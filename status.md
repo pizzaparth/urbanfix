@@ -184,14 +184,19 @@ src/
 
 ### Key UI Features
 1. **Public Home Dashboard (`Home.jsx`):**
-   * Top Statistics Overview section with responsive layout.
-   * Feature quick navigation cards leading to Public Registry, File Issue, and Track Progress.
+   * Centered statistics overview section with title placed directly on top of number in solid black Poppins font (`#000000`).
+   * Mobile-responsive vertical stacking layout (`col-12 col-md`) for smaller device viewports.
+   * Feature quick-navigation cards leading directly to Public Registry, File Issue, and Track Progress.
 2. **Public Complaints Registry (`Registry.jsx`):**
    * Dedicated page accessible via Navbar ("Public Registry").
    * Searchable registry with real-time location regex search, category drop-down filter, status drop-down filter, and resolution PDF downloads.
 3. **Frictionless Submission (`FileComplaint.jsx`):**
-   * 3-step filing wizard with category-specific questionnaires, real-time urgency badge calculation, and email OTP verification.
-4. **Admin Control Console (`AdminDashboard.jsx` & `ComplaintDetail.jsx`):**
+   * 3-step filing wizard with category-specific questionnaires (`Road Damage`, `Water Leakage`, `Garbage`, `Street Light`, `Administrative`, `Other`).
+   * Real-time urgency badge calculation (`High Urgency`, `Medium Urgency`, `Standard Urgency`) and email OTP verification.
+4. **Frosted Glass Responsive Navbar (`MainLayout.jsx`):**
+   * Sticky top header with frosted glass blur effect (`backdrop-filter: blur(12px)`).
+   * Active route pill highlights (`#60A5FA`), prominent primary call-to-action button for "File a Complaint", touch-friendly mobile drawer menu, and user session pill.
+5. **Admin Control Console (`AdminDashboard.jsx` & `ComplaintDetail.jsx`):**
    * Full data table listing complaints with citizen contact details.
    * Interactive status update form enforcing allowed transitions, mandatory remarks, and public visibility toggle.
 
@@ -251,6 +256,9 @@ Seeded via `node backend/seedAdmin.js`:
 | **On-the-fly OTP Flow** | ✅ Fully Functional | Transient OTP creation, email delivery with console fallback |
 | **Dynamic Category Questionnaire**| ✅ Fully Functional | Dynamic Yes/No questionnaire & calculated urgency badges per category |
 | **Multi-Step Submission Wizard**| ✅ Fully Functional | 3-step filing wizard on `/file-complaint` with preview & OTP modal |
+| **Frosted Glass Responsive Navbar**| ✅ Fully Functional | Sticky header with blur, active route pills, CTA button & touch drawer |
+| **Homepage Centered Statistics** | ✅ Fully Functional | Title on top of number in solid black Poppins; mobile vertical stacking |
+| **Dedicated Public Registry Page**| ✅ Fully Functional | `/registry` page with location regex search, category & status filters |
 | **Complaint Submission** | ✅ Fully Functional | Multer multi-file upload, tracking ID generation (`COMP-XXXXX-X`) |
 | **State Machine Constraints** | ✅ Fully Functional | Enforces `Pending` -> `In Progress` -> `Resolved`/`Rejected` flow |
 | **PDF Receipt Engine** | ✅ Fully Functional | PDFKit streaming and email attachment upon ticket resolution |
