@@ -16,7 +16,7 @@ const AdminAction = () => {
   const [totalPages, setTotalPages] = useState(1);
 
   const navigate = useNavigate();
-  const categories = ['Sanitation', 'Roads', 'Water Supply', 'Electricity', 'Administrative', 'Other'];
+  const categories = ['Road Damage', 'Water Leakage', 'Garbage', 'Street Light', 'Sanitation', 'Roads', 'Water Supply', 'Electricity', 'Administrative', 'Other'];
 
   useEffect(() => {
     fetchComplaints();

@@ -27,8 +27,10 @@ export const getAdminStats = catchAsync(async (req, res, next) => {
   };
 
   stats.forEach(stat => {
-    formattedStats[stat._id] = stat.count;
-    formattedStats.total += stat.count;
+    if (stat._id) {
+      formattedStats[stat._id] = stat.count;
+      formattedStats.total += stat.count;
+    }
   });
 
   // Calculate complaint volume per category
@@ -41,11 +43,67 @@ export const getAdminStats = catchAsync(async (req, res, next) => {
     },
   ]);
 
+  // Backfill existing MongoDB records lacking urgencyLevel
+  await Complaint.updateMany(
+    { $or: [{ urgencyLevel: { $exists: false } }, { urgencyLevel: null }] },
+    [
+      {
+        $set: {
+          urgencyLevel: {
+            $cond: {
+              if: { $in: ['$category', ['Electricity', 'Water Supply']] },
+              then: 'High Urgency',
+              else: {
+                $cond: {
+                  if: { $in: ['$category', ['Sanitation', 'Roads', 'Road Damage']] },
+                  then: 'Medium Urgency',
+                  else: 'Standard Urgency'
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+  );
+
+  // Calculate urgency distribution
+  const urgencyStats = await Complaint.aggregate([
+    {
+      $group: {
+        _id: '$urgencyLevel',
+        count: { $sum: 1 },
+      },
+    },
+  ]);
+
+  // Calculate timeline trend (by date)
+  const timelineStats = await Complaint.aggregate([
+    {
+      $group: {
+        _id: {
+          $dateToString: { format: '%Y-%m-%d', date: '$createdAt' }
+        },
+        totalCount: { $sum: 1 },
+        resolvedCount: {
+          $sum: { $cond: [{ $eq: ['$status', 'Resolved'] }, 1, 0] }
+        },
+        pendingCount: {
+          $sum: { $cond: [{ $eq: ['$status', 'Pending'] }, 1, 0] }
+        }
+      },
+    },
+    { $sort: { _id: 1 } },
+    { $limit: 14 }
+  ]);
+
   res.status(200).json({
     status: 'success',
     stats: {
       statusBreakdown: formattedStats,
       categoryDistribution: categoryStats,
+      urgencyDistribution: urgencyStats,
+      timelineTrend: timelineStats,
     },
   });
 });
@@ -99,7 +157,7 @@ export const updateComplaintStatus = catchAsync(async (req, res, next) => {
     return next(new AppError(errorMsg, 400));
   }
 
-  const { status: newStatus, remarks, isPublic } = validationResult.data;
+  const { status: newStatus, remarks } = validationResult.data;
 
   // Retrieve target complaint
   const complaint = await Complaint.findById(id).populate('citizenId');
@@ -121,10 +179,6 @@ export const updateComplaintStatus = catchAsync(async (req, res, next) => {
   // Apply updates
   complaint.status = newStatus;
   complaint.remarks = remarks;
-  
-  if (isPublic !== undefined) {
-    complaint.isPublic = isPublic;
-  }
 
   // Record history
   complaint.statusHistory.push({

@@ -13,7 +13,6 @@ const ComplaintDetail = () => {
   // Status modify states
   const [status, setStatus] = useState('Pending');
   const [remarks, setRemarks] = useState('');
-  const [isPublic, setIsPublic] = useState(false);
   const [updating, setUpdating] = useState(false);
   const [updateError, setUpdateError] = useState('');
 
@@ -30,7 +29,6 @@ const ComplaintDetail = () => {
       if (found) {
         setComplaint(found);
         setStatus(found.status);
-        setIsPublic(found.isPublic);
       } else {
         setError('Complaint details not found.');
       }
@@ -50,7 +48,6 @@ const ComplaintDetail = () => {
       await api.patch(`/admin/complaints/${id}/status`, {
         status,
         remarks,
-        isPublic,
       });
       setRemarks('');
       fetchComplaintDetails();
@@ -204,20 +201,6 @@ const ComplaintDetail = () => {
                         </>
                       )}
                     </select>
-                  </div>
-
-                  <div className="mb-3 form-check form-switch">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      role="switch"
-                      id="publishSwitch"
-                      checked={isPublic}
-                      onChange={(e) => setIsPublic(e.target.checked)}
-                    />
-                    <label className="form-check-label small fw-semibold text-secondary" htmlFor="publishSwitch">
-                      Publish to Transparency Portal
-                    </label>
                   </div>
 
                   <div className="mb-3">

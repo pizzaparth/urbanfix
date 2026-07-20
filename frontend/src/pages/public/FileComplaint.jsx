@@ -220,6 +220,7 @@ const FileComplaint = () => {
     });
     questionnaireSummary += `\n[CITIZEN DESCRIPTION]\n${formData.description}`;
 
+    const urgency = calculateUrgency(answers);
     const data = new FormData();
     data.append('name', formData.name);
     data.append('email', formData.email);
@@ -229,6 +230,7 @@ const FileComplaint = () => {
     data.append('description', questionnaireSummary);
     data.append('category', formData.category);
     data.append('location', formData.location);
+    data.append('urgencyLevel', urgency.label);
 
     files.forEach((file) => {
       data.append('images', file);

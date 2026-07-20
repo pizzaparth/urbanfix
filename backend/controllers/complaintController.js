@@ -46,7 +46,7 @@ export const submitComplaint = catchAsync(async (req, res, next) => {
     return next(new AppError(errorMsg, 400));
   }
 
-  const { name, email, phone, otp, title, description, category, location } = validationResult.data;
+  const { name, email, phone, otp, title, description, category, location, urgencyLevel } = validationResult.data;
 
   // Retrieve valid OTP matching target email
   const otpRecord = await Otp.findOne({ email, otp });
@@ -111,6 +111,7 @@ export const submitComplaint = catchAsync(async (req, res, next) => {
     description,
     category,
     location,
+    urgencyLevel: urgencyLevel || 'Standard Urgency',
     images: imageUrls,
     status: 'Pending',
     statusHistory: [

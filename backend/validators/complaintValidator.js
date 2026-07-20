@@ -9,4 +9,5 @@ export const createComplaintSchema = z.object({
   description: z.string().min(15, 'Description must be at least 15 characters long'),
   category: z.string().min(1, 'Category is required'),
   location: z.string().min(2, 'Location must be at least 2 characters long'),
+  urgencyLevel: z.string().optional(),
 });
