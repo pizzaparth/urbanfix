@@ -69,74 +69,101 @@ const Home = () => {
 
   return (
     <MainLayout>
-      {/* 1. Repository KPI Overview Counter Section on Top */}
-      <div className="row g-3 mb-4">
-        <div className="col-md">
-          <div className="card border-0 p-3 h-100" style={{ backgroundColor: '#DBEAFE', borderLeft: '5px solid #2563EB' }}>
-            <div className="d-flex align-items-center">
-              <div className="rounded-3 p-2 bg-white text-primary me-3 d-flex align-items-center justify-content-center" style={{ width: '45px', height: '45px' }}>
-                <i className="bi bi-folder-fill fs-4" style={{ color: '#2563EB' }}></i>
-              </div>
-              <div>
-                <span className="d-block text-secondary small fw-semibold text-uppercase">Total Issues</span>
-                <span className="h3 fw-bold mb-0" style={{ color: '#0F172A' }}>{stats?.statusBreakdown?.total || 0}</span>
-              </div>
+      {/* 1. Repository Overview Counter Section (Centered, No Cards, Title on Top of Number) */}
+      <div className="py-4 px-3 mb-4 rounded-3 bg-white" style={{ border: '1px solid #E2E8F0', boxShadow: '0 4px 20px rgba(15,23,42,.04)' }}>
+        <div className="row g-4 text-center justify-content-center align-items-center">
+          <div className="col-12 col-md">
+            <div className="d-flex flex-column align-items-center justify-content-center py-2 py-md-0">
+              <span
+                className="fw-bold text-uppercase mb-1"
+                style={{
+                  color: '#000000',
+                  fontFamily: 'Poppins, sans-serif',
+                  fontSize: '0.85rem',
+                  letterSpacing: '0.05em',
+                }}
+              >
+                Total Issues
+              </span>
+              <span className="display-6 fw-bold mb-0" style={{ color: '#2563EB', fontFamily: 'Inter, sans-serif' }}>
+                {stats?.statusBreakdown?.total || 0}
+              </span>
             </div>
           </div>
-        </div>
 
-        <div className="col-md">
-          <div className="card border-0 p-3 h-100" style={{ backgroundColor: '#FEF3C7', borderLeft: '5px solid #F59E0B' }}>
-            <div className="d-flex align-items-center">
-              <div className="rounded-3 p-2 bg-white text-warning me-3 d-flex align-items-center justify-content-center" style={{ width: '45px', height: '45px' }}>
-                <i className="bi bi-clock-history fs-4" style={{ color: '#F59E0B' }}></i>
-              </div>
-              <div>
-                <span className="d-block text-secondary small fw-semibold text-uppercase">Pending</span>
-                <span className="h3 fw-bold mb-0" style={{ color: '#0F172A' }}>{stats?.statusBreakdown?.Pending || 0}</span>
-              </div>
+          <div className="col-12 col-md">
+            <div className="d-flex flex-column align-items-center justify-content-center py-2 py-md-0">
+              <span
+                className="fw-bold text-uppercase mb-1"
+                style={{
+                  color: '#000000',
+                  fontFamily: 'Poppins, sans-serif',
+                  fontSize: '0.85rem',
+                  letterSpacing: '0.05em',
+                }}
+              >
+                Pending
+              </span>
+              <span className="display-6 fw-bold mb-0" style={{ color: '#F59E0B', fontFamily: 'Inter, sans-serif' }}>
+                {stats?.statusBreakdown?.Pending || 0}
+              </span>
             </div>
           </div>
-        </div>
 
-        <div className="col-md">
-          <div className="card border-0 p-3 h-100" style={{ backgroundColor: '#CFFAFE', borderLeft: '5px solid #06B6D4' }}>
-            <div className="d-flex align-items-center">
-              <div className="rounded-3 p-2 bg-white text-info me-3 d-flex align-items-center justify-content-center" style={{ width: '45px', height: '45px' }}>
-                <i className="bi bi-gear-wide-connected fs-4" style={{ color: '#06B6D4' }}></i>
-              </div>
-              <div>
-                <span className="d-block text-secondary small fw-semibold text-uppercase">In Progress</span>
-                <span className="h3 fw-bold mb-0" style={{ color: '#0F172A' }}>{stats?.statusBreakdown?.['In Progress'] || 0}</span>
-              </div>
+          <div className="col-12 col-md">
+            <div className="d-flex flex-column align-items-center justify-content-center py-2 py-md-0">
+              <span
+                className="fw-bold text-uppercase mb-1"
+                style={{
+                  color: '#000000',
+                  fontFamily: 'Poppins, sans-serif',
+                  fontSize: '0.85rem',
+                  letterSpacing: '0.05em',
+                }}
+              >
+                In Progress
+              </span>
+              <span className="display-6 fw-bold mb-0" style={{ color: '#06B6D4', fontFamily: 'Inter, sans-serif' }}>
+                {stats?.statusBreakdown?.['In Progress'] || 0}
+              </span>
             </div>
           </div>
-        </div>
 
-        <div className="col-md">
-          <div className="card border-0 p-3 h-100" style={{ backgroundColor: '#DCFCE7', borderLeft: '5px solid #22C55E' }}>
-            <div className="d-flex align-items-center">
-              <div className="rounded-3 p-2 bg-white text-success me-3 d-flex align-items-center justify-content-center" style={{ width: '45px', height: '45px' }}>
-                <i className="bi bi-check-circle-fill fs-4" style={{ color: '#22C55E' }}></i>
-              </div>
-              <div>
-                <span className="d-block text-secondary small fw-semibold text-uppercase">Resolved</span>
-                <span className="h3 fw-bold mb-0" style={{ color: '#0F172A' }}>{stats?.statusBreakdown?.Resolved || 0}</span>
-              </div>
+          <div className="col-12 col-md">
+            <div className="d-flex flex-column align-items-center justify-content-center py-2 py-md-0">
+              <span
+                className="fw-bold text-uppercase mb-1"
+                style={{
+                  color: '#000000',
+                  fontFamily: 'Poppins, sans-serif',
+                  fontSize: '0.85rem',
+                  letterSpacing: '0.05em',
+                }}
+              >
+                Resolved
+              </span>
+              <span className="display-6 fw-bold mb-0" style={{ color: '#22C55E', fontFamily: 'Inter, sans-serif' }}>
+                {stats?.statusBreakdown?.Resolved || 0}
+              </span>
             </div>
           </div>
-        </div>
 
-        <div className="col-md">
-          <div className="card border-0 p-3 h-100" style={{ backgroundColor: '#FEE2E2', borderLeft: '5px solid #EF4444' }}>
-            <div className="d-flex align-items-center">
-              <div className="rounded-3 p-2 bg-white text-danger me-3 d-flex align-items-center justify-content-center" style={{ width: '45px', height: '45px' }}>
-                <i className="bi bi-x-octagon-fill fs-4" style={{ color: '#EF4444' }}></i>
-              </div>
-              <div>
-                <span className="d-block text-secondary small fw-semibold text-uppercase">Rejected</span>
-                <span className="h3 fw-bold mb-0" style={{ color: '#0F172A' }}>{stats?.statusBreakdown?.Rejected || 0}</span>
-              </div>
+          <div className="col-12 col-md">
+            <div className="d-flex flex-column align-items-center justify-content-center py-2 py-md-0">
+              <span
+                className="fw-bold text-uppercase mb-1"
+                style={{
+                  color: '#000000',
+                  fontFamily: 'Poppins, sans-serif',
+                  fontSize: '0.85rem',
+                  letterSpacing: '0.05em',
+                }}
+              >
+                Rejected
+              </span>
+              <span className="display-6 fw-bold mb-0" style={{ color: '#EF4444', fontFamily: 'Inter, sans-serif' }}>
+                {stats?.statusBreakdown?.Rejected || 0}
+              </span>
             </div>
           </div>
         </div>
