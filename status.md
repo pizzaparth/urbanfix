@@ -186,7 +186,7 @@ src/
 1. **Public Home Dashboard (`Home.jsx`):**
    * Centered statistics overview section with title placed directly on top of number in solid black Poppins font (`#000000`).
    * Mobile-responsive vertical stacking layout (`col-12 col-md`) for smaller device viewports.
-   * Feature quick-navigation cards leading directly to Public Registry, File Issue, and Track Progress.
+   * Feature quick-navigation cards and tutorial headers utilizing SVG icon assets (`notebook-test.svg`, `circle-plus.svg`, `search.svg`) from `/frontend/public/`.
    * User Guide & Tutorial Sections: 3 full-width vertical tutorial sections (*Tutorial 1: Submit Complaint*, *Tutorial 2: Public Registry*, *Tutorial 3: Track Status*) featuring vertical step layouts with numbered badges and uniform hover action buttons.
 2. **Public Complaints Registry (`Registry.jsx`):**
    * Dedicated page accessible via Navbar ("Public Registry").

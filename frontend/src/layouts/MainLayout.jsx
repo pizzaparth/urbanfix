@@ -68,7 +68,7 @@ const MainLayout = ({ children }) => {
 
               <li className="nav-item">
                 <Link
-                  className={`nav-link px-3 py-2 rounded-pill fw-semibold text-transition ${
+                  className={`nav-link px-3 py-2 rounded-pill fw-semibold text-transition d-inline-flex align-items-center ${
                     isActive('/registry') ? 'text-white active-nav-pill' : 'text-slate-300'
                   }`}
                   to="/registry"
@@ -78,13 +78,13 @@ const MainLayout = ({ children }) => {
                     fontSize: '0.9rem',
                   }}
                 >
-                  <i className="bi bi-journal-text me-1"></i> Public Registry
+                  <img src="/notebook-test.svg" alt="" style={{ width: '18px', height: '18px' }} className="me-1" /> Public Registry
                 </Link>
               </li>
 
               <li className="nav-item">
                 <Link
-                  className={`nav-link px-3 py-2 rounded-pill fw-semibold text-transition ${
+                  className={`nav-link px-3 py-2 rounded-pill fw-semibold text-transition d-inline-flex align-items-center ${
                     isActive('/track') ? 'text-white active-nav-pill' : 'text-slate-300'
                   }`}
                   to="/track"
@@ -94,7 +94,7 @@ const MainLayout = ({ children }) => {
                     fontSize: '0.9rem',
                   }}
                 >
-                  <i className="bi bi-search me-1"></i> Track Complaint
+                  <img src="/search.svg" alt="" style={{ width: '18px', height: '18px' }} className="me-1" /> Track Complaint
                 </Link>
               </li>
             </ul>
@@ -114,7 +114,7 @@ const MainLayout = ({ children }) => {
                 onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#1D4ED8')}
                 onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#2563EB')}
               >
-                <i className="bi bi-plus-circle-fill me-1 fs-6"></i> File a Complaint
+                <img src="/circle-plus.svg" alt="" style={{ width: '18px', height: '18px', filter: 'brightness(0) invert(1)' }} className="me-1" /> File a Complaint
               </Link>
 
               {/* User / Admin Session Badge */}

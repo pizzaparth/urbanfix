@@ -151,7 +151,7 @@ const Home = () => {
           <div className="col-md-4">
             <div className="card h-100 border-0 p-4 bg-white shadow-sm text-center" style={{ border: '1px solid #E2E8F0', borderRadius: '12px' }}>
               <div className="rounded-circle mx-auto d-flex align-items-center justify-content-center mb-3" style={{ width: '56px', height: '56px', backgroundColor: '#DBEAFE' }}>
-                <i className="bi bi-journal-text fs-3" style={{ color: '#2563EB' }}></i>
+                <img src="/notebook-test.svg" alt="Public Registry" style={{ width: '28px', height: '28px' }} />
               </div>
               <h3 className="fs-5 fw-bold mb-2" style={{ color: '#0F172A' }}>Public Registry</h3>
               <p className="small mb-4 fw-medium" style={{ color: '#1E293B' }}>
@@ -167,7 +167,7 @@ const Home = () => {
           <div className="col-md-4">
             <div className="card h-100 border-0 p-4 bg-white shadow-sm text-center" style={{ border: '1px solid #E2E8F0', borderRadius: '12px' }}>
               <div className="rounded-circle mx-auto d-flex align-items-center justify-content-center mb-3" style={{ width: '56px', height: '56px', backgroundColor: '#DCFCE7' }}>
-                <i className="bi bi-plus-circle-fill fs-3" style={{ color: '#10B981' }}></i>
+                <img src="/circle-plus.svg" alt="File a Complaint" style={{ width: '28px', height: '28px' }} />
               </div>
               <h3 className="fs-5 fw-bold mb-2" style={{ color: '#0F172A' }}>File a Complaint</h3>
               <p className="small mb-4 fw-medium" style={{ color: '#1E293B' }}>
@@ -183,7 +183,7 @@ const Home = () => {
           <div className="col-md-4">
             <div className="card h-100 border-0 p-4 bg-white shadow-sm text-center" style={{ border: '1px solid #E2E8F0', borderRadius: '12px' }}>
               <div className="rounded-circle mx-auto d-flex align-items-center justify-content-center mb-3" style={{ width: '56px', height: '56px', backgroundColor: '#FEF3C7' }}>
-                <i className="bi bi-search fs-3" style={{ color: '#F59E0B' }}></i>
+                <img src="/search.svg" alt="Track Progress" style={{ width: '28px', height: '28px' }} />
               </div>
               <h3 className="fs-5 fw-bold mb-2" style={{ color: '#0F172A' }}>Track Progress</h3>
               <p className="small mb-4 fw-medium" style={{ color: '#1E293B' }}>
@@ -213,7 +213,7 @@ const Home = () => {
               <div className="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4 pb-3 border-bottom">
                 <div className="d-flex align-items-center mb-3 mb-md-0">
                   <div className="rounded-3 p-2 text-primary me-3 d-flex align-items-center justify-content-center" style={{ backgroundColor: '#DCFCE7', width: '48px', height: '48px' }}>
-                    <i className="bi bi-file-earmark-plus-fill fs-4" style={{ color: '#10B981' }}></i>
+                    <img src="/circle-plus.svg" alt="Submit Complaint" style={{ width: '24px', height: '24px' }} />
                   </div>
                   <div>
                     <h3 className="fs-4 fw-bold mb-0" style={{ color: '#0F172A', fontFamily: 'Poppins, sans-serif' }}>
@@ -304,7 +304,7 @@ const Home = () => {
               <div className="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4 pb-3 border-bottom">
                 <div className="d-flex align-items-center mb-3 mb-md-0">
                   <div className="rounded-3 p-2 text-primary me-3 d-flex align-items-center justify-content-center" style={{ backgroundColor: '#DBEAFE', width: '48px', height: '48px' }}>
-                    <i className="bi bi-journal-check fs-4" style={{ color: '#2563EB' }}></i>
+                    <img src="/notebook-test.svg" alt="Public Registry" style={{ width: '24px', height: '24px' }} />
                   </div>
                   <div>
                     <h3 className="fs-4 fw-bold mb-0" style={{ color: '#0F172A', fontFamily: 'Poppins, sans-serif' }}>
@@ -395,7 +395,7 @@ const Home = () => {
               <div className="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4 pb-3 border-bottom">
                 <div className="d-flex align-items-center mb-3 mb-md-0">
                   <div className="rounded-3 p-2 me-3 d-flex align-items-center justify-content-center" style={{ backgroundColor: '#FEF3C7', width: '48px', height: '48px' }}>
-                    <i className="bi bi-search fs-4" style={{ color: '#F59E0B' }}></i>
+                    <img src="/search.svg" alt="Track Status" style={{ width: '24px', height: '24px' }} />
                   </div>
                   <div>
                     <h3 className="fs-4 fw-bold mb-0" style={{ color: '#0F172A', fontFamily: 'Poppins, sans-serif' }}>

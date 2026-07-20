@@ -141,7 +141,7 @@ const Registry = () => {
           {/* Filter Bar Header */}
           <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3 gap-2">
             <h2 className="fs-5 fw-bold mb-0" style={{ color: '#0F172A', fontFamily: 'Poppins, sans-serif' }}>
-              <i className="bi bi-journal-text me-2" style={{ color: '#2563EB' }}></i> Search & Filter Registry
+              <img src="/notebook-test.svg" alt="" style={{ width: '22px', height: '22px' }} className="me-2" /> Search & Filter Registry
             </h2>
 
             <div className="d-flex align-items-center flex-wrap gap-2 ms-md-auto">
@@ -362,7 +362,7 @@ const Registry = () => {
                       onMouseOver={(e) => handleBtnOver(e, '#1D4ED8')}
                       onMouseOut={(e) => handleBtnOut(e, '#2563EB')}
                     >
-                      <i className="bi bi-search me-1"></i> Track Progress <i className="bi bi-arrow-right ms-1"></i>
+                      <img src="/search.svg" alt="" style={{ width: '16px', height: '16px' }} className="me-1" /> Track Progress <i className="bi bi-arrow-right ms-1"></i>
                     </Link>
 
                     {item.status === 'Resolved' && (
