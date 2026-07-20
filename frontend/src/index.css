@@ -1,0 +1,257 @@
+/* Import modern fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* Import Bootstrap styles and icon fonts */
+@import 'bootstrap/dist/css/bootstrap.min.css';
+@import 'bootstrap-icons/font/bootstrap-icons.css';
+
+/* Complete solid-color UI design tokens according to color_palatte.md */
+:root {
+  --primary-color: #2563EB;
+  --primary-hover: #1D4ED8;
+  --primary-light: #DBEAFE;
+  --secondary-color: #10B981;
+  --secondary-hover: #059669;
+  --accent-color: #F59E0B;
+  
+  --bg-color: #F8FAFC;
+  --surface: #FFFFFF;
+  --surface-secondary: #F1F5F9;
+  --sidebar-navbar: #0F172A;
+  --sidebar-hover: #1E293B;
+  --overlay-bg: rgba(15,23,42,0.55);
+  
+  --heading-color: #0F172A;
+  --text-primary: #1E293B;
+  --text-secondary: #64748B;
+  --text-muted: #94A3B8;
+  --text-white: #FFFFFF;
+  
+  --border-light: #E2E8F0;
+  --border-medium: #CBD5E1;
+  --border-dark: #94A3B8;
+  
+  /* Status Colors */
+  --status-submitted: #3B82F6;
+  --status-waiting: #8B5CF6;
+  --status-under-review: #F59E0B;
+  --status-team-assigned: #06B6D4;
+  --status-wip: #F97316;
+  --status-resolved: #22C55E;
+  --status-closed: #16A34A;
+  --status-rejected: #EF4444;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Poppins', sans-serif;
+  color: var(--heading-color);
+  font-weight: 600;
+}
+
+/* Custom card style override - NO GRADIENT, solid background card */
+.glass-card, .card {
+  background-color: var(--surface) !important;
+  border: 1px solid var(--border-light) !important;
+  box-shadow: 0 4px 20px rgba(15,23,42,.06) !important;
+  border-radius: 12px !important;
+}
+
+/* Row card styling */
+.hover-shadow-card {
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.hover-shadow-card:hover {
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 8px 30px rgba(15,23,42,.08) !important;
+}
+
+/* Solid Button colors */
+.btn-primary {
+  background-color: var(--primary-color) !important;
+  border-color: var(--primary-color) !important;
+  color: var(--text-white) !important;
+}
+.btn-primary:hover, .btn-primary:focus {
+  background-color: var(--primary-hover) !important;
+  border-color: var(--primary-hover) !important;
+}
+
+.btn-secondary {
+  background-color: var(--secondary-color) !important;
+  border-color: var(--secondary-color) !important;
+  color: var(--text-white) !important;
+}
+.btn-secondary:hover, .btn-secondary:focus {
+  background-color: var(--secondary-hover) !important;
+  border-color: var(--secondary-hover) !important;
+}
+
+.btn-outline-primary {
+  color: var(--primary-color) !important;
+  border-color: var(--primary-color) !important;
+  background-color: transparent !important;
+}
+.btn-outline-primary:hover, .btn-outline-primary:focus {
+  color: var(--primary-hover) !important;
+  background-color: var(--primary-light) !important;
+}
+
+.btn-danger {
+  background-color: var(--status-rejected) !important;
+  border-color: var(--status-rejected) !important;
+  color: var(--text-white) !important;
+}
+.btn-danger:hover {
+  background-color: #DC2626 !important;
+  border-color: #DC2626 !important;
+}
+
+/* Inputs override */
+.form-control, .form-select {
+  background-color: var(--surface) !important;
+  border: 1px solid var(--border-medium) !important;
+  color: var(--text-primary) !important;
+  border-radius: 8px !important;
+}
+.form-control:focus, .form-select:focus {
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25) !important;
+}
+.form-control::placeholder {
+  color: var(--text-muted) !important;
+}
+.form-control:disabled {
+  background-color: var(--surface-secondary) !important;
+}
+
+/* Tables style */
+.table thead th {
+  background-color: var(--surface-secondary) !important;
+  color: var(--text-primary) !important;
+  font-weight: 600;
+  border-bottom: 2px solid var(--border-light) !important;
+  padding: 12px 16px !important;
+}
+
+.table tbody td {
+  padding: 12px 16px !important;
+  border-bottom: 1px solid var(--border-light) !important;
+}
+
+.table-hover tbody tr:hover {
+  background-color: #EFF6FF !important;
+}
+
+/* Timeline stepper designs */
+.timeline-stepper {
+  position: relative;
+  padding-left: 2.5rem;
+  border-left: 2px solid var(--border-light);
+}
+
+.timeline-step-item {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.timeline-step-item:last-child {
+  margin-bottom: 0;
+}
+
+.timeline-step-icon {
+  position: absolute;
+  left: -3.35rem;
+  top: 0.15rem;
+  width: 1.7rem;
+  height: 1.7rem;
+  border-radius: 50%;
+  background-color: var(--surface);
+  border: 2px solid var(--primary-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.timeline-step-icon.primary {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.timeline-step-icon.success {
+  border-color: var(--secondary-color);
+  color: var(--secondary-color);
+}
+
+.timeline-step-icon.warning {
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+}
+
+.timeline-step-icon.danger {
+  border-color: var(--status-rejected);
+  color: var(--status-rejected);
+}
+
+/* Custom badges */
+.badge-submitted {
+  background-color: #DBEAFE !important;
+  color: #2563EB !important;
+}
+.badge-pending {
+  background-color: #FEF3C7 !important;
+  color: #B45309 !important;
+}
+.badge-wip {
+  background-color: #CFFAFE !important;
+  color: #0891B2 !important;
+}
+.badge-resolved {
+  background-color: #DCFCE7 !important;
+  color: #15803D !important;
+}
+.badge-rejected {
+  background-color: #FEE2E2 !important;
+  color: #B91C1C !important;
+}
+
+/* Navigation Hover Effects */
+.navbar .nav-link {
+  transition: color 0.15s ease-in-out;
+}
+.navbar .nav-link:hover {
+  color: #BFDBFE !important;
+}
+
+.navbar .navbar-brand {
+  transition: color 0.15s ease-in-out;
+}
+.navbar .navbar-brand:hover {
+  color: #BFDBFE !important;
+}
+
+.navbar .btn-outline-light {
+  transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+}
+.navbar .btn-outline-light:hover {
+  background-color: #BFDBFE !important;
+  color: #0F172A !important;
+  border-color: #BFDBFE !important;
+}
+
+.navbar .btn-light {
+  transition: background-color 0.15s ease-in-out;
+}
+.navbar .btn-light:hover {
+  background-color: #F1F5F9 !important;
+}
