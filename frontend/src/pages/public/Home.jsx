@@ -127,7 +127,7 @@ const Home = () => {
         <h1 className="display-6 fw-bold mb-3" style={{ color: '#0F172A', fontFamily: 'Poppins, sans-serif' }}>
           Smart Digital Public Administration & Transparency
         </h1>
-        <p className="fs-6 text-secondary mx-auto mb-4" style={{ maxWidth: '720px' }}>
+        <p className="fs-6 fw-medium mx-auto mb-4" style={{ maxWidth: '720px', color: '#1E293B' }}>
           Connecting community members and municipal authorities. Report public issues, verify identity securely via email OTP, monitor real-time ticket progress, and access transparent public records.
         </p>
 
@@ -139,7 +139,7 @@ const Home = () => {
                 <i className="bi bi-journal-text fs-3" style={{ color: '#2563EB' }}></i>
               </div>
               <h3 className="fs-5 fw-bold mb-2" style={{ color: '#0F172A' }}>Public Registry</h3>
-              <p className="text-secondary small mb-4">
+              <p className="small mb-4 fw-medium" style={{ color: '#1E293B' }}>
                 View all publicly registered complaints, search by area location, and filter by category or status.
               </p>
               <Link to="/registry" className="btn btn-primary fw-bold mt-auto border-0" style={{ backgroundColor: '#2563EB', borderRadius: '8px' }}>
@@ -155,7 +155,7 @@ const Home = () => {
                 <i className="bi bi-plus-circle-fill fs-3" style={{ color: '#10B981' }}></i>
               </div>
               <h3 className="fs-5 fw-bold mb-2" style={{ color: '#0F172A' }}>File a Complaint</h3>
-              <p className="text-secondary small mb-4">
+              <p className="small mb-4 fw-medium" style={{ color: '#1E293B' }}>
                 Report local road, sanitation, water, or electricity issues through our interactive questionnaire flow.
               </p>
               <Link to="/file-complaint" className="btn btn-success fw-bold mt-auto border-0" style={{ backgroundColor: '#10B981', borderRadius: '8px' }}>
@@ -171,13 +171,161 @@ const Home = () => {
                 <i className="bi bi-search fs-3" style={{ color: '#F59E0B' }}></i>
               </div>
               <h3 className="fs-5 fw-bold mb-2" style={{ color: '#0F172A' }}>Track Progress</h3>
-              <p className="text-secondary small mb-4">
+              <p className="small mb-4 fw-medium" style={{ color: '#1E293B' }}>
                 Enter your unique Tracking ID to inspect the live audit log history, official remarks, and resolution status.
               </p>
               <Link to="/track" className="btn btn-warning text-white fw-bold mt-auto border-0" style={{ backgroundColor: '#F59E0B', borderRadius: '8px' }}>
                 Track Status <i className="bi bi-arrow-right ms-1"></i>
               </Link>
             </div>
+          </div>
+        </div>
+
+        {/* 3. User Tutorial & Step-by-Step Guide Section (Full Width, Vertical Sections, No Cards) */}
+        <div className="mt-5 pt-4 text-start">
+          <div className="text-center mb-5">
+            <h2 className="display-6 fw-bold mb-2" style={{ color: '#0F172A', fontFamily: 'Poppins, sans-serif' }}>
+              How to Use the UrbanFix Portal
+            </h2>
+            <p className="fs-6 fw-medium mx-auto mb-0" style={{ maxWidth: '680px', color: '#1E293B' }}>
+              Step-by-step guidelines for filing public complaints and exploring the public transparency registry.
+            </p>
+          </div>
+
+          <div className="d-flex flex-column gap-5">
+            {/* Section 1: How to Submit a Complaint */}
+            <section className="py-4 px-3 px-md-4 rounded-3 bg-white" style={{ borderBottom: '2px solid #E2E8F0' }}>
+              <div className="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4 pb-3 border-bottom">
+                <div className="d-flex align-items-center mb-3 mb-md-0">
+                  <div className="rounded-3 p-2 text-primary me-3 d-flex align-items-center justify-content-center" style={{ backgroundColor: '#DCFCE7', width: '48px', height: '48px' }}>
+                    <i className="bi bi-file-earmark-plus-fill fs-4" style={{ color: '#10B981' }}></i>
+                  </div>
+                  <div>
+                    <h3 className="fs-4 fw-bold mb-0" style={{ color: '#0F172A', fontFamily: 'Poppins, sans-serif' }}>
+                      Tutorial 1: How to Submit a Public Complaint
+                    </h3>
+                    <span className="small text-muted">Account-less friction-free 3-step filing workflow</span>
+                  </div>
+                </div>
+                <Link to="/file-complaint" className="btn btn-success fw-bold px-4 py-2 text-nowrap" style={{ backgroundColor: '#10B981', border: 'none', borderRadius: '8px' }}>
+                  Start Filing Now <i className="bi bi-arrow-right ms-1"></i>
+                </Link>
+              </div>
+
+              <div className="row g-4">
+                {/* Step 1 */}
+                <div className="col-md-4">
+                  <div className="d-flex align-items-start">
+                    <div className="rounded-circle fw-bold text-white me-3 d-flex align-items-center justify-content-center flex-shrink-0" style={{ backgroundColor: '#10B981', width: '36px', height: '36px', fontSize: '0.9rem' }}>
+                      1
+                    </div>
+                    <div>
+                      <h4 className="fs-6 fw-bold mb-2" style={{ color: '#0F172A' }}>Select Category & Context Questions</h4>
+                      <p className="small mb-0 fw-medium" style={{ color: '#1E293B', lineHeight: '1.6' }}>
+                        Choose your issue category (e.g. Road Damage, Water Leakage) and answer dynamic Yes/No questions to help municipal teams assess urgency.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Step 2 */}
+                <div className="col-md-4">
+                  <div className="d-flex align-items-start">
+                    <div className="rounded-circle fw-bold text-white me-3 d-flex align-items-center justify-content-center flex-shrink-0" style={{ backgroundColor: '#10B981', width: '36px', height: '36px', fontSize: '0.9rem' }}>
+                      2
+                    </div>
+                    <div>
+                      <h4 className="fs-6 fw-bold mb-2" style={{ color: '#0F172A' }}>Provide Location, Description & Photos</h4>
+                      <p className="small mb-0 fw-medium" style={{ color: '#1E293B', lineHeight: '1.6' }}>
+                        Enter the specific location (ward/landmarks), describe the issue in detail, and attach up to 3 supporting photographs.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Step 3 */}
+                <div className="col-md-4">
+                  <div className="d-flex align-items-start">
+                    <div className="rounded-circle fw-bold text-white me-3 d-flex align-items-center justify-content-center flex-shrink-0" style={{ backgroundColor: '#10B981', width: '36px', height: '36px', fontSize: '0.9rem' }}>
+                      3
+                    </div>
+                    <div>
+                      <h4 className="fs-6 fw-bold mb-2" style={{ color: '#0F172A' }}>Verify Email OTP & Receive Tracking ID</h4>
+                      <p className="small mb-0 fw-medium" style={{ color: '#1E293B', lineHeight: '1.6' }}>
+                        Enter your email address, request a 6-digit OTP code, verify identity, and receive your unique <code style={{ color: '#2563EB' }}>COMP-XXXXX-X</code> tracking ID.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* Section 2: How to Use the Public Registry */}
+            <section className="py-4 px-3 px-md-4 rounded-3 bg-white" style={{ borderBottom: '2px solid #E2E8F0' }}>
+              <div className="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4 pb-3 border-bottom">
+                <div className="d-flex align-items-center mb-3 mb-md-0">
+                  <div className="rounded-3 p-2 text-primary me-3 d-flex align-items-center justify-content-center" style={{ backgroundColor: '#DBEAFE', width: '48px', height: '48px' }}>
+                    <i className="bi bi-journal-check fs-4" style={{ color: '#2563EB' }}></i>
+                  </div>
+                  <div>
+                    <h3 className="fs-4 fw-bold mb-0" style={{ color: '#0F172A', fontFamily: 'Poppins, sans-serif' }}>
+                      Tutorial 2: How to Use the Public Registry
+                    </h3>
+                    <span className="small text-muted">Explore public records, status logs & resolution receipts</span>
+                  </div>
+                </div>
+                <Link to="/registry" className="btn btn-primary fw-bold px-4 py-2 text-nowrap" style={{ backgroundColor: '#2563EB', border: 'none', borderRadius: '8px' }}>
+                  Explore Registry <i className="bi bi-arrow-right ms-1"></i>
+                </Link>
+              </div>
+
+              <div className="row g-4">
+                {/* Step 1 */}
+                <div className="col-md-4">
+                  <div className="d-flex align-items-start">
+                    <div className="rounded-circle fw-bold text-white me-3 d-flex align-items-center justify-content-center flex-shrink-0" style={{ backgroundColor: '#2563EB', width: '36px', height: '36px', fontSize: '0.9rem' }}>
+                      1
+                    </div>
+                    <div>
+                      <h4 className="fs-6 fw-bold mb-2" style={{ color: '#0F172A' }}>Access Public Registry Page</h4>
+                      <p className="small mb-0 fw-medium" style={{ color: '#1E293B', lineHeight: '1.6' }}>
+                        Click <strong>"Public Registry"</strong> in the navigation header or homepage card to view all publicly registered tickets (PII redacted).
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Step 2 */}
+                <div className="col-md-4">
+                  <div className="d-flex align-items-start">
+                    <div className="rounded-circle fw-bold text-white me-3 d-flex align-items-center justify-content-center flex-shrink-0" style={{ backgroundColor: '#2563EB', width: '36px', height: '36px', fontSize: '0.9rem' }}>
+                      2
+                    </div>
+                    <div>
+                      <h4 className="fs-6 fw-bold mb-2" style={{ color: '#0F172A' }}>Search & Filter by Location/Status</h4>
+                      <p className="small mb-0 fw-medium" style={{ color: '#1E293B', lineHeight: '1.6' }}>
+                        Use the search bar to filter complaints by area/ward location, category type, or status (Pending, In Progress, Resolved, Rejected).
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Step 3 */}
+                <div className="col-md-4">
+                  <div className="d-flex align-items-start">
+                    <div className="rounded-circle fw-bold text-white me-3 d-flex align-items-center justify-content-center flex-shrink-0" style={{ backgroundColor: '#2563EB', width: '36px', height: '36px', fontSize: '0.9rem' }}>
+                      3
+                    </div>
+                    <div>
+                      <h4 className="fs-6 fw-bold mb-2" style={{ color: '#0F172A' }}>Track Progress & Download Receipts</h4>
+                      <p className="small mb-0 fw-medium" style={{ color: '#1E293B', lineHeight: '1.6' }}>
+                        Click <strong>"Track Progress"</strong> to inspect the live audit log timeline, or click <strong>"PDF Receipt"</strong> for resolved tickets to download official reports.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
           </div>
         </div>
       </div>
