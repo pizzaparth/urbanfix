@@ -280,59 +280,62 @@ const FileComplaint = () => {
           </p>
 
           {/* Dynamic Progress Steps Indicator */}
-          <div className="d-flex justify-content-center align-items-center gap-2 gap-sm-4 my-4">
+          <div className="d-flex justify-content-center align-items-center gap-1 gap-sm-3 my-4 flex-wrap">
             <div className="d-flex align-items-center">
               <span
-                className="rounded-circle d-flex align-items-center justify-content-center fw-bold me-2"
+                className="rounded-circle d-flex align-items-center justify-content-center fw-bold me-1 me-sm-2 flex-shrink-0"
                 style={{
-                  width: '36px',
-                  height: '36px',
+                  width: '32px',
+                  height: '32px',
                   backgroundColor: currentStep >= 1 ? '#2563EB' : '#E2E8F0',
-                  color: currentStep >= 1 ? '#FFFFFF' : '#64748B',
+                  color: currentStep >= 1 ? '#FFFFFF' : '#1E293B',
+                  fontSize: '0.85rem',
                 }}
               >
                 1
               </span>
-              <span className={`small fw-semibold ${currentStep >= 1 ? 'text-primary' : 'text-muted'}`}>
+              <span className={`small fw-bold ${currentStep >= 1 ? 'text-primary' : 'text-dark'}`} style={{ fontSize: '0.825rem' }}>
                 Category & Context
               </span>
             </div>
 
-            <div style={{ width: '40px', height: '2px', backgroundColor: currentStep >= 2 ? '#2563EB' : '#E2E8F0' }}></div>
+            <div style={{ width: '24px', height: '2px', backgroundColor: currentStep >= 2 ? '#2563EB' : '#E2E8F0' }} className="d-none d-xs-block flex-shrink-0"></div>
 
             <div className="d-flex align-items-center">
               <span
-                className="rounded-circle d-flex align-items-center justify-content-center fw-bold me-2"
+                className="rounded-circle d-flex align-items-center justify-content-center fw-bold me-1 me-sm-2 flex-shrink-0"
                 style={{
-                  width: '36px',
-                  height: '36px',
+                  width: '32px',
+                  height: '32px',
                   backgroundColor: currentStep >= 2 ? '#2563EB' : '#E2E8F0',
-                  color: currentStep >= 2 ? '#FFFFFF' : '#64748B',
+                  color: currentStep >= 2 ? '#FFFFFF' : '#1E293B',
+                  fontSize: '0.85rem',
                 }}
               >
                 2
               </span>
-              <span className={`small fw-semibold ${currentStep >= 2 ? 'text-primary' : 'text-muted'}`}>
+              <span className={`small fw-bold ${currentStep >= 2 ? 'text-primary' : 'text-dark'}`} style={{ fontSize: '0.825rem' }}>
                 Details & Photos
               </span>
             </div>
 
-            <div style={{ width: '40px', height: '2px', backgroundColor: currentStep >= 3 ? '#2563EB' : '#E2E8F0' }}></div>
+            <div style={{ width: '24px', height: '2px', backgroundColor: currentStep >= 3 ? '#2563EB' : '#E2E8F0' }} className="d-none d-xs-block flex-shrink-0"></div>
 
             <div className="d-flex align-items-center">
               <span
-                className="rounded-circle d-flex align-items-center justify-content-center fw-bold me-2"
+                className="rounded-circle d-flex align-items-center justify-content-center fw-bold me-1 me-sm-2 flex-shrink-0"
                 style={{
-                  width: '36px',
-                  height: '36px',
+                  width: '32px',
+                  height: '32px',
                   backgroundColor: currentStep >= 3 ? '#2563EB' : '#E2E8F0',
-                  color: currentStep >= 3 ? '#FFFFFF' : '#64748B',
+                  color: currentStep >= 3 ? '#FFFFFF' : '#1E293B',
+                  fontSize: '0.85rem',
                 }}
               >
                 3
               </span>
-              <span className={`small fw-semibold ${currentStep >= 3 ? 'text-primary' : 'text-muted'}`}>
-                Contact & OTP Verification
+              <span className={`small fw-bold ${currentStep >= 3 ? 'text-primary' : 'text-dark'}`} style={{ fontSize: '0.825rem' }}>
+                Contact & OTP
               </span>
             </div>
           </div>
@@ -352,30 +355,30 @@ const FileComplaint = () => {
 
         {/* STEP 1: Category Selection & Dynamic Questionnaire */}
         {currentStep === 1 && (
-          <div className="card border-0 p-4 bg-white mb-4" style={{ border: '1px solid #E2E8F0', borderRadius: '12px', boxShadow: '0 4px 20px rgba(15,23,42,.06)' }}>
-            <div className="d-flex align-items-center justify-content-between mb-4 pb-3 border-bottom">
+          <div className="card border-0 p-3 p-md-4 bg-white mb-4" style={{ border: '1px solid #E2E8F0', borderRadius: '12px', boxShadow: '0 4px 20px rgba(15,23,42,.06)' }}>
+            <div className="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between mb-4 pb-3 border-bottom gap-2">
               <div className="d-flex align-items-center">
-                <div className="p-2 rounded-3 text-primary me-3 d-flex align-items-center justify-content-center" style={{ backgroundColor: '#DBEAFE', width: '44px', height: '44px' }}>
+                <div className="p-2 rounded-3 text-primary me-3 d-flex align-items-center justify-content-center flex-shrink-0" style={{ backgroundColor: '#DBEAFE', width: '44px', height: '44px' }}>
                   <i className="bi bi-tags-fill fs-5" style={{ color: '#2563EB' }}></i>
                 </div>
                 <div>
-                  <h3 className="fs-5 fw-bold mb-0" style={{ color: '#0F172A' }}>Step 1: Category & Context Questionnaire</h3>
-                  <p className="text-secondary small mb-0">Select issue type to render category-specific urgency questions</p>
+                  <h3 className="fs-5 fw-bold mb-0" style={{ color: '#0F172A', fontFamily: 'Poppins, sans-serif' }}>Step 1: Category & Context Questionnaire</h3>
+                  <p className="small mb-0 fw-medium" style={{ color: '#1E293B' }}>Select issue type to render category-specific urgency questions</p>
                 </div>
               </div>
 
               {/* Calculated Urgency Badge */}
-              <span className="badge px-3 py-2 fw-bold d-flex align-items-center" style={{ backgroundColor: urgency.bg, color: urgency.color, fontSize: '0.85rem' }}>
+              <span className="badge px-3 py-2 fw-bold d-inline-flex align-items-center align-self-start align-self-sm-center" style={{ backgroundColor: urgency.bg, color: urgency.color, fontSize: '0.85rem' }}>
                 <i className="bi bi-shield-exclamation me-1 fs-6"></i> {urgency.level}
               </span>
             </div>
 
             {/* Category Grid Cards */}
             <div className="mb-4">
-              <label className="form-label small fw-semibold text-secondary mb-2">Select Issue Category *</label>
+              <label className="form-label small fw-bold mb-2" style={{ color: '#0F172A' }}>Select Issue Category *</label>
               <div className="row g-2">
                 {categories.map((cat, idx) => (
-                  <div key={idx} className="col-6 col-md-4">
+                  <div key={idx} className="col-12 col-sm-6 col-md-4">
                     <button
                       type="button"
                       className={`btn w-100 p-3 text-start border-2 rounded-3 d-flex align-items-center justify-content-between ${
@@ -383,7 +386,7 @@ const FileComplaint = () => {
                       }`}
                       style={{
                         backgroundColor: formData.category === cat ? '#2563EB' : '#FFFFFF',
-                        borderColor: formData.category === cat ? '#2563EB' : '#E2E8F0',
+                        borderColor: formData.category === cat ? '#2563EB' : '#CBD5E1',
                         transition: 'all 0.2s',
                       }}
                       onClick={() => setFormData({ ...formData, category: cat })}
@@ -397,14 +400,14 @@ const FileComplaint = () => {
             </div>
 
             {/* Dynamic Yes/No Questionnaire Section */}
-            <div className="p-4 rounded-3" style={{ backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0' }}>
-              <div className="d-flex align-items-center mb-3">
+            <div className="p-3 p-md-4 rounded-3" style={{ backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0' }}>
+              <div className="d-flex align-items-center mb-2">
                 <i className="bi bi-question-circle-fill me-2 text-primary fs-5"></i>
-                <h4 className="fs-6 fw-bold mb-0" style={{ color: '#0F172A' }}>
+                <h4 className="fs-6 fw-bold mb-0" style={{ color: '#0F172A', fontFamily: 'Poppins, sans-serif' }}>
                   {formData.category} Context Questionnaire
                 </h4>
               </div>
-              <p className="text-secondary small mb-4">
+              <p className="small mb-3 fw-medium" style={{ color: '#1E293B' }}>
                 Answering these Yes/No questions helps administrative teams assess urgency and prioritize inspection dispatch.
               </p>
 
@@ -413,30 +416,32 @@ const FileComplaint = () => {
                   <div
                     key={q.id}
                     className="p-3 bg-white rounded-3 d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3"
-                    style={{ border: '1px solid #E2E8F0' }}
+                    style={{ border: '1px solid #CBD5E1' }}
                   >
                     <span className="small fw-semibold" style={{ color: '#1E293B' }}>
                       {idx + 1}. {q.question}
                     </span>
-                    <div className="btn-group" role="group" style={{ minWidth: '130px' }}>
+                    <div className="btn-group w-100 w-sm-auto" role="group" style={{ minWidth: '130px' }}>
                       <button
                         type="button"
-                        className={`btn btn-sm px-3 fw-bold ${answers[q.id] === 'Yes' ? 'btn-danger' : 'btn-outline-secondary'}`}
+                        className={`btn btn-sm px-3 py-2 fw-bold w-50 w-sm-auto ${answers[q.id] === 'Yes' ? 'btn-danger' : 'btn-outline-secondary'}`}
                         onClick={() => handleQuestionToggle(q.id, 'Yes')}
                         style={{
                           backgroundColor: answers[q.id] === 'Yes' ? '#EF4444' : '#FFFFFF',
-                          color: answers[q.id] === 'Yes' ? '#FFFFFF' : '#64748B',
+                          color: answers[q.id] === 'Yes' ? '#FFFFFF' : '#1E293B',
+                          borderColor: '#CBD5E1',
                         }}
                       >
                         Yes
                       </button>
                       <button
                         type="button"
-                        className={`btn btn-sm px-3 fw-bold ${answers[q.id] === 'No' ? 'btn-secondary' : 'btn-outline-secondary'}`}
+                        className={`btn btn-sm px-3 py-2 fw-bold w-50 w-sm-auto ${answers[q.id] === 'No' ? 'btn-secondary' : 'btn-outline-secondary'}`}
                         onClick={() => handleQuestionToggle(q.id, 'No')}
                         style={{
                           backgroundColor: answers[q.id] === 'No' ? '#64748B' : '#FFFFFF',
-                          color: answers[q.id] === 'No' ? '#FFFFFF' : '#64748B',
+                          color: answers[q.id] === 'No' ? '#FFFFFF' : '#1E293B',
+                          borderColor: '#CBD5E1',
                         }}
                       >
                         No
@@ -448,10 +453,10 @@ const FileComplaint = () => {
             </div>
 
             {/* Navigation Button */}
-            <div className="d-flex justify-content-end mt-4 pt-3 border-top">
+            <div className="d-flex flex-column flex-sm-row justify-content-sm-end mt-4 pt-3 border-top gap-2">
               <button
                 type="button"
-                className="btn btn-primary px-4 py-2 fw-bold d-flex align-items-center"
+                className="btn btn-primary px-4 py-2 fw-bold d-inline-flex align-items-center justify-content-center w-100 w-sm-auto"
                 onClick={handleNextStep}
                 style={{ backgroundColor: '#2563EB', borderRadius: '8px' }}
               >
@@ -463,82 +468,86 @@ const FileComplaint = () => {
 
         {/* STEP 2: Issue Details & Image Uploads */}
         {currentStep === 2 && (
-          <div className="card border-0 p-4 bg-white mb-4" style={{ border: '1px solid #E2E8F0', borderRadius: '12px', boxShadow: '0 4px 20px rgba(15,23,42,.06)' }}>
+          <div className="card border-0 p-3 p-md-4 bg-white mb-4" style={{ border: '1px solid #E2E8F0', borderRadius: '12px', boxShadow: '0 4px 20px rgba(15,23,42,.06)' }}>
             <div className="d-flex align-items-center mb-4 pb-3 border-bottom">
-              <div className="p-2 rounded-3 text-primary me-3 d-flex align-items-center justify-content-center" style={{ backgroundColor: '#DBEAFE', width: '44px', height: '44px' }}>
+              <div className="p-2 rounded-3 text-primary me-3 d-flex align-items-center justify-content-center flex-shrink-0" style={{ backgroundColor: '#DBEAFE', width: '44px', height: '44px' }}>
                 <i className="bi bi-file-earmark-text-fill fs-5" style={{ color: '#2563EB' }}></i>
               </div>
               <div>
-                <h3 className="fs-5 fw-bold mb-0" style={{ color: '#0F172A' }}>Step 2: Issue Location & Description</h3>
-                <p className="text-secondary small mb-0">Provide location details, textual explanation, and photo evidence</p>
+                <h3 className="fs-5 fw-bold mb-0" style={{ color: '#0F172A', fontFamily: 'Poppins, sans-serif' }}>Step 2: Issue Location & Description</h3>
+                <p className="small mb-0 fw-medium" style={{ color: '#1E293B' }}>Provide location details, textual explanation, and photo evidence</p>
               </div>
             </div>
 
             <div className="row g-3 mb-3">
-              <div className="col-md-8">
-                <label className="form-label small fw-semibold text-secondary">Subject / Title *</label>
+              <div className="col-12 col-md-8">
+                <label className="form-label small fw-bold mb-1" style={{ color: '#0F172A' }}>Subject / Title *</label>
                 <input
                   type="text"
                   name="title"
-                  className="form-control form-control-lg"
+                  className="form-control form-control-lg fw-medium"
                   placeholder="e.g. Severe pothole on main road causing accidents"
                   value={formData.title}
                   onChange={handleInputChange}
+                  style={{ borderColor: '#CBD5E1', color: '#0F172A', fontSize: '0.95rem' }}
                   required
                 />
               </div>
 
-              <div className="col-md-4">
-                <label className="form-label small fw-semibold text-secondary">Selected Category</label>
+              <div className="col-12 col-md-4">
+                <label className="form-label small fw-bold mb-1" style={{ color: '#0F172A' }}>Selected Category</label>
                 <input
                   type="text"
-                  className="form-control form-control-lg bg-light text-secondary fw-semibold"
+                  className="form-control form-control-lg bg-light fw-bold"
                   value={formData.category}
+                  style={{ borderColor: '#CBD5E1', color: '#0F172A', fontSize: '0.95rem' }}
                   disabled
                 />
               </div>
             </div>
 
             <div className="mb-3">
-              <label className="form-label small fw-semibold text-secondary">Specific Location *</label>
+              <label className="form-label small fw-bold mb-1" style={{ color: '#0F172A' }}>Specific Location *</label>
               <div className="input-group">
-                <span className="input-group-text bg-light text-secondary border-end-0"><i className="bi bi-geo-alt"></i></span>
+                <span className="input-group-text bg-white border-end-0 text-muted" style={{ borderColor: '#CBD5E1' }}><i className="bi bi-geo-alt-fill text-danger"></i></span>
                 <input
                   type="text"
                   name="location"
-                  className="form-control form-control-lg border-start-0"
+                  className="form-control form-control-lg border-start-0 fw-medium"
                   placeholder="e.g. Ward 4, Main Market Road (Opposite City Hospital)"
                   value={formData.location}
                   onChange={handleInputChange}
+                  style={{ borderColor: '#CBD5E1', color: '#0F172A', fontSize: '0.95rem' }}
                   required
                 />
               </div>
             </div>
 
             <div className="mb-4">
-              <label className="form-label small fw-semibold text-secondary">Detailed Explanation *</label>
+              <label className="form-label small fw-bold mb-1" style={{ color: '#0F172A' }}>Detailed Explanation *</label>
               <textarea
                 name="description"
                 rows={5}
-                className="form-control"
+                className="form-control fw-medium"
                 placeholder="Describe the complaint in detail so field inspection staff can locate and resolve it quickly."
                 value={formData.description}
                 onChange={handleInputChange}
+                style={{ borderColor: '#CBD5E1', color: '#0F172A', fontSize: '0.95rem' }}
                 required
               ></textarea>
             </div>
 
             {/* Supporting Images Upload Box */}
             <div className="mb-4">
-              <label className="form-label small fw-semibold text-secondary">Supporting Photographs (Max 3)</label>
+              <label className="form-label small fw-bold mb-1" style={{ color: '#0F172A' }}>Supporting Photographs (Max 3)</label>
               <div
                 className="border p-4 text-center rounded-3 bg-light"
                 style={{ border: '2px dashed #CBD5E1', cursor: 'pointer', transition: 'border-color 0.15s' }}
                 onClick={() => document.getElementById('file-upload-input').click()}
               >
                 <i className="bi bi-cloud-arrow-up fs-2 mb-2 d-block" style={{ color: '#2563EB' }}></i>
-                <p className="fw-bold mb-1" style={{ color: '#1E293B' }}>Click or Drag Images Here</p>
-                <span className="text-secondary small">Upload photos showing the issue (PNG, JPG, JPEG)</span>
+                <p className="fw-bold mb-1" style={{ color: '#0F172A' }}>Click or Drag Images Here</p>
+                <span className="small fw-medium" style={{ color: '#1E293B' }}>Upload photos showing the issue (PNG, JPG, JPEG)</span>
               </div>
               <input
                 type="file"
@@ -551,13 +560,13 @@ const FileComplaint = () => {
 
               {files.length > 0 && (
                 <div className="mt-3">
-                  <p className="small fw-semibold text-secondary mb-2">Attached Images ({files.length}/3):</p>
+                  <p className="small fw-bold mb-2" style={{ color: '#0F172A' }}>Attached Images ({files.length}/3):</p>
                   <div className="d-flex flex-wrap gap-2">
                     {files.map((file, idx) => (
-                      <div key={idx} className="p-2 border rounded-3 bg-white d-flex align-items-center" style={{ fontSize: '0.85rem' }}>
+                      <div key={idx} className="p-2 border rounded-3 bg-white d-flex align-items-center" style={{ fontSize: '0.85rem', borderColor: '#CBD5E1' }}>
                         <i className="bi bi-image text-primary me-2"></i>
-                        <span className="text-truncate fw-semibold" style={{ maxWidth: '180px', color: '#1E293B' }}>{file.name}</span>
-                        <span className="text-muted ms-2" style={{ fontSize: '0.75rem' }}>({(file.size / 1024 / 1024).toFixed(2)} MB)</span>
+                        <span className="text-truncate fw-semibold" style={{ maxWidth: '180px', color: '#0F172A' }}>{file.name}</span>
+                        <span className="ms-2 fw-medium" style={{ fontSize: '0.75rem', color: '#1E293B' }}>({(file.size / 1024 / 1024).toFixed(2)} MB)</span>
                       </div>
                     ))}
                   </div>
@@ -566,18 +575,18 @@ const FileComplaint = () => {
             </div>
 
             {/* Step 2 Actions */}
-            <div className="d-flex justify-content-between mt-4 pt-3 border-top">
+            <div className="d-flex flex-column-reverse flex-sm-row justify-content-between align-items-stretch align-items-sm-center mt-4 pt-3 border-top gap-2">
               <button
                 type="button"
-                className="btn btn-outline-secondary px-4 py-2 fw-semibold"
+                className="btn btn-outline-secondary px-4 py-2 fw-bold d-inline-flex align-items-center justify-content-center w-100 w-sm-auto"
                 onClick={handlePrevStep}
-                style={{ borderRadius: '8px' }}
+                style={{ borderRadius: '8px', color: '#1E293B', borderColor: '#CBD5E1' }}
               >
                 <i className="bi bi-arrow-left me-2"></i> Back to Questionnaire
               </button>
               <button
                 type="button"
-                className="btn btn-primary px-4 py-2 fw-bold d-flex align-items-center"
+                className="btn btn-primary px-4 py-2 fw-bold d-inline-flex align-items-center justify-content-center w-100 w-sm-auto"
                 onClick={handleNextStep}
                 style={{ backgroundColor: '#2563EB', borderRadius: '8px' }}
               >
@@ -590,95 +599,98 @@ const FileComplaint = () => {
         {/* STEP 3: Contact Info & Email Verification */}
         {currentStep === 3 && (
           <form onSubmit={handleVerifyEmailRequest}>
-            <div className="card border-0 p-4 bg-white mb-4" style={{ border: '1px solid #E2E8F0', borderRadius: '12px', boxShadow: '0 4px 20px rgba(15,23,42,.06)' }}>
+            <div className="card border-0 p-3 p-md-4 bg-white mb-4" style={{ border: '1px solid #E2E8F0', borderRadius: '12px', boxShadow: '0 4px 20px rgba(15,23,42,.06)' }}>
               <div className="d-flex align-items-center mb-4 pb-3 border-bottom">
-                <div className="p-2 rounded-3 text-primary me-3 d-flex align-items-center justify-content-center" style={{ backgroundColor: '#DBEAFE', width: '44px', height: '44px' }}>
+                <div className="p-2 rounded-3 text-primary me-3 d-flex align-items-center justify-content-center flex-shrink-0" style={{ backgroundColor: '#DBEAFE', width: '44px', height: '44px' }}>
                   <i className="bi bi-shield-check fs-5" style={{ color: '#2563EB' }}></i>
                 </div>
                 <div>
-                  <h3 className="fs-5 fw-bold mb-0" style={{ color: '#0F172A' }}>Step 3: Citizen Contact & Verification</h3>
-                  <p className="text-secondary small mb-0">Provide contact details to receive your Tracking ID and resolution receipt</p>
+                  <h3 className="fs-5 fw-bold mb-0" style={{ color: '#0F172A', fontFamily: 'Poppins, sans-serif' }}>Step 3: Citizen Contact & Verification</h3>
+                  <p className="small mb-0 fw-medium" style={{ color: '#1E293B' }}>Provide contact details to receive your Tracking ID and resolution receipt</p>
                 </div>
               </div>
 
               <div className="row g-3 mb-4">
-                <div className="col-md-6">
-                  <label className="form-label small fw-semibold text-secondary">Full Name *</label>
+                <div className="col-12 col-md-6">
+                  <label className="form-label small fw-bold mb-1" style={{ color: '#0F172A' }}>Full Name *</label>
                   <input
                     type="text"
                     name="name"
-                    className="form-control form-control-lg"
+                    className="form-control form-control-lg fw-medium"
                     placeholder="e.g. John Doe"
                     value={formData.name}
                     onChange={handleInputChange}
+                    style={{ borderColor: '#CBD5E1', color: '#0F172A', fontSize: '0.95rem' }}
                     required
                   />
                 </div>
 
-                <div className="col-md-6">
-                  <label className="form-label small fw-semibold text-secondary">Email Address *</label>
+                <div className="col-12 col-md-6">
+                  <label className="form-label small fw-bold mb-1" style={{ color: '#0F172A' }}>Email Address *</label>
                   <input
                     type="email"
                     name="email"
-                    className="form-control form-control-lg"
+                    className="form-control form-control-lg fw-medium"
                     placeholder="name@email.com"
                     value={formData.email}
                     onChange={handleInputChange}
+                    style={{ borderColor: '#CBD5E1', color: '#0F172A', fontSize: '0.95rem' }}
                     required
                   />
                 </div>
 
-                <div className="col-md-6">
-                  <label className="form-label small fw-semibold text-secondary">Phone Number (Optional)</label>
+                <div className="col-12 col-md-6">
+                  <label className="form-label small fw-bold mb-1" style={{ color: '#0F172A' }}>Phone Number (Optional)</label>
                   <input
                     type="tel"
                     name="phone"
-                    className="form-control form-control-lg"
+                    className="form-control form-control-lg fw-medium"
                     placeholder="10-digit mobile number"
                     value={formData.phone}
                     onChange={handleInputChange}
+                    style={{ borderColor: '#CBD5E1', color: '#0F172A', fontSize: '0.95rem' }}
                   />
                 </div>
               </div>
 
               {/* Review Summary Box */}
-              <div className="p-4 rounded-3 mb-4" style={{ backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0' }}>
-                <h4 className="fs-6 fw-bold mb-3" style={{ color: '#0F172A' }}>Complaint Submission Review</h4>
-                <div className="row g-2 small">
-                  <div className="col-md-6">
-                    <span className="text-secondary d-block">Category:</span>
-                    <span className="fw-bold text-dark">{formData.category}</span>
+              <div className="p-3 p-md-4 rounded-3 mb-4" style={{ backgroundColor: '#F8FAFC', border: '1px solid #CBD5E1' }}>
+                <h4 className="fs-6 fw-bold mb-3" style={{ color: '#0F172A', fontFamily: 'Poppins, sans-serif' }}>Complaint Submission Review</h4>
+                <div className="row g-3 small">
+                  <div className="col-12 col-sm-6">
+                    <span className="fw-semibold d-block mb-1" style={{ color: '#1E293B' }}>Category:</span>
+                    <span className="fw-bold" style={{ color: '#0F172A' }}>{formData.category}</span>
                   </div>
-                  <div className="col-md-6">
-                    <span className="text-secondary d-block">Calculated Priority Impact:</span>
-                    <span className="badge px-2 py-1 fw-bold" style={{ backgroundColor: urgency.bg, color: urgency.color }}>
+                  <div className="col-12 col-sm-6">
+                    <span className="fw-semibold d-block mb-1" style={{ color: '#1E293B' }}>Calculated Priority Impact:</span>
+                    <span className="badge px-2.5 py-1.5 fw-bold" style={{ backgroundColor: urgency.bg, color: urgency.color }}>
                       {urgency.level}
                     </span>
                   </div>
-                  <div className="col-md-6 mt-2">
-                    <span className="text-secondary d-block">Subject:</span>
-                    <span className="fw-semibold text-dark">{formData.title}</span>
+                  <div className="col-12 col-sm-6">
+                    <span className="fw-semibold d-block mb-1" style={{ color: '#1E293B' }}>Subject:</span>
+                    <span className="fw-bold" style={{ color: '#0F172A' }}>{formData.title}</span>
                   </div>
-                  <div className="col-md-6 mt-2">
-                    <span className="text-secondary d-block">Location:</span>
-                    <span className="fw-semibold text-dark">{formData.location}</span>
+                  <div className="col-12 col-sm-6">
+                    <span className="fw-semibold d-block mb-1" style={{ color: '#1E293B' }}>Location:</span>
+                    <span className="fw-bold" style={{ color: '#0F172A' }}>{formData.location}</span>
                   </div>
                 </div>
               </div>
 
               {/* Step 3 Actions */}
-              <div className="d-flex justify-content-between mt-4 pt-3 border-top">
+              <div className="d-flex flex-column-reverse flex-sm-row justify-content-between align-items-stretch align-items-sm-center mt-4 pt-3 border-top gap-2">
                 <button
                   type="button"
-                  className="btn btn-outline-secondary px-4 py-2 fw-semibold"
+                  className="btn btn-outline-secondary px-4 py-2 fw-bold d-inline-flex align-items-center justify-content-center w-100 w-sm-auto"
                   onClick={handlePrevStep}
-                  style={{ borderRadius: '8px' }}
+                  style={{ borderRadius: '8px', color: '#1E293B', borderColor: '#CBD5E1' }}
                 >
                   <i className="bi bi-arrow-left me-2"></i> Edit Details
                 </button>
                 <button
                   type="submit"
-                  className="btn btn-primary px-5 py-2 fw-bold d-flex align-items-center"
+                  className="btn btn-primary px-4 py-2 fw-bold d-inline-flex align-items-center justify-content-center w-100 w-sm-auto"
                   disabled={submittingForm}
                   style={{ backgroundColor: '#2563EB', borderRadius: '8px' }}
                 >
@@ -700,15 +712,15 @@ const FileComplaint = () => {
       {/* OTP Verification Modal */}
       {showOtpModal && (
         <div className="modal show d-block" style={{ backgroundColor: 'rgba(15,23,42,0.6)', zIndex: 1050 }}>
-          <div className="modal-dialog modal-dialog-centered" style={{ maxWidth: '440px' }}>
+          <div className="modal-dialog modal-dialog-centered px-3" style={{ maxWidth: '440px' }}>
             <div className="modal-content border-0 p-4 bg-white shadow-lg" style={{ borderRadius: '16px', border: '1px solid #E2E8F0' }}>
               <div className="text-center mb-4">
                 <div className="rounded-circle mx-auto d-flex align-items-center justify-content-center mb-3" style={{ width: '60px', height: '60px', backgroundColor: '#DBEAFE' }}>
                   <i className="bi bi-shield-check fs-2" style={{ color: '#2563EB' }}></i>
                 </div>
-                <h4 className="fw-bold mb-1" style={{ color: '#0F172A' }}>OTP Verification</h4>
-                <p className="text-secondary small mb-1">We sent a verification code to</p>
-                <p className="fw-semibold text-dark mb-2">{formData.email}</p>
+                <h4 className="fw-bold mb-1" style={{ color: '#0F172A', fontFamily: 'Poppins, sans-serif' }}>OTP Verification</h4>
+                <p className="small mb-1 fw-medium" style={{ color: '#1E293B' }}>We sent a verification code to</p>
+                <p className="fw-bold mb-2" style={{ color: '#0F172A' }}>{formData.email}</p>
                 <span className="badge px-3 py-1 fw-bold" style={{ backgroundColor: '#DCFCE7', color: '#15803D' }}>OTP Dispatched ✓</span>
               </div>
 
@@ -720,18 +732,18 @@ const FileComplaint = () => {
 
               <form onSubmit={handleOtpSubmit}>
                 <div className="mb-4 text-center">
-                  <label className="form-label small fw-semibold text-secondary d-block mb-2">Enter 6-Digit OTP Code</label>
+                  <label className="form-label small fw-bold d-block mb-2" style={{ color: '#0F172A' }}>Enter 6-Digit OTP Code</label>
                   <input
                     type="text"
                     maxLength="6"
-                    className="form-control form-control-lg text-center fw-bold text-primary"
+                    className="form-control form-control-lg text-center fw-bold text-primary w-100"
                     style={{
-                      fontSize: '1.85rem',
-                      letterSpacing: '0.6rem',
+                      fontSize: '1.65rem',
+                      letterSpacing: '0.5rem',
                       borderColor: '#CBD5E1',
-                      width: '240px',
+                      maxWidth: '240px',
                       margin: '0 auto',
-                      paddingLeft: '0.8rem',
+                      paddingLeft: '0.5rem',
                     }}
                     placeholder="000000"
                     value={otpValue}
@@ -742,7 +754,7 @@ const FileComplaint = () => {
 
                 <div className="text-center mb-4">
                   {timer > 0 ? (
-                    <span className="text-secondary small fw-semibold">
+                    <span className="small fw-semibold" style={{ color: '#1E293B' }}>
                       <i className="bi bi-hourglass-split me-1"></i> Resend OTP in {timer}s
                     </span>
                   ) : (
@@ -754,7 +766,7 @@ const FileComplaint = () => {
 
                 <div className="row g-2">
                   <div className="col-6">
-                    <button type="button" className="btn btn-outline-secondary w-100 fw-semibold" onClick={() => setShowOtpModal(false)} style={{ borderRadius: '8px' }}>
+                    <button type="button" className="btn btn-outline-secondary w-100 fw-bold" onClick={() => setShowOtpModal(false)} style={{ borderRadius: '8px', color: '#1E293B', borderColor: '#CBD5E1' }}>
                       Cancel
                     </button>
                   </div>
@@ -773,19 +785,19 @@ const FileComplaint = () => {
       {/* Success Modal Overlay */}
       {showSuccessModal && (
         <div className="modal show d-block" style={{ backgroundColor: 'rgba(15,23,42,0.6)', zIndex: 1050 }}>
-          <div className="modal-dialog modal-dialog-centered" style={{ maxWidth: '440px' }}>
+          <div className="modal-dialog modal-dialog-centered px-3" style={{ maxWidth: '440px' }}>
             <div className="modal-content border-0 p-4 bg-white shadow-lg" style={{ borderRadius: '16px' }}>
               <div className="text-center mb-4">
                 <div className="rounded-circle mx-auto d-flex align-items-center justify-content-center mb-3" style={{ width: '60px', height: '60px', backgroundColor: '#DCFCE7' }}>
                   <i className="bi bi-patch-check-fill fs-2" style={{ color: '#22C55E' }}></i>
                 </div>
-                <h4 className="fw-bold mb-1" style={{ color: '#0F172A' }}>Complaint Successfully Logged!</h4>
-                <p className="text-secondary small">Your complaint and questionnaire responses have been registered. A confirmation email has been dispatched.</p>
+                <h4 className="fw-bold mb-1" style={{ color: '#0F172A', fontFamily: 'Poppins, sans-serif' }}>Complaint Successfully Logged!</h4>
+                <p className="small fw-medium" style={{ color: '#1E293B' }}>Your complaint and questionnaire responses have been registered. A confirmation email has been dispatched.</p>
               </div>
 
-              <div className="p-3 bg-light rounded-3 text-center border mb-4">
-                <span className="text-secondary small d-block mb-1 text-uppercase fw-semibold">Your Unique Tracking ID</span>
-                <span className="h4 fw-bold text-dark d-block select-all mb-0">{createdTrackingId}</span>
+              <div className="p-3 bg-light rounded-3 text-center border mb-4" style={{ borderColor: '#CBD5E1' }}>
+                <span className="small d-block mb-1 text-uppercase fw-bold" style={{ color: '#1E293B' }}>Your Unique Tracking ID</span>
+                <span className="h4 fw-bold text-dark d-block select-all mb-0" style={{ color: '#0F172A' }}>{createdTrackingId}</span>
               </div>
 
               <div className="row g-2">
@@ -818,11 +830,12 @@ const FileComplaint = () => {
               </div>
               <button
                 type="button"
-                className="btn btn-link text-center w-100 text-decoration-none fw-semibold text-secondary mt-3 small"
+                className="btn btn-link text-center w-100 text-decoration-none fw-bold mt-3 small"
                 onClick={() => {
                   setShowSuccessModal(false);
                   navigate('/');
                 }}
+                style={{ color: '#1E293B' }}
               >
                 Back to Public Dashboard
               </button>
