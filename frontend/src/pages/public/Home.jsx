@@ -353,7 +353,7 @@ const Home = () => {
                 </div>
 
                 {/* Step 2 */}
-                <div className="d-flex align-items-start mb-4 position-relative" style={{ zIndex: 1 }}>
+                <div className="d-flex align-items-start mb-4">
                   <div
                     className="rounded-circle fw-bold text-white me-3 me-md-4 d-flex align-items-center justify-content-center flex-shrink-0 shadow-sm"
                     style={{ backgroundColor: '#2563EB', width: '40px', height: '40px', fontSize: '0.95rem' }}
@@ -371,7 +371,7 @@ const Home = () => {
                 </div>
 
                 {/* Step 3 */}
-                <div className="d-flex align-items-start position-relative" style={{ zIndex: 1 }}>
+                <div className="d-flex align-items-start">
                   <div
                     className="rounded-circle fw-bold text-white me-3 me-md-4 d-flex align-items-center justify-content-center flex-shrink-0 shadow-sm"
                     style={{ backgroundColor: '#2563EB', width: '40px', height: '40px', fontSize: '0.95rem' }}
@@ -384,6 +384,97 @@ const Home = () => {
                     </h4>
                     <p className="small mb-0 fw-medium" style={{ color: '#1E293B', lineHeight: '1.6' }}>
                       Click <strong>"Track Progress"</strong> to inspect the live audit log timeline, or click <strong>"PDF Receipt"</strong> for resolved tickets to download official reports.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* Section 3: How to Track a Complaint Status */}
+            <section className="py-4 px-3 px-md-4 rounded-3 bg-white" style={{ borderBottom: '2px solid #E2E8F0' }}>
+              <div className="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4 pb-3 border-bottom">
+                <div className="d-flex align-items-center mb-3 mb-md-0">
+                  <div className="rounded-3 p-2 me-3 d-flex align-items-center justify-content-center" style={{ backgroundColor: '#FEF3C7', width: '48px', height: '48px' }}>
+                    <i className="bi bi-search fs-4" style={{ color: '#F59E0B' }}></i>
+                  </div>
+                  <div>
+                    <h3 className="fs-4 fw-bold mb-0" style={{ color: '#0F172A', fontFamily: 'Poppins, sans-serif' }}>
+                      Tutorial 3: How to Track a Complaint Status
+                    </h3>
+                    <span className="small text-muted">Real-time audit log timeline, official remarks & resolution receipts</span>
+                  </div>
+                </div>
+                {/* Uniform Button Styling */}
+                <Link
+                  to="/track"
+                  className="btn text-white fw-bold px-4 py-2 text-nowrap d-inline-flex align-items-center justify-content-center"
+                  style={{
+                    backgroundColor: '#F59E0B',
+                    borderColor: '#F59E0B',
+                    borderRadius: '8px',
+                    fontSize: '0.9rem',
+                    boxShadow: '0 2px 8px rgba(15, 23, 42, 0.06)',
+                    transition: 'all 0.2s ease-in-out',
+                  }}
+                  onMouseOver={(e) => handleTutorialBtnOver(e, '#D97706')}
+                  onMouseOut={(e) => handleTutorialBtnOut(e, '#F59E0B')}
+                >
+                  Track Status Now <i className="bi bi-arrow-right ms-2"></i>
+                </Link>
+              </div>
+
+              {/* Vertical Steps Container */}
+              <div className="ps-2 ps-md-4 py-2">
+                {/* Step 1 */}
+                <div className="d-flex align-items-start mb-4">
+                  <div
+                    className="rounded-circle fw-bold text-white me-3 me-md-4 d-flex align-items-center justify-content-center flex-shrink-0 shadow-sm"
+                    style={{ backgroundColor: '#F59E0B', width: '40px', height: '40px', fontSize: '0.95rem' }}
+                  >
+                    1
+                  </div>
+                  <div className="pt-1">
+                    <h4 className="fs-6 fw-bold mb-1" style={{ color: '#0F172A', fontFamily: 'Poppins, sans-serif' }}>
+                      Locate Your Unique Tracking ID
+                    </h4>
+                    <p className="small mb-0 fw-medium" style={{ color: '#1E293B', lineHeight: '1.6' }}>
+                      Obtain your 10-character <code style={{ color: '#2563EB' }}>COMP-XXXXX-X</code> tracking ID displayed upon complaint submission or sent to your registered email.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Step 2 */}
+                <div className="d-flex align-items-start mb-4">
+                  <div
+                    className="rounded-circle fw-bold text-white me-3 me-md-4 d-flex align-items-center justify-content-center flex-shrink-0 shadow-sm"
+                    style={{ backgroundColor: '#F59E0B', width: '40px', height: '40px', fontSize: '0.95rem' }}
+                  >
+                    2
+                  </div>
+                  <div className="pt-1">
+                    <h4 className="fs-6 fw-bold mb-1" style={{ color: '#0F172A', fontFamily: 'Poppins, sans-serif' }}>
+                      Enter ID into the Tracking Portal
+                    </h4>
+                    <p className="small mb-0 fw-medium" style={{ color: '#1E293B', lineHeight: '1.6' }}>
+                      Navigate to the <strong>"Track Complaint"</strong> page via the navigation bar, paste your Tracking ID into the search input, and click Search.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Step 3 */}
+                <div className="d-flex align-items-start">
+                  <div
+                    className="rounded-circle fw-bold text-white me-3 me-md-4 d-flex align-items-center justify-content-center flex-shrink-0 shadow-sm"
+                    style={{ backgroundColor: '#F59E0B', width: '40px', height: '40px', fontSize: '0.95rem' }}
+                  >
+                    3
+                  </div>
+                  <div className="pt-1">
+                    <h4 className="fs-6 fw-bold mb-1" style={{ color: '#0F172A', fontFamily: 'Poppins, sans-serif' }}>
+                      Inspect Live Timeline & Download Report
+                    </h4>
+                    <p className="small mb-0 fw-medium" style={{ color: '#1E293B', lineHeight: '1.6' }}>
+                      View real-time status transitions (Pending → In Progress → Resolved), official municipal remarks, and download your official PDF resolution receipt.
                     </p>
                   </div>
                 </div>

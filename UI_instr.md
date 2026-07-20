@@ -86,7 +86,7 @@
 * Statistics titles must use solid black (`#000000`) Poppins font.
 * On mobile screens (`<768px`), statistics must stack vertically one below another (`col-12 col-md`).
 * Main feature cards must link directly to primary public destinations (`/registry`, `/file-complaint`, `/track`).
-* User guides and tutorials must be presented below feature cards in structured step cards.
+* User guides and tutorials must be presented below feature cards in 3 full-width vertical sections (*Submit Complaint*, *Public Registry*, *Track Complaint*) using vertical step layouts and uniform hover buttons.
 
 ### 3.2 Complaint Filing Portal (`FileComplaint.jsx`)
 * Follow a 3-step filing wizard:
@@ -97,5 +97,5 @@
 
 ### 3.3 Public Complaints Registry (`Registry.jsx`)
 * Display all public complaints with citizen PII (Name, Email, Phone) strictly redacted.
-* Provide real-time location regex search, category drop-down filter, and status drop-down filter.
+* Provide real-time location search with inline clear (`✕`), category & status dropdowns with input icons, removable active filter chips, 1-click Reset All button, and dynamic sorting (Newest/Oldest).
 * Include direct download action buttons for PDF resolution receipts on `Resolved` complaints.

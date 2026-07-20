@@ -187,10 +187,10 @@ src/
    * Centered statistics overview section with title placed directly on top of number in solid black Poppins font (`#000000`).
    * Mobile-responsive vertical stacking layout (`col-12 col-md`) for smaller device viewports.
    * Feature quick-navigation cards leading directly to Public Registry, File Issue, and Track Progress.
-   * User Guide & Tutorial Section: Vertical step layout with numbered badges and uniform hover action buttons for submitting complaints and using the public registry.
+   * User Guide & Tutorial Sections: 3 full-width vertical tutorial sections (*Tutorial 1: Submit Complaint*, *Tutorial 2: Public Registry*, *Tutorial 3: Track Status*) featuring vertical step layouts with numbered badges and uniform hover action buttons.
 2. **Public Complaints Registry (`Registry.jsx`):**
    * Dedicated page accessible via Navbar ("Public Registry").
-   * Searchable registry with real-time location regex search, category drop-down filter, status drop-down filter, and resolution PDF downloads.
+   * Adheres to universal design system: Poppins typography (`#000000` / `#0F172A`), high-contrast body text (`#1E293B`), semantic solid pill badges (`Pending`, `In Progress`, `Resolved`, `Rejected`), monospace tracking IDs (`COMP-XXXXX-X`), location regex search with inline clear (`✕`), category & status drop-down filters with input icons, removable active filter summary chips, 1-click "Reset All" button, sorting toggle (`Newest` vs `Oldest`), mobile filter drawer toggle, and PDF receipt downloads.
 3. **Frictionless Submission (`FileComplaint.jsx`):**
    * 3-step filing wizard with category-specific questionnaires (`Road Damage`, `Water Leakage`, `Garbage`, `Street Light`, `Administrative`, `Other`).
    * Real-time urgency badge calculation (`High Urgency`, `Medium Urgency`, `Standard Urgency`) and email OTP verification.
