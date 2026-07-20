@@ -100,7 +100,7 @@ const MainLayout = ({ children }) => {
             </ul>
 
             {/* Right Action Items: Prominent File Complaint CTA Button & Session / Admin Switcher */}
-            <div className="d-flex flex-column flex-lg-row align-items-lg-center gap-2 pt-2 pt-lg-0 border-top border-secondary border-opacity-25 border-lg-0">
+            <div className="d-flex flex-column flex-lg-row align-items-lg-center gap-2 pt-2 pt-lg-0">
               {/* Prominent Call To Action (CTA) Button */}
               <Link
                 to="/file-complaint"
