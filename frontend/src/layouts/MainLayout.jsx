@@ -28,7 +28,7 @@ const MainLayout = ({ children }) => {
         }}
       >
         <div className="container">
-          {/* Brand Element (Kept simple text as requested) */}
+          {/* Brand Element */}
           <Link className="navbar-brand fw-bold fs-4 me-4" to="/" style={{ color: '#FFFFFF', letterSpacing: '-0.02em', fontFamily: 'Poppins, sans-serif' }}>
             UrbanFix
           </Link>
@@ -143,10 +143,10 @@ const MainLayout = ({ children }) => {
               ) : (
                 <Link
                   to="/admin/login"
-                  className="btn btn-outline-light px-3 py-2 rounded-pill fw-semibold small"
+                  className="btn btn-outline-light px-3 py-2 rounded-pill fw-semibold small text-decoration-none"
                   style={{ fontSize: '0.85rem', borderColor: 'rgba(255, 255, 255, 0.2)' }}
                 >
-                  <i className="bi bi-[#334155] bi-shield-lock me-1"></i> Admin Login
+                  <i className="bi bi-shield-lock me-1"></i> Admin Login
                 </Link>
               )}
             </div>

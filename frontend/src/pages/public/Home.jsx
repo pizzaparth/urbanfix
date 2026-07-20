@@ -20,6 +20,21 @@ const Home = () => {
     fetchStats();
   }, []);
 
+  // Uniform Hover Effect Handlers for Tutorial Buttons
+  const handleTutorialBtnOver = (e, hoverColor) => {
+    e.currentTarget.style.backgroundColor = hoverColor;
+    e.currentTarget.style.borderColor = hoverColor;
+    e.currentTarget.style.transform = 'translateY(-2px)';
+    e.currentTarget.style.boxShadow = '0 4px 14px rgba(15, 23, 42, 0.15)';
+  };
+
+  const handleTutorialBtnOut = (e, baseColor) => {
+    e.currentTarget.style.backgroundColor = baseColor;
+    e.currentTarget.style.borderColor = baseColor;
+    e.currentTarget.style.transform = 'none';
+    e.currentTarget.style.boxShadow = '0 2px 8px rgba(15, 23, 42, 0.06)';
+  };
+
   return (
     <MainLayout>
       {/* 1. Repository Overview Counter Section (Centered, No Cards, Title on Top of Number) */}
@@ -181,7 +196,7 @@ const Home = () => {
           </div>
         </div>
 
-        {/* 3. User Tutorial & Step-by-Step Guide Section (Full Width, Vertical Sections, No Cards) */}
+        {/* 3. User Tutorial & Step-by-Step Guide Section (Full Width, Vertical Timeline Sections) */}
         <div className="mt-5 pt-4 text-start">
           <div className="text-center mb-5">
             <h2 className="display-6 fw-bold mb-2" style={{ color: '#0F172A', fontFamily: 'Poppins, sans-serif' }}>
@@ -207,54 +222,78 @@ const Home = () => {
                     <span className="small text-muted">Account-less friction-free 3-step filing workflow</span>
                   </div>
                 </div>
-                <Link to="/file-complaint" className="btn btn-success fw-bold px-4 py-2 text-nowrap" style={{ backgroundColor: '#10B981', border: 'none', borderRadius: '8px' }}>
-                  Start Filing Now <i className="bi bi-arrow-right ms-1"></i>
+                {/* Uniform Button Styling */}
+                <Link
+                  to="/file-complaint"
+                  className="btn text-white fw-bold px-4 py-2 text-nowrap d-inline-flex align-items-center justify-content-center"
+                  style={{
+                    backgroundColor: '#10B981',
+                    borderColor: '#10B981',
+                    borderRadius: '8px',
+                    fontSize: '0.9rem',
+                    boxShadow: '0 2px 8px rgba(15, 23, 42, 0.06)',
+                    transition: 'all 0.2s ease-in-out',
+                  }}
+                  onMouseOver={(e) => handleTutorialBtnOver(e, '#059669')}
+                  onMouseOut={(e) => handleTutorialBtnOut(e, '#10B981')}
+                >
+                  Start Filing Now <i className="bi bi-arrow-right ms-2"></i>
                 </Link>
               </div>
 
-              <div className="row g-4">
+              {/* Vertical Steps Container */}
+              <div className="ps-2 ps-md-4 py-2">
                 {/* Step 1 */}
-                <div className="col-md-4">
-                  <div className="d-flex align-items-start">
-                    <div className="rounded-circle fw-bold text-white me-3 d-flex align-items-center justify-content-center flex-shrink-0" style={{ backgroundColor: '#10B981', width: '36px', height: '36px', fontSize: '0.9rem' }}>
-                      1
-                    </div>
-                    <div>
-                      <h4 className="fs-6 fw-bold mb-2" style={{ color: '#0F172A' }}>Select Category & Context Questions</h4>
-                      <p className="small mb-0 fw-medium" style={{ color: '#1E293B', lineHeight: '1.6' }}>
-                        Choose your issue category (e.g. Road Damage, Water Leakage) and answer dynamic Yes/No questions to help municipal teams assess urgency.
-                      </p>
-                    </div>
+                <div className="d-flex align-items-start mb-4">
+                  <div
+                    className="rounded-circle fw-bold text-white me-3 me-md-4 d-flex align-items-center justify-content-center flex-shrink-0 shadow-sm"
+                    style={{ backgroundColor: '#10B981', width: '40px', height: '40px', fontSize: '0.95rem' }}
+                  >
+                    1
+                  </div>
+                  <div className="pt-1">
+                    <h4 className="fs-6 fw-bold mb-1" style={{ color: '#0F172A', fontFamily: 'Poppins, sans-serif' }}>
+                      Select Category & Answer Context Questionnaire
+                    </h4>
+                    <p className="small mb-0 fw-medium" style={{ color: '#1E293B', lineHeight: '1.6' }}>
+                      Choose your issue category (e.g. Road Damage, Water Leakage) and answer dynamic Yes/No questions to help municipal teams assess urgency.
+                    </p>
                   </div>
                 </div>
 
                 {/* Step 2 */}
-                <div className="col-md-4">
-                  <div className="d-flex align-items-start">
-                    <div className="rounded-circle fw-bold text-white me-3 d-flex align-items-center justify-content-center flex-shrink-0" style={{ backgroundColor: '#10B981', width: '36px', height: '36px', fontSize: '0.9rem' }}>
-                      2
-                    </div>
-                    <div>
-                      <h4 className="fs-6 fw-bold mb-2" style={{ color: '#0F172A' }}>Provide Location, Description & Photos</h4>
-                      <p className="small mb-0 fw-medium" style={{ color: '#1E293B', lineHeight: '1.6' }}>
-                        Enter the specific location (ward/landmarks), describe the issue in detail, and attach up to 3 supporting photographs.
-                      </p>
-                    </div>
+                <div className="d-flex align-items-start mb-4">
+                  <div
+                    className="rounded-circle fw-bold text-white me-3 me-md-4 d-flex align-items-center justify-content-center flex-shrink-0 shadow-sm"
+                    style={{ backgroundColor: '#10B981', width: '40px', height: '40px', fontSize: '0.95rem' }}
+                  >
+                    2
+                  </div>
+                  <div className="pt-1">
+                    <h4 className="fs-6 fw-bold mb-1" style={{ color: '#0F172A', fontFamily: 'Poppins, sans-serif' }}>
+                      Provide Location, Description & Photographs
+                    </h4>
+                    <p className="small mb-0 fw-medium" style={{ color: '#1E293B', lineHeight: '1.6' }}>
+                      Enter the specific location (ward/landmarks), describe the issue in detail, and attach up to 3 supporting photographs.
+                    </p>
                   </div>
                 </div>
 
                 {/* Step 3 */}
-                <div className="col-md-4">
-                  <div className="d-flex align-items-start">
-                    <div className="rounded-circle fw-bold text-white me-3 d-flex align-items-center justify-content-center flex-shrink-0" style={{ backgroundColor: '#10B981', width: '36px', height: '36px', fontSize: '0.9rem' }}>
-                      3
-                    </div>
-                    <div>
-                      <h4 className="fs-6 fw-bold mb-2" style={{ color: '#0F172A' }}>Verify Email OTP & Receive Tracking ID</h4>
-                      <p className="small mb-0 fw-medium" style={{ color: '#1E293B', lineHeight: '1.6' }}>
-                        Enter your email address, request a 6-digit OTP code, verify identity, and receive your unique <code style={{ color: '#2563EB' }}>COMP-XXXXX-X</code> tracking ID.
-                      </p>
-                    </div>
+                <div className="d-flex align-items-start">
+                  <div
+                    className="rounded-circle fw-bold text-white me-3 me-md-4 d-flex align-items-center justify-content-center flex-shrink-0 shadow-sm"
+                    style={{ backgroundColor: '#10B981', width: '40px', height: '40px', fontSize: '0.95rem' }}
+                  >
+                    3
+                  </div>
+                  <div className="pt-1">
+                    <h4 className="fs-6 fw-bold mb-1" style={{ color: '#0F172A', fontFamily: 'Poppins, sans-serif' }}>
+                      Verify Email OTP & Receive Tracking ID
+                    </h4>
+                    <p className="small mb-0 fw-medium" style={{ color: '#1E293B', lineHeight: '1.6' }}>
+                      Enter your email address, request a 6-digit OTP code, verify identity, and receive your unique <code style={{ color: '#2563EB' }}>COMP-XXXXX-X</code> tracking ID.
+                    </p>
                   </div>
                 </div>
               </div>
@@ -274,54 +313,78 @@ const Home = () => {
                     <span className="small text-muted">Explore public records, status logs & resolution receipts</span>
                   </div>
                 </div>
-                <Link to="/registry" className="btn btn-primary fw-bold px-4 py-2 text-nowrap" style={{ backgroundColor: '#2563EB', border: 'none', borderRadius: '8px' }}>
-                  Explore Registry <i className="bi bi-arrow-right ms-1"></i>
+                {/* Uniform Button Styling */}
+                <Link
+                  to="/registry"
+                  className="btn text-white fw-bold px-4 py-2 text-nowrap d-inline-flex align-items-center justify-content-center"
+                  style={{
+                    backgroundColor: '#2563EB',
+                    borderColor: '#2563EB',
+                    borderRadius: '8px',
+                    fontSize: '0.9rem',
+                    boxShadow: '0 2px 8px rgba(15, 23, 42, 0.06)',
+                    transition: 'all 0.2s ease-in-out',
+                  }}
+                  onMouseOver={(e) => handleTutorialBtnOver(e, '#1D4ED8')}
+                  onMouseOut={(e) => handleTutorialBtnOut(e, '#2563EB')}
+                >
+                  Explore Registry <i className="bi bi-arrow-right ms-2"></i>
                 </Link>
               </div>
 
-              <div className="row g-4">
+              {/* Vertical Steps Container */}
+              <div className="ps-2 ps-md-4 py-2">
                 {/* Step 1 */}
-                <div className="col-md-4">
-                  <div className="d-flex align-items-start">
-                    <div className="rounded-circle fw-bold text-white me-3 d-flex align-items-center justify-content-center flex-shrink-0" style={{ backgroundColor: '#2563EB', width: '36px', height: '36px', fontSize: '0.9rem' }}>
-                      1
-                    </div>
-                    <div>
-                      <h4 className="fs-6 fw-bold mb-2" style={{ color: '#0F172A' }}>Access Public Registry Page</h4>
-                      <p className="small mb-0 fw-medium" style={{ color: '#1E293B', lineHeight: '1.6' }}>
-                        Click <strong>"Public Registry"</strong> in the navigation header or homepage card to view all publicly registered tickets (PII redacted).
-                      </p>
-                    </div>
+                <div className="d-flex align-items-start mb-4">
+                  <div
+                    className="rounded-circle fw-bold text-white me-3 me-md-4 d-flex align-items-center justify-content-center flex-shrink-0 shadow-sm"
+                    style={{ backgroundColor: '#2563EB', width: '40px', height: '40px', fontSize: '0.95rem' }}
+                  >
+                    1
+                  </div>
+                  <div className="pt-1">
+                    <h4 className="fs-6 fw-bold mb-1" style={{ color: '#0F172A', fontFamily: 'Poppins, sans-serif' }}>
+                      Access Public Registry Page
+                    </h4>
+                    <p className="small mb-0 fw-medium" style={{ color: '#1E293B', lineHeight: '1.6' }}>
+                      Click <strong>"Public Registry"</strong> in the navigation header or homepage card to view all publicly registered tickets (PII redacted).
+                    </p>
                   </div>
                 </div>
 
                 {/* Step 2 */}
-                <div className="col-md-4">
-                  <div className="d-flex align-items-start">
-                    <div className="rounded-circle fw-bold text-white me-3 d-flex align-items-center justify-content-center flex-shrink-0" style={{ backgroundColor: '#2563EB', width: '36px', height: '36px', fontSize: '0.9rem' }}>
-                      2
-                    </div>
-                    <div>
-                      <h4 className="fs-6 fw-bold mb-2" style={{ color: '#0F172A' }}>Search & Filter by Location/Status</h4>
-                      <p className="small mb-0 fw-medium" style={{ color: '#1E293B', lineHeight: '1.6' }}>
-                        Use the search bar to filter complaints by area/ward location, category type, or status (Pending, In Progress, Resolved, Rejected).
-                      </p>
-                    </div>
+                <div className="d-flex align-items-start mb-4 position-relative" style={{ zIndex: 1 }}>
+                  <div
+                    className="rounded-circle fw-bold text-white me-3 me-md-4 d-flex align-items-center justify-content-center flex-shrink-0 shadow-sm"
+                    style={{ backgroundColor: '#2563EB', width: '40px', height: '40px', fontSize: '0.95rem' }}
+                  >
+                    2
+                  </div>
+                  <div className="pt-1">
+                    <h4 className="fs-6 fw-bold mb-1" style={{ color: '#0F172A', fontFamily: 'Poppins, sans-serif' }}>
+                      Search & Filter by Location or Status
+                    </h4>
+                    <p className="small mb-0 fw-medium" style={{ color: '#1E293B', lineHeight: '1.6' }}>
+                      Use the search bar to filter complaints by area/ward location, category type, or status (Pending, In Progress, Resolved, Rejected).
+                    </p>
                   </div>
                 </div>
 
                 {/* Step 3 */}
-                <div className="col-md-4">
-                  <div className="d-flex align-items-start">
-                    <div className="rounded-circle fw-bold text-white me-3 d-flex align-items-center justify-content-center flex-shrink-0" style={{ backgroundColor: '#2563EB', width: '36px', height: '36px', fontSize: '0.9rem' }}>
-                      3
-                    </div>
-                    <div>
-                      <h4 className="fs-6 fw-bold mb-2" style={{ color: '#0F172A' }}>Track Progress & Download Receipts</h4>
-                      <p className="small mb-0 fw-medium" style={{ color: '#1E293B', lineHeight: '1.6' }}>
-                        Click <strong>"Track Progress"</strong> to inspect the live audit log timeline, or click <strong>"PDF Receipt"</strong> for resolved tickets to download official reports.
-                      </p>
-                    </div>
+                <div className="d-flex align-items-start position-relative" style={{ zIndex: 1 }}>
+                  <div
+                    className="rounded-circle fw-bold text-white me-3 me-md-4 d-flex align-items-center justify-content-center flex-shrink-0 shadow-sm"
+                    style={{ backgroundColor: '#2563EB', width: '40px', height: '40px', fontSize: '0.95rem' }}
+                  >
+                    3
+                  </div>
+                  <div className="pt-1">
+                    <h4 className="fs-6 fw-bold mb-1" style={{ color: '#0F172A', fontFamily: 'Poppins, sans-serif' }}>
+                      Track Progress & Download Resolution Receipts
+                    </h4>
+                    <p className="small mb-0 fw-medium" style={{ color: '#1E293B', lineHeight: '1.6' }}>
+                      Click <strong>"Track Progress"</strong> to inspect the live audit log timeline, or click <strong>"PDF Receipt"</strong> for resolved tickets to download official reports.
+                    </p>
                   </div>
                 </div>
               </div>
