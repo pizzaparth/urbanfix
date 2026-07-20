@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth.js';
 import Home from './pages/public/Home.jsx';
+import Registry from './pages/public/Registry.jsx';
 import Tracker from './pages/public/Tracker.jsx';
 import FileComplaint from './pages/public/FileComplaint.jsx';
 import Register from './pages/citizen/Register.jsx';
@@ -43,6 +44,7 @@ function App() {
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<Home />} />
+        <Route path="/registry" element={<Registry />} />
         <Route path="/track" element={<Tracker />} />
         <Route path="/file-complaint" element={<FileComplaint />} />
         <Route path="/register" element={<Register />} />

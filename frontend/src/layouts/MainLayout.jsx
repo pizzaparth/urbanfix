@@ -37,6 +37,9 @@ const MainLayout = ({ children }) => {
                 <Link className="nav-link text-white" to="/">Transparency Portal</Link>
               </li>
               <li className="nav-item">
+                <Link className="nav-link text-white" to="/registry">Public Registry</Link>
+              </li>
+              <li className="nav-item">
                 <Link className="nav-link text-white" to="/track">Track Complaint</Link>
               </li>
               <li className="nav-item">

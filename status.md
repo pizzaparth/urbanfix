@@ -168,8 +168,9 @@ src/
 │   └── AdminLayout.jsx       # Dark sidebar layout for administrative pages
 └── pages/
     ├── public/
-    │   ├── Home.jsx          # Public Dashboard with Top KPI Counter Cards & Registry Search
-    │   ├── FileComplaint.jsx # Multi-step complaint submission form with inline OTP Modal
+    │   ├── Home.jsx          # Public Dashboard with Top Statistics Overview & Feature Navigation
+    │   ├── Registry.jsx      # Searchable Complaints Registry with filters & PDF receipt download
+    │   ├── FileComplaint.jsx # Multi-step complaint submission form with dynamic questionnaire & OTP
     │   └── Tracker.jsx       # Tracking ID search and audit timeline viewer
     ├── citizen/
     │   ├── Login.jsx         # Unified Login view (Admin & Citizen access)
@@ -183,13 +184,14 @@ src/
 
 ### Key UI Features
 1. **Public Home Dashboard (`Home.jsx`):**
-   * Solid-colored KPI Counter Cards (Total, Pending, In Progress, Resolved, Rejected).
-   * Searchable registry with real-time location regex search, category drop-down filter, and status drop-down filter.
-   * Quick-access buttons for direct tracking timeline viewing and PDF receipt downloading.
-2. **Frictionless Submission (`FileComplaint.jsx`):**
-   * Multi-file upload dropzone accepting up to 3 image files.
-   * "Verify Email & Submit" action triggers a modal asking for the 6-digit OTP code before submitting.
-3. **Admin Control Console (`AdminDashboard.jsx` & `ComplaintDetail.jsx`):**
+   * Top Statistics Overview section with responsive layout.
+   * Feature quick navigation cards leading to Public Registry, File Issue, and Track Progress.
+2. **Public Complaints Registry (`Registry.jsx`):**
+   * Dedicated page accessible via Navbar ("Public Registry").
+   * Searchable registry with real-time location regex search, category drop-down filter, status drop-down filter, and resolution PDF downloads.
+3. **Frictionless Submission (`FileComplaint.jsx`):**
+   * 3-step filing wizard with category-specific questionnaires, real-time urgency badge calculation, and email OTP verification.
+4. **Admin Control Console (`AdminDashboard.jsx` & `ComplaintDetail.jsx`):**
    * Full data table listing complaints with citizen contact details.
    * Interactive status update form enforcing allowed transitions, mandatory remarks, and public visibility toggle.
 
