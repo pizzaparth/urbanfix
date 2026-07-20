@@ -1,68 +1,154 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth.js';
 
 const AdminLayout = ({ children }) => {
   const { user, logoutUser } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = () => {
     logoutUser();
     navigate('/');
   };
 
-  return (
-    <div className="container-fluid p-0 d-flex min-vh-100 bg-light">
-      {/* Sidebar navigation */}
-      <aside className="bg-dark text-white p-3 d-none d-md-block" style={{ width: '260px' }}>
-        <div className="d-flex align-items-center mb-4 pb-2 border-bottom border-secondary">
-          <i className="bi bi-shield-lock-fill me-2 fs-3 text-warning"></i>
-          <span className="fs-5 fw-bold text-white">Admin Console</span>
-        </div>
-        <ul className="nav nav-pills flex-column mb-auto">
-          <li className="nav-item mb-2">
-            <Link className="nav-link text-white d-flex align-items-center py-2" to="/admin/dashboard">
-              <i className="bi bi-speedometer2 me-2"></i>
-              Dashboard
-            </Link>
-          </li>
-          <li className="nav-item mb-2">
-            <Link className="nav-link text-white d-flex align-items-center py-2" to="/admin/dashboard">
-              <i className="bi bi-list-stars me-2"></i>
-              Complaints List
-            </Link>
-          </li>
-          <li className="nav-item mb-2 mt-4">
-            <Link className="nav-link text-white d-flex align-items-center py-2" to="/">
-              <i className="bi bi-globe me-2 text-info"></i>
-              View Public Portal
-            </Link>
-          </li>
-        </ul>
-      </aside>
+  const isActive = (path) => location.pathname === path;
 
-      {/* Main console content wrapper */}
-      <div className="d-flex flex-column flex-grow-1">
-        {/* Top administration bar */}
-        <header className="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm px-4 py-3">
-          <div className="container-fluid p-0 justify-content-between">
-            <span className="navbar-brand d-md-none fw-bold">Admin Console</span>
-            <div className="d-flex align-items-center ms-auto">
-              <span className="me-3 text-secondary d-none d-sm-inline">
-                Welcome, <strong>{user?.name || 'Administrator'}</strong>
-              </span>
-              <button className="btn btn-outline-danger btn-sm" onClick={handleLogout}>
-                <i className="bi bi-box-arrow-right me-1"></i> Logout
-              </button>
+  return (
+    <div className="d-flex flex-column min-vh-100" style={{ backgroundColor: '#F8FAFC' }}>
+      {/* Identical Frosted Glass Sticky Navbar as Public Portal */}
+      <nav
+        className="navbar navbar-expand-lg navbar-dark sticky-top shadow-sm py-2"
+        style={{
+          backgroundColor: 'rgba(15, 23, 42, 0.95)',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+          zIndex: 1030,
+        }}
+      >
+        <div className="container">
+          {/* Brand Element */}
+          <Link className="navbar-brand fw-bold fs-4 me-4" to="/admin/dashboard" style={{ color: '#FFFFFF', letterSpacing: '-0.02em', fontFamily: 'Poppins, sans-serif' }}>
+            UrbanFix
+          </Link>
+
+          {/* Custom Styled Mobile Toggler */}
+          <button
+            className="navbar-toggler border-0 p-2"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#adminNavbar"
+            aria-controls="adminNavbar"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+            style={{ backgroundColor: 'rgba(255, 255, 255, 0.08)', borderRadius: '8px' }}
+          >
+            <span className="navbar-toggler-icon"></span>
+          </button>
+
+          {/* Collapsible Navigation Menu */}
+          <div className="collapse navbar-collapse mt-3 mt-lg-0" id="adminNavbar">
+            <ul className="navbar-nav me-auto mb-3 mb-lg-0 gap-1 gap-lg-2">
+              <li className="nav-item">
+                <Link
+                  className={`nav-link px-3 py-2 rounded-pill fw-semibold text-transition ${
+                    isActive('/admin/dashboard') ? 'text-white active-nav-pill' : 'text-slate-300'
+                  }`}
+                  to="/admin/dashboard"
+                  style={{
+                    backgroundColor: isActive('/admin/dashboard') ? 'rgba(37, 99, 235, 0.2)' : 'transparent',
+                    color: isActive('/admin/dashboard') ? '#60A5FA' : '#CBD5E1',
+                    fontSize: '0.9rem',
+                  }}
+                >
+                  <i className="bi bi-speedometer2 me-1"></i> Dashboard
+                </Link>
+              </li>
+
+              <li className="nav-item">
+                <Link
+                  className={`nav-link px-3 py-2 rounded-pill fw-semibold text-transition d-inline-flex align-items-center ${
+                    isActive('/registry') ? 'text-white active-nav-pill' : 'text-slate-300'
+                  }`}
+                  to="/registry"
+                  style={{
+                    backgroundColor: isActive('/registry') ? 'rgba(37, 99, 235, 0.2)' : 'transparent',
+                    color: isActive('/registry') ? '#60A5FA' : '#CBD5E1',
+                    fontSize: '0.9rem',
+                  }}
+                >
+                  <img src="/notebook-test.svg" alt="" style={{ width: '18px', height: '18px' }} className="me-1" /> Public Registry
+                </Link>
+              </li>
+
+              <li className="nav-item">
+                <Link
+                  className={`nav-link px-3 py-2 rounded-pill fw-semibold text-transition d-inline-flex align-items-center ${
+                    isActive('/track') ? 'text-white active-nav-pill' : 'text-slate-300'
+                  }`}
+                  to="/track"
+                  style={{
+                    backgroundColor: isActive('/track') ? 'rgba(37, 99, 235, 0.2)' : 'transparent',
+                    color: isActive('/track') ? '#60A5FA' : '#CBD5E1',
+                    fontSize: '0.9rem',
+                  }}
+                >
+                  <img src="/search.svg" alt="" style={{ width: '18px', height: '18px' }} className="me-1" /> Track Complaint
+                </Link>
+              </li>
+            </ul>
+
+            {/* Right Action Items & Prominent File Complaint CTA Button */}
+            <div className="d-flex flex-column flex-lg-row align-items-lg-center gap-2 pt-2 pt-lg-0 border-top border-secondary border-opacity-25 border-lg-0">
+              {/* Prominent Call To Action (CTA) Button */}
+              <Link
+                to="/file-complaint"
+                className="btn btn-primary px-3 py-2 rounded-pill fw-bold d-inline-flex align-items-center justify-content-center shadow-sm text-decoration-none me-lg-2"
+                style={{
+                  backgroundColor: '#2563EB',
+                  border: 'none',
+                  fontSize: '0.9rem',
+                  transition: 'transform 0.15s ease, background-color 0.15s ease',
+                }}
+                onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#1D4ED8')}
+                onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#2563EB')}
+              >
+                <img src="/circle-plus.svg" alt="" style={{ width: '18px', height: '18px', filter: 'brightness(0) invert(1)' }} className="me-1" /> File a Complaint
+              </Link>
+
+              {/* Authenticated Admin Session Badge */}
+              <div className="d-flex align-items-center gap-2 p-1 pe-2 rounded-pill" style={{ backgroundColor: 'rgba(255, 255, 255, 0.08)', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+                <span
+                  className="text-white small fw-bold px-2 py-1 d-inline-flex align-items-center"
+                  style={{ fontSize: '0.85rem' }}
+                >
+                  <i className="bi bi-person-circle me-1 text-primary fs-6"></i>
+                  <span>{user?.name ? user.name.split(' ')[0] : 'Admin'}</span>
+                  <span className="badge bg-primary-subtle text-primary ms-2 rounded-pill small" style={{ fontSize: '0.7rem' }}>
+                    ADMIN
+                  </span>
+                </span>
+                <button
+                  className="btn btn-outline-light btn-xs rounded-circle p-1 d-flex align-items-center justify-content-center"
+                  onClick={handleLogout}
+                  title="Logout"
+                  style={{ width: '28px', height: '28px', fontSize: '0.75rem' }}
+                >
+                  <i className="bi bi-box-arrow-right"></i>
+                </button>
+              </div>
             </div>
           </div>
-        </header>
+        </div>
+      </nav>
 
-        {/* Content Section */}
-        <main className="flex-grow-1 p-4">
+      {/* Main Console Content Section */}
+      <main className="flex-grow-1 py-4">
+        <div className="container">
           {children}
-        </main>
-      </div>
+        </div>
+      </main>
     </div>
   );
 };

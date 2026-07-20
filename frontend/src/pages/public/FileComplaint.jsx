@@ -278,67 +278,6 @@ const FileComplaint = () => {
           <p className="fs-6 mx-auto mb-4" style={{ color: '#64748B', maxWidth: '650px' }}>
             Interactive citizen complaint filing portal. Answer the category questionnaire, describe the issue, and verify via email OTP.
           </p>
-
-          {/* Dynamic Progress Steps Indicator */}
-          <div className="d-flex justify-content-center align-items-center gap-1 gap-sm-3 my-4 flex-wrap">
-            <div className="d-flex align-items-center">
-              <span
-                className="rounded-circle d-flex align-items-center justify-content-center fw-bold me-1 me-sm-2 flex-shrink-0"
-                style={{
-                  width: '32px',
-                  height: '32px',
-                  backgroundColor: currentStep >= 1 ? '#2563EB' : '#E2E8F0',
-                  color: currentStep >= 1 ? '#FFFFFF' : '#1E293B',
-                  fontSize: '0.85rem',
-                }}
-              >
-                1
-              </span>
-              <span className={`small fw-bold ${currentStep >= 1 ? 'text-primary' : 'text-dark'}`} style={{ fontSize: '0.825rem' }}>
-                Category & Context
-              </span>
-            </div>
-
-            <div style={{ width: '24px', height: '2px', backgroundColor: currentStep >= 2 ? '#2563EB' : '#E2E8F0' }} className="d-none d-xs-block flex-shrink-0"></div>
-
-            <div className="d-flex align-items-center">
-              <span
-                className="rounded-circle d-flex align-items-center justify-content-center fw-bold me-1 me-sm-2 flex-shrink-0"
-                style={{
-                  width: '32px',
-                  height: '32px',
-                  backgroundColor: currentStep >= 2 ? '#2563EB' : '#E2E8F0',
-                  color: currentStep >= 2 ? '#FFFFFF' : '#1E293B',
-                  fontSize: '0.85rem',
-                }}
-              >
-                2
-              </span>
-              <span className={`small fw-bold ${currentStep >= 2 ? 'text-primary' : 'text-dark'}`} style={{ fontSize: '0.825rem' }}>
-                Details & Photos
-              </span>
-            </div>
-
-            <div style={{ width: '24px', height: '2px', backgroundColor: currentStep >= 3 ? '#2563EB' : '#E2E8F0' }} className="d-none d-xs-block flex-shrink-0"></div>
-
-            <div className="d-flex align-items-center">
-              <span
-                className="rounded-circle d-flex align-items-center justify-content-center fw-bold me-1 me-sm-2 flex-shrink-0"
-                style={{
-                  width: '32px',
-                  height: '32px',
-                  backgroundColor: currentStep >= 3 ? '#2563EB' : '#E2E8F0',
-                  color: currentStep >= 3 ? '#FFFFFF' : '#1E293B',
-                  fontSize: '0.85rem',
-                }}
-              >
-                3
-              </span>
-              <span className={`small fw-bold ${currentStep >= 3 ? 'text-primary' : 'text-dark'}`} style={{ fontSize: '0.825rem' }}>
-                Contact & OTP
-              </span>
-            </div>
-          </div>
         </div>
 
         {/* Global Error Banner */}
@@ -415,16 +354,16 @@ const FileComplaint = () => {
                 {currentQuestions.map((q, idx) => (
                   <div
                     key={q.id}
-                    className="p-3 bg-white rounded-3 d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3"
+                    className="p-3 bg-white rounded-3 d-flex align-items-center justify-content-between gap-3"
                     style={{ border: '1px solid #CBD5E1' }}
                   >
-                    <span className="small fw-semibold" style={{ color: '#1E293B' }}>
+                    <span className="small fw-semibold flex-grow-1" style={{ color: '#1E293B' }}>
                       {idx + 1}. {q.question}
                     </span>
-                    <div className="btn-group w-100 w-sm-auto" role="group" style={{ minWidth: '130px' }}>
+                    <div className="btn-group flex-shrink-0" role="group" style={{ width: '130px' }}>
                       <button
                         type="button"
-                        className={`btn btn-sm px-3 py-2 fw-bold w-50 w-sm-auto ${answers[q.id] === 'Yes' ? 'btn-danger' : 'btn-outline-secondary'}`}
+                        className={`btn btn-sm px-3 py-2 fw-bold w-50 ${answers[q.id] === 'Yes' ? 'btn-danger' : 'btn-outline-secondary'}`}
                         onClick={() => handleQuestionToggle(q.id, 'Yes')}
                         style={{
                           backgroundColor: answers[q.id] === 'Yes' ? '#EF4444' : '#FFFFFF',
@@ -436,7 +375,7 @@ const FileComplaint = () => {
                       </button>
                       <button
                         type="button"
-                        className={`btn btn-sm px-3 py-2 fw-bold w-50 w-sm-auto ${answers[q.id] === 'No' ? 'btn-secondary' : 'btn-outline-secondary'}`}
+                        className={`btn btn-sm px-3 py-2 fw-bold w-50 ${answers[q.id] === 'No' ? 'btn-secondary' : 'btn-outline-secondary'}`}
                         onClick={() => handleQuestionToggle(q.id, 'No')}
                         style={{
                           backgroundColor: answers[q.id] === 'No' ? '#64748B' : '#FFFFFF',

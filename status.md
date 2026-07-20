@@ -193,10 +193,10 @@ src/
    * Adheres to universal design system: Poppins typography (`#000000` / `#0F172A`), high-contrast body & small font text (`#1E293B` / `#0F172A`), dedicated section heading ("Registered Public Complaints"), semantic solid pill badges (`Pending`, `In Progress`, `Resolved`, `Rejected`), monospace tracking IDs (`COMP-XXXXX-X`), non-collapsible vertical stacked search/filter layout, separated icon boxes with horizontal gap (`gap-2`), inline clear (`✕`), removable active filter summary chips, 1-click "Reset All" button with hover fill (`#EF4444`), sorting toggle (`Newest` vs `Oldest`), and PDF receipt downloads.
 3. **Frictionless Submission (`FileComplaint.jsx`):**
    * 3-step filing wizard with category-specific questionnaires (`Road Damage`, `Water Leakage`, `Garbage`, `Street Light`, `Administrative`, `Other`).
-   * Fully mobile-responsive layout: flexible step bar indicators, responsive category grid (`col-12 col-sm-6 col-md-4`), full-width mobile Yes/No questionnaire toggles, responsive action buttons (`flex-column-reverse flex-sm-row`), responsive review grid (`col-12 col-sm-6`), padding-safe OTP and Success modal overlays, real-time urgency badge calculation (`High Urgency`, `Medium Urgency`, `Standard Urgency`), and email OTP verification.
-4. **Frosted Glass Responsive Navbar (`MainLayout.jsx`):**
-   * Sticky top header with frosted glass blur effect (`backdrop-filter: blur(12px)`).
-   * Active route pill highlights (`#60A5FA`), prominent primary call-to-action button for "File a Complaint", touch-friendly mobile drawer menu, and user session pill.
+   * Fully mobile-responsive layout: responsive category grid (`col-12 col-sm-6 col-md-4`), straight-line aligned Yes/No questionnaire toggles across all viewports (`btn-group flex-shrink-0`), responsive action buttons (`flex-column-reverse flex-sm-row`), responsive review grid (`col-12 col-sm-6`), padding-safe OTP and Success modal overlays, real-time urgency badge calculation (`High Urgency`, `Medium Urgency`, `Standard Urgency`), and email OTP verification.
+ 4. **Frosted Glass Responsive Navbar (`MainLayout.jsx` & `AdminLayout.jsx`):**
+   * Shared sticky top header with frosted glass blur effect (`backdrop-filter: blur(12px)`), solid dark navy background (`rgba(15, 23, 42, 0.95)`), and centered container alignment (`container`).
+   * Active route pill highlights (`#60A5FA`), custom SVG icon integrations (`/notebook-test.svg`, `/search.svg`, `/circle-plus.svg`), prominent primary call-to-action button ("File a Complaint"), touch-friendly mobile drawer menu, and authenticated user/admin session pill badge.
 5. **Admin Control Console (`AdminDashboard.jsx` & `ComplaintDetail.jsx`):**
    * Full data table listing complaints with citizen contact details.
    * Interactive status update form enforcing allowed transitions, mandatory remarks, and public visibility toggle.
