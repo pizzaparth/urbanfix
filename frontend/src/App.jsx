@@ -10,6 +10,7 @@ import VerifyOtp from './pages/citizen/VerifyOtp.jsx';
 import Login from './pages/citizen/Login.jsx';
 import Dashboard from './pages/citizen/Dashboard.jsx';
 import AdminDashboard from './pages/admin/AdminDashboard.jsx';
+import AdminAction from './pages/admin/AdminAction.jsx';
 import ComplaintDetail from './pages/admin/ComplaintDetail.jsx';
 
 // Guard wrapper to restrict routes to logged-in users and valid roles
@@ -68,6 +69,14 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={['admin']}>
               <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/action"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <AdminAction />
             </ProtectedRoute>
           }
         />

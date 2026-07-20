@@ -99,7 +99,7 @@ const MainLayout = ({ children }) => {
               </li>
             </ul>
 
-            {/* Right Action Items & Prominent File Complaint CTA Button */}
+            {/* Right Action Items: Prominent File Complaint CTA Button & Session / Admin Switcher */}
             <div className="d-flex flex-column flex-lg-row align-items-lg-center gap-2 pt-2 pt-lg-0 border-top border-secondary border-opacity-25 border-lg-0">
               {/* Prominent Call To Action (CTA) Button */}
               <Link
@@ -117,12 +117,22 @@ const MainLayout = ({ children }) => {
                 <img src="/circle-plus.svg" alt="" style={{ width: '18px', height: '18px', filter: 'brightness(0) invert(1)' }} className="me-1" /> File a Complaint
               </Link>
 
-              {/* User / Admin Session Badge */}
+              {/* Show Switch to Admin Panel button ONLY when logged in as Admin */}
+              {user && user.role === 'admin' && (
+                <Link
+                  to="/admin/dashboard"
+                  className="btn btn-warning px-3 py-2 rounded-pill fw-bold text-dark small d-inline-flex align-items-center justify-content-center text-decoration-none me-lg-2"
+                  style={{ fontSize: '0.85rem' }}
+                >
+                  <i className="bi bi-shield-lock-fill me-2" style={{ marginRight: '0.45rem' }}></i> Admin Panel
+                </Link>
+              )}
+
+              {/* User / Admin Session Badge & Logout Button (or Admin Login when unauthenticated) */}
               {user ? (
                 <div className="d-flex align-items-center gap-2 p-1 pe-2 rounded-pill" style={{ backgroundColor: 'rgba(255, 255, 255, 0.08)', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
-                  <Link
-                    to={user.role === 'admin' ? '/admin/dashboard' : '/dashboard'}
-                    className="btn btn-link text-decoration-none text-white small fw-bold px-2 py-1 d-inline-flex align-items-center"
+                  <span
+                    className="text-white small fw-bold px-2 py-1 d-inline-flex align-items-center"
                     style={{ fontSize: '0.85rem' }}
                   >
                     <i className="bi bi-person-circle me-1 text-primary fs-6"></i>
@@ -130,7 +140,7 @@ const MainLayout = ({ children }) => {
                     <span className="badge bg-primary-subtle text-primary ms-2 rounded-pill small" style={{ fontSize: '0.7rem' }}>
                       {user.role.toUpperCase()}
                     </span>
-                  </Link>
+                  </span>
                   <button
                     className="btn btn-outline-light btn-xs rounded-circle p-1 d-flex align-items-center justify-content-center"
                     onClick={handleLogout}

@@ -194,12 +194,14 @@ src/
 3. **Frictionless Submission (`FileComplaint.jsx`):**
    * 3-step filing wizard with category-specific questionnaires (`Road Damage`, `Water Leakage`, `Garbage`, `Street Light`, `Administrative`, `Other`).
    * Fully mobile-responsive layout: responsive category grid (`col-12 col-sm-6 col-md-4`), straight-line aligned Yes/No questionnaire toggles across all viewports (`btn-group flex-shrink-0`), responsive action buttons (`flex-column-reverse flex-sm-row`), responsive review grid (`col-12 col-sm-6`), padding-safe OTP and Success modal overlays, real-time urgency badge calculation (`High Urgency`, `Medium Urgency`, `Standard Urgency`), and email OTP verification.
- 4. **Frosted Glass Responsive Navbar (`MainLayout.jsx` & `AdminLayout.jsx`):**
+ 4. **Frosted Glass Responsive Navbar & Portal Switcher (`MainLayout.jsx` & `AdminLayout.jsx`):**
    * Shared sticky top header with frosted glass blur effect (`backdrop-filter: blur(12px)`), solid dark navy background (`rgba(15, 23, 42, 0.95)`), and centered container alignment (`container`).
-   * Active route pill highlights (`#60A5FA`), custom SVG icon integrations (`/notebook-test.svg`, `/search.svg`, `/circle-plus.svg`), prominent primary call-to-action button ("File a Complaint"), touch-friendly mobile drawer menu, and authenticated user/admin session pill badge.
-5. **Admin Control Console (`AdminDashboard.jsx` & `ComplaintDetail.jsx`):**
-   * Full data table listing complaints with citizen contact details.
-   * Interactive status update form enforcing allowed transitions, mandatory remarks, and public visibility toggle.
+   * Bidirectional Portal Switcher: When unauthenticated, the Public Portal header provides an "Admin Login" button (`/admin/login`). Once logged in as an Admin (`user.role === 'admin'`), a prominent "Admin Panel" switch button appears in the header. The Admin Console navbar includes a "Public Portal" switch button styled using the `color_palatte.md` Secondary token (`backgroundColor: #10B981`, hover `#059669`, white text). Both switcher buttons feature identical dimensions (`px-3 py-2 rounded-pill fw-bold`, `fontSize: 0.85rem`, `0.45rem` icon padding). The Logout button is preserved directly on the session badge across both views.
+ 5. **Admin Control Console (`AdminDashboard.jsx`, `AdminAction.jsx` & `ComplaintDetail.jsx`):**
+   * **System Overview Dashboard (`/admin/dashboard`):** Homepage-aligned top statistic counter section (`row g-4 text-center justify-content-center align-items-center`) displaying overall metrics (`Total Issues`, `Pending`, `In Progress`, `Resolved`, `Rejected`).
+   * **Administrative Action Panel (`/admin/action`):** Shifted complaint search bar (Tracking ID / title filter, status filter, category filter, 1-click reset button) and full complaints data table grid with pagination and citizen contact details to a dedicated tab (`/admin/action`).
+   * **Navbar Integration:** Added "Action Panel" tab link in `AdminLayout.jsx` with identical pill attributes (`px-3 py-2 rounded-pill fw-semibold text-transition`, `0.45rem` icon padding, active indicator `#60A5FA`).
+   * **Detail Inspection (`/admin/complaints/:id`):** Interactive status update form enforcing allowed transitions, mandatory remarks, and public visibility toggle.
 
 ---
 

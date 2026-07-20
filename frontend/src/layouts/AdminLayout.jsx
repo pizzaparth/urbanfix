@@ -69,52 +69,42 @@ const AdminLayout = ({ children }) => {
               <li className="nav-item">
                 <Link
                   className={`nav-link px-3 py-2 rounded-pill fw-semibold text-transition d-inline-flex align-items-center ${
-                    isActive('/registry') ? 'text-white active-nav-pill' : 'text-slate-300'
+                    isActive('/admin/action') ? 'text-white active-nav-pill' : 'text-slate-300'
                   }`}
-                  to="/registry"
+                  to="/admin/action"
                   style={{
-                    backgroundColor: isActive('/registry') ? 'rgba(37, 99, 235, 0.2)' : 'transparent',
-                    color: isActive('/registry') ? '#60A5FA' : '#CBD5E1',
+                    backgroundColor: isActive('/admin/action') ? 'rgba(37, 99, 235, 0.2)' : 'transparent',
+                    color: isActive('/admin/action') ? '#60A5FA' : '#CBD5E1',
                     fontSize: '0.9rem',
                   }}
                 >
-                  <img src="/notebook-test.svg" alt="" style={{ width: '18px', height: '18px' }} className="me-1" /> Public Registry
-                </Link>
-              </li>
-
-              <li className="nav-item">
-                <Link
-                  className={`nav-link px-3 py-2 rounded-pill fw-semibold text-transition d-inline-flex align-items-center ${
-                    isActive('/track') ? 'text-white active-nav-pill' : 'text-slate-300'
-                  }`}
-                  to="/track"
-                  style={{
-                    backgroundColor: isActive('/track') ? 'rgba(37, 99, 235, 0.2)' : 'transparent',
-                    color: isActive('/track') ? '#60A5FA' : '#CBD5E1',
-                    fontSize: '0.9rem',
-                  }}
-                >
-                  <img src="/search.svg" alt="" style={{ width: '18px', height: '18px' }} className="me-1" /> Track Complaint
+                  <i className="bi bi-lightning-charge me-2 text-warning" style={{ marginRight: '0.45rem' }}></i> Action Panel
                 </Link>
               </li>
             </ul>
 
-            {/* Right Action Items & Prominent File Complaint CTA Button */}
-            <div className="d-flex flex-column flex-lg-row align-items-lg-center gap-2 pt-2 pt-lg-0 border-top border-secondary border-opacity-25 border-lg-0">
-              {/* Prominent Call To Action (CTA) Button */}
+            {/* Action Items: Switch to Public Portal & Admin Session Badge */}
+            <div className="d-flex flex-column flex-lg-row align-items-lg-center gap-2 pt-2 pt-lg-0 ms-auto">
+              {/* Portal Switcher Button: Switch to Public Portal */}
               <Link
-                to="/file-complaint"
-                className="btn btn-primary px-3 py-2 rounded-pill fw-bold d-inline-flex align-items-center justify-content-center shadow-sm text-decoration-none me-lg-2"
+                to="/"
+                className="btn px-3 py-2 rounded-pill fw-bold text-white small d-inline-flex align-items-center justify-content-center text-decoration-none me-lg-2 shadow-sm"
                 style={{
-                  backgroundColor: '#2563EB',
-                  border: 'none',
-                  fontSize: '0.9rem',
-                  transition: 'transform 0.15s ease, background-color 0.15s ease',
+                  backgroundColor: '#10B981',
+                  borderColor: '#10B981',
+                  fontSize: '0.85rem',
+                  transition: 'all 0.15s ease-in-out',
                 }}
-                onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#1D4ED8')}
-                onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#2563EB')}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.backgroundColor = '#059669';
+                  e.currentTarget.style.borderColor = '#059669';
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.backgroundColor = '#10B981';
+                  e.currentTarget.style.borderColor = '#10B981';
+                }}
               >
-                <img src="/circle-plus.svg" alt="" style={{ width: '18px', height: '18px', filter: 'brightness(0) invert(1)' }} className="me-1" /> File a Complaint
+                <i className="bi bi-globe me-2 text-white" style={{ marginRight: '0.45rem' }}></i> Public Portal
               </Link>
 
               {/* Authenticated Admin Session Badge */}
