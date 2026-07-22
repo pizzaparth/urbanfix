@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import AdminLayout from '../../layouts/AdminLayout.jsx';
-import api from '../../services/api.js';
+import StatusBadge from '../../components/StatusBadge.jsx';
+import StatusTimeline from '../../components/StatusTimeline.jsx';
+import api, { getUploadsBaseUrl } from '../../services/api.js';
 
 const ComplaintDetail = () => {
   const { id } = useParams();
@@ -58,16 +60,6 @@ const ComplaintDetail = () => {
     }
   };
 
-  const getStatusBadge = (s) => {
-    switch (s) {
-      case 'Pending': return 'bg-warning text-dark';
-      case 'In Progress': return 'bg-primary';
-      case 'Resolved': return 'bg-success';
-      case 'Rejected': return 'bg-danger';
-      default: return 'bg-secondary';
-    }
-  };
-
   const isTerminalState = complaint?.status === 'Resolved' || complaint?.status === 'Rejected';
 
   return (
@@ -96,9 +88,7 @@ const ComplaintDetail = () => {
                   <h3 className="fs-5 fw-bold mb-1 text-dark">{complaint.title}</h3>
                   <span className="text-muted small">Tracking ID: <strong>{complaint.trackingId}</strong></span>
                 </div>
-                <span className={`badge ${getStatusBadge(complaint.status)} px-3 py-2 fs-7 fw-bold`}>
-                  {complaint.status}
-                </span>
+                <StatusBadge status={complaint.status} />
               </div>
 
               <div className="mb-4">
@@ -115,9 +105,9 @@ const ComplaintDetail = () => {
                   <div className="row g-2">
                     {complaint.images.map((img, idx) => (
                       <div key={idx} className="col-4">
-                        <a href={`http://localhost:5001${img}`} target="_blank" rel="noopener noreferrer">
+                        <a href={`${getUploadsBaseUrl()}${img}`} target="_blank" rel="noopener noreferrer">
                           <img
-                            src={`http://localhost:5001${img}`}
+                            src={`${getUploadsBaseUrl()}${img}`}
                             alt={`Upload ${idx + 1}`}
                             className="img-fluid rounded border hover-shadow-card"
                             style={{ height: '140px', width: '100%', objectFit: 'cover' }}
@@ -132,22 +122,7 @@ const ComplaintDetail = () => {
               {/* Status history timeline */}
               <div>
                 <h4 className="fs-7 fw-bold text-secondary text-uppercase tracking-wider mb-3">Status Audit Log</h4>
-                <div className="timeline-stepper">
-                  {complaint.statusHistory.map((step, idx) => (
-                    <div key={idx} className="timeline-step-item">
-                      <span className="timeline-step-icon">
-                        <i className="bi bi-record-fill text-secondary"></i>
-                      </span>
-                      <div className="bg-light p-3 rounded border ms-2">
-                        <div className="d-flex justify-content-between align-items-center mb-1">
-                          <span className="fw-bold small">{step.status}</span>
-                          <small className="text-muted" style={{ fontSize: '0.75rem' }}>{new Date(step.changedAt).toLocaleString()}</small>
-                        </div>
-                        <p className="text-secondary small mb-0 text-justify">{step.remarks}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                <StatusTimeline statusHistory={complaint.statusHistory} />
               </div>
             </div>
           </div>
@@ -174,7 +149,7 @@ const ComplaintDetail = () => {
             {/* Transition operation controls */}
             <div className="card shadow-sm border-0 rounded-3 p-4 bg-white">
               <h4 className="fs-6 fw-bold text-dark mb-3 border-bottom pb-2">Transition Operations</h4>
-              
+
               {isTerminalState ? (
                 <div className="alert alert-info border-0 small mb-0">
                   <i className="bi bi-info-circle me-1"></i> This ticket is resolved/rejected and cannot be updated.

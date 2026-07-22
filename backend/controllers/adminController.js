@@ -5,33 +5,11 @@ import catchAsync from '../utils/catchAsync.js';
 import { updateStatusSchema } from '../validators/adminValidator.js';
 import { sendStatusUpdateEmail, sendResolutionEmailWithPdf } from '../services/emailService.js';
 import { generateResolutionPdf } from '../services/pdfService.js';
+import { getStatusBreakdown } from '../utils/statsHelpers.js';
 
 // 1. Get Summary Metrics for Admin Dashboard
 export const getAdminStats = catchAsync(async (req, res, next) => {
-  const stats = await Complaint.aggregate([
-    {
-      $group: {
-        _id: '$status',
-        count: { $sum: 1 },
-      },
-    },
-  ]);
-
-  // Format aggregated stats counts
-  const formattedStats = {
-    Pending: 0,
-    'In Progress': 0,
-    Resolved: 0,
-    Rejected: 0,
-    total: 0,
-  };
-
-  stats.forEach(stat => {
-    if (stat._id) {
-      formattedStats[stat._id] = stat.count;
-      formattedStats.total += stat.count;
-    }
-  });
+  const formattedStats = await getStatusBreakdown();
 
   // Calculate complaint volume per category
   const categoryStats = await Complaint.aggregate([
@@ -42,30 +20,6 @@ export const getAdminStats = catchAsync(async (req, res, next) => {
       },
     },
   ]);
-
-  // Backfill existing MongoDB records lacking urgencyLevel
-  await Complaint.updateMany(
-    { $or: [{ urgencyLevel: { $exists: false } }, { urgencyLevel: null }] },
-    [
-      {
-        $set: {
-          urgencyLevel: {
-            $cond: {
-              if: { $in: ['$category', ['Electricity', 'Water Supply']] },
-              then: 'High Urgency',
-              else: {
-                $cond: {
-                  if: { $in: ['$category', ['Sanitation', 'Roads', 'Road Damage']] },
-                  then: 'Medium Urgency',
-                  else: 'Standard Urgency'
-                }
-              }
-            }
-          }
-        }
-      }
-    ]
-  );
 
   // Calculate urgency distribution
   const urgencyStats = await Complaint.aggregate([

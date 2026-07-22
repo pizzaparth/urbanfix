@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AdminLayout from '../../layouts/AdminLayout.jsx';
+import StatsCounterCard from '../../components/StatsCounterCard.jsx';
 import api from '../../services/api.js';
 import {
   Chart as ChartJS,
@@ -144,66 +145,7 @@ const AdminDashboard = () => {
   return (
     <AdminLayout>
       {/* 1. Top Statistic Counter Section (Homepage Aligned Glassmorphic Container) */}
-      {stats && (
-        <div className="card glass-card py-4 px-3 mb-4">
-          <div className="row g-4 text-center justify-content-center align-items-center">
-            <div className="col-12 col-md">
-              <div className="d-flex flex-column align-items-center justify-content-center py-2 py-md-0">
-                <span className="fw-bold text-uppercase mb-1" style={{ color: '#000000', fontFamily: 'Poppins, sans-serif', fontSize: '0.85rem', letterSpacing: '0.05em' }}>
-                  Total Issues
-                </span>
-                <span className="display-6 fw-bold mb-0" style={{ color: '#2563EB', fontFamily: 'Inter, sans-serif' }}>
-                  {stats.statusBreakdown.total || 0}
-                </span>
-              </div>
-            </div>
-
-            <div className="col-12 col-md">
-              <div className="d-flex flex-column align-items-center justify-content-center py-2 py-md-0">
-                <span className="fw-bold text-uppercase mb-1" style={{ color: '#000000', fontFamily: 'Poppins, sans-serif', fontSize: '0.85rem', letterSpacing: '0.05em' }}>
-                  Pending
-                </span>
-                <span className="display-6 fw-bold mb-0" style={{ color: '#F59E0B', fontFamily: 'Inter, sans-serif' }}>
-                  {stats.statusBreakdown.Pending || 0}
-                </span>
-              </div>
-            </div>
-
-            <div className="col-12 col-md">
-              <div className="d-flex flex-column align-items-center justify-content-center py-2 py-md-0">
-                <span className="fw-bold text-uppercase mb-1" style={{ color: '#000000', fontFamily: 'Poppins, sans-serif', fontSize: '0.85rem', letterSpacing: '0.05em' }}>
-                  In Progress
-                </span>
-                <span className="display-6 fw-bold mb-0" style={{ color: '#06B6D4', fontFamily: 'Inter, sans-serif' }}>
-                  {stats.statusBreakdown['In Progress'] || 0}
-                </span>
-              </div>
-            </div>
-
-            <div className="col-12 col-md">
-              <div className="d-flex flex-column align-items-center justify-content-center py-2 py-md-0">
-                <span className="fw-bold text-uppercase mb-1" style={{ color: '#000000', fontFamily: 'Poppins, sans-serif', fontSize: '0.85rem', letterSpacing: '0.05em' }}>
-                  Resolved
-                </span>
-                <span className="display-6 fw-bold mb-0" style={{ color: '#22C55E', fontFamily: 'Inter, sans-serif' }}>
-                  {stats.statusBreakdown.Resolved || 0}
-                </span>
-              </div>
-            </div>
-
-            <div className="col-12 col-md">
-              <div className="d-flex flex-column align-items-center justify-content-center py-2 py-md-0">
-                <span className="fw-bold text-uppercase mb-1" style={{ color: '#000000', fontFamily: 'Poppins, sans-serif', fontSize: '0.85rem', letterSpacing: '0.05em' }}>
-                  Rejected
-                </span>
-                <span className="display-6 fw-bold mb-0" style={{ color: '#EF4444', fontFamily: 'Inter, sans-serif' }}>
-                  {stats.statusBreakdown.Rejected || 0}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {stats && <StatsCounterCard statusBreakdown={stats.statusBreakdown} className="card glass-card py-4 px-3 mb-4" />}
 
       {/* 2. Page Section Title */}
       <h2 className="display-6 fw-bold text-center mb-4" style={{ color: '#0F172A', fontFamily: 'Poppins, sans-serif' }}>

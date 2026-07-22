@@ -1,30 +1,10 @@
 import Complaint from '../models/Complaint.js';
 import catchAsync from '../utils/catchAsync.js';
+import { getStatusBreakdown } from '../utils/statsHelpers.js';
 
 // 1. Fetch public resolution statistics for Landing Page
 export const getPublicStats = catchAsync(async (req, res, next) => {
-  // Aggregate status count for all filed complaints
-  const stats = await Complaint.aggregate([
-    {
-      $group: {
-        _id: '$status',
-        count: { $sum: 1 },
-      },
-    },
-  ]);
-
-  const formattedStats = {
-    Pending: 0,
-    'In Progress': 0,
-    Resolved: 0,
-    Rejected: 0,
-    total: 0,
-  };
-
-  stats.forEach(stat => {
-    formattedStats[stat._id] = stat.count;
-    formattedStats.total += stat.count;
-  });
+  const formattedStats = await getStatusBreakdown();
 
   // Group count of resolved complaints by category
   const categoryStats = await Complaint.aggregate([
@@ -49,8 +29,8 @@ export const getPublicStats = catchAsync(async (req, res, next) => {
 export const getPublicComplaints = catchAsync(async (req, res, next) => {
   const { category, location, status, page = 1, limit = 50 } = req.query;
 
-  const query = {};
-  
+  const query = { isPublic: true };
+
   if (category) {
     query.category = category;
   }

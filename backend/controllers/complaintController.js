@@ -114,6 +114,7 @@ export const submitComplaint = catchAsync(async (req, res, next) => {
     urgencyLevel: urgencyLevel || 'Standard Urgency',
     images: imageUrls,
     status: 'Pending',
+    isPublic: true, // admin no longer has a manual toggle; all filed complaints are public
     statusHistory: [
       {
         status: 'Pending',

@@ -4,7 +4,7 @@ import { useAuth } from './hooks/useAuth.js';
 import Home from './pages/public/Home.jsx';
 import Registry from './pages/public/Registry.jsx';
 import Tracker from './pages/public/Tracker.jsx';
-import FileComplaint from './pages/public/FileComplaint.jsx';
+import FileComplaint from './pages/public/FileComplaint/index.jsx';
 import Register from './pages/citizen/Register.jsx';
 import VerifyOtp from './pages/citizen/VerifyOtp.jsx';
 import Login from './pages/citizen/Login.jsx';

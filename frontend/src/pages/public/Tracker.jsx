@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import MainLayout from '../../layouts/MainLayout.jsx';
-import api from '../../services/api.js';
+import StatusBadge from '../../components/StatusBadge.jsx';
+import StatusTimeline from '../../components/StatusTimeline.jsx';
+import api, { getUploadsBaseUrl } from '../../services/api.js';
 
 const Tracker = () => {
   const [searchParams] = useSearchParams();
   const trackingIdParam = searchParams.get('id') || '';
-  
+
   const [trackingId, setTrackingId] = useState(trackingIdParam);
   const [complaint, setComplaint] = useState(null);
   const [error, setError] = useState('');
@@ -36,16 +38,6 @@ const Tracker = () => {
     e.preventDefault();
     if (trackingId.trim()) {
       fetchComplaint(trackingId.trim());
-    }
-  };
-
-  const getStatusBadgeClass = (status) => {
-    switch (status) {
-      case 'Pending': return 'bg-warning text-dark';
-      case 'In Progress': return 'bg-primary';
-      case 'Resolved': return 'bg-success';
-      case 'Rejected': return 'bg-danger';
-      default: return 'bg-secondary';
     }
   };
 
@@ -89,9 +81,7 @@ const Tracker = () => {
                 <h3 className="fs-5 fw-bold text-dark mb-1">{complaint.title}</h3>
                 <span className="text-muted small">Tracking ID: <strong>{complaint.trackingId}</strong></span>
               </div>
-              <span className={`badge ${getStatusBadgeClass(complaint.status)} px-3 py-2 fs-7 fw-bold`}>
-                {complaint.status}
-              </span>
+              <StatusBadge status={complaint.status} />
             </div>
 
             <div className="mb-4">
@@ -109,7 +99,7 @@ const Tracker = () => {
                   {complaint.images.map((img, idx) => (
                     <div key={idx} className="col-4">
                       <img
-                        src={`http://localhost:5001${img}`}
+                        src={`${getUploadsBaseUrl()}${img}`}
                         alt={`Attachment ${idx + 1}`}
                         className="img-fluid rounded border hover-shadow-card"
                         style={{ height: '140px', width: '100%', objectFit: 'cover' }}
@@ -123,34 +113,7 @@ const Tracker = () => {
             {/* Interactive Timeline Stepper */}
             <div>
               <h4 className="fs-7 fw-bold text-secondary text-uppercase tracking-wider mb-3">Status Log History</h4>
-              <div className="timeline-stepper">
-                {complaint.statusHistory && complaint.statusHistory.map((step, idx) => {
-                  let stepIcon = 'bi-circle';
-                  let iconColor = 'warning';
-                  
-                  if (step.status === 'In Progress') { stepIcon = 'bi-gear-wide-connected'; iconColor = 'primary'; }
-                  else if (step.status === 'Resolved') { stepIcon = 'bi-check2-circle'; iconColor = 'success'; }
-                  else if (step.status === 'Rejected') { stepIcon = 'bi-x-circle'; iconColor = 'danger'; }
-                  else if (step.status === 'Pending') { stepIcon = 'bi-clock'; iconColor = 'warning'; }
-
-                  return (
-                    <div key={idx} className="timeline-step-item">
-                      <span className={`timeline-step-icon ${iconColor}`}>
-                        <i className={`bi ${stepIcon}`}></i>
-                      </span>
-                      <div className="bg-light p-3 rounded border ms-2">
-                        <div className="d-flex justify-content-between align-items-center mb-2">
-                          <h6 className="fw-bold mb-0 text-dark small">{step.status}</h6>
-                          <small className="text-muted" style={{ fontSize: '0.75rem' }}>
-                            {new Date(step.changedAt).toLocaleString()}
-                          </small>
-                        </div>
-                        <p className="text-secondary small mb-0 text-justify">{step.remarks}</p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+              <StatusTimeline statusHistory={complaint.statusHistory} />
             </div>
           </div>
         )}

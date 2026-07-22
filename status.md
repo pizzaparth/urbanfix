@@ -1,7 +1,7 @@
 # Project Status & Comprehensive Codebase Documentation
 
 **System Title:** Smart Digital Complaint Management and Public Transparency System (UrbanFix Portal)  
-**Date:** July 20, 2026  
+**Date:** July 22, 2026  
 **Repository Location:** `/Users/parth/University/Classes/3rd semester/DSN`  
 
 ---
@@ -82,11 +82,11 @@ Core ticket schema tracking complaint details, status lifecycle, and history.
 * `citizenId` (ObjectId, Ref: `User`, Required, Indexed) - Foreign key referencing the submitter.
 * `title` (String, Required, Max 100 chars) - Summary title of the issue.
 * `description` (String, Required) - Detailed explanation.
-* `category` (String, Required, Indexed) - Category classification (`Sanitation`, `Roads`, `Water Supply`, `Electricity`, `Administrative`, `Other`).
+* `category` (String, Required, Indexed) - Category classification (`Road Damage`, `Water Leakage`, `Garbage`, `Street Light`, `Administrative`, `Other`) - single source of truth is `frontend/src/constants/categories.js`, shared by every category picker/filter in the app.
 * `location` (String, Required, Indexed) - Ward/area location description.
 * `images` (Array of Strings, Max 3) - Relative file paths to uploaded attachments (`/uploads/...`).
 * `status` (String, Enum: `['Pending', 'In Progress', 'Resolved', 'Rejected']`, Default: `'Pending'`, Indexed).
-* `isPublic` (Boolean, Default: `false`, Indexed) - Visibility toggle for transparency listing.
+* `isPublic` (Boolean, Default: `false`, Indexed) - Gates visibility on the public registry (`GET /api/public/complaints` filters on `isPublic: true`). Set to `true` automatically on every submission (`complaintController.submitComplaint`) since there is no manual admin toggle; pre-existing records were backfilled via `backend/scripts/backfillIsPublic.js`.
 * `remarks` (String) - Admin resolution or status remarks.
 * `pdfReceiptUrl` (String) - Endpoint URL to download generated resolution receipt.
 * `statusHistory` (Array of Embedded Objects):
@@ -133,11 +133,11 @@ Base URL: `http://localhost:5001/api`
 
 ### 5.1 Public & Complaint Endpoints (`/api/complaints` & `/api/public`)
 * `POST /api/complaints/request-otp`: Accepts `{ email }`, generates 6-digit OTP code, saves in DB, sends email.
-* `POST /api/complaints`: Accepts `multipart/form-data` with fields (`name`, `email`, `phone`, `otp`, `title`, `description`, `category`, `location`) and up to 3 image files. Verifies OTP, registers user/ticket, dispatches confirmation.
+* `POST /api/complaints`: Accepts `multipart/form-data` with fields (`name`, `email`, `phone`, `otp`, `title`, `description`, `category`, `location`, `urgencyLevel`) and up to 3 image files. Verifies OTP, registers user/ticket, dispatches confirmation. Complaints are created with `isPublic: true`.
 * `GET /api/complaints/track/:trackingId`: Retrieves tracking details and status history (citizen details redacted).
 * `GET /api/complaints/download-receipt/:trackingId`: Streams dynamically generated PDF resolution receipt for resolved complaints.
-* `GET /api/public/stats`: Returns status breakdown counts (`total`, `Pending`, `In Progress`, `Resolved`, `Rejected`) and category distribution for public dashboards.
-* `GET /api/public/complaints`: Returns public registry of complaints (supports `location`, `category`, `status`, `page`, `limit` queries; PII redacted).
+* `GET /api/public/stats`: Returns status breakdown counts (`total`, `Pending`, `In Progress`, `Resolved`, `Rejected`) and category distribution for public dashboards. Status-breakdown aggregation is shared with `/api/admin/stats` via `backend/utils/statsHelpers.js`.
+* `GET /api/public/complaints`: Returns public registry of complaints, filtered to `isPublic: true` (supports `location`, `category`, `status`, `page`, `limit` queries; PII redacted).
 
 ### 5.2 Authentication Endpoints (`/api/auth`)
 * `POST /api/auth/register`: Citizen registration endpoint (triggers OTP).
@@ -146,9 +146,9 @@ Base URL: `http://localhost:5001/api`
 * `POST /api/auth/login`: Authenticates credentials (admin or citizen) and returns JWT bearer token.
 
 ### 5.3 Admin Endpoints (`/api/admin`) *(Requires Bearer Token + Admin Role)*
-* `GET /api/admin/stats`: Retrieves administrative analytics summary.
+* `GET /api/admin/stats`: Retrieves administrative analytics summary (status breakdown, category distribution, urgency distribution, timeline trend).
 * `GET /api/admin/complaints`: Retrieves paginated, filterable complaints grid populated with full citizen contact details (`name`, `email`, `phone`).
-* `PATCH /api/admin/complaints/:id/status`: Updates complaint status, remarks, public toggle, and triggers email/PDF side-effects.
+* `PATCH /api/admin/complaints/:id/status`: Updates complaint status and remarks (enforcing the state-machine transition constraints below) and triggers email/PDF side-effects. There is no manual public-visibility toggle on this endpoint - see `isPublic` in §3.3.
 
 ---
 
@@ -159,10 +159,22 @@ src/
 ├── App.jsx                   # Central Router & ProtectedRoute guard wrappers
 ├── main.jsx                  # React application entry point
 ├── index.css                 # Custom CSS Design System (Solid Colors, Badges, Cards)
+├── constants/
+│   └── categories.js         # Canonical CATEGORIES list & CATEGORY_QUESTIONNAIRES map (single source of truth)
 ├── contexts/
 │   └── AuthContext.jsx       # Context Provider managing auth state & localStorage tokens
 ├── services/
-│   └── api.js                # Axios instance with VITE_API_URL & Auth Interceptors
+│   └── api.js                # Axios instance (VITE_API_URL, Auth Interceptors) & getUploadsBaseUrl() helper
+├── utils/
+│   ├── urgency.js             # calculateUrgency(answers) - derives urgency rating from questionnaire responses
+│   └── downloadReceipt.js     # Shared blob-fetch-and-save-as PDF receipt download helper
+├── components/
+│   ├── StatusBadge.jsx        # Shared status pill (Pending/In Progress/Resolved/Rejected)
+│   ├── StatsCounterCard.jsx   # Shared 5-tile stats counter row (used on Home & AdminDashboard)
+│   ├── StatusTimeline.jsx     # Shared status-history audit log stepper (used on Tracker & ComplaintDetail)
+│   ├── TutorialSection.jsx    # Parameterized "how to use the portal" tutorial block (used 3x on Home)
+│   ├── RegistryFilters.jsx    # Search/filter card for the Public Registry
+│   └── ComplaintCard.jsx      # Registry listing card (used on Registry)
 ├── layouts/
 │   ├── MainLayout.jsx        # Public Navbar & Footer wrapper
 │   └── AdminLayout.jsx       # Dark sidebar layout for administrative pages
@@ -170,7 +182,13 @@ src/
     ├── public/
     │   ├── Home.jsx          # Public Dashboard with Top Statistics Overview & Feature Navigation
     │   ├── Registry.jsx      # Searchable Complaints Registry with filters & PDF receipt download
-    │   ├── FileComplaint.jsx # Multi-step complaint submission form with dynamic questionnaire & OTP
+    │   ├── FileComplaint/    # Multi-step complaint submission form with dynamic questionnaire & OTP
+    │   │   ├── index.jsx       # Owns wizard state/handlers; composes the steps & modals below
+    │   │   ├── CategoryStep.jsx  # Step 1: category grid + dynamic questionnaire
+    │   │   ├── DetailsStep.jsx   # Step 2: location/description/image upload
+    │   │   ├── VerifyStep.jsx    # Step 3: contact info + review summary
+    │   │   ├── OtpModal.jsx      # Email OTP verification modal
+    │   │   └── SuccessModal.jsx  # Post-submission tracking ID modal
     │   └── Tracker.jsx       # Tracking ID search and audit timeline viewer
     ├── citizen/
     │   ├── Login.jsx         # Unified Login view (Admin & Citizen access)
@@ -178,7 +196,8 @@ src/
     │   ├── VerifyOtp.jsx     # OTP verification screen
     │   └── Dashboard.jsx     # Citizen personal complaints list
     └── admin/
-        ├── AdminDashboard.jsx # KPI Cards, Search/Filters, & Complaints Data Table
+        ├── AdminDashboard.jsx # KPI Cards & Chart.js visual analytics (category, timeline, urgency)
+        ├── AdminAction.jsx    # Search/filters & paginated complaints data table
         └── ComplaintDetail.jsx# Status transition form, remarks editor, & audit logs
 ```
 
@@ -191,15 +210,15 @@ src/
 2. **Public Complaints Registry (`Registry.jsx`):**
    * Dedicated page accessible via Navbar ("Public Registry").
    * Adheres to universal design system: Poppins typography (`#000000` / `#0F172A`), high-contrast body & small font text (`#1E293B` / `#0F172A`), dedicated section heading ("Registered Public Complaints"), semantic solid pill badges (`Pending`, `In Progress`, `Resolved`, `Rejected`), monospace tracking IDs (`COMP-XXXXX-X`), non-collapsible vertical stacked search/filter layout, separated icon boxes with horizontal gap (`gap-2`), inline clear (`✕`), removable active filter summary chips, 1-click "Reset All" button with hover fill (`#EF4444`), sorting toggle (`Newest` vs `Oldest`), and PDF receipt downloads.
-3. **Frictionless Submission (`FileComplaint.jsx`):**
-   * 3-step filing wizard with category-specific questionnaires (`Road Damage`, `Water Leakage`, `Garbage`, `Street Light`, `Administrative`, `Other`).
-   * Fully mobile-responsive layout: responsive category grid (`col-12 col-sm-6 col-md-4`), straight-line aligned Yes/No questionnaire toggles across all viewports (`btn-group flex-shrink-0`), responsive action buttons (`flex-column-reverse flex-sm-row`), responsive review grid (`col-12 col-sm-6`), padding-safe OTP and Success modal overlays, real-time urgency badge calculation (`High Urgency`, `Medium Urgency`, `Standard Urgency`), and email OTP verification.
+3. **Frictionless Submission (`pages/public/FileComplaint/`):**
+   * 3-step filing wizard with category-specific questionnaires (`Road Damage`, `Water Leakage`, `Garbage`, `Street Light`, `Administrative`, `Other`), split into a thin `index.jsx` coordinator plus dedicated `CategoryStep`, `DetailsStep`, `VerifyStep`, `OtpModal`, and `SuccessModal` components.
+   * Fully mobile-responsive layout: responsive category grid (`col-12 col-sm-6 col-md-4`), straight-line aligned Yes/No questionnaire toggles across all viewports (`btn-group flex-shrink-0`), responsive action buttons (`flex-column-reverse flex-sm-row`), responsive review grid (`col-12 col-sm-6`), padding-safe OTP and Success modal overlays, real-time urgency badge calculation via the shared `calculateUrgency()` util (`High Urgency`, `Medium Urgency`, `Standard Urgency`), and email OTP verification.
  4. **Frosted Glass Responsive Navbar & Portal Switcher (`MainLayout.jsx` & `AdminLayout.jsx`):**
     * Shared sticky top header with frosted glass blur effect (`backdrop-filter: blur(12px)`), solid dark navy background (`rgba(15, 23, 42, 0.95)`), and centered container alignment (`container`). Removed border line above action buttons for clean header presentation.
    * Bidirectional Portal Switcher: When unauthenticated, the Public Portal header provides an "Admin Login" button (`/admin/login`). Once logged in as an Admin (`user.role === 'admin'`), a prominent "Admin Panel" switch button appears in the header. The Admin Console navbar includes a "Public Portal" switch button styled using the `color_palatte.md` Secondary token (`backgroundColor: #10B981`, hover `#059669`, white text). Both switcher buttons feature identical dimensions (`px-3 py-2 rounded-pill fw-bold`, `fontSize: 0.85rem`, `0.45rem` icon padding). The Logout button is preserved directly on the session badge across both views.
  5. **Admin Control Console (`AdminDashboard.jsx`, `AdminAction.jsx` & `ComplaintDetail.jsx`):**
-   * **System Overview & Visual Analytics Dashboard (`/admin/dashboard`):** Homepage-aligned top statistic counter section (`row g-4 text-center justify-content-center align-items-center`) accompanied by 3 vertically stacked visual graphs powered by Chart.js (`1. Category Volume Breakdown Bar Chart`, `2. Complaint Inflow & Resolution Timeline Multi-Line Trend`, `3. Priority & Urgency Impact Matrix`). Equipped with a 10-second background polling timer (`setInterval`) and tab-focus re-fetch listener (`window.addEventListener('focus')`) for seamless real-time graph auto-refresh when complaints are created, updated, or deleted. Graph 1 features dynamic category mapping reading MongoDB aggregate results directly (`categoryLabels` & `categoryCounts`), supporting all citizen categories (`Road Damage`, `Water Leakage`, `Garbage`, `Street Light`, `Administrative`, `Other`). Added `urgencyLevel` persistence to MongoDB schema (`Complaint.js`), POST payload in `FileComplaint.jsx`, and an automatic database backfill query for existing records. All redundant header pills (*Department Volume*, *Timeline Velocity*, *Priority Audit*) have been removed for a clean presentation.
-   * **Administrative Action Panel (`/admin/action`):** Shifted complaint search bar (Tracking ID / title filter, status filter, category filter, 1-click reset button) and full complaints data table grid with pagination and citizen contact details to a dedicated tab (`/admin/action`). Categories in the action panel filter are 100% synchronized with `/file-complaint` and `/registry` (`Road Damage`, `Water Leakage`, `Garbage`, `Street Light`, `Administrative`, `Other`).
+   * **System Overview & Visual Analytics Dashboard (`/admin/dashboard`):** Homepage-aligned top statistic counter section, rendered via the shared `StatsCounterCard` component (also used on the public `Home.jsx`), accompanied by 3 vertically stacked visual graphs powered by Chart.js (`1. Category Volume Breakdown Bar Chart`, `2. Complaint Inflow & Resolution Timeline Multi-Line Trend`, `3. Priority & Urgency Impact Matrix`). Equipped with a 10-second background polling timer (`setInterval`) and tab-focus re-fetch listener (`window.addEventListener('focus')`) for seamless real-time graph auto-refresh when complaints are created, updated, or deleted. Graph 1 features dynamic category mapping reading MongoDB aggregate results directly (`categoryLabels` & `categoryCounts`), supporting all citizen categories (`Road Damage`, `Water Leakage`, `Garbage`, `Street Light`, `Administrative`, `Other`). `urgencyLevel` is persisted on the MongoDB schema (`Complaint.js`) and set at submission time; legacy records missing it are backfilled via a standalone, manually-run migration script (`backend/scripts/backfillUrgencyLevels.js`) rather than on every stats request, so `GET /api/admin/stats` no longer performs a write on each poll. All redundant header pills (*Department Volume*, *Timeline Velocity*, *Priority Audit*) have been removed for a clean presentation.
+   * **Administrative Action Panel (`/admin/action`):** Shifted complaint search bar (Tracking ID / title filter, status filter, category filter, 1-click reset button) and full complaints data table grid with pagination and citizen contact details to a dedicated tab (`/admin/action`). Category options across the action panel filter, `/file-complaint`, `/registry`, and the citizen dashboard's "File New Complaint" modal all read from the single shared `frontend/src/constants/categories.js` list (`Road Damage`, `Water Leakage`, `Garbage`, `Street Light`, `Administrative`, `Other`), so they cannot drift out of sync.
    * **Navbar Integration:** Added "Action Panel" tab link in `AdminLayout.jsx` with identical pill attributes (`px-3 py-2 rounded-pill fw-semibold text-transition`, `0.45rem` icon padding, active indicator `#60A5FA`).
    * **Detail Inspection (`/admin/complaints/:id`):** Interactive status update form enforcing allowed transitions and mandatory remarks. The privilege to manually toggle ticket public visibility has been completely removed.
 
@@ -267,8 +286,10 @@ Seeded via `node backend/seedAdmin.js`:
 | **Complaint Submission** | ✅ Fully Functional | Multer multi-file upload, tracking ID generation (`COMP-XXXXX-X`) |
 | **State Machine Constraints** | ✅ Fully Functional | Enforces `Pending` -> `In Progress` -> `Resolved`/`Rejected` flow |
 | **PDF Receipt Engine** | ✅ Fully Functional | PDFKit streaming and email attachment upon ticket resolution |
-| **Public Transparency Portal**| ✅ Fully Functional | Redacts PII (`citizenId`), search by location, category, status |
+| **Public Transparency Portal**| ✅ Fully Functional | Redacts PII (`citizenId`), search by location, category, status; registry query filters strictly on `isPublic: true` |
 | **Admin Console & Auth** | ✅ Fully Functional | JWT bearer auth, protected routes, stats breakdown |
+| **Shared Component Library** | ✅ Fully Functional | `StatusBadge`, `StatsCounterCard`, `StatusTimeline`, `TutorialSection`, `RegistryFilters`, `ComplaintCard` (`frontend/src/components/`) eliminate duplicated status-badge, stats-tile, timeline, and download-receipt logic that previously existed independently on 4-5 pages each |
+| **Backend Migration Scripts** | ✅ Fully Functional | One-off, manually-run scripts (`backend/scripts/backfillUrgencyLevels.js`, `backend/scripts/backfillIsPublic.js`) backfill legacy records without running on every request |
 
 
 ---

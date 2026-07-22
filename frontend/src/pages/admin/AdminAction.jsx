@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AdminLayout from '../../layouts/AdminLayout.jsx';
+import StatusBadge from '../../components/StatusBadge.jsx';
+import { CATEGORIES } from '../../constants/categories.js';
 import api from '../../services/api.js';
 
 const AdminAction = () => {
@@ -16,7 +18,6 @@ const AdminAction = () => {
   const [totalPages, setTotalPages] = useState(1);
 
   const navigate = useNavigate();
-  const categories = ['Road Damage', 'Water Leakage', 'Garbage', 'Street Light', 'Administrative', 'Other'];
 
   useEffect(() => {
     fetchComplaints();
@@ -40,16 +41,6 @@ const AdminAction = () => {
       setError('Failed to fetch administrative complaint records.');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const getStatusBadge = (status) => {
-    switch (status) {
-      case 'Pending': return 'bg-warning text-dark';
-      case 'In Progress': return 'bg-primary';
-      case 'Resolved': return 'bg-success';
-      case 'Rejected': return 'bg-danger';
-      default: return 'bg-secondary';
     }
   };
 
@@ -97,7 +88,7 @@ const AdminAction = () => {
               onChange={(e) => { setCategoryFilter(e.target.value); setPage(1); }}
             >
               <option value="">All Categories</option>
-              {categories.map((c, idx) => (
+              {CATEGORIES.map((c, idx) => (
                 <option key={idx} value={c}>{c}</option>
               ))}
             </select>
@@ -142,7 +133,7 @@ const AdminAction = () => {
                     </td>
                     <td><span className="badge bg-secondary-subtle text-secondary">{item.category}</span></td>
                     <td className="text-truncate" style={{ maxWidth: '200px' }}>{item.title}</td>
-                    <td><span className={`badge ${getStatusBadge(item.status)}`}>{item.status}</span></td>
+                    <td><StatusBadge status={item.status} /></td>
                     <td>{new Date(item.createdAt).toLocaleDateString()}</td>
                     <td className="text-end px-4">
                       <button

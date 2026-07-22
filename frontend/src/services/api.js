@@ -1,11 +1,16 @@
 import axios from 'axios';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5001/api',
+  baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
 });
+
+// Base URL for statically served uploads (images), derived from the API URL
+export const getUploadsBaseUrl = () => API_BASE_URL.replace(/\/api\/?$/, '');
 
 // Axios request interceptor to automatically attach authorization header
 api.interceptors.request.use(
