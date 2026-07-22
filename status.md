@@ -207,17 +207,17 @@ src/
 
 ## 7. Design System & UI Specifications
 
-The interface adheres strictly to a **Solid-Color Design System** (no background gradients) based on `/color_palatte.md`:
+The interface adheres to a modern **Frosted Glassmorphism Design System** layered over a full-page digital blueprint grid with soft blue ambient glow, based on `/color_palatte.md`:
 
-| Visual Token | Hex Code | Applied Component / Context |
+| Visual Token | Hex / RGBA Code | Applied Component / Context |
 | :--- | :--- | :--- |
-| **Primary Blue** | `#2563EB` | Main buttons, navigation active states, links |
+| **Primary Blue** | `#2563EB` | Main buttons, navigation active states, grid lines (`rgba(37,99,235,0.12)`) |
 | **Primary Hover** | `#1D4ED8` | Button hover states |
 | **Success Green** | `#10B981` | Secondary buttons, resolved badge accents |
 | **Warning Amber** | `#F59E0B` | Pending status badges, warning callouts |
 | **Dark Navy** | `#0F172A` | Navbar, Admin sidebar background |
-| **Page Background** | `#F8FAFC` | Main viewport body background |
-| **Surface Card** | `#FFFFFF` | Cards, tables, forms, modals |
+| **Page Background** | `#F8FAFC` | Main viewport body background with full-height 32px grid & faint ambient blue glow |
+| **Glassmorphic Surface** | `rgba(255, 255, 255, 0.42)` | Translucent cards, modals (`blur(20px)`), forms, tables with specular top-edge bevel |
 | **Status: Pending** | `#FEF3C7` (BG) / `#B45309` (Text) | Badges & metrics cards |
 | **Status: In Progress** | `#CFFAFE` (BG) / `#0891B2` (Text) | Badges & metrics cards |
 | **Status: Resolved** | `#DCFCE7` (BG) / `#15803D` (Text) | Badges & metrics cards |
@@ -260,14 +260,15 @@ Seeded via `node backend/seedAdmin.js`:
 | **Dynamic Category Questionnaire**| ✅ Fully Functional | Dynamic Yes/No questionnaire & calculated urgency badges per category |
 | **Multi-Step Submission Wizard**| ✅ Fully Functional | 3-step filing wizard on `/file-complaint` with preview & OTP modal |
 | **Frosted Glass Responsive Navbar**| ✅ Fully Functional | Sticky header with blur, active route pills, CTA button & touch drawer |
-| **Homepage Centered Statistics** | ✅ Fully Functional | Title on top of number in solid black Poppins; mobile vertical stacking |
+| **Full-Page Blueprint Grid & Glow**| ✅ Fully Functional | 32px × 32px digital grid background extending 100% height with soft blue ambient glow |
+| **Translucent Glassmorphism Cards**| ✅ Fully Functional | `rgba(255, 255, 255, 0.42)` opacity cards with `blur(20px)`, specular bevel, glass inputs & tables |
+| **Glassmorphic Statistics Counters**| ✅ Fully Functional | Frosted glassmorphic top counter section (`rgba(255, 255, 255, 0.42)`, `blur(20px)`) on Public Portal & Admin Console |
 | **Dedicated Public Registry Page**| ✅ Fully Functional | `/registry` page with location regex search, category & status filters |
 | **Complaint Submission** | ✅ Fully Functional | Multer multi-file upload, tracking ID generation (`COMP-XXXXX-X`) |
 | **State Machine Constraints** | ✅ Fully Functional | Enforces `Pending` -> `In Progress` -> `Resolved`/`Rejected` flow |
 | **PDF Receipt Engine** | ✅ Fully Functional | PDFKit streaming and email attachment upon ticket resolution |
 | **Public Transparency Portal**| ✅ Fully Functional | Redacts PII (`citizenId`), search by location, category, status |
 | **Admin Console & Auth** | ✅ Fully Functional | JWT bearer auth, protected routes, stats breakdown |
-| **Solid-Color Styling System**| ✅ Fully Functional | Custom CSS matching `#2563EB`, `#0F172A`, `#F8FAFC` palette |
 
 
 ---

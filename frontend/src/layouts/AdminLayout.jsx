@@ -15,16 +15,21 @@ const AdminLayout = ({ children }) => {
   const isActive = (path) => location.pathname === path;
 
   return (
-    <div className="d-flex flex-column min-vh-100" style={{ backgroundColor: '#F8FAFC' }}>
-      {/* Identical Frosted Glass Sticky Navbar as Public Portal */}
+    <div className="d-flex flex-column min-vh-100 hero-grid-bg">
+      {/* Frosted Glass Dark Navy Fixed Top Navbar */}
       <nav
-        className="navbar navbar-expand-lg navbar-dark sticky-top shadow-sm py-2"
+        className="navbar navbar-expand-lg navbar-dark fixed-top py-2 shadow-sm"
         style={{
-          backgroundColor: 'rgba(15, 23, 42, 0.95)',
-          backdropFilter: 'blur(12px)',
-          WebkitBackdropFilter: 'blur(12px)',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
-          zIndex: 1030,
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          width: '100%',
+          backgroundColor: 'rgba(15, 23, 42, 0.85)',
+          backdropFilter: 'blur(16px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(16px) saturate(180%)',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.10)',
+          zIndex: 1050,
         }}
       >
         <div className="container">
@@ -134,7 +139,7 @@ const AdminLayout = ({ children }) => {
       </nav>
 
       {/* Main Console Content Section */}
-      <main className="flex-grow-1 py-4">
+      <main className="flex-grow-1 pb-4" style={{ paddingTop: '90px' }}>
         <div className="container">
           {children}
         </div>

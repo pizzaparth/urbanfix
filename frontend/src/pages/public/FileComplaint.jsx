@@ -351,41 +351,50 @@ const FileComplaint = () => {
               <p className="small mb-3 fw-medium" style={{ color: '#1E293B' }}>
                 Answering these Yes/No questions helps administrative teams assess urgency and prioritize inspection dispatch.
               </p>
-
               <div className="d-flex flex-column gap-3">
                 {currentQuestions.map((q, idx) => (
                   <div
                     key={q.id}
-                    className="p-3 bg-white rounded-3 d-flex align-items-center justify-content-between gap-3"
-                    style={{ border: '1px solid #CBD5E1' }}
+                    className="p-3 glass-card rounded-3 d-flex flex-column gap-3 hover-shadow-card"
+                    style={{ border: '1px solid rgba(203, 213, 225, 0.8)' }}
                   >
-                    <span className="small fw-semibold flex-grow-1" style={{ color: '#1E293B' }}>
-                      {idx + 1}. {q.question}
-                    </span>
-                    <div className="btn-group flex-shrink-0" role="group" style={{ width: '130px' }}>
+                    <div className="d-flex align-items-center">
+                      <span className="badge bg-primary-subtle text-primary rounded-circle p-2 me-2 flex-shrink-0 d-inline-flex align-items-center justify-content-center" style={{ width: '26px', height: '26px', fontSize: '0.8rem' }}>
+                        {idx + 1}
+                      </span>
+                      <span className="small fw-semibold" style={{ color: '#0F172A', lineHeight: '1.5' }}>
+                        {q.question}
+                      </span>
+                    </div>
+
+                    <div className="btn-group w-100" role="group" style={{ maxWidth: '240px' }}>
                       <button
                         type="button"
-                        className={`btn btn-sm px-3 py-2 fw-bold w-50 ${answers[q.id] === 'Yes' ? 'btn-danger' : 'btn-outline-secondary'}`}
+                        className={`btn btn-sm px-3 py-2 fw-bold w-50 text-transition ${answers[q.id] === 'Yes' ? 'btn-danger shadow-sm' : 'btn-outline-secondary'}`}
                         onClick={() => handleQuestionToggle(q.id, 'Yes')}
                         style={{
-                          backgroundColor: answers[q.id] === 'Yes' ? '#EF4444' : '#FFFFFF',
+                          backgroundColor: answers[q.id] === 'Yes' ? '#EF4444' : 'rgba(255, 255, 255, 0.65)',
                           color: answers[q.id] === 'Yes' ? '#FFFFFF' : '#1E293B',
-                          borderColor: '#CBD5E1',
+                          borderColor: answers[q.id] === 'Yes' ? '#EF4444' : 'rgba(203, 213, 225, 0.8)',
+                          backdropFilter: 'blur(8px)',
+                          cursor: 'pointer',
                         }}
                       >
-                        Yes
+                        <i className={`bi ${answers[q.id] === 'Yes' ? 'bi-check-circle-fill me-1' : ''}`}></i> Yes
                       </button>
                       <button
                         type="button"
-                        className={`btn btn-sm px-3 py-2 fw-bold w-50 ${answers[q.id] === 'No' ? 'btn-secondary' : 'btn-outline-secondary'}`}
+                        className={`btn btn-sm px-3 py-2 fw-bold w-50 text-transition ${answers[q.id] === 'No' ? 'btn-success shadow-sm' : 'btn-outline-secondary'}`}
                         onClick={() => handleQuestionToggle(q.id, 'No')}
                         style={{
-                          backgroundColor: answers[q.id] === 'No' ? '#64748B' : '#FFFFFF',
+                          backgroundColor: answers[q.id] === 'No' ? '#10B981' : 'rgba(255, 255, 255, 0.65)',
                           color: answers[q.id] === 'No' ? '#FFFFFF' : '#1E293B',
-                          borderColor: '#CBD5E1',
+                          borderColor: answers[q.id] === 'No' ? '#10B981' : 'rgba(203, 213, 225, 0.8)',
+                          backdropFilter: 'blur(8px)',
+                          cursor: 'pointer',
                         }}
                       >
-                        No
+                        <i className={`bi ${answers[q.id] === 'No' ? 'bi-check-circle-fill me-1' : ''}`}></i> No
                       </button>
                     </div>
                   </div>

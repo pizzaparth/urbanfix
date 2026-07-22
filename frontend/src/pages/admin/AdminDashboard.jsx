@@ -143,9 +143,9 @@ const AdminDashboard = () => {
 
   return (
     <AdminLayout>
-      {/* 1. Top Statistic Counter Section (Homepage Aligned Container) */}
+      {/* 1. Top Statistic Counter Section (Homepage Aligned Glassmorphic Container) */}
       {stats && (
-        <div className="py-4 px-3 mb-4 rounded-3 bg-white" style={{ border: '1px solid #E2E8F0', boxShadow: '0 4px 20px rgba(15,23,42,.04)' }}>
+        <div className="card glass-card py-4 px-3 mb-4">
           <div className="row g-4 text-center justify-content-center align-items-center">
             <div className="col-12 col-md">
               <div className="d-flex flex-column align-items-center justify-content-center py-2 py-md-0">
@@ -215,7 +215,7 @@ const AdminDashboard = () => {
       {/* STACKED VISUAL GRAPHS (ONE BELOW ANOTHER) */}
       <div className="d-flex flex-column gap-4 mb-4">
         {/* GRAPH 1: Category Distribution Breakdown */}
-        <div className="card border-0 shadow-sm rounded-3 p-4 bg-white" style={{ border: '1px solid #E2E8F0' }}>
+        <div className="card glass-card border-0 p-4">
           <div className="mb-3 pb-2 border-bottom">
             <h3 className="fs-5 fw-bold mb-1" style={{ color: '#0F172A', fontFamily: 'Poppins, sans-serif' }}>
               1. Category Volume Breakdown
@@ -243,7 +243,7 @@ const AdminDashboard = () => {
         </div>
 
         {/* GRAPH 2: Complaint Inflow & Resolution Timeline Trends */}
-        <div className="card border-0 shadow-sm rounded-3 p-4 bg-white" style={{ border: '1px solid #E2E8F0' }}>
+        <div className="card glass-card border-0 p-4">
           <div className="mb-3 pb-2 border-bottom">
             <h3 className="fs-5 fw-bold mb-1" style={{ color: '#0F172A', fontFamily: 'Poppins, sans-serif' }}>
               2. Complaint Inflow & Resolution Timeline Trend
@@ -270,7 +270,7 @@ const AdminDashboard = () => {
         </div>
 
         {/* GRAPH 3: Urgency & Impact Matrix */}
-        <div className="card border-0 shadow-sm rounded-3 p-4 bg-white" style={{ border: '1px solid #E2E8F0' }}>
+        <div className="card glass-card border-0 p-4">
           <div className="mb-3 pb-2 border-bottom">
             <h3 className="fs-5 fw-bold mb-1" style={{ color: '#0F172A', fontFamily: 'Poppins, sans-serif' }}>
               3. Calculated Priority & Urgency Impact Breakdown

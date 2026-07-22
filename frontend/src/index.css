@@ -42,13 +42,45 @@
   --status-rejected: #EF4444;
 }
 
-body {
+html, body {
   margin: 0;
+  overflow-x: hidden;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background-color: var(--bg-color);
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Visible Hero & Full-Page Grid Background Utility with Soft Faint Ambient Blue Glow */
+.hero-grid-bg {
+  position: relative;
+  background-color: var(--bg-color);
+  min-height: 100vh;
+}
+
+.hero-grid-bg::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(37, 99, 235, 0.09) 0%, transparent 70%),
+    radial-gradient(circle at 10% 45%, rgba(59, 130, 246, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 90% 80%, rgba(37, 99, 235, 0.06) 0%, transparent 55%),
+    linear-gradient(to right, rgba(37, 99, 235, 0.12) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(37, 99, 235, 0.12) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 100% 100%, 32px 32px, 32px 32px;
+  background-repeat: no-repeat, no-repeat, no-repeat, repeat, repeat;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero-grid-bg > * {
+  position: relative;
+  z-index: 1;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -57,22 +89,50 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 600;
 }
 
-/* Custom card style override - NO GRADIENT, solid background card */
-.glass-card, .card {
-  background-color: var(--surface) !important;
-  border: 1px solid var(--border-light) !important;
-  box-shadow: 0 4px 20px rgba(15,23,42,.06) !important;
-  border-radius: 12px !important;
+/* Authentic Glassmorphism Card System Override with Hardware Compositing Acceleration */
+.glass-card, .card, .card.bg-white {
+  background: rgba(255, 255, 255, 0.42) !important;
+  backdrop-filter: blur(20px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(190%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.75) !important;
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.9), 0 12px 32px 0 rgba(31, 38, 135, 0.06), 0 0 0 1px rgba(226, 232, 240, 0.5) !important;
+  border-radius: 16px !important;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  will-change: transform, backdrop-filter;
 }
 
-/* Row card styling */
+.card .bg-white, .card-body {
+  background-color: transparent !important;
+}
+
+.card-header, .card-footer {
+  background-color: transparent !important;
+  border-color: rgba(226, 232, 240, 0.5) !important;
+}
+
+/* Row card hover styling with dynamic glass highlight */
 .hover-shadow-card {
-  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
 .hover-shadow-card:hover {
-  border-color: var(--primary-color) !important;
-  box-shadow: 0 8px 30px rgba(15,23,42,.08) !important;
+  background: rgba(255, 255, 255, 0.65) !important;
+  border-color: rgba(37, 99, 235, 0.4) !important;
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 1), 0 16px 40px -4px rgba(37, 99, 235, 0.12), 0 0 0 1px rgba(37, 99, 235, 0.3) !important;
+  transform: translateY(-2px);
+}
+
+/* Modal Content Glassmorphism */
+.modal-content {
+  background: rgba(255, 255, 255, 0.65) !important;
+  backdrop-filter: blur(24px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.85) !important;
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 1), 0 25px 50px -12px rgba(15, 23, 42, 0.18) !important;
+  border-radius: 20px !important;
 }
 
 /* Solid Button colors */
@@ -116,14 +176,17 @@ h1, h2, h3, h4, h5, h6 {
   border-color: #DC2626 !important;
 }
 
-/* Inputs override */
+/* Inputs override with Translucent Glass Style */
 .form-control, .form-select {
-  background-color: var(--surface) !important;
-  border: 1px solid var(--border-medium) !important;
+  background: rgba(255, 255, 255, 0.55) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(203, 213, 225, 0.8) !important;
   color: var(--text-primary) !important;
   border-radius: 8px !important;
 }
 .form-control:focus, .form-select:focus {
+  background: rgba(255, 255, 255, 0.85) !important;
   border-color: var(--primary-color) !important;
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25) !important;
 }
@@ -131,12 +194,19 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--text-muted) !important;
 }
 .form-control:disabled {
-  background-color: var(--surface-secondary) !important;
+  background-color: rgba(241, 245, 249, 0.6) !important;
 }
 
-/* Tables style */
+/* Tables style with Translucent Glass Header and Rows */
+.table {
+  background-color: transparent !important;
+  --bs-table-bg: transparent !important;
+}
+
 .table thead th {
-  background-color: var(--surface-secondary) !important;
+  background-color: rgba(241, 245, 249, 0.65) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
   color: var(--text-primary) !important;
   font-weight: 600;
   border-bottom: 2px solid var(--border-light) !important;
@@ -146,10 +216,11 @@ h1, h2, h3, h4, h5, h6 {
 .table tbody td {
   padding: 12px 16px !important;
   border-bottom: 1px solid var(--border-light) !important;
+  background-color: transparent !important;
 }
 
 .table-hover tbody tr:hover {
-  background-color: #EFF6FF !important;
+  background-color: rgba(239, 246, 255, 0.6) !important;
 }
 
 /* Timeline stepper designs */
