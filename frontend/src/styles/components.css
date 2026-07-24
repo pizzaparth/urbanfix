@@ -622,6 +622,22 @@ select.input {
   border-radius: var(--radius-sm);
 }
 
+/* Tutorial section screenshot — sits below the numbered steps, scales down
+   fluidly with the panel rather than at fixed breakpoints so it stays
+   correctly sized across phones/tablets/desktop without layout shift. */
+.tutorial-image-wrap {
+  margin-top: var(--space-5);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--border);
+}
+.tutorial-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+}
+
 /* Spinner */
 .spinner {
   width: 20px;

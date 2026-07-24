@@ -2,8 +2,8 @@ import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { ICON_STROKE } from '../constants/icons.js';
 
-// Renders one "How to use the portal" tutorial block: header + CTA + vertical numbered steps.
-const TutorialSection = ({ icon: Icon, title, subtitle, ctaTo, ctaLabel, steps }) => {
+// Renders one "How to use the portal" tutorial block: header + CTA + vertical numbered steps + a supporting screenshot.
+const TutorialSection = ({ icon: Icon, title, subtitle, ctaTo, ctaLabel, steps, image }) => {
   return (
     <section className="panel">
       <div
@@ -56,6 +56,12 @@ const TutorialSection = ({ icon: Icon, title, subtitle, ctaTo, ctaLabel, steps }
           </div>
         ))}
       </div>
+
+      {image && (
+        <div className="tutorial-image-wrap">
+          <img src={image} alt={title} className="tutorial-image" loading="lazy" />
+        </div>
+      )}
     </section>
   );
 };

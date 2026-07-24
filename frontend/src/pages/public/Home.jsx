@@ -36,6 +36,7 @@ const TUTORIALS = [
     icon: CirclePlus,
     title: 'How to Submit a Public Complaint',
     subtitle: 'Account-less, friction-free 3-step filing workflow',
+    image: '/TutorialComplaint.png',
     ctaTo: '/file-complaint',
     ctaLabel: 'Start Filing',
     steps: [
@@ -62,6 +63,7 @@ const TUTORIALS = [
     icon: NotebookText,
     title: 'How to Use the Public Registry',
     subtitle: 'Explore public records, status logs & resolution receipts',
+    image: '/TutorialRegistry.png',
     ctaTo: '/registry',
     ctaLabel: 'Explore Registry',
     steps: [
@@ -83,6 +85,7 @@ const TUTORIALS = [
     icon: Search,
     title: 'How to Track a Complaint Status',
     subtitle: 'Real-time audit log timeline, official remarks & resolution receipts',
+    image: '/TutorialTrack.png',
     ctaTo: '/track',
     ctaLabel: 'Track Status',
     steps: [
@@ -124,7 +127,7 @@ const Home = () => {
 
   return (
     <MainLayout>
-      <div className="blueprint-guides" style={{ textAlign: 'center', padding: 'var(--space-8) 0 var(--space-7)' }}>
+      <div className="blueprint-guides" style={{ textAlign: 'center', padding: 'var(--space-4) 0 var(--space-7)' }}>
         <h1 className="text-display" style={{ marginBottom: 'var(--space-4)' }}>
           Smart Digital Public Administration &amp; Transparency
         </h1>
