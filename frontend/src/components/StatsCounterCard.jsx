@@ -41,9 +41,9 @@ const radarOptions = {
       beginAtZero: true,
       angleLines: { color: CHART_COLORS.border },
       grid: { color: CHART_COLORS.border },
-      ticks: { display: false },
+      ticks: { display: false, count: 6 },
       pointLabels: {
-        color: CHART_COLORS.textSecondary,
+        color: '#FFFFFF',
         font: { family: CHART_FONT_SANS, size: 12 },
       },
     },
@@ -70,7 +70,8 @@ const StatsCounterCard = ({ statusBreakdown, className = 'panel' }) => {
       {
         data: METRICS.map((key) => statusBreakdown?.[key] || 0),
         borderColor: CHART_COLORS.accent,
-        backgroundColor: 'rgba(59, 130, 246, 0.15)',
+        borderWidth: 2,
+        backgroundColor: 'transparent',
         pointBackgroundColor: POINT_COLORS,
         pointBorderColor: CHART_COLORS.surfaceRaised,
         pointBorderWidth: 2,
@@ -81,7 +82,7 @@ const StatsCounterCard = ({ statusBreakdown, className = 'panel' }) => {
   }), [statusBreakdown]);
 
   return (
-    <div className={className}>
+    <div className={`${className} stats-radar-panel`}>
       <div className="radar-panel">
         <div style={{ textAlign: 'center' }}>
           <span className="text-mono-label" style={{ marginBottom: 'var(--space-1)', display: 'block' }}>Total Issues</span>

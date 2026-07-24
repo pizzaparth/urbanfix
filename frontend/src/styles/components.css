@@ -410,7 +410,14 @@ select.input {
 
 /* Status radar — replaces the old 5-tile stats grid. Total is shown as a
    plain label above the chart rather than a 5th radar axis, since it's the
-   sum of the other four and would always dominate the polygon's shape. */
+   sum of the other four and would always dominate the polygon's shape.
+   .stats-radar-panel overrides the shared .panel look (background/border)
+   for this one instance only — the global .panel rule itself is untouched,
+   so every other card in the app keeps its normal surface/border. */
+.stats-radar-panel {
+  background: transparent;
+  border: none;
+}
 .radar-panel {
   display: flex;
   flex-direction: column;
@@ -420,8 +427,8 @@ select.input {
 .radar-canvas-wrap {
   position: relative;
   width: 100%;
-  max-width: 320px;
-  height: 280px;
+  max-width: 460px;
+  height: 400px;
   margin-inline: auto;
   /* Chart.js's radar auto-layout reserves asymmetric side padding for
      point labels of different lengths ("In Progress" vs "Rejected"/
