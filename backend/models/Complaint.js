@@ -95,6 +95,7 @@ complaintSchema.index({ status: 1 });
 complaintSchema.index({ category: 1 });
 complaintSchema.index({ location: 1 });
 complaintSchema.index({ isPublic: 1 });
+complaintSchema.index({ createdAt: 1 });
 
 const Complaint = mongoose.model('Complaint', complaintSchema);
 export default Complaint;

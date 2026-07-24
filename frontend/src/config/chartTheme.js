@@ -32,3 +32,27 @@ export const CHART_CATEGORY_COLORS = [
 ];
 
 export const getCategoryColor = (index) => CHART_CATEGORY_COLORS[index % CHART_CATEGORY_COLORS.length];
+
+// Sequential ramp for the activity heatmap — magnitude, not identity, so it's
+// a single hue (the accent) at monotone lightness, not the categorical set
+// above. Level 0 is neutral (no activity, not part of the hue ramp, same
+// idea as GitHub's own empty-cell gray). Levels 1-4 blend the accent toward
+// --surface-raised (#161616) at increasing intensity.
+export const HEATMAP_LEVEL_COLORS = [
+  '#1F1F1F', // level 0 — no activity (gray-800)
+  '#213659', // level 1
+  '#2A5191', // level 2
+  '#336AC5', // level 3
+  '#3B82F6', // level 4 — full accent, max activity
+];
+
+// Bucket a raw day count into a 0-4 heatmap level relative to the max count
+// in the current window. Guarded against maxCount <= 0 (all-zero window).
+export const getHeatmapLevel = (count, maxCount) => {
+  if (!count || count <= 0 || !maxCount || maxCount <= 0) return 0;
+  const ratio = count / maxCount;
+  if (ratio <= 0.25) return 1;
+  if (ratio <= 0.5) return 2;
+  if (ratio <= 0.75) return 3;
+  return 4;
+};

@@ -5,7 +5,7 @@ import catchAsync from '../utils/catchAsync.js';
 import { updateStatusSchema } from '../validators/adminValidator.js';
 import { sendStatusUpdateEmail, sendResolutionEmailWithPdf } from '../services/emailService.js';
 import { generateResolutionPdf } from '../services/pdfService.js';
-import { getStatusBreakdown } from '../utils/statsHelpers.js';
+import { getStatusBreakdown, getActivityByDay } from '../utils/statsHelpers.js';
 
 // 1. Get Summary Metrics for Admin Dashboard
 export const getAdminStats = catchAsync(async (req, res, next) => {
@@ -59,6 +59,19 @@ export const getAdminStats = catchAsync(async (req, res, next) => {
       urgencyDistribution: urgencyStats,
       timelineTrend: timelineStats,
     },
+  });
+});
+
+// 1b. Get daily filed+resolved activity for the admin action panel's heatmap
+export const getActivityHeatmap = catchAsync(async (req, res, next) => {
+  const { days } = req.query;
+  const { activity, maxCount } = await getActivityByDay(days);
+
+  res.status(200).json({
+    status: 'success',
+    days: activity.length,
+    maxCount,
+    activity,
   });
 });
 

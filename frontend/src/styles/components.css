@@ -434,6 +434,13 @@ select.input {
   flex-shrink: 0;
   margin-inline: auto;
 }
+/* The ring chart needs more absolute radius than the single-ring donut: its
+   center hole has to clear the widest hover label ("Standard Urgency") past
+   the innermost ring's rounded end-caps, not just the default total. */
+.donut-canvas-wrap--lg {
+  width: 260px;
+  height: 260px;
+}
 .donut-center {
   position: absolute;
   inset: 0;
@@ -474,6 +481,123 @@ select.input {
 @media (max-width: 560px) {
   .donut-layout { justify-content: center; }
   .donut-legend { min-width: 100%; }
+}
+
+/* Ring-chart legend rows add a per-item progress bar beneath the label,
+   so the swatch aligns to the top of the two-line block instead of center. */
+.ring-legend-item { align-items: flex-start; }
+.ring-legend-item .donut-swatch { margin-top: 4px; }
+.ring-legend-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+.ring-legend-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+.ring-progress-track {
+  height: 4px;
+  border-radius: var(--radius-sm);
+  background: var(--border);
+  overflow: hidden;
+}
+.ring-progress-fill {
+  height: 100%;
+  border-radius: var(--radius-sm);
+  transition: width var(--transition-base);
+}
+
+/* Activity heatmap — calendar grid of daily filed+resolved complaint counts.
+   Plain CSS grid, no canvas: Chart.js has no matrix/heatmap chart type, and
+   a divs-in-a-grid layout matches how .donut-legend/.ring-legend-item are
+   already built. */
+.heatmap-container {
+  position: relative;
+}
+.heatmap-scroll {
+  overflow-x: auto;
+  padding-bottom: var(--space-2);
+  width: fit-content;
+  max-width: 100%;
+  margin-inline: auto;
+}
+.heatmap-grid-wrap {
+  position: relative;
+  width: max-content;
+}
+.heatmap-months {
+  position: relative;
+  height: 16px;
+  margin-bottom: var(--space-1);
+}
+.heatmap-month-label {
+  position: absolute;
+  top: 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-mono-sm);
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.heatmap-body {
+  display: flex;
+  gap: var(--space-2);
+}
+.heatmap-weekday-labels {
+  display: grid;
+  grid-template-rows: repeat(7, 11px);
+  gap: 2px;
+  flex-shrink: 0;
+}
+.heatmap-weekday-label {
+  font-size: 9px;
+  line-height: 11px;
+  color: var(--text-muted);
+}
+.heatmap-grid {
+  display: grid;
+  grid-auto-flow: column;
+  gap: 2px;
+}
+.heatmap-cell {
+  width: 11px;
+  height: 11px;
+  border-radius: var(--radius-sm);
+}
+.heatmap-cell--pad {
+  background: transparent;
+}
+.heatmap-cell:hover {
+  outline: 1px solid var(--text-primary);
+  outline-offset: -1px;
+}
+.heatmap-tooltip {
+  position: absolute;
+  transform: translate(-50%, calc(-100% - 8px));
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-3);
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+.heatmap-legend {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin-top: var(--space-3);
+  width: max-content;
+  margin-inline: auto;
+}
+.heatmap-legend-swatch {
+  width: 11px;
+  height: 11px;
+  border-radius: var(--radius-sm);
 }
 
 /* Spinner */

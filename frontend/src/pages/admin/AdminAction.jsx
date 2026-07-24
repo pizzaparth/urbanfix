@@ -3,14 +3,22 @@ import { useNavigate } from 'react-router-dom';
 import { ChevronRight, Inbox } from 'lucide-react';
 import AdminLayout from '../../layouts/AdminLayout.jsx';
 import StatusBadge from '../../components/StatusBadge.jsx';
+import ActivityHeatmap from '../../components/ActivityHeatmap.jsx';
 import { CATEGORIES } from '../../constants/categories.js';
 import api from '../../services/api.js';
 import { ICON_STROKE } from '../../constants/icons.js';
+
+const HEATMAP_DAYS = 365;
 
 const AdminAction = () => {
   const [complaints, setComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  const [heatmapActivity, setHeatmapActivity] = useState([]);
+  const [heatmapMax, setHeatmapMax] = useState(0);
+  const [heatmapLoading, setHeatmapLoading] = useState(true);
+  const [heatmapError, setHeatmapError] = useState('');
 
   const [statusFilter, setStatusFilter] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
@@ -44,8 +52,40 @@ const AdminAction = () => {
     fetchComplaints();
   }, [statusFilter, categoryFilter, page, search]);
 
+  useEffect(() => {
+    const fetchHeatmap = async () => {
+      try {
+        const response = await api.get('/admin/activity-heatmap', { params: { days: HEATMAP_DAYS } });
+        setHeatmapActivity(response.data.activity);
+        setHeatmapMax(response.data.maxCount);
+      } catch {
+        setHeatmapError('Failed to load complaint activity history.');
+      } finally {
+        setHeatmapLoading(false);
+      }
+    };
+    fetchHeatmap(); // mount-only — slow-changing yearly aggregate, no polling
+  }, []);
+
   return (
     <AdminLayout>
+      <div className="panel" style={{ marginBottom: 'var(--space-4)' }}>
+        <div style={{ borderBottom: '1px solid var(--border)', paddingBottom: 'var(--space-2)', marginBottom: 'var(--space-3)' }}>
+          <h3 style={{ fontSize: '1.0625rem', marginBottom: 'var(--space-1)' }}>Complaint Activity</h3>
+          <p className="text-small">Daily filed + resolved activity over the last year</p>
+        </div>
+
+        {heatmapLoading ? (
+          <div className="flex justify-center" style={{ padding: 'var(--space-6) 0' }}>
+            <span className="spinner" role="status" aria-label="Loading" />
+          </div>
+        ) : heatmapError ? (
+          <div className="alert alert-danger">{heatmapError}</div>
+        ) : (
+          <ActivityHeatmap activity={heatmapActivity} maxCount={heatmapMax} />
+        )}
+      </div>
+
       <h1 style={{ fontSize: 'var(--text-h1)', marginBottom: 'var(--space-4)' }}>Administrative Action Panel</h1>
 
       {error && (
@@ -54,8 +94,8 @@ const AdminAction = () => {
         </div>
       )}
 
-      <div className="panel grid-12" style={{ marginBottom: 'var(--space-4)' }}>
-        <div className="col-span-4">
+      <div className="panel filter-bar" style={{ marginBottom: 'var(--space-4)' }}>
+        <div className="filter-bar__search">
           <input
             type="text"
             className="input"
@@ -64,7 +104,7 @@ const AdminAction = () => {
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
           />
         </div>
-        <div className="col-span-3">
+        <div className="filter-bar__status">
           <select className="input" value={statusFilter} onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}>
             <option value="">All Statuses</option>
             <option value="Pending">Pending</option>
@@ -73,7 +113,7 @@ const AdminAction = () => {
             <option value="Rejected">Rejected</option>
           </select>
         </div>
-        <div className="col-span-3">
+        <div className="filter-bar__category">
           <select className="input" value={categoryFilter} onChange={(e) => { setCategoryFilter(e.target.value); setPage(1); }}>
             <option value="">All Categories</option>
             {CATEGORIES.map((c, idx) => (
@@ -83,7 +123,7 @@ const AdminAction = () => {
             ))}
           </select>
         </div>
-        <div className="col-span-2">
+        <div className="filter-bar__reset">
           <button
             type="button"
             className="btn btn-secondary"

@@ -30,6 +30,49 @@
   }
 }
 
+/* Admin action panel's search/filter bar — a flexible-width row (search
+   grows, status/category share the rest, reset stays its natural width) on
+   desktop, collapsing through a 2-column tablet layout before stacking to
+   one column, rather than jumping straight from one row to full stack. */
+.filter-bar {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr auto;
+  gap: var(--grid-gutter);
+  align-items: stretch;
+}
+.filter-bar > * {
+  min-width: 0;
+}
+.filter-bar select,
+.filter-bar input {
+  width: 100%;
+}
+
+@media (max-width: 900px) {
+  .filter-bar {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "search search"
+      "status category"
+      "reset reset";
+  }
+  .filter-bar__search { grid-area: search; }
+  .filter-bar__status { grid-area: status; }
+  .filter-bar__category { grid-area: category; }
+  .filter-bar__reset { grid-area: reset; }
+}
+
+@media (max-width: 520px) {
+  .filter-bar {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "search"
+      "status"
+      "category"
+      "reset";
+  }
+}
+
 /* Flex utilities */
 .flex { display: flex; }
 .flex-col { display: flex; flex-direction: column; }

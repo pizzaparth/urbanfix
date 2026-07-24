@@ -1,5 +1,5 @@
 import express from 'express';
-import { getAdminStats, getAllComplaints, updateComplaintStatus } from '../controllers/adminController.js';
+import { getAdminStats, getAllComplaints, updateComplaintStatus, getActivityHeatmap } from '../controllers/adminController.js';
 import { protect, restrictTo } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
@@ -9,6 +9,7 @@ router.use(protect);
 router.use(restrictTo('admin'));
 
 router.get('/stats', getAdminStats);
+router.get('/activity-heatmap', getActivityHeatmap);
 router.get('/complaints', getAllComplaints);
 router.patch('/complaints/:id/status', updateComplaintStatus);
 
