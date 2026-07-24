@@ -16,3 +16,19 @@ export const CHART_COLORS = {
 
 export const CHART_FONT_SANS = 'Geist Sans';
 export const CHART_FONT_MONO = 'Geist Mono';
+
+// Fixed identity order for category-breakdown charts — the accent leads,
+// the rest step down through the neutral scale. Kept short and monochrome
+// on purpose (see "the one accent color" in tokens.css); slices are never
+// told apart by hue alone, so every consumer must pair this with a
+// always-visible label (legend row, direct label), never color alone.
+export const CHART_CATEGORY_COLORS = [
+  '#3B82F6', // accent
+  '#E4E4E4', // gray-100
+  '#6E6E6E', // gray-500
+  '#60A5FA', // accent-hover
+  '#ADADAD', // gray-300
+  '#8C8C8C', // gray-400
+];
+
+export const getCategoryColor = (index) => CHART_CATEGORY_COLORS[index % CHART_CATEGORY_COLORS.length];

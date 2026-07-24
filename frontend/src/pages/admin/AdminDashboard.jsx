@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import AdminLayout from '../../layouts/AdminLayout.jsx';
 import StatsCounterCard from '../../components/StatsCounterCard.jsx';
 import api from '../../services/api.js';
-import { CHART_COLORS, CHART_FONT_SANS, CHART_FONT_MONO } from '../../config/chartTheme.js';
+import { CHART_COLORS, CHART_FONT_SANS, CHART_FONT_MONO, getCategoryColor } from '../../config/chartTheme.js';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -16,7 +16,7 @@ import {
   Legend,
   Filler,
 } from 'chart.js';
-import { Bar, Line } from 'react-chartjs-2';
+import { Bar, Line, Doughnut } from 'react-chartjs-2';
 
 ChartJS.register(
   CategoryScale,
@@ -45,6 +45,7 @@ const axisTicks = { color: CHART_COLORS.textSecondary, font: { family: CHART_FON
 const AdminDashboard = () => {
   const [stats, setStats] = useState(null);
   const [error, setError] = useState('');
+  const [hoveredCategory, setHoveredCategory] = useState(null);
 
   useEffect(() => {
     const fetchStats = async (showLoading = true) => {
@@ -76,14 +77,19 @@ const AdminDashboard = () => {
     ? stats.categoryDistribution.map((item) => item.count)
     : [0, 0, 0, 0, 0, 0];
 
+  const categoryTotal = categoryCounts.reduce((sum, count) => sum + count, 0);
+
   const categoryData = {
     labels: categoryLabels,
     datasets: [
       {
         label: 'Number of Complaints',
         data: categoryCounts,
-        backgroundColor: CHART_COLORS.accent,
-        borderRadius: 2,
+        backgroundColor: categoryLabels.map((_, index) => getCategoryColor(index)),
+        borderColor: CHART_COLORS.surfaceRaised,
+        borderWidth: 2,
+        borderRadius: 3,
+        hoverOffset: 8,
       },
     ],
   };
@@ -153,23 +159,62 @@ const AdminDashboard = () => {
             <h3 style={{ fontSize: '1.0625rem', marginBottom: 'var(--space-1)' }}>Category Volume Breakdown</h3>
             <p className="text-small">Distribution of filed complaints across municipal departments</p>
           </div>
-          <div style={{ height: '300px' }}>
-            <Bar
-              data={categoryData}
-              options={{
-                indexAxis: 'y',
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                  legend: { display: false },
-                  tooltip: tooltipBase,
-                },
-                scales: {
-                  x: { grid: { color: CHART_COLORS.grid }, ticks: axisTicks },
-                  y: { grid: { display: false }, ticks: { color: CHART_COLORS.textPrimary, font: { family: CHART_FONT_SANS, size: 12 } } },
-                },
-              }}
-            />
+          <div className="donut-layout">
+            <div className="donut-canvas-wrap" onMouseLeave={() => setHoveredCategory(null)}>
+              <Doughnut
+                data={categoryData}
+                options={{
+                  cutout: '68%',
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  animation: { animateRotate: true, animateScale: true },
+                  onHover: (_event, elements) => {
+                    setHoveredCategory(elements.length ? elements[0].index : null);
+                  },
+                  plugins: {
+                    legend: { display: false },
+                    tooltip: { enabled: false },
+                  },
+                }}
+              />
+              <div className="donut-center">
+                {hoveredCategory !== null ? (
+                  <>
+                    <span className="text-mono" style={{ fontSize: '1.75rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+                      {categoryCounts[hoveredCategory]}
+                    </span>
+                    <span className="text-mono-label">{categoryLabels[hoveredCategory]}</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-mono" style={{ fontSize: '1.75rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+                      {categoryTotal}
+                    </span>
+                    <span className="text-mono-label">Total Filed</span>
+                  </>
+                )}
+              </div>
+            </div>
+
+            <ul className="donut-legend">
+              {categoryLabels.map((label, index) => {
+                const count = categoryCounts[index];
+                const percentage = categoryTotal > 0 ? Math.round((count / categoryTotal) * 100) : 0;
+                return (
+                  <li
+                    key={label}
+                    className={`donut-legend-item ${hoveredCategory === index ? 'is-active' : ''}`}
+                    onMouseEnter={() => setHoveredCategory(index)}
+                    onMouseLeave={() => setHoveredCategory(null)}
+                  >
+                    <span className="donut-swatch" style={{ backgroundColor: getCategoryColor(index) }} />
+                    <span className="donut-legend-label">{label}</span>
+                    <span className="text-mono text-secondary">{count}</span>
+                    <span className="text-mono-label">{percentage}%</span>
+                  </li>
+                );
+              })}
+            </ul>
           </div>
         </div>
 
