@@ -1,107 +1,80 @@
-import React from 'react';
+import { ShieldCheck, ArrowLeft } from 'lucide-react';
+import { ICON_STROKE } from '../../../constants/icons.js';
 
 const VerifyStep = ({ formData, onInputChange, urgency, submittingForm, onPrev, onSubmit }) => {
   return (
     <form onSubmit={onSubmit}>
-      <div className="card border-0 p-3 p-md-4 bg-white mb-4" style={{ border: '1px solid #E2E8F0', borderRadius: '12px', boxShadow: '0 4px 20px rgba(15,23,42,.06)' }}>
-        <div className="d-flex align-items-center mb-4 pb-3 border-bottom">
-          <div className="p-2 rounded-3 text-primary me-3 d-flex align-items-center justify-content-center flex-shrink-0" style={{ backgroundColor: '#DBEAFE', width: '44px', height: '44px' }}>
-            <i className="bi bi-shield-check fs-5" style={{ color: '#2563EB' }}></i>
+      <div className="panel" style={{ marginBottom: 'var(--space-4)' }}>
+        <div
+          className="flex items-center gap-3"
+          style={{ borderBottom: '1px solid var(--border)', paddingBottom: 'var(--space-3)', marginBottom: 'var(--space-4)' }}
+        >
+          <div
+            className="flex items-center justify-center"
+            style={{ width: '40px', height: '40px', flexShrink: 0, border: '1px solid var(--border-strong)', borderRadius: 'var(--radius-md)', color: 'var(--accent)' }}
+          >
+            <ShieldCheck size={18} strokeWidth={ICON_STROKE} />
           </div>
           <div>
-            <h3 className="fs-5 fw-bold mb-0" style={{ color: '#0F172A', fontFamily: 'Poppins, sans-serif' }}>Step 3: Citizen Contact & Verification</h3>
-            <p className="small mb-0 fw-medium" style={{ color: '#1E293B' }}>Provide contact details to receive your Tracking ID and resolution receipt</p>
+            <h3 style={{ fontSize: '1.0625rem' }}>Step 3 — Citizen Contact &amp; Verification</h3>
+            <p className="text-small text-muted">Provide contact details to receive your Tracking ID and resolution receipt</p>
           </div>
         </div>
 
-        <div className="row g-3 mb-4">
-          <div className="col-12 col-md-6">
-            <label className="form-label small fw-bold mb-1" style={{ color: '#0F172A' }}>Full Name *</label>
-            <input
-              type="text"
-              name="name"
-              className="form-control form-control-lg fw-medium"
-              placeholder="e.g. John Doe"
-              value={formData.name}
-              onChange={onInputChange}
-              style={{ borderColor: '#CBD5E1', color: '#0F172A', fontSize: '0.95rem' }}
-              required
-            />
+        <div className="grid-12" style={{ marginBottom: 'var(--space-4)' }}>
+          <div className="col-span-4 field">
+            <label>Full Name *</label>
+            <input type="text" name="name" className="input" placeholder="e.g. John Doe" value={formData.name} onChange={onInputChange} required />
           </div>
 
-          <div className="col-12 col-md-6">
-            <label className="form-label small fw-bold mb-1" style={{ color: '#0F172A' }}>Email Address *</label>
-            <input
-              type="email"
-              name="email"
-              className="form-control form-control-lg fw-medium"
-              placeholder="name@email.com"
-              value={formData.email}
-              onChange={onInputChange}
-              style={{ borderColor: '#CBD5E1', color: '#0F172A', fontSize: '0.95rem' }}
-              required
-            />
+          <div className="col-span-4 field">
+            <label>Email Address *</label>
+            <input type="email" name="email" className="input" placeholder="name@email.com" value={formData.email} onChange={onInputChange} required />
           </div>
 
-          <div className="col-12 col-md-6">
-            <label className="form-label small fw-bold mb-1" style={{ color: '#0F172A' }}>Phone Number (Optional)</label>
-            <input
-              type="tel"
-              name="phone"
-              className="form-control form-control-lg fw-medium"
-              placeholder="10-digit mobile number"
-              value={formData.phone}
-              onChange={onInputChange}
-              style={{ borderColor: '#CBD5E1', color: '#0F172A', fontSize: '0.95rem' }}
-            />
+          <div className="col-span-4 field">
+            <label>Phone Number (Optional)</label>
+            <input type="tel" name="phone" className="input" placeholder="10-digit mobile number" value={formData.phone} onChange={onInputChange} />
           </div>
         </div>
 
-        {/* Review Summary Box */}
-        <div className="p-3 p-md-4 rounded-3 mb-4" style={{ backgroundColor: '#F8FAFC', border: '1px solid #CBD5E1' }}>
-          <h4 className="fs-6 fw-bold mb-3" style={{ color: '#0F172A', fontFamily: 'Poppins, sans-serif' }}>Complaint Submission Review</h4>
-          <div className="row g-3 small">
-            <div className="col-12 col-sm-6">
-              <span className="fw-semibold d-block mb-1" style={{ color: '#1E293B' }}>Category:</span>
-              <span className="fw-bold" style={{ color: '#0F172A' }}>{formData.category}</span>
+        <div className="panel" style={{ marginBottom: 'var(--space-4)' }}>
+          <h4 style={{ fontSize: 'var(--text-body)', marginBottom: 'var(--space-3)' }}>Complaint Submission Review</h4>
+          <dl style={{ margin: 0 }}>
+            <div className="field-row">
+              <dt>Category</dt>
+              <dd>{formData.category}</dd>
             </div>
-            <div className="col-12 col-sm-6">
-              <span className="fw-semibold d-block mb-1" style={{ color: '#1E293B' }}>Calculated Priority Impact:</span>
-              <span className="badge px-2.5 py-1.5 fw-bold" style={{ backgroundColor: urgency.bg, color: urgency.color }}>
-                {urgency.level}
-              </span>
+            <div className="field-row">
+              <dt>Calculated Priority</dt>
+              <dd>
+                <span className="status-pill" style={{ '--status-color': urgency.color }}>{urgency.level}</span>
+              </dd>
             </div>
-            <div className="col-12 col-sm-6">
-              <span className="fw-semibold d-block mb-1" style={{ color: '#1E293B' }}>Subject:</span>
-              <span className="fw-bold" style={{ color: '#0F172A' }}>{formData.title}</span>
+            <div className="field-row">
+              <dt>Subject</dt>
+              <dd>{formData.title}</dd>
             </div>
-            <div className="col-12 col-sm-6">
-              <span className="fw-semibold d-block mb-1" style={{ color: '#1E293B' }}>Location:</span>
-              <span className="fw-bold" style={{ color: '#0F172A' }}>{formData.location}</span>
+            <div className="field-row">
+              <dt>Location</dt>
+              <dd>{formData.location}</dd>
             </div>
-          </div>
+          </dl>
         </div>
 
-        {/* Step 3 Actions */}
-        <div className="d-flex flex-column-reverse flex-sm-row justify-content-between align-items-stretch align-items-sm-center mt-4 pt-3 border-top gap-2">
-          <button
-            type="button"
-            className="btn btn-outline-secondary px-4 py-2 fw-bold d-inline-flex align-items-center justify-content-center w-100 w-sm-auto"
-            onClick={onPrev}
-            style={{ borderRadius: '8px', color: '#1E293B', borderColor: '#CBD5E1' }}
-          >
-            <i className="bi bi-arrow-left me-2"></i> Edit Details
+        <div
+          className="flex justify-between flex-wrap gap-2"
+          style={{ paddingTop: 'var(--space-3)', borderTop: '1px solid var(--border)' }}
+        >
+          <button type="button" className="btn btn-secondary" onClick={onPrev}>
+            <ArrowLeft size={16} strokeWidth={ICON_STROKE} />
+            Edit Details
           </button>
-          <button
-            type="submit"
-            className="btn btn-primary px-4 py-2 fw-bold d-inline-flex align-items-center justify-content-center w-100 w-sm-auto"
-            disabled={submittingForm}
-            style={{ backgroundColor: '#2563EB', borderRadius: '8px' }}
-          >
+          <button type="submit" className="btn btn-primary" disabled={submittingForm}>
             {submittingForm ? (
               <>
-                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                Sending OTP...
+                <span className="spinner" style={{ width: '14px', height: '14px', flexShrink: 0 }} />
+                Sending OTP…
               </>
             ) : (
               'Request Email OTP & Submit'

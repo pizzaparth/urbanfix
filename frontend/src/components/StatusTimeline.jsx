@@ -1,10 +1,11 @@
-import React from 'react';
+import { Clock, Settings2, CheckCircle2, XCircle, Circle } from 'lucide-react';
+import { ICON_STROKE } from '../constants/icons.js';
 
 const STEP_ICONS = {
-  Pending: { icon: 'bi-clock', color: 'warning' },
-  'In Progress': { icon: 'bi-gear-wide-connected', color: 'primary' },
-  Resolved: { icon: 'bi-check2-circle', color: 'success' },
-  Rejected: { icon: 'bi-x-circle', color: 'danger' },
+  Pending: { icon: Clock, color: 'warning' },
+  'In Progress': { icon: Settings2, color: 'primary' },
+  Resolved: { icon: CheckCircle2, color: 'success' },
+  Rejected: { icon: XCircle, color: 'danger' },
 };
 
 const StatusTimeline = ({ statusHistory }) => {
@@ -13,21 +14,23 @@ const StatusTimeline = ({ statusHistory }) => {
   return (
     <div className="timeline-stepper">
       {statusHistory.map((step, idx) => {
-        const { icon = 'bi-circle', color = 'warning' } = STEP_ICONS[step.status] || {};
+        const { icon: Icon = Circle, color = 'warning' } = STEP_ICONS[step.status] || {};
 
         return (
           <div key={idx} className="timeline-step-item">
             <span className={`timeline-step-icon ${color}`}>
-              <i className={`bi ${icon}`}></i>
+              <Icon size={13} strokeWidth={ICON_STROKE} />
             </span>
-            <div className="bg-light p-3 rounded border ms-2">
-              <div className="d-flex justify-content-between align-items-center mb-2">
-                <h6 className="fw-bold mb-0 text-dark small">{step.status}</h6>
-                <small className="text-muted" style={{ fontSize: '0.75rem' }}>
-                  {new Date(step.changedAt).toLocaleString()}
-                </small>
+            <div className="panel" style={{ padding: 'var(--space-3) var(--space-4)' }}>
+              <div className="flex items-center justify-between" style={{ marginBottom: 'var(--space-1)' }}>
+                <span className="text-small" style={{ fontWeight: 600, color: 'var(--text-primary)' }}>
+                  {step.status}
+                </span>
+                <span className="text-mono-label">{new Date(step.changedAt).toLocaleString()}</span>
               </div>
-              <p className="text-secondary small mb-0 text-justify">{step.remarks}</p>
+              <p className="text-small text-secondary" style={{ margin: 0 }}>
+                {step.remarks}
+              </p>
             </div>
           </div>
         );

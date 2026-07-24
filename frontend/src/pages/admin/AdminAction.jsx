@@ -1,16 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ChevronRight, Inbox } from 'lucide-react';
 import AdminLayout from '../../layouts/AdminLayout.jsx';
 import StatusBadge from '../../components/StatusBadge.jsx';
 import { CATEGORIES } from '../../constants/categories.js';
 import api from '../../services/api.js';
+import { ICON_STROKE } from '../../constants/icons.js';
 
 const AdminAction = () => {
   const [complaints, setComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // Filtering and pagination states
   const [statusFilter, setStatusFilter] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [search, setSearch] = useState('');
@@ -20,151 +21,141 @@ const AdminAction = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const fetchComplaints = async () => {
+      setLoading(true);
+      try {
+        const response = await api.get('/admin/complaints', {
+          params: {
+            status: statusFilter || undefined,
+            category: categoryFilter || undefined,
+            search: search || undefined,
+            page,
+            limit: 10,
+          },
+        });
+        setComplaints(response.data.complaints);
+        setTotalPages(response.data.pagination.pages);
+      } catch {
+        setError('Failed to fetch administrative complaint records.');
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchComplaints();
   }, [statusFilter, categoryFilter, page, search]);
 
-  const fetchComplaints = async () => {
-    setLoading(true);
-    try {
-      const response = await api.get('/admin/complaints', {
-        params: {
-          status: statusFilter || undefined,
-          category: categoryFilter || undefined,
-          search: search || undefined,
-          page,
-          limit: 10,
-        },
-      });
-      setComplaints(response.data.complaints);
-      setTotalPages(response.data.pagination.pages);
-    } catch (err) {
-      setError('Failed to fetch administrative complaint records.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <AdminLayout>
-      {/* Section Heading */}
-      <h1
-        className="display-6 fw-bold text-center mb-4"
-        style={{ color: '#0F172A', fontFamily: 'Poppins, sans-serif' }}
-      >
-        Administrative Action Panel
-      </h1>
+      <h1 style={{ fontSize: 'var(--text-h1)', marginBottom: 'var(--space-4)' }}>Administrative Action Panel</h1>
 
-      {error && <div className="alert alert-danger border-0 shadow-sm mb-4">{error}</div>}
+      {error && (
+        <div className="alert alert-danger" style={{ marginBottom: 'var(--space-4)' }}>
+          {error}
+        </div>
+      )}
 
-      {/* Filters and Search panel */}
-      <div className="card border-0 shadow-sm rounded-3 p-3 bg-white mb-4">
-        <div className="row g-2 align-items-center">
-          <div className="col-md-4">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Search by Tracking ID or Title..."
-              value={search}
-              onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            />
-          </div>
-          <div className="col-md-3">
-            <select
-              className="form-select"
-              value={statusFilter}
-              onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-            >
-              <option value="">All Statuses</option>
-              <option value="Pending">Pending</option>
-              <option value="In Progress">In Progress</option>
-              <option value="Resolved">Resolved</option>
-              <option value="Rejected">Rejected</option>
-            </select>
-          </div>
-          <div className="col-md-3">
-            <select
-              className="form-select"
-              value={categoryFilter}
-              onChange={(e) => { setCategoryFilter(e.target.value); setPage(1); }}
-            >
-              <option value="">All Categories</option>
-              {CATEGORIES.map((c, idx) => (
-                <option key={idx} value={c}>{c}</option>
-              ))}
-            </select>
-          </div>
-          <div className="col-md-2">
-            <button className="btn btn-secondary w-100" onClick={() => { setSearch(''); setStatusFilter(''); setCategoryFilter(''); setPage(1); }}>
-              Reset Filters
-            </button>
-          </div>
+      <div className="panel grid-12" style={{ marginBottom: 'var(--space-4)' }}>
+        <div className="col-span-4">
+          <input
+            type="text"
+            className="input"
+            placeholder="Search by Tracking ID or Title"
+            value={search}
+            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+          />
+        </div>
+        <div className="col-span-3">
+          <select className="input" value={statusFilter} onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}>
+            <option value="">All Statuses</option>
+            <option value="Pending">Pending</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Resolved">Resolved</option>
+            <option value="Rejected">Rejected</option>
+          </select>
+        </div>
+        <div className="col-span-3">
+          <select className="input" value={categoryFilter} onChange={(e) => { setCategoryFilter(e.target.value); setPage(1); }}>
+            <option value="">All Categories</option>
+            {CATEGORIES.map((c, idx) => (
+              <option key={idx} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="col-span-2">
+          <button
+            type="button"
+            className="btn btn-secondary"
+            style={{ width: '100%' }}
+            onClick={() => { setSearch(''); setStatusFilter(''); setCategoryFilter(''); setPage(1); }}
+          >
+            Reset
+          </button>
         </div>
       </div>
 
-      {/* Data Table */}
       {loading ? (
-        <div className="text-center py-5">
-          <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
+        <div className="flex justify-center" style={{ padding: 'var(--space-8) 0' }}>
+          <span className="spinner" role="status" aria-label="Loading" />
         </div>
       ) : complaints.length > 0 ? (
-        <div className="card shadow-sm border-0 rounded-3 overflow-hidden bg-white">
-          <div className="table-responsive">
-            <table className="table table-hover align-middle mb-0">
-              <thead className="table-light">
-                <tr>
-                  <th className="px-4">Tracking ID</th>
-                  <th>Citizen Details</th>
-                  <th>Category</th>
-                  <th>Subject / Title</th>
-                  <th>Status</th>
-                  <th>Filed Date</th>
-                  <th className="text-end px-4">Action</th>
+        <div className="panel" style={{ padding: 0, overflowX: 'auto' }}>
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Tracking ID</th>
+                <th>Citizen Details</th>
+                <th>Category</th>
+                <th>Subject / Title</th>
+                <th>Status</th>
+                <th>Filed Date</th>
+                <th style={{ textAlign: 'right' }}>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {complaints.map((item) => (
+                <tr key={item._id}>
+                  <td className="text-mono">{item.trackingId}</td>
+                  <td>
+                    <div className="text-small">{item.citizenId?.name || 'Unknown'}</div>
+                    <div className="text-mono-label">{item.citizenId?.phone}</div>
+                  </td>
+                  <td>
+                    <span className="tag">{item.category}</span>
+                  </td>
+                  <td style={{ maxWidth: '220px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.title}</td>
+                  <td>
+                    <StatusBadge status={item.status} />
+                  </td>
+                  <td className="text-mono-label">{new Date(item.createdAt).toLocaleDateString()}</td>
+                  <td style={{ textAlign: 'right' }}>
+                    <button type="button" className="btn btn-ghost btn-sm" onClick={() => navigate(`/admin/complaints/${item._id}`)}>
+                      Action
+                      <ChevronRight size={14} strokeWidth={ICON_STROKE} />
+                    </button>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {complaints.map((item) => (
-                  <tr key={item._id}>
-                    <td className="px-4 fw-semibold">{item.trackingId}</td>
-                    <td>
-                      <div className="small fw-semibold">{item.citizenId?.name || 'Unknown'}</div>
-                      <div className="text-muted" style={{ fontSize: '0.75rem' }}>{item.citizenId?.phone}</div>
-                    </td>
-                    <td><span className="badge bg-secondary-subtle text-secondary">{item.category}</span></td>
-                    <td className="text-truncate" style={{ maxWidth: '200px' }}>{item.title}</td>
-                    <td><StatusBadge status={item.status} /></td>
-                    <td>{new Date(item.createdAt).toLocaleDateString()}</td>
-                    <td className="text-end px-4">
-                      <button
-                        className="btn btn-outline-primary btn-xs fw-semibold px-2 py-1"
-                        style={{ fontSize: '0.75rem' }}
-                        onClick={() => navigate(`/admin/complaints/${item._id}`)}
-                      >
-                        Action <i className="bi bi-chevron-right ms-1"></i>
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+              ))}
+            </tbody>
+          </table>
 
-          {/* Pagination Controls */}
           {totalPages > 1 && (
-            <div className="d-flex justify-content-between align-items-center p-3 border-top bg-light">
-              <button
-                className="btn btn-outline-secondary btn-sm"
-                disabled={page === 1}
-                onClick={() => setPage(prev => Math.max(prev - 1, 1))}
-              >
+            <div
+              className="flex justify-between items-center"
+              style={{ padding: 'var(--space-3)', borderTop: '1px solid var(--border)' }}
+            >
+              <button type="button" className="btn btn-secondary btn-sm" disabled={page === 1} onClick={() => setPage((prev) => Math.max(prev - 1, 1))}>
                 Previous
               </button>
-              <span className="small text-secondary">Page <strong>{page}</strong> of <strong>{totalPages}</strong></span>
+              <span className="text-mono-label">
+                Page {page} of {totalPages}
+              </span>
               <button
-                className="btn btn-outline-secondary btn-sm"
+                type="button"
+                className="btn btn-secondary btn-sm"
                 disabled={page === totalPages}
-                onClick={() => setPage(prev => Math.min(prev + 1, totalPages))}
+                onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
               >
                 Next
               </button>
@@ -172,9 +163,9 @@ const AdminAction = () => {
           )}
         </div>
       ) : (
-        <div className="text-center py-5 bg-white border rounded shadow-sm">
-          <i className="bi bi-inbox fs-1 text-muted d-block mb-2"></i>
-          <p className="text-muted mb-0">No complaints match your filtering criteria.</p>
+        <div className="panel" style={{ textAlign: 'center', padding: 'var(--space-8)' }}>
+          <Inbox size={32} strokeWidth={ICON_STROKE} style={{ color: 'var(--text-muted)', margin: '0 auto var(--space-3)' }} />
+          <p className="text-small">No complaints match your filtering criteria.</p>
         </div>
       )}
     </AdminLayout>

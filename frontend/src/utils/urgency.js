@@ -4,10 +4,10 @@ export const calculateUrgency = (answers) => {
   const yesCount = Object.values(answers).filter((val) => val === 'Yes').length;
 
   if (yesCount >= 3) {
-    return { level: 'High Urgency', label: 'High Urgency', color: '#EF4444', bg: '#FEE2E2' };
+    return { level: 'High Urgency', label: 'High Urgency', color: 'var(--status-rejected)' };
   }
   if (yesCount >= 1) {
-    return { level: 'Medium Urgency', label: 'Medium Urgency', color: '#B45309', bg: '#FEF3C7' };
+    return { level: 'Medium Urgency', label: 'Medium Urgency', color: 'var(--status-pending)' };
   }
-  return { level: 'Standard Urgency', label: 'Standard Urgency', color: '#2563EB', bg: '#DBEAFE' };
+  return { level: 'Standard Urgency', label: 'Standard Urgency', color: 'var(--accent)' };
 };

@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ShieldCheck, AlertCircle } from 'lucide-react';
 import MainLayout from '../../layouts/MainLayout.jsx';
 import { useAuth } from '../../hooks/useAuth.js';
+import { ICON_STROKE } from '../../constants/icons.js';
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -28,7 +30,6 @@ const Login = () => {
       }
     } catch (err) {
       if (err.response?.status === 403) {
-        // Redirect user to verify unverified registrations
         navigate('/verify-otp', { state: { email: formData.email } });
       } else {
         setError(err.response?.data?.message || 'Login failed. Please check credentials.');
@@ -40,49 +41,39 @@ const Login = () => {
 
   return (
     <MainLayout>
-      <div className="d-flex justify-content-center align-items-center py-5">
-        <div className="card border-0 rounded-3 p-4 bg-white w-100" style={{ maxWidth: '440px', boxShadow: '0 4px 20px rgba(15,23,42,.06)', border: '1px solid #E2E8F0' }}>
-          <div className="text-center mb-4">
-            <i className="bi bi-shield-lock-fill fs-1 mb-2" style={{ color: '#2563EB' }}></i>
-            <h2 className="fs-4 fw-bold mb-1" style={{ color: '#0F172A', fontFamily: 'Poppins, sans-serif' }}>Admin Portal Login</h2>
-            <p style={{ color: '#64748B', fontSize: '0.875rem' }}>Sign in to access the complaints management console</p>
+      <div className="flex justify-center" style={{ padding: 'var(--space-6) 0' }}>
+        <div className="panel" style={{ width: '100%', maxWidth: '400px' }}>
+          <div style={{ textAlign: 'center', marginBottom: 'var(--space-4)' }}>
+            <div
+              className="flex items-center justify-center"
+              style={{ width: '44px', height: '44px', flexShrink: 0, border: '1px solid var(--border-strong)', borderRadius: 'var(--radius-md)', color: 'var(--accent)', margin: '0 auto var(--space-3)' }}
+            >
+              <ShieldCheck size={20} strokeWidth={ICON_STROKE} />
+            </div>
+            <h2 style={{ fontSize: '1.25rem', marginBottom: 'var(--space-1)' }}>Admin Portal Login</h2>
+            <p className="text-small text-muted">Sign in to access the complaints management console</p>
           </div>
 
           {error && (
-            <div className="alert border-0 small py-2 mb-3" style={{ backgroundColor: '#FEE2E2', border: '1px solid #EF4444', color: '#991B1B' }} role="alert">
-              <i className="bi bi-exclamation-circle me-1"></i> {error}
+            <div className="alert alert-danger" style={{ marginBottom: 'var(--space-3)' }}>
+              <AlertCircle size={15} strokeWidth={ICON_STROKE} style={{ color: 'var(--status-rejected)', flexShrink: 0 }} />
+              {error}
             </div>
           )}
 
-          <form onSubmit={handleSubmit}>
-            <div className="mb-3">
-              <label className="form-label small fw-semibold" style={{ color: '#1E293B' }}>Admin Email Address</label>
-              <input
-                type="email"
-                name="email"
-                className="form-control form-control-sm"
-                style={{ borderColor: '#CBD5E1', color: '#1E293B' }}
-                value={formData.email}
-                onChange={handleChange}
-                required
-              />
+          <form onSubmit={handleSubmit} className="stack">
+            <div className="field">
+              <label>Admin Email Address</label>
+              <input type="email" name="email" className="input" value={formData.email} onChange={handleChange} required />
             </div>
 
-            <div className="mb-4">
-              <label className="form-label small fw-semibold" style={{ color: '#1E293B' }}>Password</label>
-              <input
-                type="password"
-                name="password"
-                className="form-control form-control-sm"
-                style={{ borderColor: '#CBD5E1', color: '#1E293B' }}
-                value={formData.password}
-                onChange={handleChange}
-                required
-              />
+            <div className="field">
+              <label>Password</label>
+              <input type="password" name="password" className="input" value={formData.password} onChange={handleChange} required />
             </div>
 
-            <button type="submit" className="btn btn-primary w-100 fw-bold border-0" style={{ backgroundColor: '#2563EB', color: '#FFFFFF', padding: '0.5rem 1rem' }} disabled={loading}>
-              {loading ? 'Logging in...' : 'Sign In as Admin'}
+            <button type="submit" className="btn btn-primary" style={{ width: '100%' }} disabled={loading}>
+              {loading ? 'Signing in…' : 'Sign In as Admin'}
             </button>
           </form>
         </div>

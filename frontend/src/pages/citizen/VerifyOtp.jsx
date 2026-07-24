@@ -1,14 +1,16 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { ShieldCheck, AlertCircle, CheckCircle2 } from 'lucide-react';
 import MainLayout from '../../layouts/MainLayout.jsx';
 import { useAuth } from '../../hooks/useAuth.js';
 import api from '../../services/api.js';
+import { ICON_STROKE } from '../../constants/icons.js';
 
 const VerifyOtp = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { verifyOtpCode } = useAuth();
-  
+
   const email = location.state?.email || '';
   const [otp, setOtp] = useState('');
   const [error, setError] = useState('');
@@ -44,48 +46,55 @@ const VerifyOtp = () => {
 
   return (
     <MainLayout>
-      <div className="d-flex justify-content-center align-items-center py-4">
-        <div className="card shadow-sm border-0 rounded-3 p-4 bg-white w-100" style={{ maxWidth: '440px' }}>
-          <div className="text-center mb-4">
-            <i className="bi bi-shield-lock-fill text-primary fs-1 mb-2"></i>
-            <h2 className="fs-4 fw-bold mb-1">Verify Email Address</h2>
-            <p className="text-muted small">Enter the 6-digit verification code sent to <strong>{email}</strong></p>
+      <div className="flex justify-center" style={{ padding: 'var(--space-6) 0' }}>
+        <div className="panel" style={{ width: '100%', maxWidth: '400px' }}>
+          <div style={{ textAlign: 'center', marginBottom: 'var(--space-4)' }}>
+            <div
+              className="flex items-center justify-center"
+              style={{ width: '44px', height: '44px', flexShrink: 0, border: '1px solid var(--border-strong)', borderRadius: 'var(--radius-md)', color: 'var(--accent)', margin: '0 auto var(--space-3)' }}
+            >
+              <ShieldCheck size={20} strokeWidth={ICON_STROKE} />
+            </div>
+            <h2 style={{ fontSize: '1.25rem', marginBottom: 'var(--space-1)' }}>Verify Email Address</h2>
+            <p className="text-small text-muted">
+              Enter the 6-digit verification code sent to <strong style={{ color: 'var(--text-primary)' }}>{email}</strong>
+            </p>
           </div>
 
           {error && (
-            <div className="alert alert-danger border-0 small py-2 mb-3" role="alert">
-              <i className="bi bi-exclamation-circle me-1"></i> {error}
+            <div className="alert alert-danger" style={{ marginBottom: 'var(--space-3)' }}>
+              <AlertCircle size={15} strokeWidth={ICON_STROKE} style={{ color: 'var(--status-rejected)', flexShrink: 0 }} />
+              {error}
             </div>
           )}
 
           {message && (
-            <div className="alert alert-success border-0 small py-2 mb-3" role="alert">
-              <i className="bi bi-check-circle me-1"></i> {message}
+            <div className="alert alert-success" style={{ marginBottom: 'var(--space-3)' }}>
+              <CheckCircle2 size={15} strokeWidth={ICON_STROKE} style={{ color: 'var(--status-resolved)', flexShrink: 0 }} />
+              {message}
             </div>
           )}
 
-          <form onSubmit={handleSubmit}>
-            <div className="mb-4">
-              <input
-                type="text"
-                className="form-control form-control-lg text-center fw-bold"
-                style={{ letterSpacing: '8px', fontSize: '24px' }}
-                placeholder="000000"
-                maxLength={6}
-                value={otp}
-                onChange={(e) => setOtp(e.target.value)}
-                required
-              />
-            </div>
+          <form onSubmit={handleSubmit} className="stack">
+            <input
+              type="text"
+              className="input text-mono"
+              style={{ letterSpacing: '8px', fontSize: '1.5rem', textAlign: 'center' }}
+              placeholder="000000"
+              maxLength={6}
+              value={otp}
+              onChange={(e) => setOtp(e.target.value)}
+              required
+            />
 
-            <button type="submit" className="btn btn-primary w-100 fw-bold mb-3" disabled={loading}>
-              {loading ? 'Verifying...' : 'Verify OTP'}
+            <button type="submit" className="btn btn-primary" style={{ width: '100%' }} disabled={loading}>
+              {loading ? 'Verifying…' : 'Verify OTP'}
             </button>
           </form>
 
-          <div className="text-center mt-2 small">
+          <div className="text-small" style={{ textAlign: 'center', marginTop: 'var(--space-3)' }}>
             <span className="text-muted">Didn't receive the email? </span>
-            <button className="btn btn-link p-0 fw-semibold text-primary text-decoration-none small align-baseline" onClick={handleResend}>
+            <button type="button" className="btn btn-ghost btn-sm" style={{ display: 'inline-flex', height: 'auto', padding: 0 }} onClick={handleResend}>
               Resend OTP code
             </button>
           </div>

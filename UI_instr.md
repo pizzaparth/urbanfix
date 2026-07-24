@@ -1,36 +1,45 @@
 # UI & UX Guidelines, Design Rules, and Explicit Instructions
 
-**Project:** Smart Digital Complaint Management and Public Transparency System (UrbanFix Portal)  
+**Project:** Smart Digital Complaint Management and Public Transparency System (UrbanFix Portal)
 **Document Purpose:** Defines mandatory UI/UX design standards, layout rules, typography guidelines, and explicit Do's and Don'ts for the entire project interface.
+
+**Design language:** Swiss Tech / Vercel + Linear inspired — dark monochrome interface, editorial
+typography, a structural 12-column grid, ultra-minimal flat components, Geist typography, Geist
+Mono metadata, Lucide icons, technical-dashboard tone, subtle borders, industrial precision,
+generous whitespace. See `Instructions/DESIGN_INSTRUCTION.md` for the full governing rule set —
+this document restates it with UrbanFix's specific token names.
 
 ---
 
 ## 1. Core Color System & Palette Rules
 
 ### Mandatory Color Directives
-* **Dont use gradient**
-* **Always use solid colors**
+* **Restrained dark monochrome foundation with exactly one accent color** (`#3B82F6`)
+* **Don't use gradients** as a primary visual element
+* **Don't use glassmorphism, glow, or blur effects**
+* Status/priority meaning is communicated through color used sparingly (icon/border/text
+  only) — never as a filled pastel chip background
 
 ### Defined Color Tokens (`color_palatte.md`)
 
 | Color Token | Hex Code | Role & Applied UI Context |
 | :--- | :--- | :--- |
-| **Primary Blue** | `#2563EB` | Primary buttons, active navigation indicators, key icons |
-| **Primary Hover** | `#1D4ED8` | Hover state for primary interactive elements |
-| **Primary Light** | `#DBEAFE` | Soft badge backgrounds, icon containers, subtle highlights |
-| **Success Green** | `#10B981` / `#22C55E` | Secondary success CTA buttons, resolved status badges |
-| **Success Hover** | `#059669` | Hover state for success actions |
-| **Success Light** | `#DCFCE7` | Resolution alerts, verified OTP pills |
-| **Warning Amber** | `#F59E0B` | Pending status badges, warning callouts |
-| **Warning Light** | `#FEF3C7` | Pending alert backgrounds |
-| **Danger / Error Red** | `#EF4444` | Danger buttons, rejected status badges, error alerts |
-| **Danger Light** | `#FEE2E2` | Error alert backgrounds, rejected badges |
-| **Dark Navy** | `#0F172A` | Navbar background, main dark headings |
-| **Surface Secondary** | `#F1F5F9` | Secondary cards, table headers |
-| **Page Background** | `#F8FAFC` | Whole portal viewport background |
-| **Surface Card** | `#FFFFFF` | Cards, forms, modals, search containers |
-| **Border Light** | `#E2E8F0` | Dividers, card borders, input borders |
-| **Border Medium** | `#CBD5E1` | Input focus borders, card hover outlines |
+| **Page Background** | `#0A0A0A` | Whole portal viewport background |
+| **Surface** | `#111111` | Cards, panels, table backgrounds |
+| **Raised Surface** | `#161616` | Modal panels |
+| **Border** | `#1F1F1F` | Default dividers, card borders, input borders |
+| **Border Strong** | `#272727` | Hover/emphasis borders, button borders |
+| **Accent** | `#3B82F6` | Primary buttons, active nav, links, focus rings, "in progress" status |
+| **Accent Hover** | `#60A5FA` | Hover state for accent elements |
+| **Accent Wash** | `rgba(59,130,246,0.12)` | Active nav background, focus ring |
+| **Text Primary** | `#FAFAFA` | Headings |
+| **Text Body** | `#E4E4E4` | Primary body text |
+| **Text Secondary** | `#8C8C8C` | Secondary text, chart ticks |
+| **Text Muted** | `#6E6E6E` | Placeholder / de-emphasized text |
+| **Status — Pending** | `#C9A227` | Icon/border/text on pending status pills |
+| **Status — In Progress** | `#3B82F6` (accent) | Icon/border/text on in-progress status pills |
+| **Status — Resolved** | `#22C55E` | Icon/border/text on resolved status pills |
+| **Status — Rejected** | `#EF5A5A` | Icon/border/text on rejected status pills |
 
 ---
 
@@ -40,10 +49,10 @@
 
 | DO | DONT |
 | :--- | :--- |
-| ✅ **Always use solid colors** for backgrounds, buttons, and badges. | ❌ **Dont use gradient** backgrounds, linear color fades, or radial fills anywhere in the interface. |
-| ✅ Use flat, clean background cards (`#FFFFFF`) with subtle solid borders (`#E2E8F0`). | ❌ Don't use heavy drop-shadows or multi-colored glow effects. |
-| ✅ Maintain high contrast ratios for text (`#1E293B` or `#0F172A` on `#FFFFFF` / `#F8FAFC`). | ❌ Don't use light gray text (`#94A3B8` / `text-secondary`) for body paragraphs or card text. |
-| ✅ Use semantic badge background colors (`#DBEAFE`, `#FEF3C7`, `#DCFCE7`, `#FEE2E2`). | ❌ Don't mix random hex values outside the defined color palette. |
+| ✅ Use the dark monochrome scale for all surfaces/backgrounds/borders. | ❌ Don't use gradient backgrounds, linear color fades, or radial fills anywhere. |
+| ✅ Use flat surfaces (`#111111`) with 1px solid borders (`#1F1F1F`). | ❌ Don't use drop shadows, glow effects, or `backdrop-filter`/blur. |
+| ✅ Maintain high contrast text (`#FAFAFA`/`#E4E4E4` on `#0A0A0A`/`#111111`). | ❌ Don't introduce a second accent color — exactly one accent (`#3B82F6`) exists. |
+| ✅ Use status tokens as icon/border/text color only. | ❌ Don't fill a status pill or card with a solid pastel background. |
 
 ---
 
@@ -51,10 +60,10 @@
 
 | DO | DONT |
 | :--- | :--- |
-| ✅ Use **Poppins** (`fontFamily: 'Poppins, sans-serif'`) for all main titles and section headings (`H1`–`H4`). | ❌ Don't use default browser serif or generic fonts for section headers. |
-| ✅ Use **Inter** for body paragraphs, input fields, labels, and table content. | ❌ Don't use small, low-contrast text for critical user instructions or wizard steps. |
-| ✅ Render section headers in solid dark navy (`#0F172A`) or solid black (`#000000`). | ❌ Don't use light muted gray text for long paragraphs or hero text. |
-| ✅ Keep text alignment clean (left-aligned for forms/guides, centered for heroes/counters). | ❌ Don't overcrowd text lines without adequate line-height (`1.5` to `1.6`). |
+| ✅ Use **Geist Sans** for all headings, body text, labels, and buttons. | ❌ Don't mix in a second UI typeface — Geist Sans covers both headings and body via size/weight. |
+| ✅ Use **Geist Mono** for metadata only: tracking IDs, timestamps, counts, status text. | ❌ Don't use Geist Mono for headings, body copy, or button labels. |
+| ✅ Pair large editorial headings with small supporting text. | ❌ Don't make every heading the same size, or use oversized body text. |
+| ✅ Keep line-height comfortable (1.5–1.6) for paragraph text. | ❌ Don't overcrowd text lines without adequate line-height. |
 
 ---
 
@@ -62,9 +71,9 @@
 
 | DO | DONT |
 | :--- | :--- |
-| ✅ Ensure statistics and cards stack vertically (`col-12 col-md`) on mobile viewports (`<768px`). | ❌ Don't force multi-column horizontal cards on small mobile screens. |
-| ✅ Maintain sticky frosted-glass navigation (`sticky-top`) with dark background (`rgba(15, 23, 42, 0.95)`). | ❌ Don't block screen content with static non-responsive headers. |
-| ✅ Use responsive Bootstrap containers (`container`) with proper padding (`py-4`, `px-3`). | ❌ Don't hardcode fixed pixel widths on container elements. |
+| ✅ Build layouts on the real 12-column CSS Grid (`.grid-12` / `.col-span-*`). | ❌ Don't use ad hoc pixel widths or Bootstrap's `.row`/`.col-*` grid (removed from the project). |
+| ✅ Use a sticky, flat, 1px-bordered top navbar (no blur, no fixed-offset hacks). | ❌ Don't use frosted-glass/backdrop-blur navigation. |
+| ✅ Use the 4/8px spacing scale (`--space-1` … `--space-9`) consistently. | ❌ Don't hardcode arbitrary padding/margin values. |
 
 ---
 
@@ -72,30 +81,33 @@
 
 | DO | DONT |
 | :--- | :--- |
-| ✅ Provide clear hover states (`:hover`, `:focus`) on buttons and interactive cards. | ❌ Don't leave interactive buttons without hover feedback or active state indicators. |
-| ✅ Use clear, high-visibility Call-To-Action (CTA) buttons with explicit labels and rounded pills (`border-radius: 8px` / `rounded-pill`). | ❌ Don't rely solely on plain unstyled text links for critical user actions like filing a complaint. |
-| ✅ Include step indicators (1, 2, 3) for multi-step workflows like `/file-complaint`. | ❌ Don't present long single-page form scrolling without logical step separation. |
-| ✅ Provide touch-friendly tap targets (minimum 44px height) for mobile navigation items. | ❌ Don't place tiny text links closely together on touch interfaces. |
+| ✅ Limit buttons to four styles: `.btn-primary`, `.btn-secondary`, `.btn-ghost`, `.btn-danger`. | ❌ Don't invent a new button style per page, or use `rounded-pill` buttons. |
+| ✅ Keep exactly one `.btn-primary` visible per screen. | ❌ Don't use multiple primary buttons in one viewport. |
+| ✅ Use the shared `Modal` component (focus trap, Escape-to-close, backdrop click) for all dialogs. | ❌ Don't reintroduce Bootstrap's modal JS or `data-bs-toggle` attributes. |
+| ✅ Use Lucide icons only, one consistent stroke weight (`ICON_STROKE = 1.75`). | ❌ Don't mix icon libraries (no `bootstrap-icons`, no raw `<img>` icon files). |
 
 ---
 
 ## 3. Page-Specific Design Guidelines
 
 ### 3.1 Homepage (`Home.jsx`)
-* Top statistics metrics must be centered horizontally and vertically, with title stacked directly on top of the number.
-* Statistics titles must use solid black (`#000000`) Poppins font.
-* On mobile screens (`<768px`), statistics must stack vertically one below another (`col-12 col-md`).
-* Main feature cards must link directly to primary public destinations (`/registry`, `/file-complaint`, `/track`).
-* User guides and tutorials must be presented below feature cards in 3 full-width vertical sections (*Submit Complaint*, *Public Registry*, *Track Complaint*) using vertical step layouts and uniform hover buttons.
+* Top statistics strip is a flat metadata row (Geist Mono numerals) — no glassmorphism, no
+  per-tile accent colors.
+* Feature cards (Registry / File Complaint / Track) sit on the 12-column grid, one accent
+  icon tile each, single `.btn-secondary` CTA.
+* Tutorial sections below feature cards use flat numbered steps (no colored circles per
+  section — the one-accent rule applies here too).
 
-### 3.2 Complaint Filing Portal (`FileComplaint.jsx`)
-* Follow a 3-step filing wizard:
-  * **Step 1:** Category selection & dynamic Yes/No context questions + real-time urgency badge calculation.
-  * **Step 2:** Location, detailed text description & drag-and-drop photo attachments.
-  * **Step 3:** Contact details & email OTP verification modal.
-* Provide copyable Tracking ID upon successful registration.
+### 3.2 Complaint Filing Portal (`FileComplaint/`)
+* 3-step filing wizard: category + urgency questionnaire → location/description/photos →
+  contact + OTP verification, unchanged in flow.
+* Urgency and status are communicated via flat `.status-pill` tokens, not filled pastel
+  badges.
+* OTP and success dialogs use the shared `Modal` component.
 
 ### 3.3 Public Complaints Registry (`Registry.jsx`)
-* Display all public complaints with citizen PII (Name, Email, Phone) strictly redacted.
-* Provide real-time location search with inline clear (`✕`), category & status dropdowns with input icons, removable active filter chips, 1-click Reset All button, and dynamic sorting (Newest/Oldest).
-* Include direct download action buttons for PDF resolution receipts on `Resolved` complaints.
+* Complaints remain a card-per-item list (not a table) — flattened to the monochrome/thin-
+  border style, PII strictly redacted.
+* Filters: real-time location search with inline clear, category/status selects, removable
+  active-filter tags, 1-click Reset All, dynamic sorting (Newest/Oldest).
+* Resolved complaints expose a PDF receipt download action.

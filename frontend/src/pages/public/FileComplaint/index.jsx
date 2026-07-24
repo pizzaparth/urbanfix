@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { AlertCircle } from 'lucide-react';
 import MainLayout from '../../../layouts/MainLayout.jsx';
 import api from '../../../services/api.js';
 import { CATEGORY_QUESTIONNAIRES } from '../../../constants/categories.js';
 import { calculateUrgency } from '../../../utils/urgency.js';
+import { ICON_STROKE } from '../../../constants/icons.js';
 import CategoryStep from './CategoryStep.jsx';
 import DetailsStep from './DetailsStep.jsx';
 import VerifyStep from './VerifyStep.jsx';
@@ -220,25 +222,18 @@ const FileComplaint = () => {
 
   return (
     <MainLayout>
-      <div className="mx-auto py-5" style={{ maxWidth: '920px' }}>
-        {/* Header Title */}
-        <div className="text-center mb-4">
-          <h1 className="display-5 fw-bold mb-2" style={{ color: '#0F172A', fontFamily: 'Poppins, sans-serif' }}>
-            File a Public Complaint
-          </h1>
-          <p className="fs-6 mx-auto mb-4" style={{ color: '#64748B', maxWidth: '650px' }}>
-            Interactive citizen complaint filing portal. Answer the category questionnaire, describe the issue, and verify via email OTP.
+      <div style={{ maxWidth: '860px', margin: '0 auto' }}>
+        <div style={{ textAlign: 'center', marginBottom: 'var(--space-5)' }}>
+          <h1 style={{ fontSize: 'var(--text-h1)', marginBottom: 'var(--space-2)' }}>File a Public Complaint</h1>
+          <p className="text-secondary" style={{ maxWidth: '600px', margin: '0 auto', fontSize: 'var(--text-body)' }}>
+            Interactive citizen complaint filing portal. Answer the category questionnaire, describe the issue, and
+            verify via email OTP.
           </p>
         </div>
 
-        {/* Global Error Banner */}
         {formError && (
-          <div
-            className="alert border-0 p-3 mb-4 rounded-3 d-flex align-items-center"
-            style={{ backgroundColor: '#FEE2E2', border: '1px solid #EF4444', color: '#991B1B' }}
-            role="alert"
-          >
-            <i className="bi bi-exclamation-circle-fill me-2 fs-5"></i>
+          <div className="alert alert-danger" style={{ marginBottom: 'var(--space-4)' }}>
+            <AlertCircle size={16} strokeWidth={ICON_STROKE} style={{ color: 'var(--status-rejected)', flexShrink: 0 }} />
             <div>{formError}</div>
           </div>
         )}

@@ -71,8 +71,9 @@ The homepage serves as the public dashboard:
 
 #### 3.2 Frontend
 * **Core Framework:** React (Vite environment).
-* **Styling Framework:** Bootstrap 5 (Responsive utilities) & Bootstrap Icons.
-* **Layout Design:** Custom Vanilla CSS properties (strictly solid colors from design system).
+* **Styling Framework:** Hand-rolled CSS design-token system (`src/styles/`) — no component framework. A dark monochrome Swiss-Tech/Vercel-Linear aesthetic: CSS custom properties for color/spacing/type, a real 12-column CSS Grid, and flat 1px-bordered components (no shadows, no glassmorphism, no gradients).
+* **Typography:** Geist Sans (UI text, headings) and Geist Mono (metadata — tracking IDs, timestamps, counts, status), self-hosted via the `geist` npm package's raw variable `.woff2` files (no external font CDN).
+* **Icons:** Lucide (`lucide-react`) exclusively, one consistent stroke weight across the app.
 * **HTTP Client:** Axios (API communication layer with JWT automatic attachment interceptors).
 
 ---
@@ -149,20 +150,21 @@ Main ticket repository.
 
 ---
 
-### 6. Solid-Color Design System & Color Palette
-The interface uses a strict solid-color layout with no gradients to present a clean, high-contrast, premium look.
-* **Primary Blue:** `#2563EB` (Hover: `#1D4ED8`)
-* **Success Green:** `#10B981` (Hover: `#059669`)
-* **Warning Amber:** `#F59E0B`
-* **Navy Backgrounds:** `#0F172A` (Sidebar/Navbar)
-* **Light Background:** `#F8FAFC`
-* **Surface Cards:** `#FFFFFF`
-* **Border Light:** `#E2E8F0`
-* **Status Badges:**
-  * *Pending:* `#FEF3C7` background, `#B45309` text
-  * *In Progress (WIP):* `#CFFAFE` background, `#0891B2` text
-  * *Resolved:* `#DCFCE7` background, `#15803D` text
-  * *Rejected:* `#FEE2E2` background, `#B91C1C` text
+### 6. Dark Monochrome Design System & Color Palette
+The interface uses a restrained dark monochrome foundation with exactly one accent color — a
+Swiss-Tech/Vercel-Linear aesthetic ("civic operating system"). No gradients, no glassmorphism,
+no glow/blur effects. Status and priority meaning is communicated through color used sparingly
+(icon/border/text only, never a filled pastel chip). See `color_palatte.md` for the full token
+table and `Instructions/DESIGN_INSTRUCTION.md` for the governing design rules.
+* **Page Background:** `#0A0A0A` · **Surface:** `#111111` · **Raised Surface (modals):** `#161616`
+* **Borders:** `#1F1F1F` (default), `#272727` (strong)
+* **Text:** `#FAFAFA` (headings) → `#E4E4E4` (body) → `#8C8C8C` (secondary) → `#6E6E6E` (muted)
+* **The one accent color:** `#3B82F6` (hover `#60A5FA`) — used only for primary actions, active
+  nav, links, focus rings, and the "in progress" status.
+* **Status tokens** (icon/border/text color only): *Pending* `#C9A227` · *In Progress* (accent)
+  `#3B82F6` · *Resolved* `#22C55E` · *Rejected* `#EF5A5A`
+* **Typography:** Geist Sans (headings/UI) and Geist Mono (tracking IDs, timestamps, counts,
+  status text).
 
 ---
 

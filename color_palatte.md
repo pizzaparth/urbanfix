@@ -1,354 +1,173 @@
 # Smart Digital Complaint Management System
-## Complete UI Color Palette
+## Complete UI Color Palette (Dark Monochrome / Swiss Tech)
+
+These tokens mirror `frontend/src/styles/tokens.css` exactly — that file is the source of
+truth; this document is the human-readable reference. See `Instructions/DESIGN_INSTRUCTION.md`
+for the governing design rules this palette follows (restrained monochrome, one accent color,
+no gradients, no glassmorphism).
 
 ---
 
-# Brand Colors
+# Monochrome Scale
 
 | Token | Hex | Usage |
 |-------|------|------|
-| Primary | `#2563EB` | Primary buttons, links, active navigation |
-| Primary Hover | `#1D4ED8` | Hover state |
-| Primary Light | `#DBEAFE` | Selected cards, badges, backgrounds |
-| Secondary | `#10B981` | Success actions, secondary buttons |
-| Secondary Hover | `#059669` | Hover state |
-| Accent | `#F59E0B` | Highlights, warnings, analytics |
+| Gray 950 | `#0A0A0A` | Page background |
+| Gray 900 | `#111111` | Surface — cards, panels, tables |
+| Gray 850 | `#161616` | Raised surface — modal panels |
+| Gray 800 | `#1F1F1F` | Border (default) |
+| Gray 750 | `#272727` | Border (strong / hover) |
+| Gray 600 | `#3F3F3F` | Disabled borders |
+| Gray 500 | `#6E6E6E` | Muted text, placeholder |
+| Gray 400 | `#8C8C8C` | Secondary text, chart ticks |
+| Gray 300 | `#ADADAD` | Tertiary / de-emphasized labels |
+| Gray 100 | `#E4E4E4` | Primary body text |
+| Gray 50 | `#FAFAFA` | Headings, highest-contrast text |
 
 ---
 
-# Background Colors
+# The One Accent Color
 
 | Token | Hex | Usage |
 |-------|------|------|
-| Background | `#F8FAFC` | Entire website background |
-| Surface | `#FFFFFF` | Cards, forms, modals |
-| Surface Secondary | `#F1F5F9` | Secondary cards |
-| Sidebar/Navbar | `#0F172A` | Navigation |
-| Sidebar Hover | `#1E293B` | Sidebar hover |
-| Overlay | `rgba(15,23,42,0.55)` | Modal overlay |
+| Accent | `#3B82F6` | Primary buttons, active nav, links, focus rings, "in progress" status, chart accent series |
+| Accent Hover | `#60A5FA` | Hover state |
+| Accent Wash | `rgba(59,130,246,0.12)` | Active nav background, selected-row tint |
+| Accent Border | `rgba(59,130,246,0.4)` | Focus ring border |
+
+No other accent color exists anywhere in the interface — status tokens below are the only
+exception, and even those are used as icon/border/text color, never as decoration.
+
+---
+
+# Status Tokens (icon / border / text only — never a filled background)
+
+| Status | Hex |
+|--------|------|
+| Pending | `#C9A227` |
+| In Progress | `#3B82F6` (accent) |
+| Resolved | `#22C55E` |
+| Rejected | `#EF5A5A` |
 
 ---
 
 # Typography
 
-| Token | Hex | Usage |
-|-------|------|------|
-| Heading | `#0F172A` | H1–H4 |
-| Primary Text | `#1E293B` | Paragraphs |
-| Secondary Text | `#64748B` | Helper text |
-| Muted Text | `#94A3B8` | Disabled text |
-| White Text | `#FFFFFF` | Dark backgrounds |
+| Token | Value | Usage |
+|-------|-------|------|
+| Font — Sans | Geist Sans | Headings, body text, labels, buttons, nav |
+| Font — Mono | Geist Mono | Metadata only: tracking IDs, timestamps, counts, status text |
+| Display | `clamp(2.5rem, 4vw + 1rem, 4.25rem)` | Hero heading |
+| H1 | `clamp(1.75rem, 2vw + 1rem, 2.5rem)` | Page titles |
+| H2 | `1.5rem` | Section titles |
+| H3 | `1.125rem` | Card/panel titles |
+| Body | `0.9375rem` | Paragraph text |
+| Small | `0.8125rem` | Supporting text, labels |
+| Mono (metadata) | `0.8125rem` / `0.75rem` | Tracking IDs, dates, table headers |
+
+Both fonts are self-hosted via the `geist` npm package's raw variable `.woff2` files
+(`frontend/public/fonts/geist-sans-variable.woff2`, `geist-mono-variable.woff2`) — no external
+font CDN dependency.
 
 ---
 
-# Borders & Dividers
+# Spacing Scale (4px base)
 
-| Token | Hex |
-|-------|------|
-| Border Light | `#E2E8F0` |
-| Border Medium | `#CBD5E1` |
-| Border Dark | `#94A3B8` |
-
----
-
-# Status Colors
-
-| Status | Hex |
-|--------|------|
-| Submitted | `#3B82F6` |
-| Waiting for Review | `#8B5CF6` |
-| Under Review | `#F59E0B` |
-| Team Assigned | `#06B6D4` |
-| Work in Progress | `#F97316` |
-| Problem Resolved | `#22C55E` |
-| Ticket Closed | `#16A34A` |
-| Rejected | `#EF4444` |
+| Token | Value |
+|-------|-------|
+| `--space-1` | 4px |
+| `--space-2` | 8px |
+| `--space-3` | 12px |
+| `--space-4` | 16px |
+| `--space-5` | 24px |
+| `--space-6` | 32px |
+| `--space-7` | 48px |
+| `--space-8` | 64px |
+| `--space-9` | 96px |
 
 ---
 
-# Semantic Colors
+# Radii (sharp / minimal — no pill radius anywhere)
 
-| Token | Hex |
-|-------|------|
-| Success | `#22C55E` |
-| Warning | `#F59E0B` |
-| Error | `#EF4444` |
-| Info | `#3B82F6` |
-
----
-
-# Buttons
-
-## Primary Button
-
-Background: `#2563EB`
-
-Hover: `#1D4ED8`
-
-Text: `#FFFFFF`
+| Token | Value | Usage |
+|-------|-------|------|
+| `--radius-sm` | 2px | Inputs, small tags, status pills |
+| `--radius-md` | 4px | Buttons, cards, icon tiles |
+| `--radius-lg` | 6px | Modal panels |
 
 ---
 
-## Secondary Button
+# Buttons (exactly four styles, clear hierarchy)
 
-Background: `#10B981`
+| Style | Background | Text | Border |
+|-------|-----------|------|--------|
+| Primary | Accent `#3B82F6` | `#0A0A0A` | none |
+| Secondary | transparent | `#FAFAFA` | Gray 750 `#272727` |
+| Ghost | transparent | Gray 300 `#ADADAD` | none |
+| Danger | transparent | `#EF5A5A` | `#EF5A5A` |
 
-Hover: `#059669`
-
-Text: `#FFFFFF`
-
----
-
-## Outline Button
-
-Border: `#2563EB`
-
-Text: `#2563EB`
-
-Hover Background: `#DBEAFE`
-
----
-
-## Danger Button
-
-Background: `#EF4444`
-
-Hover: `#DC2626`
-
-Text: `#FFFFFF`
+Only one `.btn-primary` should be visible per screen.
 
 ---
 
 # Inputs
 
-Background: `#FFFFFF`
-
-Border: `#CBD5E1`
-
-Focus Border: `#2563EB`
-
-Placeholder: `#94A3B8`
-
-Input Text: `#1E293B`
-
-Disabled Background: `#F1F5F9`
+Background: `#111111` (Gray 900)
+Border: `#1F1F1F` (Gray 800)
+Focus Border: Accent `#3B82F6`
+Focus Ring: `rgba(59,130,246,0.12)`
+Placeholder: `#6E6E6E` (Gray 500)
+Text: `#FAFAFA` (Gray 50)
 
 ---
 
-# Cards
+# Cards / Panels
 
-Background: `#FFFFFF`
-
-Border: `#E2E8F0`
-
-Hover Border: `#2563EB`
-
-Shadow:
-
-```
-0 4px 20px rgba(15,23,42,.06)
-```
+Background: `#111111` (Gray 900)
+Border: 1px solid `#1F1F1F` (Gray 800)
+Radius: `--radius-md` (4px)
+Shadow: none — flat only, per DESIGN_INSTRUCTION
 
 ---
 
 # Navigation
 
-Navbar Background: `#0F172A`
-
-Navbar Text: `#FFFFFF`
-
-Active Item: `#60A5FA`
-
-Hover Item: `#BFDBFE`
-
-Divider: `#334155`
+Navbar Background: `#0A0A0A` (page background, flat — no blur)
+Navbar Border: 1px solid `#1F1F1F`
+Active Nav Item: Accent Wash background + `#FAFAFA` text
+Nav Link (default): Gray 300 `#ADADAD`
 
 ---
 
 # Tables
 
-Header Background: `#F1F5F9`
-
-Header Text: `#1E293B`
-
-Row Background: `#FFFFFF`
-
-Alternate Row: `#F8FAFC`
-
-Border: `#E2E8F0`
-
-Hover: `#EFF6FF`
-
----
-
-# Dashboard Cards
-
-Total Complaints
-
-Background: `#DBEAFE`
-
-Icon: `#2563EB`
-
----
-
-Pending
-
-Background: `#FEF3C7`
-
-Icon: `#F59E0B`
-
----
-
-In Progress
-
-Background: `#CFFAFE`
-
-Icon: `#06B6D4`
-
----
-
-Resolved
-
-Background: `#DCFCE7`
-
-Icon: `#22C55E`
-
----
-
-Rejected
-
-Background: `#FEE2E2`
-
-Icon: `#EF4444`
+Header Background: transparent (flat)
+Header Text: Geist Mono, uppercase, Gray 500
+Row Border: `#1F1F1F`
+Row Hover: `#111111` (Gray 900)
 
 ---
 
 # Charts
 
-Primary Blue: `#2563EB`
-
-Emerald: `#10B981`
-
-Amber: `#F59E0B`
-
-Cyan: `#06B6D4`
-
-Purple: `#8B5CF6`
-
-Orange: `#F97316`
-
-Red: `#EF4444`
-
-Slate: `#64748B`
+Grid lines: `#1F1F1F` (near-invisible on dark surface)
+Axis text: `#8C8C8C` (Gray 400), Geist Mono
+Accent series: `#3B82F6`
+Neutral series: `#8C8C8C` / `#6E6E6E`
+Urgency (3-hue, restrained): High `#EF5A5A` · Medium `#C9A227` · Standard `#3B82F6`
 
 ---
 
-# Alerts
+# Icons
 
-Success
-
-Background: `#DCFCE7`
-
-Border: `#22C55E`
-
-Text: `#166534`
-
----
-
-Warning
-
-Background: `#FEF3C7`
-
-Border: `#F59E0B`
-
-Text: `#92400E`
-
----
-
-Error
-
-Background: `#FEE2E2`
-
-Border: `#EF4444`
-
-Text: `#991B1B`
-
----
-
-Info
-
-Background: `#DBEAFE`
-
-Border: `#3B82F6`
-
-Text: `#1D4ED8`
-
----
-
-# Badges
-
-Submitted
-
-Background: `#DBEAFE`
-
-Text: `#2563EB`
-
----
-
-Pending
-
-Background: `#FEF3C7`
-
-Text: `#B45309`
-
----
-
-In Progress
-
-Background: `#CFFAFE`
-
-Text: `#0891B2`
-
----
-
-Resolved
-
-Background: `#DCFCE7`
-
-Text: `#15803D`
-
----
-
-Rejected
-
-Background: `#FEE2E2`
-
-Text: `#B91C1C`
+Library: Lucide (`lucide-react`) exclusively — no other icon library mixed in.
+Stroke width: `1.75` everywhere (see `src/constants/icons.js` → `ICON_STROKE`).
 
 ---
 
 # Miscellaneous
 
-Scrollbar Thumb: `#CBD5E1`
-
-Scrollbar Track: `#F8FAFC`
-
-Selection Background: `#BFDBFE`
-
-Selection Text: `#0F172A`
-
-Link: `#2563EB`
-
-Link Hover: `#1D4ED8`
-
-Focus Ring: `#93C5FD`
-
----
-
-# Recommended Fonts
-
-Heading: **Poppins**
-
-Body: **Inter**
-
-Code: **JetBrains Mono**
+Selection Background: `rgba(59,130,246,0.12)`
+Selection Text: `#FAFAFA`
+Link: Accent `#3B82F6`
+Link Hover: `#60A5FA`

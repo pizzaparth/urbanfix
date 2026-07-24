@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { ArrowLeft, Info } from 'lucide-react';
 import AdminLayout from '../../layouts/AdminLayout.jsx';
 import StatusBadge from '../../components/StatusBadge.jsx';
 import StatusTimeline from '../../components/StatusTimeline.jsx';
 import api, { getUploadsBaseUrl } from '../../services/api.js';
+import { ICON_STROKE } from '../../constants/icons.js';
 
 const ComplaintDetail = () => {
   const { id } = useParams();
@@ -12,34 +14,33 @@ const ComplaintDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // Status modify states
   const [status, setStatus] = useState('Pending');
   const [remarks, setRemarks] = useState('');
   const [updating, setUpdating] = useState(false);
   const [updateError, setUpdateError] = useState('');
 
-  useEffect(() => {
-    fetchComplaintDetails();
-  }, [id]);
-
   const fetchComplaintDetails = async () => {
     setLoading(true);
     try {
       const response = await api.get(`/admin/complaints`);
-      // Filter list locally to find target complaint
-      const found = response.data.complaints.find(c => c._id === id);
+      const found = response.data.complaints.find((c) => c._id === id);
       if (found) {
         setComplaint(found);
         setStatus(found.status);
       } else {
         setError('Complaint details not found.');
       }
-    } catch (err) {
+    } catch {
       setError('Failed to fetch details.');
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchComplaintDetails();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
 
   const handleUpdateStatus = async (e) => {
     e.preventDefault();
@@ -47,10 +48,7 @@ const ComplaintDetail = () => {
     setUpdating(true);
 
     try {
-      await api.patch(`/admin/complaints/${id}/status`, {
-        status,
-        remarks,
-      });
+      await api.patch(`/admin/complaints/${id}/status`, { status, remarks });
       setRemarks('');
       fetchComplaintDetails();
     } catch (err) {
@@ -64,140 +62,134 @@ const ComplaintDetail = () => {
 
   return (
     <AdminLayout>
-      <div className="mb-4">
-        <button className="btn btn-outline-secondary btn-sm" onClick={() => navigate('/admin/dashboard')}>
-          <i className="bi bi-arrow-left me-1"></i> Back to Dashboard
-        </button>
-      </div>
+      <button type="button" className="btn btn-secondary btn-sm" onClick={() => navigate('/admin/dashboard')} style={{ marginBottom: 'var(--space-4)' }}>
+        <ArrowLeft size={14} strokeWidth={ICON_STROKE} />
+        Back to Dashboard
+      </button>
 
-      {error && <div className="alert alert-danger border-0 shadow-sm">{error}</div>}
+      {error && <div className="alert alert-danger">{error}</div>}
 
       {loading ? (
-        <div className="text-center py-5">
-          <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
+        <div className="flex justify-center" style={{ padding: 'var(--space-8) 0' }}>
+          <span className="spinner" role="status" aria-label="Loading" />
         </div>
-      ) : complaint && (
-        <div className="row g-4">
-          {/* Main Info Card */}
-          <div className="col-lg-7">
-            <div className="card shadow-sm border-0 rounded-3 p-4 bg-white mb-4">
-              <div className="d-flex justify-content-between align-items-start border-bottom pb-3 mb-4">
-                <div>
-                  <h3 className="fs-5 fw-bold mb-1 text-dark">{complaint.title}</h3>
-                  <span className="text-muted small">Tracking ID: <strong>{complaint.trackingId}</strong></span>
+      ) : (
+        complaint && (
+          <div className="grid-12">
+            <div className="col-span-7">
+              <div className="panel">
+                <div
+                  className="flex justify-between items-start"
+                  style={{ borderBottom: '1px solid var(--border)', paddingBottom: 'var(--space-3)', marginBottom: 'var(--space-4)' }}
+                >
+                  <div>
+                    <h3 style={{ marginBottom: 'var(--space-1)' }}>{complaint.title}</h3>
+                    <span className="text-mono-label">ID: {complaint.trackingId}</span>
+                  </div>
+                  <StatusBadge status={complaint.status} />
                 </div>
-                <StatusBadge status={complaint.status} />
-              </div>
 
-              <div className="mb-4">
-                <h4 className="fs-7 fw-bold text-secondary text-uppercase tracking-wider">Citizen Description</h4>
-                <p className="bg-light p-3 rounded border text-secondary small text-justify" style={{ whiteSpace: 'pre-wrap' }}>
-                  {complaint.description}
-                </p>
-              </div>
+                <div style={{ marginBottom: 'var(--space-4)' }}>
+                  <h4 className="text-mono-label" style={{ marginBottom: 'var(--space-2)' }}>Citizen Description</h4>
+                  <p className="text-small" style={{ whiteSpace: 'pre-wrap' }}>{complaint.description}</p>
+                </div>
 
-              {/* Media uploads */}
-              {complaint.images && complaint.images.length > 0 && (
-                <div className="mb-4">
-                  <h4 className="fs-7 fw-bold text-secondary text-uppercase tracking-wider mb-2">Supporting Proofs</h4>
-                  <div className="row g-2">
-                    {complaint.images.map((img, idx) => (
-                      <div key={idx} className="col-4">
-                        <a href={`${getUploadsBaseUrl()}${img}`} target="_blank" rel="noopener noreferrer">
+                {complaint.images && complaint.images.length > 0 && (
+                  <div style={{ marginBottom: 'var(--space-4)' }}>
+                    <h4 className="text-mono-label" style={{ marginBottom: 'var(--space-2)' }}>Supporting Proofs</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {complaint.images.map((img, idx) => (
+                        <a key={idx} href={`${getUploadsBaseUrl()}${img}`} target="_blank" rel="noopener noreferrer">
                           <img
                             src={`${getUploadsBaseUrl()}${img}`}
                             alt={`Upload ${idx + 1}`}
-                            className="img-fluid rounded border hover-shadow-card"
-                            style={{ height: '140px', width: '100%', objectFit: 'cover' }}
+                            style={{ height: '110px', width: '110px', objectFit: 'cover', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)' }}
                           />
                         </a>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
-              {/* Status history timeline */}
-              <div>
-                <h4 className="fs-7 fw-bold text-secondary text-uppercase tracking-wider mb-3">Status Audit Log</h4>
-                <StatusTimeline statusHistory={complaint.statusHistory} />
+                <div>
+                  <h4 className="text-mono-label" style={{ marginBottom: 'var(--space-3)' }}>Status Audit Log</h4>
+                  <StatusTimeline statusHistory={complaint.statusHistory} />
+                </div>
+              </div>
+            </div>
+
+            <div className="col-span-5">
+              <div className="panel" style={{ marginBottom: 'var(--space-4)' }}>
+                <h4 style={{ fontSize: 'var(--text-body)', marginBottom: 'var(--space-2)' }}>Reporter Information</h4>
+                <dl style={{ margin: 0 }}>
+                  <div className="field-row">
+                    <dt>Full Name</dt>
+                    <dd>{complaint.citizenId?.name || 'Unknown'}</dd>
+                  </div>
+                  <div className="field-row">
+                    <dt>Email</dt>
+                    <dd>{complaint.citizenId?.email || 'N/A'}</dd>
+                  </div>
+                  <div className="field-row">
+                    <dt>Phone</dt>
+                    <dd>{complaint.citizenId?.phone || 'N/A'}</dd>
+                  </div>
+                </dl>
+              </div>
+
+              <div className="panel">
+                <h4 style={{ fontSize: 'var(--text-body)', marginBottom: 'var(--space-3)' }}>Transition Operations</h4>
+
+                {isTerminalState ? (
+                  <div className="alert alert-info">
+                    <Info size={15} strokeWidth={ICON_STROKE} style={{ color: 'var(--accent)', flexShrink: 0 }} />
+                    This ticket is resolved/rejected and cannot be updated.
+                  </div>
+                ) : (
+                  <form onSubmit={handleUpdateStatus} className="stack">
+                    {updateError && <div className="alert alert-danger">{updateError}</div>}
+
+                    <div className="field">
+                      <label>Target Status</label>
+                      <select className="input" value={status} onChange={(e) => setStatus(e.target.value)}>
+                        {complaint.status === 'Pending' && (
+                          <>
+                            <option value="Pending">Pending</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Rejected">Rejected</option>
+                          </>
+                        )}
+                        {complaint.status === 'In Progress' && (
+                          <>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Resolved">Resolved</option>
+                            <option value="Rejected">Rejected</option>
+                          </>
+                        )}
+                      </select>
+                    </div>
+
+                    <div className="field">
+                      <label>Administrative Remarks / Comments</label>
+                      <textarea
+                        className="input"
+                        rows={4}
+                        value={remarks}
+                        onChange={(e) => setRemarks(e.target.value)}
+                        placeholder="Input review remarks (min 10 characters)"
+                        required
+                      />
+                    </div>
+
+                    <button type="submit" className="btn btn-primary" style={{ width: '100%' }} disabled={updating}>
+                      {updating ? 'Processing…' : 'Apply Transition'}
+                    </button>
+                  </form>
+                )}
               </div>
             </div>
           </div>
-
-          {/* Actions panel */}
-          <div className="col-lg-5">
-            {/* Citizen Details Card */}
-            <div className="card shadow-sm border-0 rounded-3 p-4 bg-white mb-4">
-              <h4 className="fs-6 fw-bold text-dark mb-3 border-bottom pb-2">Reporter Information</h4>
-              <div className="mb-2">
-                <span className="text-muted small d-block">Full Name</span>
-                <span className="fw-semibold">{complaint.citizenId?.name || 'Unknown'}</span>
-              </div>
-              <div className="mb-2">
-                <span className="text-muted small d-block">Email Address</span>
-                <span>{complaint.citizenId?.email || 'N/A'}</span>
-              </div>
-              <div className="mb-0">
-                <span className="text-muted small d-block">Phone Number</span>
-                <span>{complaint.citizenId?.phone || 'N/A'}</span>
-              </div>
-            </div>
-
-            {/* Transition operation controls */}
-            <div className="card shadow-sm border-0 rounded-3 p-4 bg-white">
-              <h4 className="fs-6 fw-bold text-dark mb-3 border-bottom pb-2">Transition Operations</h4>
-
-              {isTerminalState ? (
-                <div className="alert alert-info border-0 small mb-0">
-                  <i className="bi bi-info-circle me-1"></i> This ticket is resolved/rejected and cannot be updated.
-                </div>
-              ) : (
-                <form onSubmit={handleUpdateStatus}>
-                  {updateError && <div className="alert alert-danger border-0 small mb-3">{updateError}</div>}
-
-                  <div className="mb-3">
-                    <label className="form-label small fw-semibold text-secondary">Target Status</label>
-                    <select className="form-select form-select-sm" value={status} onChange={(e) => setStatus(e.target.value)}>
-                      {complaint.status === 'Pending' && (
-                        <>
-                          <option value="Pending">Pending</option>
-                          <option value="In Progress">In Progress</option>
-                          <option value="Rejected">Rejected</option>
-                        </>
-                      )}
-                      {complaint.status === 'In Progress' && (
-                        <>
-                          <option value="In Progress">In Progress</option>
-                          <option value="Resolved">Resolved</option>
-                          <option value="Rejected">Rejected</option>
-                        </>
-                      )}
-                    </select>
-                  </div>
-
-                  <div className="mb-3">
-                    <label className="form-label small fw-semibold text-secondary">Administrative Remarks / Comments</label>
-                    <textarea
-                      className="form-control form-control-sm"
-                      rows={4}
-                      value={remarks}
-                      onChange={(e) => setRemarks(e.target.value)}
-                      placeholder="Input review remarks (Min 10 characters)..."
-                      required
-                    ></textarea>
-                  </div>
-
-                  <button type="submit" className="btn btn-primary btn-sm w-100 fw-bold" disabled={updating}>
-                    {updating ? 'Processing...' : 'Apply Transition'}
-                  </button>
-                </form>
-              )}
-            </div>
-          </div>
-        </div>
+        )
       )}
     </AdminLayout>
   );
