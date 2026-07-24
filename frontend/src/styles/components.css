@@ -439,6 +439,23 @@ select.input {
   transform: translateX(7px);
 }
 
+/* On phones, both the page container's and the shared .panel's padding eat
+   into the already-narrow viewport, and Chart.js scales the radar to
+   whichever of width/height is smaller — so width, not height, was the real
+   ceiling on how big the diamond could get. Pull this one card edge-to-edge
+   (cancel the container's own inline padding with a negative margin) to
+   reclaim that width instead of just adding empty vertical space. */
+@media (max-width: 640px) {
+  .stats-radar-panel {
+    margin-inline: calc(-1 * var(--space-5));
+    padding-inline: var(--space-3);
+  }
+  .radar-canvas-wrap {
+    max-width: 100%;
+    height: 380px;
+  }
+}
+
 /* Category donut — chart + always-visible legend side by side. The legend
    is not decorative: with a restrained, mostly-monochrome slice palette
    (see chartTheme.js), it is the primary way a reader tells slices apart,
@@ -626,8 +643,8 @@ select.input {
    fluidly with the panel rather than at fixed breakpoints so it stays
    correctly sized across phones/tablets/desktop without layout shift. */
 .tutorial-image-wrap {
-  margin-top: var(--space-5);
-  padding-top: var(--space-5);
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
   border-top: 1px solid var(--border);
 }
 .tutorial-image {

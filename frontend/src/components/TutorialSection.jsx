@@ -8,7 +8,7 @@ const TutorialSection = ({ icon: Icon, title, subtitle, ctaTo, ctaLabel, steps, 
     <section className="panel">
       <div
         className="flex items-center justify-between flex-wrap gap-3"
-        style={{ marginBottom: 'var(--space-4)', paddingBottom: 'var(--space-4)', borderBottom: '1px solid var(--border)' }}
+        style={{ marginBottom: 'var(--space-3)', paddingBottom: 'var(--space-3)', borderBottom: '1px solid var(--border)' }}
       >
         <div className="flex items-center gap-3">
           <div
@@ -33,7 +33,7 @@ const TutorialSection = ({ icon: Icon, title, subtitle, ctaTo, ctaLabel, steps, 
           <div
             className="flex items-start gap-3"
             key={idx}
-            style={{ marginBottom: idx < steps.length - 1 ? 'var(--space-4)' : 0 }}
+            style={{ marginBottom: idx < steps.length - 1 ? 'var(--space-3)' : 0 }}
           >
             <div
               className="flex items-center justify-center text-mono"

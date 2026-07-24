@@ -127,7 +127,7 @@ const Home = () => {
 
   return (
     <MainLayout>
-      <div className="blueprint-guides" style={{ textAlign: 'center', padding: 'var(--space-4) 0 var(--space-7)' }}>
+      <div className="blueprint-guides" style={{ textAlign: 'center', padding: 'var(--space-4) 0 var(--space-5)' }}>
         <h1 className="text-display" style={{ marginBottom: 'var(--space-4)' }}>
           Smart Digital Public Administration &amp; Transparency
         </h1>
@@ -139,7 +139,7 @@ const Home = () => {
 
       <StatsCounterCard statusBreakdown={stats?.statusBreakdown} className="panel" />
 
-      <div className="grid-12" style={{ marginBottom: 'var(--space-8)', marginTop: 'var(--space-8)' }}>
+      <div className="grid-12" style={{ marginBottom: 'var(--space-6)', marginTop: 'var(--space-6)' }}>
         {FEATURE_CARDS.map((card) => {
           const Icon = card.icon;
           return (
@@ -172,7 +172,7 @@ const Home = () => {
         })}
       </div>
 
-      <div style={{ textAlign: 'center', marginBottom: 'var(--space-6)' }}>
+      <div style={{ textAlign: 'center', marginBottom: 'var(--space-5)' }}>
         <h2 style={{ fontSize: 'var(--text-h1)', marginBottom: 'var(--space-2)' }}>How to Use the UrbanFix Portal</h2>
         <p className="text-secondary" style={{ maxWidth: '600px', margin: '0 auto', fontSize: 'var(--text-body)' }}>
           Step-by-step guidance for filing public complaints and exploring the public transparency registry.
