@@ -408,40 +408,28 @@ select.input {
 }
 .session-pill .tag { border: none; padding: 0; color: var(--accent); }
 
-/* Stats counter strip — CSS Grid with named areas so the Resolved tile can
-   span the width of two tiles while In Progress and Rejected sit side by
-   side on their own row underneath, independent of DOM order. */
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-template-areas:
-    "total pending resolved resolved"
-    "progress progress rejected rejected";
-}
-.stats-tile {
+/* Status radar — replaces the old 5-tile stats grid. Total is shown as a
+   plain label above the chart rather than a 5th radar axis, since it's the
+   sum of the other four and would always dominate the polygon's shape. */
+.radar-panel {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: var(--space-4) var(--space-3);
+  gap: var(--space-3);
 }
-.stats-tile--total { grid-area: total; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-.stats-tile--pending { grid-area: pending; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-.stats-tile--resolved { grid-area: resolved; border-bottom: 1px solid var(--border); }
-.stats-tile--progress { grid-area: progress; border-right: 1px solid var(--border); }
-.stats-tile--rejected { grid-area: rejected; }
-
-@media (max-width: 640px) {
-  .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-areas:
-      "total pending"
-      "resolved resolved"
-      "progress rejected";
-  }
-  .stats-tile--pending { border-right: none; }
-  .stats-tile--resolved { border-right: none; }
+.radar-canvas-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 320px;
+  height: 280px;
+  margin-inline: auto;
+  /* Chart.js's radar auto-layout reserves asymmetric side padding for
+     point labels of different lengths ("In Progress" vs "Rejected"/
+     "Pending"/"Resolved"), so the plot's true center lands ~7px left of
+     this wrapper's geometric center — measured directly from rendered
+     canvas pixels, not eyeballed. This fixed label set never changes, so
+     compensating with a constant shift is stable rather than fragile. */
+  transform: translateX(7px);
 }
 
 /* Category donut — chart + always-visible legend side by side. The legend

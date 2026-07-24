@@ -11,6 +11,8 @@ export const CHART_COLORS = {
   gray400: '#8C8C8C',
   gray500: '#6E6E6E',
   statusPending: '#C9A227',
+  statusProgress: '#3B82F6',
+  statusResolved: '#22C55E',
   statusRejected: '#EF5A5A',
 };
 
