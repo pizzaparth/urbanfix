@@ -1,7 +1,7 @@
 # Project Status & Comprehensive Codebase Documentation
 
 **System Title:** Smart Digital Complaint Management and Public Transparency System (UrbanFix Portal)  
-**Date:** July 22, 2026  
+**Date:** July 25, 2026  
 **Repository Location:** `/Users/parth/University/Classes/3rd semester/DSN`  
 
 ---
@@ -23,7 +23,8 @@ The **Smart Digital Complaint Management and Public Transparency System** is an 
 ```
                                 +-----------------------------------+
                                 |   React 19 Frontend (Vite App)    |
-                                | Bootstrap 5 + Axios + React Router|
+                                |  Hand-rolled CSS design system +  |
+                                |   Chart.js + Axios + React Router |
                                 +-----------------+-----------------+
                                                   |
                                             REST APIs (JSON / FormData)
@@ -43,8 +44,11 @@ The **Smart Digital Complaint Management and Public Transparency System** is an 
 
 | Layer | Technology / Library | Description & Version |
 | :--- | :--- | :--- |
-| **Frontend Framework** | React 19 + Vite | Fast HMR development setup with client-side React Router v7 |
-| **Frontend Styling** | Bootstrap 5.3 + Custom CSS | Responsive layout utilities & strict solid-color design system |
+| **Frontend Framework** | React 19 + Vite 8 | Fast HMR development setup with client-side React Router v6 |
+| **Frontend Styling** | Hand-rolled CSS (no framework) | No Bootstrap/Tailwind — a bespoke dark, monochrome + one-accent design system (`frontend/src/styles/{tokens,base,layout,components,fonts}.css`); see §7 |
+| **Charts** | Chart.js v4 + `react-chartjs-2` v5 | Doughnut, Line, and stacked-Doughnut-as-rings charts on the admin dashboard; see §6 |
+| **Icons** | `lucide-react` | Sole icon library across the app, fixed stroke width (`ICON_STROKE`) |
+| **Fonts** | `geist` npm package (self-hosted `.woff2`) | Geist Sans (UI text) + Geist Mono (metadata/IDs/timestamps) — no external font CDN |
 | **HTTP Client** | Axios | Configured with automatic JWT bearer token interceptors |
 | **Backend Runtime** | Node.js (v18+) | ES Module (`"type": "module"`) Express application |
 | **Database** | MongoDB + Mongoose v8 | Schematized data layer with TTL indexes and reference population |
@@ -93,7 +97,9 @@ Core ticket schema tracking complaint details, status lifecycle, and history.
   * `status` (String, Enum) - State after transition.
   * `changedBy` (ObjectId, Ref: `User`) - Admin or user who performed the transition.
   * `remarks` (String) - Mandatory remark associated with transition.
-  * `changedAt` (Date, Default: `Date.now`).
+  * `changedAt` (Date, Default: `Date.now`) — this is the authoritative "status changed on this date" timestamp (not `updatedAt`); the admin activity heatmap's resolved-count aggregation reads it directly.
+
+Indexes: `citizenId`, `status`, `category`, `location`, `isPublic`, and `createdAt` (added to support the admin activity heatmap's 365-day range scan — see §5.3 and §6).
 
 ---
 
@@ -146,7 +152,8 @@ Base URL: `http://localhost:5001/api`
 * `POST /api/auth/login`: Authenticates credentials (admin or citizen) and returns JWT bearer token.
 
 ### 5.3 Admin Endpoints (`/api/admin`) *(Requires Bearer Token + Admin Role)*
-* `GET /api/admin/stats`: Retrieves administrative analytics summary (status breakdown, category distribution, urgency distribution, timeline trend).
+* `GET /api/admin/stats`: Retrieves administrative analytics summary (status breakdown, category distribution, urgency distribution, timeline trend). Note: the `timelineTrend` aggregation has a known pre-existing bug — it groups over the entire collection with no date filter and a flat `$limit: 14`, so it returns the *earliest* 14 days with data rather than the last 14. Not yet fixed.
+* `GET /api/admin/activity-heatmap?days=365`: Returns a continuous, zero-filled daily series (`{ date, filedCount, resolvedCount, count }[]`, plus `maxCount`) merging complaints **filed** (`createdAt`) and complaints **resolved** (`statusHistory` entries where `status === 'Resolved'`, keyed by `changedAt`) for the last N days (default/max 365). Powers the `/admin/action` contribution-style heatmap (§6). Built via a single `$facet` aggregation in `backend/utils/statsHelpers.js` (`getActivityByDay`), all computed in UTC.
 * `GET /api/admin/complaints`: Retrieves paginated, filterable complaints grid populated with full citizen contact details (`name`, `email`, `phone`).
 * `PATCH /api/admin/complaints/:id/status`: Updates complaint status and remarks (enforcing the state-machine transition constraints below) and triggers email/PDF side-effects. There is no manual public-visibility toggle on this endpoint - see `isPublic` in §3.3.
 
@@ -158,89 +165,112 @@ Base URL: `http://localhost:5001/api`
 src/
 ├── App.jsx                   # Central Router & ProtectedRoute guard wrappers
 ├── main.jsx                  # React application entry point
-├── index.css                 # Custom CSS Design System (Solid Colors, Badges, Cards)
+├── index.css                 # Imports the styles/ modules below, in cascade order
+├── styles/
+│   ├── tokens.css             # Design tokens: gray scale, the one accent color, spacing, radii, type — source of truth for /color_palatte.md
+│   ├── base.css                # Resets, html/body, global element defaults
+│   ├── layout.css              # .container, .grid-12/.col-span-*, .filter-bar (responsive search/filter row), flex utilities
+│   ├── components.css          # Every component class: .navbar, .btn, .panel, .stats-grid, .donut-*, .ring-*, .heatmap-*, .session-pill, etc.
+│   └── fonts.css               # @font-face declarations for self-hosted Geist Sans/Mono
 ├── constants/
-│   └── categories.js         # Canonical CATEGORIES list & CATEGORY_QUESTIONNAIRES map (single source of truth)
+│   ├── categories.js          # Canonical CATEGORIES list & CATEGORY_QUESTIONNAIRES map (single source of truth)
+│   └── icons.js                # ICON_STROKE — the one stroke-width constant every lucide-react icon uses
+├── config/
+│   └── chartTheme.js          # Chart.js color tokens (CHART_COLORS), the category-donut identity palette (CHART_CATEGORY_COLORS/getCategoryColor), and the heatmap's sequential ramp (HEATMAP_LEVEL_COLORS/getHeatmapLevel)
 ├── contexts/
-│   └── AuthContext.jsx       # Context Provider managing auth state & localStorage tokens
+│   └── AuthContext.jsx        # Context Provider managing auth state & localStorage tokens
+├── hooks/
+│   └── useAuth.js              # Consumes AuthContext
 ├── services/
-│   └── api.js                # Axios instance (VITE_API_URL, Auth Interceptors) & getUploadsBaseUrl() helper
+│   └── api.js                  # Axios instance (VITE_API_URL, Auth Interceptors) & getUploadsBaseUrl() helper
 ├── utils/
-│   ├── urgency.js             # calculateUrgency(answers) - derives urgency rating from questionnaire responses
-│   └── downloadReceipt.js     # Shared blob-fetch-and-save-as PDF receipt download helper
+│   ├── urgency.js               # calculateUrgency(answers) - derives urgency rating from questionnaire responses
+│   └── downloadReceipt.js       # Shared blob-fetch-and-save-as PDF receipt download helper
 ├── components/
-│   ├── StatusBadge.jsx        # Shared status pill (Pending/In Progress/Resolved/Rejected)
-│   ├── StatsCounterCard.jsx   # Shared 5-tile stats counter row (used on Home & AdminDashboard)
-│   ├── StatusTimeline.jsx     # Shared status-history audit log stepper (used on Tracker & ComplaintDetail)
-│   ├── TutorialSection.jsx    # Parameterized "how to use the portal" tutorial block (used 3x on Home)
-│   ├── RegistryFilters.jsx    # Search/filter card for the Public Registry
-│   └── ComplaintCard.jsx      # Registry listing card (used on Registry)
+│   ├── NavBar.jsx               # Single shared navbar used by both MainLayout and AdminLayout (see below) — brand, items, actions all passed as props
+│   ├── StatusBadge.jsx          # Shared status pill (Pending/In Progress/Resolved/Rejected)
+│   ├── StatsCounterCard.jsx     # Shared stats tile grid (used on Home & AdminDashboard) — see below for its layout
+│   ├── StatusTimeline.jsx       # Shared status-history audit log stepper (used on Tracker & ComplaintDetail)
+│   ├── TutorialSection.jsx      # Parameterized "how to use the portal" tutorial block (used 3x on Home)
+│   ├── RegistryFilters.jsx      # Search/filter card for the Public Registry
+│   ├── ComplaintCard.jsx        # Registry listing card (used on Registry)
+│   ├── ActivityHeatmap.jsx      # GitHub-style contribution heatmap, plain CSS grid (no charting lib) — see below
+│   └── Modal.jsx                # Generic modal shell
 ├── layouts/
-│   ├── MainLayout.jsx        # Public Navbar & Footer wrapper
-│   └── AdminLayout.jsx       # Dark sidebar layout for administrative pages
+│   ├── MainLayout.jsx           # Public NavBar + footer wrapper
+│   └── AdminLayout.jsx          # Admin NavBar wrapper (no sidebar — top nav only, same NavBar component as public)
 └── pages/
     ├── public/
-    │   ├── Home.jsx          # Public Dashboard with Top Statistics Overview & Feature Navigation
-    │   ├── Registry.jsx      # Searchable Complaints Registry with filters & PDF receipt download
-    │   ├── FileComplaint/    # Multi-step complaint submission form with dynamic questionnaire & OTP
-    │   │   ├── index.jsx       # Owns wizard state/handlers; composes the steps & modals below
-    │   │   ├── CategoryStep.jsx  # Step 1: category grid + dynamic questionnaire
-    │   │   ├── DetailsStep.jsx   # Step 2: location/description/image upload
-    │   │   ├── VerifyStep.jsx    # Step 3: contact info + review summary
-    │   │   ├── OtpModal.jsx      # Email OTP verification modal
-    │   │   └── SuccessModal.jsx  # Post-submission tracking ID modal
-    │   └── Tracker.jsx       # Tracking ID search and audit timeline viewer
+    │   ├── Home.jsx              # Public Dashboard with Top Statistics Overview & Feature Navigation
+    │   ├── Registry.jsx          # Searchable Complaints Registry with filters & PDF receipt download
+    │   ├── FileComplaint/        # Multi-step complaint submission form with dynamic questionnaire & OTP
+    │   │   ├── index.jsx           # Owns wizard state/handlers; composes the steps & modals below
+    │   │   ├── CategoryStep.jsx      # Step 1: category grid + dynamic questionnaire
+    │   │   ├── DetailsStep.jsx       # Step 2: location/description/image upload
+    │   │   ├── VerifyStep.jsx        # Step 3: contact info + review summary
+    │   │   ├── OtpModal.jsx          # Email OTP verification modal
+    │   │   └── SuccessModal.jsx      # Post-submission tracking ID modal
+    │   └── Tracker.jsx           # Tracking ID search and audit timeline viewer
     ├── citizen/
-    │   ├── Login.jsx         # Unified Login view (Admin & Citizen access)
-    │   ├── Register.jsx      # Secondary registration view
-    │   ├── VerifyOtp.jsx     # OTP verification screen
-    │   └── Dashboard.jsx     # Citizen personal complaints list
+    │   ├── Login.jsx             # Unified Login view (Admin & Citizen access)
+    │   ├── Register.jsx          # Secondary registration view
+    │   ├── VerifyOtp.jsx         # OTP verification screen
+    │   └── Dashboard.jsx         # Citizen personal complaints list
     └── admin/
-        ├── AdminDashboard.jsx # KPI Cards & Chart.js visual analytics (category, timeline, urgency)
-        ├── AdminAction.jsx    # Search/filters & paginated complaints data table
-        └── ComplaintDetail.jsx# Status transition form, remarks editor, & audit logs
+        ├── AdminDashboard.jsx     # KPI tiles + 3 Chart.js visualizations (donut, line, ring — see below)
+        ├── AdminAction.jsx        # Activity heatmap + responsive search/filter bar + paginated complaints table
+        └── ComplaintDetail.jsx    # Status transition form, remarks editor, & audit logs
 ```
 
 ### Key UI Features
-1. **Public Home Dashboard (`Home.jsx`):**
-   * Centered statistics overview section with title placed directly on top of number in solid black Poppins font (`#000000`).
-   * Mobile-responsive vertical stacking layout (`col-12 col-md`) for smaller device viewports.
-   * Feature quick-navigation cards and tutorial headers utilizing SVG icon assets (`notebook-test.svg`, `circle-plus.svg`, `search.svg`) from `/frontend/public/`.
-   * User Guide & Tutorial Sections: 3 full-width vertical tutorial sections (*Tutorial 1: Submit Complaint*, *Tutorial 2: Public Registry*, *Tutorial 3: Track Status*) featuring vertical step layouts with numbered badges and uniform hover action buttons.
-2. **Public Complaints Registry (`Registry.jsx`):**
-   * Dedicated page accessible via Navbar ("Public Registry").
-   * Adheres to universal design system: Poppins typography (`#000000` / `#0F172A`), high-contrast body & small font text (`#1E293B` / `#0F172A`), dedicated section heading ("Registered Public Complaints"), semantic solid pill badges (`Pending`, `In Progress`, `Resolved`, `Rejected`), monospace tracking IDs (`COMP-XXXXX-X`), non-collapsible vertical stacked search/filter layout, separated icon boxes with horizontal gap (`gap-2`), inline clear (`✕`), removable active filter summary chips, 1-click "Reset All" button with hover fill (`#EF4444`), sorting toggle (`Newest` vs `Oldest`), and PDF receipt downloads.
-3. **Frictionless Submission (`pages/public/FileComplaint/`):**
-   * 3-step filing wizard with category-specific questionnaires (`Road Damage`, `Water Leakage`, `Garbage`, `Street Light`, `Administrative`, `Other`), split into a thin `index.jsx` coordinator plus dedicated `CategoryStep`, `DetailsStep`, `VerifyStep`, `OtpModal`, and `SuccessModal` components.
-   * Fully mobile-responsive layout: responsive category grid (`col-12 col-sm-6 col-md-4`), straight-line aligned Yes/No questionnaire toggles across all viewports (`btn-group flex-shrink-0`), responsive action buttons (`flex-column-reverse flex-sm-row`), responsive review grid (`col-12 col-sm-6`), padding-safe OTP and Success modal overlays, real-time urgency badge calculation via the shared `calculateUrgency()` util (`High Urgency`, `Medium Urgency`, `Standard Urgency`), and email OTP verification.
- 4. **Frosted Glass Responsive Navbar & Portal Switcher (`MainLayout.jsx` & `AdminLayout.jsx`):**
-    * Shared sticky top header with frosted glass blur effect (`backdrop-filter: blur(12px)`), solid dark navy background (`rgba(15, 23, 42, 0.95)`), and centered container alignment (`container`). Removed border line above action buttons for clean header presentation.
-   * Bidirectional Portal Switcher: When unauthenticated, the Public Portal header provides an "Admin Login" button (`/admin/login`). Once logged in as an Admin (`user.role === 'admin'`), a prominent "Admin Panel" switch button appears in the header. The Admin Console navbar includes a "Public Portal" switch button styled using the `color_palatte.md` Secondary token (`backgroundColor: #10B981`, hover `#059669`, white text). Both switcher buttons feature identical dimensions (`px-3 py-2 rounded-pill fw-bold`, `fontSize: 0.85rem`, `0.45rem` icon padding). The Logout button is preserved directly on the session badge across both views.
- 5. **Admin Control Console (`AdminDashboard.jsx`, `AdminAction.jsx` & `ComplaintDetail.jsx`):**
-   * **System Overview & Visual Analytics Dashboard (`/admin/dashboard`):** Homepage-aligned top statistic counter section, rendered via the shared `StatsCounterCard` component (also used on the public `Home.jsx`), accompanied by 3 vertically stacked visual graphs powered by Chart.js (`1. Category Volume Breakdown Bar Chart`, `2. Complaint Inflow & Resolution Timeline Multi-Line Trend`, `3. Priority & Urgency Impact Matrix`). Equipped with a 10-second background polling timer (`setInterval`) and tab-focus re-fetch listener (`window.addEventListener('focus')`) for seamless real-time graph auto-refresh when complaints are created, updated, or deleted. Graph 1 features dynamic category mapping reading MongoDB aggregate results directly (`categoryLabels` & `categoryCounts`), supporting all citizen categories (`Road Damage`, `Water Leakage`, `Garbage`, `Street Light`, `Administrative`, `Other`). `urgencyLevel` is persisted on the MongoDB schema (`Complaint.js`) and set at submission time; legacy records missing it are backfilled via a standalone, manually-run migration script (`backend/scripts/backfillUrgencyLevels.js`) rather than on every stats request, so `GET /api/admin/stats` no longer performs a write on each poll. All redundant header pills (*Department Volume*, *Timeline Velocity*, *Priority Audit*) have been removed for a clean presentation.
-   * **Administrative Action Panel (`/admin/action`):** Shifted complaint search bar (Tracking ID / title filter, status filter, category filter, 1-click reset button) and full complaints data table grid with pagination and citizen contact details to a dedicated tab (`/admin/action`). Category options across the action panel filter, `/file-complaint`, `/registry`, and the citizen dashboard's "File New Complaint" modal all read from the single shared `frontend/src/constants/categories.js` list (`Road Damage`, `Water Leakage`, `Garbage`, `Street Light`, `Administrative`, `Other`), so they cannot drift out of sync.
-   * **Navbar Integration:** Added "Action Panel" tab link in `AdminLayout.jsx` with identical pill attributes (`px-3 py-2 rounded-pill fw-semibold text-transition`, `0.45rem` icon padding, active indicator `#60A5FA`).
-   * **Detail Inspection (`/admin/complaints/:id`):** Interactive status update form enforcing allowed transitions and mandatory remarks. The privilege to manually toggle ticket public visibility has been completely removed.
+
+1. **Design language — dark monochrome "Swiss Tech" (superseded the earlier light-mode glassmorphism system entirely):** Near-black surfaces (`--gray-950` … `--gray-50` scale), exactly **one accent color** (`--accent #3B82F6`) used everywhere identity/emphasis is needed, sharp/minimal radii (2–6px) on nearly every static component, Geist Sans for UI text and Geist Mono for metadata (tracking IDs, timestamps, counts). No gradients, no Bootstrap, no glassmorphism blur-everywhere aesthetic — full spec in `color_palatte.md` and `Instructions/DESIGN_INSTRUCTION.md`. The one deliberate exception is the navbar (#4 below), which is an explicitly-requested departure into a floating glass pill.
+
+2. **Public Home Dashboard (`Home.jsx`):** Centered stats overview (shared `StatsCounterCard`), feature quick-navigation cards, and 3 tutorial sections (submit / registry / track), all restyled to the dark token system — no more Poppins/light-theme/SVG-asset styling from the earlier era.
+
+3. **Public Complaints Registry (`Registry.jsx`):** Search/filter card (`RegistryFilters`), status/category filters, sort toggle, semantic status badges, monospace tracking IDs, PDF receipt downloads — restyled to the dark system, no remaining Bootstrap grid classes.
+
+4. **Floating pill navbar, shared across both layouts (`components/NavBar.jsx` + `.navbar*` in `components.css`):**
+   * One `NavBar` component renders for both `MainLayout` (public) and `AdminLayout` (admin) — brand target, nav items, and the right-side actions cluster (login/logout, portal-switch buttons, session pill) are all passed in as props, so there is a single source of truth for the header instead of two parallel implementations.
+   * **Shape/position:** `position: fixed`, centered, inset from the viewport edges, narrower `max-width` than the page's own content width so it reads as a discrete floating element. Fully pill-shaped (`border-radius: 9999px`) when collapsed to a single row; relaxes to a 24px rounded rectangle (via `:has(.navbar-collapse.open)`) when the mobile dropdown is open, since a true pill looks wrong once the box gets tall.
+   * **Surface:** translucent blurred background (`backdrop-filter: blur(16px) saturate(140%)`), a visible accent-tinted border, and a layered glow/shadow (`box-shadow`) for depth — the one place in the app that intentionally breaks from flat/no-blur, per explicit request.
+   * `position: sticky` was tried first and doesn't actually work in this codebase: `html, body { overflow-x: hidden }` (base.css, pre-existing) turns `body` into a scroll-container ancestor, which is a well-known way to silently break sticky positioning in most browsers (the element just scrolls away like `relative`). Switching to `fixed` sidesteps it entirely; `main.flex-1` carries compensating `padding-top` (in `layout.css`) since the fixed bar no longer occupies flow space.
+   * **Responsive/collapsible:** below 860px, links + actions collapse behind a hamburger toggle into a dropdown panel (`.navbar-collapse.open`), auto-closing on route change; above that, everything sits in one row with generous, deliberately-spaced gaps between brand / links / actions.
+5. **Frictionless Submission (`pages/public/FileComplaint/`):** 3-step filing wizard (category+questionnaire → details → verify+OTP) unchanged in flow from earlier, restyled to the dark token system; urgency computed via `calculateUrgency()`.
+6. **`StatsCounterCard` layout:** a 4-column grid where **Resolved** spans 2 columns (double width, centered text) and **In Progress** / **Rejected** sit side by side on the row below — not 5 equal tiles.
+7. **Admin Dashboard (`/admin/dashboard`) — 3 Chart.js visualizations, none of them plain bar/line charts anymore:**
+   * **Category Volume Breakdown:** a `Doughnut` (not a bar chart) with a center label that shows the total by default and swaps to the hovered category's name+count on hover; always-visible legend (swatch/label/count/%) since the slice palette (`CHART_CATEGORY_COLORS`) is intentionally restrained/monochrome-plus-accent, so color alone isn't a reliable identity signal.
+   * **Complaint Inflow & Resolution Timeline Trend:** a `Line` chart with a custom crosshair plugin, `interaction: {mode:'index', intersect:false}` (hovering anywhere reveals all 3 series at that date), and hover-reveal-only point markers.
+   * **Calculated Priority & Urgency Impact Breakdown:** three concentric `Doughnut` rings (not a bar chart) — High/Medium/Standard urgency as nested progress rings, each ring's sweep = that level's share of total complaints, center label swaps to the hovered ring's name+count, legend rows include a per-item progress bar.
+   * All three chart `data`/`options` objects are wrapped in `useMemo` — a real bug was found and fixed where hover-driven re-renders handed Chart.js new object references every time, causing it to replay its full entrance animation mid-hover (rings/lines flashing blank while being hovered).
+8. **Admin Action Panel (`/admin/action`):**
+   * **Complaint Activity heatmap** (new): a GitHub-style contribution calendar (`ActivityHeatmap.jsx`) rendered above the "Administrative Action Panel" heading, showing daily filed+resolved activity for the last 365 days. Built as a plain CSS grid (no charting library — Chart.js has no matrix/heatmap chart type, and this app has no Tailwind/visx to use a registry-style heatmap component either), fed by `GET /api/admin/activity-heatmap` (see §5.3). Includes month labels, a hover tooltip (count/date/filed-resolved breakdown), and a "Less→More" legend using a sequential single-hue ramp derived from the one accent color (`HEATMAP_LEVEL_COLORS`).
+   * **Responsive search/filter bar** (`.filter-bar`): a flexible `2fr 1fr 1fr auto` row on desktop (search grows, Reset sizes to its own content) that collapses to a 2-column tablet layout at ≤900px and a single stacked column at ≤520px — replaced the old blanket `grid-12`/`col-span-*` utility (which only had one all-or-nothing 768px breakpoint) with a layout tuned specifically for these 4 fields.
+   * Paginated complaints table with citizen contact details, unchanged in behavior from earlier.
+9. **Detail Inspection (`/admin/complaints/:id`):** Interactive status update form enforcing allowed transitions and mandatory remarks; no manual public-visibility toggle exists.
 
 ---
 
 ## 7. Design System & UI Specifications
 
-The interface adheres to a modern **Frosted Glassmorphism Design System** layered over a full-page digital blueprint grid with soft blue ambient glow, based on `/color_palatte.md`:
+The interface is a **dark monochrome, one-accent-color "Swiss Tech" system** (full spec in `/color_palatte.md`, governing rules in `Instructions/DESIGN_INSTRUCTION.md`) — restrained, flat, sharp-radii, no gradients, no glassmorphism. The one deliberate departure is the navbar, an explicitly-requested floating glass pill (§6).
 
 | Visual Token | Hex / RGBA Code | Applied Component / Context |
 | :--- | :--- | :--- |
-| **Primary Blue** | `#2563EB` | Main buttons, navigation active states, grid lines (`rgba(37,99,235,0.12)`) |
-| **Primary Hover** | `#1D4ED8` | Button hover states |
-| **Success Green** | `#10B981` | Secondary buttons, resolved badge accents |
-| **Warning Amber** | `#F59E0B` | Pending status badges, warning callouts |
-| **Dark Navy** | `#0F172A` | Navbar, Admin sidebar background |
-| **Page Background** | `#F8FAFC` | Main viewport body background with full-height 32px grid & faint ambient blue glow |
-| **Glassmorphic Surface** | `rgba(255, 255, 255, 0.42)` | Translucent cards, modals (`blur(20px)`), forms, tables with specular top-edge bevel |
-| **Status: Pending** | `#FEF3C7` (BG) / `#B45309` (Text) | Badges & metrics cards |
-| **Status: In Progress** | `#CFFAFE` (BG) / `#0891B2` (Text) | Badges & metrics cards |
-| **Status: Resolved** | `#DCFCE7` (BG) / `#15803D` (Text) | Badges & metrics cards |
-| **Status: Rejected** | `#FEE2E2` (BG) / `#B91C1C` (Text) | Badges & metrics cards |
+| **Page Background** | `#0A0A0A` (Gray 950) | Base surface everywhere |
+| **Surface / Raised Surface** | `#111111` / `#161616` (Gray 900 / 850) | Cards, panels, tables / modal panels |
+| **Border (default / strong)** | `#1F1F1F` / `#272727` (Gray 800 / 750) | Card & input borders |
+| **Text (primary / secondary / muted)** | `#FAFAFA` / `#ADADAD` / `#6E6E6E` (Gray 50 / 300 / 500) | Headings / body / placeholders |
+| **The one accent color** | `#3B82F6` (hover `#60A5FA`) | Primary buttons, active nav, links, focus rings, "In Progress" status, the one chart accent series |
+| **Status: Pending** | `#C9A227` (icon/border/text only, never a filled bg) | Badges & metrics |
+| **Status: In Progress** | `#3B82F6` (= accent) | Badges & metrics |
+| **Status: Resolved** | `#22C55E` | Badges & metrics |
+| **Status: Rejected** | `#EF5A5A` | Badges & metrics |
+| **Category donut identity palette** | 6-step: accent → gray-100 → gray-500 → accent-hover → gray-300 → gray-400 | `CHART_CATEGORY_COLORS` in `chartTheme.js` — deliberately restrained, so every consumer must pair it with an always-visible label (never color alone) |
+| **Heatmap sequential ramp** | `#1F1F1F` (empty) → `#213659` → `#2A5191` → `#336AC5` → `#3B82F6` (max) | `HEATMAP_LEVEL_COLORS` — one hue, monotone lightness, derived from the accent + `--surface-raised`, not an imported palette |
+| **Navbar (exception to "no blur")** | `rgba(17,17,17,0.72)` + `backdrop-filter: blur(16px)` + accent-tinted glow border | Floating fixed pill — see §6 |
+| **Radii** | 2px / 4px / 6px (`--radius-sm/md/lg`) | Sharp/minimal everywhere *except* the navbar, which is intentionally pill-shaped (9999px collapsed / 24px expanded) |
+| **Fonts** | Geist Sans (UI) / Geist Mono (metadata) | Self-hosted via the `geist` npm package, no CDN |
 
 ---
 
@@ -274,22 +304,25 @@ Seeded via `node backend/seedAdmin.js`:
 | Module / Feature | Status | Verification Detail |
 | :--- | :--- | :--- |
 | **Backend Express Server** | ✅ Fully Functional | Health check at `/health`, error middleware, CORS enabled |
-| **MongoDB Mongoose Models** | ✅ Fully Functional | Indexes applied, TTL on OTPs, sub-documents for audit trail |
+| **MongoDB Mongoose Models** | ✅ Fully Functional | Indexes applied (incl. new `createdAt` index), TTL on OTPs, sub-documents for audit trail |
 | **On-the-fly OTP Flow** | ✅ Fully Functional | Transient OTP creation, email delivery with console fallback |
 | **Dynamic Category Questionnaire**| ✅ Fully Functional | Dynamic Yes/No questionnaire & calculated urgency badges per category |
 | **Multi-Step Submission Wizard**| ✅ Fully Functional | 3-step filing wizard on `/file-complaint` with preview & OTP modal |
-| **Frosted Glass Responsive Navbar**| ✅ Fully Functional | Sticky header with blur, active route pills, CTA button & touch drawer |
-| **Full-Page Blueprint Grid & Glow**| ✅ Fully Functional | 32px × 32px digital grid background extending 100% height with soft blue ambient glow |
-| **Translucent Glassmorphism Cards**| ✅ Fully Functional | `rgba(255, 255, 255, 0.42)` opacity cards with `blur(20px)`, specular bevel, glass inputs & tables |
-| **Glassmorphic Statistics Counters**| ✅ Fully Functional | Frosted glassmorphic top counter section (`rgba(255, 255, 255, 0.42)`, `blur(20px)`) on Public Portal & Admin Console |
+| **Floating pill navbar** | ✅ Fully Functional | Fixed position, centered inset pill, accent glow border, blur background, verified in-browser: stays visible while scrolling, correctly relaxes radius when the mobile dropdown is open |
+| **Collapsible/responsive navbar** | ✅ Fully Functional | Hamburger toggle below 860px, auto-closes on route change, verified on both `MainLayout` and `AdminLayout` (shared `NavBar.jsx`) |
+| **Dark monochrome "Swiss Tech" design system** | ✅ Fully Functional | `tokens.css`/`base.css`/`layout.css`/`components.css`, no Bootstrap, no glassmorphism, one accent color throughout |
+| **Admin dashboard charts (donut / crosshair line / ring)** | ✅ Fully Functional | Chart.js `Doughnut`/`Line` with custom crosshair plugin; hover-flicker bug (stale object identity replaying entrance animation) found and fixed via `useMemo` |
+| **Admin activity heatmap** | ✅ Fully Functional | `GET /api/admin/activity-heatmap`, 365 cells rendered, hover tooltip verified (a real clipping bug from `overflow-x:auto` implicitly computing `overflow-y:auto` was found and fixed), centered layout, horizontal scroll on narrow viewports |
+| **Responsive admin filter bar** | ✅ Fully Functional | `.filter-bar` — verified at desktop / ≤900px / ≤520px tiers |
 | **Dedicated Public Registry Page**| ✅ Fully Functional | `/registry` page with location regex search, category & status filters |
 | **Complaint Submission** | ✅ Fully Functional | Multer multi-file upload, tracking ID generation (`COMP-XXXXX-X`) |
 | **State Machine Constraints** | ✅ Fully Functional | Enforces `Pending` -> `In Progress` -> `Resolved`/`Rejected` flow |
 | **PDF Receipt Engine** | ✅ Fully Functional | PDFKit streaming and email attachment upon ticket resolution |
 | **Public Transparency Portal**| ✅ Fully Functional | Redacts PII (`citizenId`), search by location, category, status; registry query filters strictly on `isPublic: true` |
 | **Admin Console & Auth** | ✅ Fully Functional | JWT bearer auth, protected routes, stats breakdown |
-| **Shared Component Library** | ✅ Fully Functional | `StatusBadge`, `StatsCounterCard`, `StatusTimeline`, `TutorialSection`, `RegistryFilters`, `ComplaintCard` (`frontend/src/components/`) eliminate duplicated status-badge, stats-tile, timeline, and download-receipt logic that previously existed independently on 4-5 pages each |
+| **Shared Component Library** | ✅ Fully Functional | `NavBar`, `StatusBadge`, `StatsCounterCard`, `StatusTimeline`, `TutorialSection`, `RegistryFilters`, `ComplaintCard`, `ActivityHeatmap` (`frontend/src/components/`) — one navbar implementation for both public and admin layouts, eliminating what used to be two parallel headers |
 | **Backend Migration Scripts** | ✅ Fully Functional | One-off, manually-run scripts (`backend/scripts/backfillUrgencyLevels.js`, `backend/scripts/backfillIsPublic.js`) backfill legacy records without running on every request |
+| **Known issue (not yet fixed)** | ⚠️ Latent bug | `GET /api/admin/stats`'s `timelineTrend` aggregation has no date filter and a flat `$limit: 14`, so it returns the earliest 14 days with data rather than the last 14 — out of scope for recent work, still present |
 
 
 ---
