@@ -46,7 +46,7 @@ The **Smart Digital Complaint Management and Public Transparency System** is an 
 | :--- | :--- | :--- |
 | **Frontend Framework** | React 19 + Vite 8 | Fast HMR development setup with client-side React Router v6 |
 | **Frontend Styling** | Hand-rolled CSS (no framework) | No Bootstrap/Tailwind — a bespoke dark, monochrome + one-accent design system (`frontend/src/styles/{tokens,base,layout,components,fonts}.css`); see §7 |
-| **Charts** | Chart.js v4 + `react-chartjs-2` v5 | Doughnut, Line, and stacked-Doughnut-as-rings charts on the admin dashboard; see §6 |
+| **Charts** | Chart.js v4 + `react-chartjs-2` v5 | Doughnut, Line, stacked-Doughnut-as-rings (admin dashboard), and native Radar (`StatsCounterCard`, both Home & AdminDashboard); see §6 |
 | **Icons** | `lucide-react` | Sole icon library across the app, fixed stroke width (`ICON_STROKE`) |
 | **Fonts** | `geist` npm package (self-hosted `.woff2`) | Geist Sans (UI text) + Geist Mono (metadata/IDs/timestamps) — no external font CDN |
 | **HTTP Client** | Axios | Configured with automatic JWT bearer token interceptors |
@@ -176,7 +176,7 @@ src/
 │   ├── categories.js          # Canonical CATEGORIES list & CATEGORY_QUESTIONNAIRES map (single source of truth)
 │   └── icons.js                # ICON_STROKE — the one stroke-width constant every lucide-react icon uses
 ├── config/
-│   └── chartTheme.js          # Chart.js color tokens (CHART_COLORS), the category-donut identity palette (CHART_CATEGORY_COLORS/getCategoryColor), and the heatmap's sequential ramp (HEATMAP_LEVEL_COLORS/getHeatmapLevel)
+│   └── chartTheme.js          # Chart.js color tokens (CHART_COLORS — incl. statusPending/statusProgress/statusResolved/statusRejected), the category-donut identity palette (CHART_CATEGORY_COLORS/getCategoryColor), and the heatmap's sequential ramp (HEATMAP_LEVEL_COLORS/getHeatmapLevel)
 ├── contexts/
 │   └── AuthContext.jsx        # Context Provider managing auth state & localStorage tokens
 ├── hooks/
@@ -189,9 +189,9 @@ src/
 ├── components/
 │   ├── NavBar.jsx               # Single shared navbar used by both MainLayout and AdminLayout (see below) — brand, items, actions all passed as props
 │   ├── StatusBadge.jsx          # Shared status pill (Pending/In Progress/Resolved/Rejected)
-│   ├── StatsCounterCard.jsx     # Shared stats tile grid (used on Home & AdminDashboard) — see below for its layout
+│   ├── StatsCounterCard.jsx     # Shared status radar chart (used on Home & AdminDashboard) — see below, no longer a tile grid
 │   ├── StatusTimeline.jsx       # Shared status-history audit log stepper (used on Tracker & ComplaintDetail)
-│   ├── TutorialSection.jsx      # Parameterized "how to use the portal" tutorial block (used 3x on Home)
+│   ├── TutorialSection.jsx      # Parameterized "how to use the portal" tutorial block (used 3x on Home), each with a supporting screenshot below its steps
 │   ├── RegistryFilters.jsx      # Search/filter card for the Public Registry
 │   ├── ComplaintCard.jsx        # Registry listing card (used on Registry)
 │   ├── ActivityHeatmap.jsx      # GitHub-style contribution heatmap, plain CSS grid (no charting lib) — see below
@@ -233,11 +233,19 @@ src/
 4. **Floating pill navbar, shared across both layouts (`components/NavBar.jsx` + `.navbar*` in `components.css`):**
    * One `NavBar` component renders for both `MainLayout` (public) and `AdminLayout` (admin) — brand target, nav items, and the right-side actions cluster (login/logout, portal-switch buttons, session pill) are all passed in as props, so there is a single source of truth for the header instead of two parallel implementations.
    * **Shape/position:** `position: fixed`, centered, inset from the viewport edges, narrower `max-width` than the page's own content width so it reads as a discrete floating element. Fully pill-shaped (`border-radius: 9999px`) when collapsed to a single row; relaxes to a 24px rounded rectangle (via `:has(.navbar-collapse.open)`) when the mobile dropdown is open, since a true pill looks wrong once the box gets tall.
-   * **Surface:** translucent blurred background (`backdrop-filter: blur(16px) saturate(140%)`), a visible accent-tinted border, and a layered glow/shadow (`box-shadow`) for depth — the one place in the app that intentionally breaks from flat/no-blur, per explicit request.
+   * **Surface:** translucent blurred background (`rgba(17,17,17,0.45)` + `backdrop-filter: blur(20px) saturate(140%)` — tuned twice, starting more opaque/less blurred before being loosened for more visible page content through it), a visible accent-tinted border, and a layered glow/shadow (`box-shadow`) for depth — the one place in the app that intentionally breaks from flat/no-blur, per explicit request.
    * `position: sticky` was tried first and doesn't actually work in this codebase: `html, body { overflow-x: hidden }` (base.css, pre-existing) turns `body` into a scroll-container ancestor, which is a well-known way to silently break sticky positioning in most browsers (the element just scrolls away like `relative`). Switching to `fixed` sidesteps it entirely; `main.flex-1` carries compensating `padding-top` (in `layout.css`) since the fixed bar no longer occupies flow space.
    * **Responsive/collapsible:** below 860px, links + actions collapse behind a hamburger toggle into a dropdown panel (`.navbar-collapse.open`), auto-closing on route change; above that, everything sits in one row with generous, deliberately-spaced gaps between brand / links / actions.
+   * A second real bug was found and fixed here: the pill↔rounded-rectangle radius change was originally CSS-transitioned, but the dropdown's height change itself is an instant `display:none`↔`flex` toggle with no transition — so for several frames a still-huge (mid-interpolation, e.g. thousands of px) radius landed on the already-tall expanded box. Browsers clamp `border-radius` to at most half the box's height, so during that window it rendered as a bulging/warped pill on a tall rectangle instead of clean rounded corners. Fix: removed the `transition: border-radius` entirely so the shape snaps in sync with the equally-instant height change.
 5. **Frictionless Submission (`pages/public/FileComplaint/`):** 3-step filing wizard (category+questionnaire → details → verify+OTP) unchanged in flow from earlier, restyled to the dark token system; urgency computed via `calculateUrgency()`.
-6. **`StatsCounterCard` layout:** a 4-column grid where **Resolved** spans 2 columns (double width, centered text) and **In Progress** / **Rejected** sit side by side on the row below — not 5 equal tiles.
+6. **`StatsCounterCard` — a status Radar chart, not a tile grid anymore** (`components/StatsCounterCard.jsx`, rendered on both `Home.jsx` and `AdminDashboard.jsx`, positioned below the homepage's hero heading/paragraph):
+   * Went through an intermediate 4-column-grid-with-a-2-wide-Resolved-tile layout before being replaced entirely by a Chart.js **native `radar` chart type** (`RadarController`/`RadialLinearScale`, registered independently in this file since `Home.jsx` can mount before any admin-only module has registered them globally) — of the four `@bklitui`-referenced chart styles adapted in this project (donut, line, ring, heatmap, radar), this was the only one with a first-class Chart.js equivalent, so no custom canvas/CSS build was needed.
+   * **4 axes only — Pending / In Progress / Resolved / Rejected — deliberately excluding Total**, since Total is the sum of the other four and would always be the largest point, dominating the polygon's shape (a real radar-chart anti-pattern). Total is shown as a separate `text-mono-label`/`text-mono` pair above the chart instead.
+   * **Per-axis identity color** on each vertex (`POINT_COLORS`: gold/accent-blue/green/red, matching `StatusBadge` elsewhere), while the connecting polygon itself is a single accent-blue outline (`borderColor`) with **no fill** (`backgroundColor: 'transparent'`) — went through an iteration where both fill and border were removed per a literal reading of "remove the greyish background and border," leaving only points, then the border was restored once clarified that only the fill should be gone.
+   * Point labels are solid white (`#FFFFFF`, not the usual muted `--text-secondary`), grid/angle lines use `--border`, radial tick numbers are hidden (`ticks.display:false`) with `ticks.count` tuned for wider ring spacing.
+   * `.stats-radar-panel` overrides the shared `.panel` background/border to fully transparent for this one instance only (the global `.panel` rule is untouched — every other card in the app keeps its normal surface/border).
+   * Two more real bugs found and fixed: (1) the total count wasn't actually centered under its label — the wrapping `<div>` lacked `text-align:center`, so the number sat left-aligned within a box sized by the wider label text; (2) the polygon's true center sat ~7px off from the chart's geometric center because Chart.js's radar layout reserves asymmetric side padding for the longer "In Progress" axis label — measured directly from rendered canvas pixel data (not eyeballed) and compensated with a fixed `transform: translateX(7px)` on `.radar-canvas-wrap`, stable since this label set never changes.
+   * **Mobile-specific sizing fix:** on phones, both the page container's and the panel's padding stacked to leave Chart.js very little width to draw in (it scales the diamond to whichever of width/height is smaller — so just enlarging height alone, tried first, only added empty space without growing the visible shape). Fix: at `≤640px`, `.stats-radar-panel` gets a negative `margin-inline` that cancels the container's own padding (pulling just this card edge-to-edge with the viewport) plus a smaller internal padding, genuinely growing the available width (measured 279px → 351px, +26%) rather than padding out empty space.
 7. **Admin Dashboard (`/admin/dashboard`) — 3 Chart.js visualizations, none of them plain bar/line charts anymore:**
    * **Category Volume Breakdown:** a `Doughnut` (not a bar chart) with a center label that shows the total by default and swaps to the hovered category's name+count on hover; always-visible legend (swatch/label/count/%) since the slice palette (`CHART_CATEGORY_COLORS`) is intentionally restrained/monochrome-plus-accent, so color alone isn't a reliable identity signal.
    * **Complaint Inflow & Resolution Timeline Trend:** a `Line` chart with a custom crosshair plugin, `interaction: {mode:'index', intersect:false}` (hovering anywhere reveals all 3 series at that date), and hover-reveal-only point markers.
@@ -248,6 +256,8 @@ src/
    * **Responsive search/filter bar** (`.filter-bar`): a flexible `2fr 1fr 1fr auto` row on desktop (search grows, Reset sizes to its own content) that collapses to a 2-column tablet layout at ≤900px and a single stacked column at ≤520px — replaced the old blanket `grid-12`/`col-span-*` utility (which only had one all-or-nothing 768px breakpoint) with a layout tuned specifically for these 4 fields.
    * Paginated complaints table with citizen contact details, unchanged in behavior from earlier.
 9. **Detail Inspection (`/admin/complaints/:id`):** Interactive status update form enforcing allowed transitions and mandatory remarks; no manual public-visibility toggle exists.
+10. **Homepage tutorial screenshots (`Home.jsx` + `TutorialSection.jsx`):** each of the 3 tutorial cards now renders a supporting product screenshot below its numbered steps (`/TutorialComplaint.png`, `/TutorialRegistry.png`, `/TutorialTrack.png` in `frontend/public/`) via a new optional `image` prop, fluid `width:100%; height:auto` so it scales smoothly at any viewport with no fixed breakpoints. One of the three source files had an accidental leading space in its actual filename (`" TutorialComplaint.png"`) that was renamed before wiring it up, since a literal-space filename is a fragile thing to reference in a URL.
+11. **Homepage vertical rhythm tightened** (`Home.jsx`, `TutorialSection.jsx`, `.tutorial-image-wrap` in `components.css`): hero bottom padding, the feature-card grid's top/bottom margins, the "How to Use" heading margin, each `TutorialSection`'s header/step gaps, and the image wrapper's top spacing were all reduced a step or two down the `--space-*` scale — several rounds of "a bit more" — for a less padded-out first screen.
 
 ---
 
@@ -268,7 +278,8 @@ The interface is a **dark monochrome, one-accent-color "Swiss Tech" system** (fu
 | **Status: Rejected** | `#EF5A5A` | Badges & metrics |
 | **Category donut identity palette** | 6-step: accent → gray-100 → gray-500 → accent-hover → gray-300 → gray-400 | `CHART_CATEGORY_COLORS` in `chartTheme.js` — deliberately restrained, so every consumer must pair it with an always-visible label (never color alone) |
 | **Heatmap sequential ramp** | `#1F1F1F` (empty) → `#213659` → `#2A5191` → `#336AC5` → `#3B82F6` (max) | `HEATMAP_LEVEL_COLORS` — one hue, monotone lightness, derived from the accent + `--surface-raised`, not an imported palette |
-| **Navbar (exception to "no blur")** | `rgba(17,17,17,0.72)` + `backdrop-filter: blur(16px)` + accent-tinted glow border | Floating fixed pill — see §6 |
+| **Status radar identity colors** | gold / accent-blue / green / red (same 4 hex values as the status rows above) | `POINT_COLORS` in `StatsCounterCard.jsx` — reuses the existing status tokens per-vertex rather than a new palette; polygon line/fill stays a single accent tone |
+| **Navbar (exception to "no blur")** | `rgba(17,17,17,0.45)` + `backdrop-filter: blur(20px)` + accent-tinted glow border | Floating fixed pill — see §6. Loosened from an initial `rgba(...,0.72)` + `blur(16px)` for more visible page content through it |
 | **Radii** | 2px / 4px / 6px (`--radius-sm/md/lg`) | Sharp/minimal everywhere *except* the navbar, which is intentionally pill-shaped (9999px collapsed / 24px expanded) |
 | **Fonts** | Geist Sans (UI) / Geist Mono (metadata) | Self-hosted via the `geist` npm package, no CDN |
 
@@ -308,12 +319,14 @@ Seeded via `node backend/seedAdmin.js`:
 | **On-the-fly OTP Flow** | ✅ Fully Functional | Transient OTP creation, email delivery with console fallback |
 | **Dynamic Category Questionnaire**| ✅ Fully Functional | Dynamic Yes/No questionnaire & calculated urgency badges per category |
 | **Multi-Step Submission Wizard**| ✅ Fully Functional | 3-step filing wizard on `/file-complaint` with preview & OTP modal |
-| **Floating pill navbar** | ✅ Fully Functional | Fixed position, centered inset pill, accent glow border, blur background, verified in-browser: stays visible while scrolling, correctly relaxes radius when the mobile dropdown is open |
+| **Floating pill navbar** | ✅ Fully Functional | Fixed position, centered inset pill, accent glow border, `rgba(17,17,17,0.45)` + `blur(20px)` background (page content clearly visible through it), verified in-browser: stays visible while scrolling, correctly relaxes radius when the mobile dropdown is open with no border glitch (transition removed — see §6) |
 | **Collapsible/responsive navbar** | ✅ Fully Functional | Hamburger toggle below 860px, auto-closes on route change, verified on both `MainLayout` and `AdminLayout` (shared `NavBar.jsx`) |
 | **Dark monochrome "Swiss Tech" design system** | ✅ Fully Functional | `tokens.css`/`base.css`/`layout.css`/`components.css`, no Bootstrap, no glassmorphism, one accent color throughout |
 | **Admin dashboard charts (donut / crosshair line / ring)** | ✅ Fully Functional | Chart.js `Doughnut`/`Line` with custom crosshair plugin; hover-flicker bug (stale object identity replaying entrance animation) found and fixed via `useMemo` |
+| **Status radar chart (`StatsCounterCard`)** | ✅ Fully Functional | Chart.js native `radar` type on Home + AdminDashboard; 4 axes (Total excluded, shown as a separate label), per-status point colors, outline-only polygon, verified: label/number centering, chart-vs-text center alignment (~7px Chart.js label-padding asymmetry, measured and compensated), and mobile width (279px→351px after the edge-to-edge fix) |
 | **Admin activity heatmap** | ✅ Fully Functional | `GET /api/admin/activity-heatmap`, 365 cells rendered, hover tooltip verified (a real clipping bug from `overflow-x:auto` implicitly computing `overflow-y:auto` was found and fixed), centered layout, horizontal scroll on narrow viewports |
 | **Responsive admin filter bar** | ✅ Fully Functional | `.filter-bar` — verified at desktop / ≤900px / ≤520px tiers |
+| **Homepage tutorial screenshots** | ✅ Fully Functional | 3 images wired to their matching tutorial card, fluid scaling verified at desktop and ≤375px; one source file's accidental leading-space filename was fixed before use |
 | **Dedicated Public Registry Page**| ✅ Fully Functional | `/registry` page with location regex search, category & status filters |
 | **Complaint Submission** | ✅ Fully Functional | Multer multi-file upload, tracking ID generation (`COMP-XXXXX-X`) |
 | **State Machine Constraints** | ✅ Fully Functional | Enforces `Pending` -> `In Progress` -> `Resolved`/`Rejected` flow |
