@@ -124,8 +124,6 @@ const Home = () => {
 
   return (
     <MainLayout>
-      <StatsCounterCard statusBreakdown={stats?.statusBreakdown} className="panel" />
-
       <div className="blueprint-guides" style={{ textAlign: 'center', padding: 'var(--space-8) 0 var(--space-7)' }}>
         <h1 className="text-display" style={{ marginBottom: 'var(--space-4)' }}>
           Smart Digital Public Administration &amp; Transparency
@@ -136,7 +134,9 @@ const Home = () => {
         </p>
       </div>
 
-      <div className="grid-12" style={{ marginBottom: 'var(--space-8)' }}>
+      <StatsCounterCard statusBreakdown={stats?.statusBreakdown} className="panel" />
+
+      <div className="grid-12" style={{ marginBottom: 'var(--space-8)', marginTop: 'var(--space-8)' }}>
         {FEATURE_CARDS.map((card) => {
           const Icon = card.icon;
           return (
