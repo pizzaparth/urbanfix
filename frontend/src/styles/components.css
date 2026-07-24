@@ -234,22 +234,49 @@ select.input {
   color: var(--text-secondary);
 }
 
-/* Navbar */
+/* Navbar — floating, centered, inset pill, truly fixed to the viewport.
+   `position: sticky` doesn't work here: `html, body { overflow-x: hidden }`
+   (base.css) makes body a scroll-container ancestor, which is a well-known
+   way to silently break sticky positioning in most browsers — the element
+   just scrolls away like `relative` instead of pinning. `fixed` sidesteps
+   that entirely and matches "fixed navigation bar" literally. Removing it
+   from flow means the page content needs matching top padding — see
+   `main.flex-1` below. */
 .navbar {
-  position: sticky;
-  top: 0;
+  position: fixed;
+  top: var(--space-4);
+  left: 0;
+  right: 0;
   z-index: 40;
-  background: var(--bg);
-  border-bottom: 1px solid var(--border);
-  min-height: 56px;
+  padding-inline: var(--space-4);
+  background: transparent;
+  border-bottom: none;
 }
 .navbar .container {
+  max-width: 1100px;
   min-height: 56px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-5);
   flex-wrap: nowrap;
+  background: rgba(17, 17, 17, 0.72);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  border: 1px solid rgba(59, 130, 246, 0.16);
+  border-radius: 9999px;
+  padding-inline: var(--space-5);
+  box-shadow:
+    0 0 0 1px rgba(59, 130, 246, 0.06),
+    0 12px 32px -8px rgba(0, 0, 0, 0.6),
+    0 0 28px -6px rgba(59, 130, 246, 0.28);
+  transition: border-radius var(--transition-base);
+}
+/* The dropdown panel makes the container tall on mobile — a true pill
+   (fully rounded stadium) reads oddly once it's no longer a slim single
+   row, so relax to a large-but-finite radius while it's open. */
+.navbar .container:has(.navbar-collapse.open) {
+  border-radius: 24px;
 }
 .navbar-brand {
   font-family: var(--font-sans);
@@ -315,7 +342,7 @@ select.input {
   appearance: none;
   border: none;
   border-radius: var(--radius-sm);
-  background: var(--bg);
+  background: transparent;
   color: var(--text-primary);
   transition: background-color var(--transition-fast);
 }

@@ -83,6 +83,18 @@
 .flex-wrap { flex-wrap: wrap; }
 .flex-1 { flex: 1 1 0%; }
 
+/* Compensates for the navbar's move to `position: fixed` (see components.css)
+   — it no longer occupies space in flow, so the page's main content needs
+   matching top padding or it renders underneath the floating pill. */
+main.flex-1 {
+  padding-top: calc(var(--space-4) + 56px + var(--space-6));
+}
+@media (max-width: 860px) {
+  main.flex-1 {
+    padding-top: calc(var(--space-4) + 60px + var(--space-5));
+  }
+}
+
 .gap-1 { gap: var(--space-1); }
 .gap-2 { gap: var(--space-2); }
 .gap-3 { gap: var(--space-3); }
