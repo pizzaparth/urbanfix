@@ -308,6 +308,22 @@ Seeded via `node backend/seedAdmin.js`:
 * **Email:** `admin@complaintsystem.gov`
 * **Password:** `admin_password_123`
 
+### 8.3 Dummy Complaint Data (`backend/scripts/seedComplaints.js`)
+For populating the status radar, category donut, urgency ring, activity heatmap, and public
+registry with realistic data during development/demos:
+```bash
+cd backend
+npm run seed:complaints                        # 60 complaints over the last 365 days
+node scripts/seedComplaints.js --count=100 --days=180
+node scripts/seedComplaints.js --fresh          # wipe previously seeded data, then re-seed
+```
+* Writes directly through the Mongoose models (bypasses OTP verification, file upload, and
+  admin transition rules) so it can construct backdated, terminal-status records the HTTP
+  API alone couldn't produce. Requires an admin user to already exist (`node seedAdmin.js`).
+* Seeded citizens use an `@example.com` email marker, so `--fresh` only deletes what this
+  script created — real complaints/users are never touched.
+* Seeded complaints always carry `images: []` — no files are written to `backend/uploads/`.
+
 ---
 
 ## 9. Current Operational State & Verification Checklist
