@@ -21,6 +21,10 @@
 .btn-primary { background: var(--accent); color: var(--gray-950); }
 .btn-primary:hover:not(:disabled) { background: var(--accent-hover); color: var(--gray-950); }
 
+/* Navbar CTA ("File a Complaint") — darker blue background, white text */
+.navbar-actions .btn-primary { background: var(--nav-cta-bg); color: var(--white); }
+.navbar-actions .btn-primary:hover:not(:disabled) { background: var(--nav-cta-bg-hover); color: var(--white); }
+
 .btn-secondary { background: transparent; color: var(--text-primary); border-color: var(--border-strong); }
 .btn-secondary:hover:not(:disabled) { background: var(--surface-raised); color: var(--text-primary); }
 

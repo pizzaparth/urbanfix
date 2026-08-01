@@ -19,6 +19,11 @@
   --accent-wash: rgba(59, 130, 246, 0.12);
   --accent-border: rgba(59, 130, 246, 0.4);
 
+  /* Navbar CTA ("File a Complaint") — deliberate one-off darker-blue exception, requested
+     for stronger contrast against the navbar's translucent background; not used elsewhere */
+  --nav-cta-bg: #1D4ED8;
+  --nav-cta-bg-hover: #2563EB;
+
   /* Semantic status tokens: icon/text/border color only, never a filled chip background */
   --status-pending: #C9A227;
   --status-progress: #3B82F6;
