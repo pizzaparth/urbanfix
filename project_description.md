@@ -180,3 +180,95 @@ To test the administration dashboard, utilize the seeded administrator account b
 * **Admin Portal Login Route:** `/admin/login` or `/login`
 * **Admin Email:** `admin@complaintsystem.gov`
 * **Admin Password:** `admin_password_123`
+
+---
+
+### 8. AI-Powered Image Detection and Complaint Validation System
+
+#### 8.1 Overview
+The Smart Digital Complaint Management and Public Transparency System incorporates an AI-powered computer vision layer to automatically analyze complaint images before they are published to the public registry.
+
+Each complaint category has its own independently trained object detection model. When a citizen submits a complaint and selects a category, the system sends the uploaded image to the corresponding AI model.
+
+The AI model attempts to:
+
+1. Detect the reported issue in the image.
+2. Identify the location of the issue using bounding boxes.
+3. Draw a rectangle around the detected problem area.
+4. Generate an annotated/highlighted version of the original image.
+5. Return the detection confidence and bounding box metadata to the backend.
+
+The AI system acts as an automated validation and localization layer. It does not automatically reject complaints. Complaints for which the AI cannot confidently detect the selected issue are routed to an administrative review queue.
+
+#### 8.2 AI Models and Category Mapping
+The system uses separate AI object detection models for each complaint category.
+
+| Complaint Category | AI Model |
+|---|---|
+| Pothole / Road Damage | `pothole_road_damage_model.pt` |
+| Garbage / Litter | `garbage_litter_model.pt` |
+| Water Leakage | `water_leakage_model.pt` |
+| Faulty Streetlight | `faulty_streetlight_model.pt` |
+| Illegal Parking | `illegal_parking_model.pt` |
+| Open Manhole | `open_manhole_model.pt` |
+| Fallen Tree | `fallen_tree_model.pt` |
+| Damaged Road Signs | `damaged_road_sign_model.pt` |
+| Graffiti | `graffiti_model.pt` |
+| Damaged Electrical Poles / Wires | `electrical_damage_model.pt` |
+
+The `.pt` files are trained PyTorch model files containing the learned parameters and weights of the corresponding AI model.
+
+The initial implementation uses YOLO-based object detection models fine-tuned independently for each complaint category.
+
+#### 8.3 AI Model Training Strategy
+Each complaint category is trained independently using a category-specific dataset:
+
+```text
+Pothole / Road Damage Dataset
+            │
+            ▼
+      YOLO Training
+            │
+            ▼
+pothole_road_damage_model.pt
+```
+
+The resulting per-category models are served by a dedicated AI inference service, called by the backend as part of complaint submission:
+
+```text
+                                       ┌────────────────────────┐
+                                       │     AI Model Storage    │
+                                       │                         │
+                                       │ pothole_model.pt        │
+                                       │ garbage_model.pt        │
+                                       │ water_model.pt          │
+                                       │ manhole_model.pt        │
+                                       │ tree_model.pt           │
+                                       │ graffiti_model.pt       │
+                                       │ etc.                    │
+                                       └────────────┬────────────┘
+                                                     │
+                                                     ▼
+┌───────────────────┐        REST API        ┌────────────────────────┐
+│                    │  ─────────────────────►│                        │
+│   React Frontend   │                        │   Express / Node.js    │
+│                    │  ◄─────────────────────│                        │
+└───────────────────┘                        │                        │
+                                               │ Complaint Management   │
+                                               │ OTP Verification       │
+                                               │ Admin Authentication   │
+                                               │ AI Integration         │
+                                               └────────────┬────────────┘
+                                                             │
+                                ┌────────────────────────────┼────────────────────────────┐
+                                │                             │                             │
+                                ▼                             ▼                             ▼
+                      ┌──────────────────┐         ┌──────────────────┐         ┌──────────────────┐
+                      │      MongoDB      │         │  Python FastAPI   │         │  Image Storage    │
+                      │                    │         │    AI Service      │         │                    │
+                      │ Users              │         │                    │         │ Original Images   │
+                      │ Complaints         │         │ YOLO Inference     │         │ Annotated Images  │
+                      │ Status History     │         │ Bounding Boxes     │         │                    │
+                      │ AI Metadata        │         │ Image Annotation   │         │                    │
+                      └──────────────────┘         └──────────────────┘         └──────────────────┘
+```
