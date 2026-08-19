@@ -77,6 +77,10 @@ const complaintSchema = new mongoose.Schema(
       type: String,
       default: '',
     },
+    pdfReceiptUrl: {
+      type: String,
+      default: '',
+    },
     urgencyLevel: {
       type: String,
       enum: ['High Urgency', 'Medium Urgency', 'Standard Urgency'],

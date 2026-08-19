@@ -467,6 +467,8 @@ const buildComplaintDoc = (context) => {
     status,
     isPublic: true,
     remarks: topRemarks,
+    // Mirrors adminController.updateComplaintStatus's real resolution side-effect.
+    pdfReceiptUrl: status === 'Resolved' ? `/api/complaints/download-receipt/${trackingId}` : '',
     urgencyLevel,
     statusHistory: history,
     createdAt,
