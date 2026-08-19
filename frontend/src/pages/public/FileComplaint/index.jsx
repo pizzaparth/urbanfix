@@ -6,9 +6,7 @@ import api from '../../../services/api.js';
 import { CATEGORY_QUESTIONNAIRES } from '../../../constants/categories.js';
 import { calculateUrgency } from '../../../utils/urgency.js';
 import { ICON_STROKE } from '../../../constants/icons.js';
-import CategoryStep from './CategoryStep.jsx';
-import DetailsStep from './DetailsStep.jsx';
-import VerifyStep from './VerifyStep.jsx';
+import ReportStep from './ReportStep.jsx';
 import OtpModal from './OtpModal.jsx';
 import SuccessModal from './SuccessModal.jsx';
 
@@ -22,11 +20,28 @@ const INITIAL_FORM_DATA = {
   location: '',
 };
 
+// The whole filing flow is one continuous, one-card-at-a-time wizard: category
+// selection, one card per questionnaire question, then title/description/location/
+// upload, then name/email/phone, then a final review + submit card. `cardIndex`
+// tracks position in this single sequence, kept here (not inside ReportStep) so
+// navigation state survives across the whole form.
+const buildCards = (questions) => [
+  { type: 'category' },
+  ...questions.map((q, idx) => ({ type: 'question', question: q, questionIndex: idx, totalQuestions: questions.length })),
+  { type: 'title' },
+  { type: 'description' },
+  { type: 'location' },
+  { type: 'upload' },
+  { type: 'name' },
+  { type: 'email' },
+  { type: 'phone' },
+  { type: 'review' },
+];
+
 const FileComplaint = () => {
   const navigate = useNavigate();
 
-  // Submission Flow Wizard Step State
-  const [currentStep, setCurrentStep] = useState(1);
+  const [cardIndex, setCardIndex] = useState(0);
 
   // Form Field States
   const [formData, setFormData] = useState(INITIAL_FORM_DATA);
@@ -48,6 +63,10 @@ const FileComplaint = () => {
   // Success Modal States
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [createdTrackingId, setCreatedTrackingId] = useState('');
+
+  const questions = CATEGORY_QUESTIONNAIRES[formData.category] || [];
+  const cards = buildCards(questions);
+  const currentCard = cards[Math.min(cardIndex, cards.length - 1)];
 
   // Initialize Questionnaire Answers when Category Changes
   useEffect(() => {
@@ -95,36 +114,64 @@ const FileComplaint = () => {
     }
   };
 
-  // Step Validation & Navigation
-  const handleNextStep = () => {
+  // Card-by-card Validation & Navigation
+  const handleCardNext = () => {
     setFormError('');
-    if (currentStep === 1) {
-      // Step 1: Category selection & questionnaire complete
-      setCurrentStep(2);
-    } else if (currentStep === 2) {
-      // Step 2: Validate details
-      if (!formData.title || !formData.location || !formData.description) {
-        setFormError('Please fill in the subject, location, and description.');
+
+    if (currentCard.type === 'title') {
+      if (!formData.title) {
+        setFormError('Please enter a subject/title.');
         return;
       }
       if (formData.title.length < 5) {
         setFormError('Subject title must be at least 5 characters long.');
         return;
       }
+    }
+
+    if (currentCard.type === 'description') {
+      if (!formData.description) {
+        setFormError('Please enter a detailed description.');
+        return;
+      }
       if (formData.description.length < 15) {
         setFormError('Detailed description must be at least 15 characters long.');
         return;
       }
-      setCurrentStep(3);
+    }
+
+    if (currentCard.type === 'location') {
+      if (!formData.location) {
+        setFormError('Please enter the specific location.');
+        return;
+      }
+    }
+
+    if (currentCard.type === 'name') {
+      if (!formData.name) {
+        setFormError('Please enter your full name.');
+        return;
+      }
+    }
+
+    if (currentCard.type === 'email') {
+      if (!formData.email) {
+        setFormError('Please enter your email address.');
+        return;
+      }
+    }
+
+    if (cardIndex < cards.length - 1) {
+      setCardIndex((prev) => prev + 1);
     }
   };
 
-  const handlePrevStep = () => {
+  const handleCardBack = () => {
     setFormError('');
-    setCurrentStep((prev) => Math.max(prev - 1, 1));
+    setCardIndex((prev) => Math.max(prev - 1, 0));
   };
 
-  // Step 3: Request Email Verification OTP
+  // Final card (review): Request Email Verification OTP
   const handleVerifyEmailRequest = async (e) => {
     e.preventDefault();
     setFormError('');
@@ -206,7 +253,7 @@ const FileComplaint = () => {
       setFiles([]);
       setOtpValue('');
       setShowOtpModal(false);
-      setCurrentStep(1);
+      setCardIndex(0);
 
       // Show Success Modal
       setCreatedTrackingId(response.data.complaint.trackingId);
@@ -218,7 +265,7 @@ const FileComplaint = () => {
     }
   };
 
-  const urgency = calculateUrgency(answers, CATEGORY_QUESTIONNAIRES[formData.category] || []);
+  const urgency = calculateUrgency(answers, questions);
 
   return (
     <MainLayout>
@@ -238,38 +285,23 @@ const FileComplaint = () => {
           </div>
         )}
 
-        {currentStep === 1 && (
-          <CategoryStep
-            category={formData.category}
-            onSelectCategory={handleSelectCategory}
-            answers={answers}
-            onToggleAnswer={handleQuestionToggle}
-            urgency={urgency}
-            onNext={handleNextStep}
-          />
-        )}
-
-        {currentStep === 2 && (
-          <DetailsStep
-            formData={formData}
-            onInputChange={handleInputChange}
-            files={files}
-            onFileChange={handleFileChange}
-            onNext={handleNextStep}
-            onPrev={handlePrevStep}
-          />
-        )}
-
-        {currentStep === 3 && (
-          <VerifyStep
-            formData={formData}
-            onInputChange={handleInputChange}
-            urgency={urgency}
-            submittingForm={submittingForm}
-            onPrev={handlePrevStep}
-            onSubmit={handleVerifyEmailRequest}
-          />
-        )}
+        <ReportStep
+          card={currentCard}
+          cardIndex={cardIndex}
+          category={formData.category}
+          onSelectCategory={handleSelectCategory}
+          answers={answers}
+          onToggleAnswer={handleQuestionToggle}
+          urgency={urgency}
+          formData={formData}
+          onInputChange={handleInputChange}
+          files={files}
+          onFileChange={handleFileChange}
+          onNext={handleCardNext}
+          onBack={handleCardBack}
+          submittingForm={submittingForm}
+          onSubmit={handleVerifyEmailRequest}
+        />
       </div>
 
       {showOtpModal && (

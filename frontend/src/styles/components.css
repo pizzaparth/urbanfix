@@ -140,6 +140,70 @@ select.input {
   white-space: nowrap;
 }
 
+/* File-complaint report wizard — one card per question/field (FileComplaint/ReportStep.jsx) */
+.category-line {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.category-line .btn {
+  width: 100%;
+  justify-content: flex-start;
+}
+
+/* White-bordered card used for every card in the wizard (category, each question,
+   title, description, location, upload, name, email, phone, review) — an
+   intentional departure from `.panel`'s default `--border` to give this wizard
+   its own identity. Every card is the same fixed height regardless of type, so
+   the layout never jumps around as the user steps through the form; content
+   that would overflow (the category list, a long description, the review
+   summary) scrolls inside `.question-card-body` instead of growing the card.
+   The nav row below the body is never part of that scroll area, so Back/Next
+   stay in the same place on every card. */
+.question-card {
+  background: var(--surface);
+  border: 1px solid var(--gray-50);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  height: 380px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+.question-card-body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.question-counter {
+  font-family: var(--font-mono);
+  font-size: var(--text-mono-sm);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  padding: 2px var(--space-2);
+  white-space: nowrap;
+}
+
+/* Live priority score readout below each question card — solid dark fill per
+   urgency level (set via --priority-bg) with white text/border, unlike the
+   flat icon/border-only `.status-pill` used elsewhere in the app. Positioned
+   directly under its question card with modest spacing so it never requires
+   scrolling to see. */
+.priority-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  background: var(--priority-bg, var(--accent));
+  border: 2px solid var(--gray-50);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
 /* Alerts — flat, single left border accent, no filled backgrounds */
 .alert {
   display: flex;
