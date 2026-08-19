@@ -129,7 +129,7 @@ const Home = () => {
     <MainLayout>
       <div className="blueprint-guides" style={{ textAlign: 'center', padding: 'var(--space-4) 0 var(--space-5)' }}>
         <h1 className="text-display" style={{ marginBottom: 'var(--space-4)' }}>
-          Smart Digital Public Administration &amp; Transparency
+          AI Powered Public Administration &amp; Transparency
         </h1>
         <p className="text-secondary" style={{ maxWidth: '640px', margin: '0 auto', fontSize: 'var(--text-body)' }}>
           Connecting community members and municipal authorities. Report public issues, verify identity securely via
