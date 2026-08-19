@@ -140,6 +140,27 @@ select.input {
   white-space: nowrap;
 }
 
+/* Solid status pill — fully rounded, dark solid fill per status, white text/icon.
+   Used where a status needs to read at a glance from across a list (registry
+   cards, admin action table) via `<StatusBadge variant="solid">`; the flat
+   icon/border/text-only `.status-pill` above stays the default everywhere else
+   (audit trail timelines, dashboards). */
+.status-pill-solid {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  background: var(--status-solid-bg, var(--gray-600));
+  color: var(--white);
+  border-radius: 9999px;
+  padding: 3px var(--space-3);
+  font-family: var(--font-mono);
+  font-size: var(--text-mono-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  line-height: 1.6;
+  white-space: nowrap;
+}
+
 /* File-complaint report wizard — one card per question/field (FileComplaint/ReportStep.jsx) */
 .category-line {
   display: flex;

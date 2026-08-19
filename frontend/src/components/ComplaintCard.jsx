@@ -15,7 +15,7 @@ const ComplaintCard = ({ item }) => {
             {item.location}
           </span>
         </div>
-        <StatusBadge status={item.status} />
+        <StatusBadge status={item.status} variant="solid" />
       </div>
 
       <h3 style={{ fontSize: '1.0625rem', marginBottom: 'var(--space-2)' }}>{item.title}</h3>

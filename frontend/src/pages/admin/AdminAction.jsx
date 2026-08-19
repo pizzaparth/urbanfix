@@ -166,7 +166,7 @@ const AdminAction = () => {
                   </td>
                   <td style={{ maxWidth: '220px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.title}</td>
                   <td>
-                    <StatusBadge status={item.status} />
+                    <StatusBadge status={item.status} variant="solid" />
                   </td>
                   <td className="text-mono-label">{new Date(item.createdAt).toLocaleDateString()}</td>
                   <td style={{ textAlign: 'right' }}>
