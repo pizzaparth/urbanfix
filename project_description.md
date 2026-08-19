@@ -6,11 +6,11 @@
 ### 1. Project Overview
 
 #### 1.1 System Explanation
-The **Smart Digital Complaint Management and Public Transparency System** is a web-based citizen-engagement and public administration portal. It serves as a digital bridge between community members and municipal administrators, allowing citizens to log public issues (such as road damage, sanitation issues, water shortages, electricity failures, or administrative misconduct), verify their contact details on-the-fly, track complaint statuses in real-time, and audit official resolutions.
+The **Smart Digital Complaint Management and Public Transparency System** is a web-based citizen-engagement and public administration portal. It serves as a digital bridge between community members and municipal administrators, allowing citizens to log public infrastructure issues (across a fixed 10-category taxonomy — potholes/road damage, garbage/litter, water leakage, faulty streetlights, illegal parking, open manholes, fallen trees, damaged road signs, graffiti, and damaged electrical poles/wires), verify their contact details on-the-fly, track complaint statuses in real-time, and audit official resolutions.
 
 #### 1.2 Core Objectives
 * **Public Accessibility:** Enable account-less, friction-free complaint logging with robust email verification.
-* **Administrative Optimization:** Streamline internal workflows with an admin panel that allows status updates, public toggling, and PDF receipt compilation.
+* **Administrative Optimization:** Streamline internal workflows with an admin panel that allows status updates and PDF receipt compilation.
 * **Absolute Transparency:** Expose all filed complaints and status counters on a public registry (with citizen details redacted) to promote accountability.
 * **Audit Trails:** Record every status transition, the acting user, timestamps, and comments in a tamper-evident timeline.
 
@@ -20,9 +20,10 @@ The **Smart Digital Complaint Management and Public Transparency System** is a w
 
 #### 2.1 Citizen Submission & Email Verification
 To eliminate the barrier of account creation while preventing spam, the portal uses an **On-the-fly OTP Verification Flow**:
-1. The citizen fills out the **File a Complaint** form (Name, Email, optional Phone, Subject, Category, Location, Description, and up to 3 Images).
-2. The user clicks **Verify Email & Submit**, which requests a 6-digit OTP sent to their email.
-3. An OTP modal prompts the citizen for the code. Upon successful verification:
+1. The citizen picks an issue **Category**, then answers that category's dynamic **yes/no context questionnaire** (5 tailored questions per category, e.g. "Are live wires exposed or hanging at a low, reachable height?" for electrical hazards). Each question carries a severity weight (2 = safety-critical, 1 = standard context); a **live Priority Score** (Standard / Medium / High Urgency) is calculated as the proportion of weighted "Yes" answers and shown to the citizen as they answer.
+2. The citizen provides Subject, Location, Description, and up to 3 supporting photographs, then their Name, Email, and optional Phone number.
+3. The user submits, which requests a 6-digit OTP sent to their email.
+4. An OTP modal prompts the citizen for the code. Upon successful verification:
    * The backend finds or creates a `User` record linked to the email.
    * A unique, high-entropy Tracking ID is generated (e.g. `COMP-XXXXX-X`).
    * The complaint is saved in MongoDB.
@@ -30,15 +31,11 @@ To eliminate the barrier of account creation while preventing spam, the portal u
 
 #### 2.2 Public Transparency & Search Repository
 The homepage serves as the public dashboard:
-* **Metrics Counters (Top):** Solid-colored dashboard panels displaying counts for:
-  * *Total Issues Filed*
-  * *Pending Complaints*
-  * *In Progress Complaints*
-  * *Resolved Complaints*
-  * *Rejected Complaints*
+* **Metrics Counters (Top):** A status radar chart (4 axes — Pending, In Progress, Resolved,
+  Rejected) with the total issue count shown as a separate label alongside it.
 * **Searchable Registry (Center):** A full-width list of all filed complaints where visitor search criteria include:
   * *Search by Location* (regex search on ward/area)
-  * *Filter by Category / Type* (Sanitation, Roads, Water, Electricity, etc.)
+  * *Filter by Category / Type* (Pothole/Road Damage, Garbage/Litter, Water Leakage, Faulty Streetlight, and 6 more)
   * *Filter by Status* (Pending, In Progress, Resolved, Rejected)
 * **Progress Tracking:** Clicking on a complaint links to its tracking timeline, showing history logs with official comments.
 * **PDF Receipt Downloads:** Publicly downloadable resolution receipts are compiled dynamically for *Resolved* complaints.
@@ -47,7 +44,7 @@ The homepage serves as the public dashboard:
 * **Admin Login (`/admin/login`):** A secure login page dedicated strictly to system administrators.
 * **Admin Dashboard:** Displays KPI metrics, issue volumes, and complaint categories.
 * **Complaints Management Grid:** A detailed list of all complaints with full citizen contact info (`name`, `email`, `phone`).
-* **Status Action Page:** Administrators review complaints, assign teams, log remarks, change statuses, and toggle public visibility.
+* **Status Action Page:** Administrators review complaints, assign teams, log remarks, and change statuses. There is no manual public-visibility toggle — every submitted complaint is public by default.
   * **Status Transitions Allowed:** 
     * `Pending` $\rightarrow$ `In Progress` $\rightarrow$ `Resolved` OR `Rejected`.
     * Moving directly from `Pending` to `Resolved` is blocked.
@@ -108,7 +105,8 @@ Main ticket repository.
 * `status` (String, Enum: `['Pending', 'In Progress', 'Resolved', 'Rejected']`, Default: `Pending`, Indexed)
 * `isPublic` (Boolean, Default: `false`, Indexed)
 * `remarks` (String, Default: `""`)
-* `pdfReceiptUrl` (String, Default: `""`)
+* `pdfReceiptUrl` (String, Default: `""`) — set to the download endpoint path when a complaint transitions to `Resolved`
+* `urgencyLevel` (String, Enum: `['High Urgency', 'Medium Urgency', 'Standard Urgency']`, Default: `Standard Urgency`) — calculated client-side from the category questionnaire's weighted "Yes" answers
 * `statusHistory` (Array of sub-documents):
   * `status` (String, Required)
   * `changedBy` (ObjectId referencing `User`, Required)
@@ -125,7 +123,7 @@ Main ticket repository.
   * *Payload:* `{ "email": "citizen@email.com" }`
   * *Action:* Generates 6-digit OTP and dispatches email verification.
 * **`POST /api/complaints`**
-  * *Payload:* Multipart Form Data (`name`, `email`, `phone`, `otp`, `title`, `description`, `category`, `location`, `images`)
+  * *Payload:* Multipart Form Data (`name`, `email`, `phone`, `otp`, `title`, `description`, `category`, `location`, `urgencyLevel`, `images`)
   * *Action:* Verifies OTP, registers user/complaint, generates Tracking ID, and triggers nodemailer alerts.
 * **`GET /api/complaints/track/:trackingId`**
   * *Action:* Returns tracking log details (PII Redacted).
@@ -145,7 +143,7 @@ Main ticket repository.
   * *Query Params:* `status`, `category`, `search`, `page`, `limit`
   * *Action:* Returns complaints list populated with citizen contact details.
 * **`PATCH /api/admin/complaints/:id/status`**
-  * *Payload:* `{ "status": "In Progress", "remarks": "Assigned to Ward 4 team.", "isPublic": true }`
+  * *Payload:* `{ "status": "In Progress", "remarks": "Assigned to Ward 4 team." }` — no manual public-visibility toggle; every submitted complaint is public by default
   * *Action:* Triggers transition audit logs and nodemailer alerts.
 
 ---
@@ -161,10 +159,18 @@ table and `Instructions/DESIGN_INSTRUCTION.md` for the governing design rules.
 * **Text:** `#FAFAFA` (headings) → `#E4E4E4` (body) → `#8C8C8C` (secondary) → `#6E6E6E` (muted)
 * **The one accent color:** `#3B82F6` (hover `#60A5FA`) — used only for primary actions, active
   nav, links, focus rings, and the "in progress" status.
-* **Status tokens** (icon/border/text color only): *Pending* `#C9A227` · *In Progress* (accent)
-  `#3B82F6` · *Resolved* `#22C55E` · *Rejected* `#EF5A5A`
+* **Status tokens** (icon/border/text color only, the default badge style): *Pending* `#C9A227` ·
+  *In Progress* (accent) `#3B82F6` · *Resolved* `#22C55E` · *Rejected* `#EF5A5A`
 * **Typography:** Geist Sans (headings/UI) and Geist Mono (tracking IDs, timestamps, counts,
   status text).
+
+**Documented exceptions** (each scoped and deliberate, not a drift from the system above):
+the navbar is a floating glass pill (`backdrop-filter: blur`) — the one place blur is used;
+the Public Registry and Admin Action Panel use a second, solid-fill status badge variant
+(fully rounded, dark green/yellow/orange/red background, white text) so status reads at a
+glance across a list; the admin dashboard's category donut uses a validated multi-hue
+categorical palette (not monochrome) since 10 simultaneous categories were not
+distinguishable on a single-hue ramp.
 
 ---
 
