@@ -3,6 +3,7 @@ import AdminLayout from '../../layouts/AdminLayout.jsx';
 import StatsCounterCard from '../../components/StatsCounterCard.jsx';
 import api from '../../services/api.js';
 import { CHART_COLORS, CHART_FONT_MONO, getCategoryColor } from '../../config/chartTheme.js';
+import { CATEGORIES } from '../../constants/categories.js';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -128,11 +129,11 @@ const AdminDashboard = () => {
   const { categoryLabels, categoryCounts, categoryTotal, categoryData } = useMemo(() => {
     const labels = stats?.categoryDistribution?.length > 0
       ? stats.categoryDistribution.map((item) => item._id || 'Other')
-      : ['Road Damage', 'Water Leakage', 'Garbage', 'Street Light', 'Administrative', 'Other'];
+      : CATEGORIES;
 
     const counts = stats?.categoryDistribution?.length > 0
       ? stats.categoryDistribution.map((item) => item.count)
-      : [0, 0, 0, 0, 0, 0];
+      : CATEGORIES.map(() => 0);
 
     const total = counts.reduce((sum, count) => sum + count, 0);
 

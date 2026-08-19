@@ -42,7 +42,7 @@ const TUTORIALS = [
     steps: [
       {
         title: 'Select category & answer the context questionnaire',
-        description: 'Choose your issue category (e.g. Road Damage, Water Leakage) and answer dynamic yes/no questions to help municipal teams assess urgency.',
+        description: 'Choose your issue category (e.g. Pothole/Road Damage, Water Leakage) and answer dynamic yes/no questions to help municipal teams assess urgency.',
       },
       {
         title: 'Provide location, description & photographs',

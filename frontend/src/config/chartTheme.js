@@ -20,10 +20,12 @@ export const CHART_FONT_SANS = 'Geist Sans';
 export const CHART_FONT_MONO = 'Geist Mono';
 
 // Fixed identity order for category-breakdown charts — the accent leads,
-// the rest step down through the neutral scale. Kept short and monochrome
-// on purpose (see "the one accent color" in tokens.css); slices are never
-// told apart by hue alone, so every consumer must pair this with a
-// always-visible label (legend row, direct label), never color alone.
+// the rest step down through the neutral scale, with two extra accent
+// tints/shades folded in to cover all 10 issue categories without leaving
+// the blue+gray family (see "the one accent color" in tokens.css). Kept
+// monochrome on purpose; slices are never told apart by hue alone, so every
+// consumer must pair this with an always-visible label (legend row, direct
+// label), never color alone.
 export const CHART_CATEGORY_COLORS = [
   '#3B82F6', // accent
   '#E4E4E4', // gray-100
@@ -31,6 +33,10 @@ export const CHART_CATEGORY_COLORS = [
   '#60A5FA', // accent-hover
   '#ADADAD', // gray-300
   '#8C8C8C', // gray-400
+  '#93BBF3', // accent tint (lighter)
+  '#2A63C9', // accent shade (darker)
+  '#5C7699', // muted accent/gray blend
+  '#3F3F3F', // gray-600
 ];
 
 export const getCategoryColor = (index) => CHART_CATEGORY_COLORS[index % CHART_CATEGORY_COLORS.length];

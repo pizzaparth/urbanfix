@@ -31,60 +31,94 @@ const DAYS = getNumericFlag('days', 365);
 const FRESH = args.includes('--fresh');
 
 // ---- Static reference data mirrored from frontend/src/constants/categories.js ----
+// (scripts run standalone via `node`, outside the Vite build, so this can't easily
+// import the frontend ESM module without a build-path change — kept in sync by hand.)
 const CATEGORY_QUESTIONNAIRES = {
-  'Road Damage': [
-    { id: 'q_accident', question: 'Has there been any accident because of this issue?' },
-    { id: 'q_duration', question: 'Has the problem existed for more than one week?' },
-    { id: 'q_public_facility', question: 'Is a school or hospital located nearby?' },
-    { id: 'q_busy_area', question: 'Is there a market or busy public area nearby?' },
-    { id: 'q_vehicle_flow', question: 'Is the issue affecting vehicle movement or blocking traffic?' },
-    { id: 'q_inconvenience', question: 'Is the issue causing severe public inconvenience?' },
+  'Pothole / Road Damage': [
+    { id: 'q_accident', question: 'Has this pothole/damage caused an accident or vehicle damage?', weight: 2 },
+    { id: 'q_size', question: 'Is the pothole/damage large or deep enough to be a serious hazard?', weight: 2 },
+    { id: 'q_traffic', question: 'Is it affecting vehicle movement or blocking traffic?', weight: 1 },
+    { id: 'q_duration', question: 'Has the problem existed for more than one week?', weight: 1 },
+    { id: 'q_public_facility', question: 'Is a school, hospital, or busy market nearby?', weight: 1 },
+  ],
+  'Garbage / Litter': [
+    { id: 'q_health_hazard', question: 'Is there a foul odor, pest infestation, or health hazard?', weight: 2 },
+    { id: 'q_overflowing', question: 'Is garbage overflowing onto the road or public path?', weight: 1 },
+    { id: 'q_uncollected', question: 'Has garbage been uncollected for more than 48 hours?', weight: 1 },
+    { id: 'q_public_facility', question: 'Is a school, hospital, or food market located nearby?', weight: 1 },
+    { id: 'q_inconvenience', question: 'Is the issue causing severe public inconvenience?', weight: 1 },
   ],
   'Water Leakage': [
-    { id: 'q_flooding', question: 'Is there severe water wastage or street flooding?' },
-    { id: 'q_drinking_water', question: 'Has the leakage affected clean drinking water supply?' },
-    { id: 'q_duration', question: 'Has the problem existed for more than 3 days?' },
-    { id: 'q_public_facility', question: 'Is a school or hospital located nearby?' },
-    { id: 'q_property_damage', question: 'Is the water leakage causing structural or property damage?' },
-    { id: 'q_inconvenience', question: 'Is the issue causing severe public inconvenience?' },
+    { id: 'q_drinking_water', question: 'Has the leakage affected clean drinking water supply?', weight: 2 },
+    { id: 'q_property_damage', question: 'Is the leakage causing structural or property damage?', weight: 2 },
+    { id: 'q_flooding', question: 'Is there severe water wastage or street flooding?', weight: 1 },
+    { id: 'q_duration', question: 'Has the problem existed for more than 3 days?', weight: 1 },
+    { id: 'q_public_facility', question: 'Is a school or hospital located nearby?', weight: 1 },
   ],
-  Garbage: [
-    { id: 'q_overflowing', question: 'Is garbage overflowing onto the main road or public path?' },
-    { id: 'q_odor_pest', question: 'Is there a severe foul odor or health hazard/pest risk?' },
-    { id: 'q_uncollected', question: 'Has garbage been uncollected for more than 48 hours?' },
-    { id: 'q_public_facility', question: 'Is a school, hospital, or food market located nearby?' },
-    { id: 'q_inconvenience', question: 'Is the issue causing severe public inconvenience?' },
+  'Faulty Streetlight': [
+    { id: 'q_safety_risk', question: 'Does the darkness pose an immediate safety or crime risk?', weight: 2 },
+    { id: 'q_darkness', question: 'Is the entire street or junction completely dark at night?', weight: 1 },
+    { id: 'q_duration', question: 'Has the light been non-functional for more than one week?', weight: 1 },
+    { id: 'q_busy_area', question: 'Is a market, bus stop, or school located nearby?', weight: 1 },
+    { id: 'q_multiple_lights', question: 'Are multiple streetlights affected in this stretch?', weight: 1 },
   ],
-  'Street Light': [
-    { id: 'q_darkness', question: 'Is the entire street or junction completely dark at night?' },
-    { id: 'q_duration', question: 'Has the light malfunctioned for more than one week?' },
-    { id: 'q_safety_risk', question: 'Does the dark area pose an immediate safety/crime concern?' },
-    { id: 'q_busy_area', question: 'Is a market, bus stop, or public area nearby?' },
-    { id: 'q_inconvenience', question: 'Is the issue causing public inconvenience?' },
+  'Illegal Parking': [
+    { id: 'q_blocking_traffic', question: 'Is the vehicle blocking traffic or emergency vehicle access?', weight: 2 },
+    { id: 'q_blocking_path', question: 'Is it blocking a pedestrian path, ramp, or driveway?', weight: 1 },
+    { id: 'q_duration', question: 'Has the vehicle been parked illegally for more than 24 hours?', weight: 1 },
+    { id: 'q_repeat_offender', question: 'Is this a recurring/frequent parking violation at this spot?', weight: 1 },
+    { id: 'q_busy_area', question: 'Is this near a school, hospital, or busy commercial area?', weight: 1 },
   ],
-  Administrative: [
-    { id: 'q_delayed', question: 'Has an official service request been delayed beyond standard limits?' },
-    { id: 'q_violation', question: 'Were official administrative procedures violated or unheeded?' },
-    { id: 'q_multiple_citizens', question: 'Does this administrative issue affect multiple citizens?' },
-    { id: 'q_previous_notice', question: 'Have you previously submitted a physical or verbal request?' },
-    { id: 'q_inconvenience', question: 'Is the issue causing public inconvenience?' },
+  'Open Manhole': [
+    { id: 'q_uncovered', question: 'Is the manhole completely uncovered, posing a fall hazard?', weight: 2 },
+    { id: 'q_busy_area', question: 'Is it located on a busy road, pathway, or residential area with children?', weight: 2 },
+    { id: 'q_duration', question: 'Has it been open for more than 2 days?', weight: 1 },
+    { id: 'q_lighting', question: 'Is the area poorly lit, making the manhole hard to notice at night?', weight: 1 },
+    { id: 'q_near_facility', question: 'Is a school or playground located nearby?', weight: 1 },
   ],
-  Other: [
-    { id: 'q_safety_risk', question: 'Is this issue causing immediate public inconvenience or safety risk?' },
-    { id: 'q_duration', question: 'Has this issue persisted for more than a week?' },
-    { id: 'q_public_facility', question: 'Is a school, hospital, or busy public area nearby?' },
+  'Fallen Tree': [
+    { id: 'q_blocking_road', question: 'Is it blocking a road or pathway?', weight: 2 },
+    { id: 'q_power_lines', question: 'Has it damaged property, vehicles, or power lines?', weight: 2 },
+    { id: 'q_safety_hazard', question: 'Is it posing an immediate safety hazard to pedestrians or vehicles?', weight: 1 },
+    { id: 'q_duration', question: 'Has it been lying there for more than 24 hours?', weight: 1 },
+    { id: 'q_busy_area', question: 'Is this in a busy or residential area?', weight: 1 },
+  ],
+  'Damaged Road Signs': [
+    { id: 'q_safety_sign', question: 'Is the missing/damaged sign a critical safety sign (stop, yield, speed limit)?', weight: 2 },
+    { id: 'q_near_accident', question: 'Has its absence caused confusion or a near-accident?', weight: 2 },
+    { id: 'q_visibility', question: 'Is the sign completely unreadable or missing (not just faded)?', weight: 1 },
+    { id: 'q_duration', question: 'Has the sign been damaged or missing for more than a week?', weight: 1 },
+    { id: 'q_busy_area', question: 'Is this on a busy road or intersection?', weight: 1 },
+  ],
+  Graffiti: [
+    { id: 'q_offensive', question: 'Does the graffiti contain offensive, hateful, or inappropriate content?', weight: 2 },
+    { id: 'q_public_building', question: 'Is it on a government building, monument, or public property?', weight: 1 },
+    { id: 'q_duration', question: 'Has it been there for more than two weeks?', weight: 1 },
+    { id: 'q_high_visibility', question: 'Is it in a high-visibility public area?', weight: 1 },
+    { id: 'q_repeat', question: 'Is this a recurring vandalism spot?', weight: 1 },
+  ],
+  'Damaged Electrical Poles / Wires': [
+    { id: 'q_exposed_wires', question: 'Are live wires exposed or hanging at a low, reachable height?', weight: 2 },
+    { id: 'q_leaning_pole', question: 'Is the pole visibly leaning, cracked, or at risk of collapse?', weight: 2 },
+    { id: 'q_recent_incident', question: 'Has this already caused a shock, spark, or fire incident?', weight: 2 },
+    { id: 'q_busy_area', question: 'Is this near a school, market, or busy pedestrian area?', weight: 1 },
+    { id: 'q_duration', question: 'Has this condition existed for more than a day?', weight: 1 },
   ],
 };
 
-// Weighted so the category donut isn't flat — Road Damage/Garbage are the most common
-// municipal complaint types in practice.
+// Weighted so the category donut isn't flat — potholes/garbage are the most common
+// municipal complaint types in practice, rarer hazards (fallen trees, graffiti) less so.
 const CATEGORY_WEIGHTS = {
-  'Road Damage': 5,
-  'Water Leakage': 3,
-  Garbage: 4,
-  'Street Light': 3,
-  Administrative: 2,
-  Other: 2,
+  'Pothole / Road Damage': 6,
+  'Garbage / Litter': 5,
+  'Water Leakage': 4,
+  'Faulty Streetlight': 4,
+  'Illegal Parking': 3,
+  'Damaged Electrical Poles / Wires': 3,
+  'Fallen Tree': 2,
+  'Damaged Road Signs': 2,
+  'Open Manhole': 2,
+  Graffiti: 2,
 };
 
 const STATUS_WEIGHTS = {
@@ -108,13 +142,19 @@ const LOCATIONS = [
 ];
 
 const TITLE_TEMPLATES = {
-  'Road Damage': [
+  'Pothole / Road Damage': [
     'Deep pothole near {loc} bus stop',
     'Road surface collapsed on {loc} main stretch',
     'Large cracks forming across {loc} carriageway',
-    'Broken road divider causing hazard in {loc}',
+    'Cluster of potholes slowing traffic on {loc}',
     'Uneven road patch after utility digging in {loc}',
-    'Waterlogged pothole cluster along {loc}',
+  ],
+  'Garbage / Litter': [
+    'Garbage pile uncollected for days in {loc}',
+    'Overflowing dustbins near {loc} market',
+    'Illegal waste dumping spotted at {loc}',
+    'Foul smell from uncollected trash in {loc}',
+    'Litter scattered across {loc} pavement',
   ],
   'Water Leakage': [
     'Major pipeline leak flooding {loc}',
@@ -123,66 +163,107 @@ const TITLE_TEMPLATES = {
     'Drinking water supply line leaking in {loc}',
     'Overflowing water valve chamber at {loc}',
   ],
-  Garbage: [
-    'Garbage pile uncollected for days in {loc}',
-    'Overflowing dustbins near {loc} market',
-    'Illegal waste dumping spotted at {loc}',
-    'Foul smell from uncollected trash in {loc}',
-    'Community bin overflowing onto street in {loc}',
-  ],
-  'Street Light': [
+  'Faulty Streetlight': [
     'Street light not working at {loc} junction',
     'Entire stretch of {loc} without lighting at night',
     'Flickering street lamp poses safety risk in {loc}',
     'Broken street light pole near {loc}',
     'Dark patch on {loc} main road after sunset',
   ],
-  Administrative: [
-    'Delayed response to service request in {loc}',
-    'No action taken on prior complaint from {loc}',
-    'Municipal office unresponsive to {loc} residents',
-    'Administrative procedure violation reported in {loc}',
-    'Pending certificate issuance for {loc} applicants',
+  'Illegal Parking': [
+    'Vehicle blocking driveway access in {loc}',
+    'Illegally parked truck obstructing traffic at {loc}',
+    'Cars parked on footpath near {loc} market',
+    'Repeated illegal parking blocking emergency lane in {loc}',
+    'Two-wheelers parked across pedestrian crossing at {loc}',
   ],
-  Other: [
-    'Stray animal issue reported near {loc}',
-    'Encroachment on public footpath in {loc}',
-    'Noise disturbance complaint from {loc}',
-    'Public property damage observed at {loc}',
-    'Unsafe construction debris left in {loc}',
+  'Open Manhole': [
+    'Uncovered manhole poses fall risk near {loc}',
+    'Open manhole cover reported on {loc} main road',
+    'Missing manhole cover near {loc} school zone',
+    'Manhole left uncovered after maintenance in {loc}',
+    'Dangerous open drain cover spotted at {loc}',
+  ],
+  'Fallen Tree': [
+    'Fallen tree blocking road at {loc}',
+    'Storm-damaged tree obstructing pathway in {loc}',
+    'Tree branch collapsed onto power line near {loc}',
+    'Uprooted tree blocking pedestrian path at {loc}',
+    'Large tree branch hanging precariously over {loc} road',
+  ],
+  'Damaged Road Signs': [
+    'Missing stop sign at {loc} intersection',
+    'Faded speed limit sign near {loc}',
+    'Bent and unreadable road sign at {loc}',
+    'Knocked-down directional sign near {loc}',
+    'Vandalized traffic sign reported at {loc}',
+  ],
+  Graffiti: [
+    'Graffiti covering public wall near {loc}',
+    'Offensive graffiti spotted on {loc} community center',
+    'Vandalized bus shelter with graffiti at {loc}',
+    'Spray-paint tags defacing {loc} underpass',
+    'Graffiti on municipal building near {loc}',
+  ],
+  'Damaged Electrical Poles / Wires': [
+    'Leaning electrical pole near {loc}',
+    'Exposed live wires hanging near {loc}',
+    'Damaged electrical pole after storm at {loc}',
+    'Sparking wires reported near {loc} junction',
+    'Low-hanging power line poses risk at {loc}',
   ],
 };
 
 const DESCRIPTION_TEMPLATES = {
-  'Road Damage': [
+  'Pothole / Road Damage': [
     'The road near {loc} has a severe pothole that has damaged multiple vehicle tyres and continues to worsen with each rainfall.',
     'A large section of the carriageway at {loc} has caved in, forcing vehicles to swerve dangerously into oncoming traffic.',
     'Cracks have spread across the entire road surface at {loc}, making the commute unsafe especially for two-wheelers at night.',
+  ],
+  'Garbage / Litter': [
+    'Household waste has been piling up uncollected near {loc} for over 48 hours, attracting stray animals and pests.',
+    'The community dustbin at {loc} is overflowing onto the street, creating a foul smell and health hazard for nearby residents.',
+    'Litter and food wrappers are scattered across the pavement at {loc}, making the area look neglected and unhygienic.',
   ],
   'Water Leakage': [
     'A pipeline burst near {loc} is causing continuous water wastage and has flooded the adjoining street for several days.',
     'Residents of {loc} have noticed a steady leak from an underground water line that is affecting the drinking water pressure.',
     'The water valve chamber at {loc} has been overflowing, creating a slippery and unhygienic patch on the road.',
   ],
-  Garbage: [
-    'Household waste has been piling up uncollected near {loc} for over 48 hours, attracting stray animals and pests.',
-    'The community dustbin at {loc} is overflowing onto the street, creating a foul smell and health hazard for nearby residents.',
-    'Illegal dumping of construction debris has been observed repeatedly at {loc}, blocking pedestrian movement.',
-  ],
-  'Street Light': [
+  'Faulty Streetlight': [
     'The street light at {loc} junction has not been functioning for over a week, leaving the area completely dark after sunset.',
     'Multiple lamp posts along {loc} are flickering intermittently, creating a safety concern for evening commuters.',
     'A damaged street light pole at {loc} has left a long stretch of road unlit, raising safety concerns for pedestrians.',
   ],
-  Administrative: [
-    'A service request submitted to the ward office for {loc} has been pending for several weeks without any response.',
-    'Despite multiple visits to the municipal office regarding {loc}, no action has been taken on the registered request.',
-    'Residents of {loc} have reported that standard administrative procedures were not followed while processing their application.',
+  'Illegal Parking': [
+    'A vehicle has been illegally parked outside a residential driveway at {loc}, blocking access for days.',
+    'Vehicles parked along the roadside near {loc} are obstructing traffic flow and forcing pedestrians onto the main road.',
+    'Cars regularly park on the footpath near {loc} market, leaving no safe space for pedestrians to walk.',
   ],
-  Other: [
-    'An unresolved public nuisance issue near {loc} continues to cause inconvenience to residents and shopkeepers alike.',
-    'Encroachment on the footpath at {loc} has forced pedestrians to walk on the main road, creating safety risks.',
-    'Residents near {loc} have raised concerns about an ongoing issue that requires municipal attention.',
+  'Open Manhole': [
+    'An uncovered manhole near {loc} poses a serious fall risk to pedestrians, especially after dark.',
+    'The manhole cover on the main road at {loc} appears to have been missing for several days, endangering commuters.',
+    'A drain cover near the {loc} school zone has been left open, putting children at risk while walking to school.',
+  ],
+  'Fallen Tree': [
+    'A large tree has fallen across the road at {loc}, completely blocking vehicle movement since last night.',
+    'Following recent storms, a tree branch has come down near {loc}, obstructing the pedestrian pathway.',
+    'A tree limb has fallen onto nearby power lines at {loc}, raising concerns about electrical hazards.',
+  ],
+  'Damaged Road Signs': [
+    'The stop sign at the {loc} intersection is missing, creating confusion for drivers and increasing accident risk.',
+    'The speed limit sign near {loc} has faded completely and is no longer visible to approaching traffic.',
+    'A road sign at {loc} was knocked down during recent roadwork and has not been replaced.',
+  ],
+  Graffiti: [
+    'A public wall near {loc} has been covered in graffiti, making the area look unkempt and neglected.',
+    'Offensive graffiti has appeared on the community center building at {loc}, drawing complaints from residents.',
+    'The underpass near {loc} has been repeatedly defaced with spray-paint tags over the past month.',
+  ],
+  'Damaged Electrical Poles / Wires': [
+    'An electrical pole near {loc} is visibly leaning and appears at risk of collapse, endangering nearby pedestrians.',
+    'Live wires are hanging at a dangerously low height near {loc}, posing an immediate electrocution risk.',
+    "Following last week's storm, a damaged electrical pole at {loc} has left wires exposed and unsafe.",
   ],
 };
 
@@ -348,8 +429,13 @@ const buildComplaintDoc = (context) => {
   questions.forEach((q) => {
     answers[q.id] = Math.random() < 0.35 ? 'Yes' : 'No';
   });
-  const yesCount = Object.values(answers).filter((a) => a === 'Yes').length;
-  const urgencyLevel = yesCount >= 3 ? 'High Urgency' : yesCount >= 1 ? 'Medium Urgency' : 'Standard Urgency';
+  // Mirrors frontend/src/utils/urgency.js's weighted-ratio calculation: each question's
+  // severity `weight` (2 = safety-critical, 1 = standard) is summed for "Yes" answers and
+  // scored as a proportion of the category's total possible weight.
+  const totalWeight = questions.reduce((sum, q) => sum + (q.weight || 1), 0);
+  const scoredWeight = questions.reduce((sum, q) => sum + (answers[q.id] === 'Yes' ? q.weight || 1 : 0), 0);
+  const urgencyRatio = totalWeight > 0 ? scoredWeight / totalWeight : 0;
+  const urgencyLevel = urgencyRatio >= 0.6 ? 'High Urgency' : urgencyRatio >= 0.3 ? 'Medium Urgency' : 'Standard Urgency';
 
   const title = randomChoice(TITLE_TEMPLATES[category]).replace('{loc}', location.short);
   const freeText = randomChoice(DESCRIPTION_TEMPLATES[category]).replace('{loc}', location.short);

@@ -18,7 +18,7 @@ const INITIAL_FORM_DATA = {
   phone: '',
   title: '',
   description: '',
-  category: 'Road Damage',
+  category: 'Pothole / Road Damage',
   location: '',
 };
 
@@ -180,7 +180,7 @@ const FileComplaint = () => {
     });
     questionnaireSummary += `\n[CITIZEN DESCRIPTION]\n${formData.description}`;
 
-    const urgency = calculateUrgency(answers);
+    const urgency = calculateUrgency(answers, questionsList);
     const data = new FormData();
     data.append('name', formData.name);
     data.append('email', formData.email);
@@ -218,7 +218,7 @@ const FileComplaint = () => {
     }
   };
 
-  const urgency = calculateUrgency(answers);
+  const urgency = calculateUrgency(answers, CATEGORY_QUESTIONNAIRES[formData.category] || []);
 
   return (
     <MainLayout>
