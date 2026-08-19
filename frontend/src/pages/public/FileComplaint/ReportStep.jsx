@@ -23,7 +23,9 @@ import { ICON_STROKE } from '../../../constants/icons.js';
 const PRIORITY_BG = {
   'High Urgency': '#6B1E23',
   'Medium Urgency': '#6B4E14',
-  'Standard Urgency': '#1E3A66',
+  // Reuses the navbar CTA's dark-blue token, so every dark-blue fill in the app
+  // is the same deliberately dark shade — never the brighter --accent blue.
+  'Standard Urgency': 'var(--nav-cta-bg)',
 };
 
 const CardHeader = ({ icon: Icon, title, subtitle }) => (
@@ -92,7 +94,7 @@ const ReportStep = ({
 
   if (card.type === 'category') {
     return (
-      <div className="question-card">
+      <div className="question-card question-card--auto">
         <div className="question-card-body">
           <CardHeader icon={Tags} title="Select Issue Category" subtitle="Choose the type of issue you're reporting, then continue" />
           <div className="category-line">
@@ -153,10 +155,8 @@ const ReportStep = ({
         </div>
 
         <div className="priority-box" style={{ '--priority-bg': PRIORITY_BG[urgency.level] }}>
-          <span className="text-mono-label" style={{ color: '#FFFFFF' }}>
-            Live Priority Score
-          </span>
-          <span className="text-mono" style={{ color: '#FFFFFF', fontWeight: 600 }}>
+          <span className="text-mono-label">Live Priority Score</span>
+          <span className="text-mono" style={{ fontWeight: 600 }}>
             {urgency.level}
           </span>
         </div>
@@ -326,7 +326,7 @@ const ReportStep = ({
 
   // card.type === 'review'
   return (
-    <form className="question-card" onSubmit={onSubmit}>
+    <form className="question-card question-card--auto" onSubmit={onSubmit}>
       <div className="question-card-body">
         <CardHeader icon={ShieldCheck} title="Complaint Submission Review" subtitle="Confirm the details, then request your email OTP" />
         <dl style={{ margin: 0 }}>

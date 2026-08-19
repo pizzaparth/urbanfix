@@ -171,6 +171,13 @@ select.input {
   justify-content: space-between;
   margin-bottom: var(--space-4);
 }
+/* Sizing exceptions: the category picker (all 10 options must be visible without
+   scrolling) and the final review card (its summary must not be clipped) both
+   grow to fit their content instead of sharing the fixed 380px used everywhere
+   else in the wizard. */
+.question-card--auto {
+  height: auto;
+}
 .question-card-body {
   flex: 1 1 auto;
   overflow-y: auto;
@@ -197,11 +204,15 @@ select.input {
   align-items: center;
   justify-content: space-between;
   gap: var(--space-3);
-  background: var(--priority-bg, var(--accent));
+  background: var(--priority-bg, var(--nav-cta-bg));
   border: 2px solid var(--gray-50);
   border-radius: var(--radius-lg);
   padding: var(--space-3) var(--space-4);
   margin-bottom: var(--space-4);
+  color: var(--white);
+}
+.priority-box * {
+  color: var(--white);
 }
 
 /* Alerts — flat, single left border accent, no filled backgrounds */
