@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 580" role="img" aria-label="Mockup of the tracking-ID search box and status timeline">
+  <defs>
+    <clipPath id="winClip3">
+      <rect x="0" y="0" width="960" height="580" rx="14" ry="14" />
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#winClip3)" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif">
+    <rect x="0" y="0" width="960" height="580" fill="#0A0A0A" />
+
+    <!-- Title bar -->
+    <rect x="0" y="0" width="960" height="44" fill="#111111" />
+    <line x1="0" y1="44" x2="960" y2="44" stroke="#1F1F1F" stroke-width="1" />
+    <circle cx="28" cy="22" r="6" fill="#FF5F57" />
+    <circle cx="50" cy="22" r="6" fill="#FFBD2E" />
+    <circle cx="72" cy="22" r="6" fill="#28C840" />
+    <rect x="360" y="11" width="240" height="22" rx="6" fill="#1A1A1A" stroke="#272727" />
+    <text x="480" y="26" font-size="11" fill="#6E6E6E" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">urbanfix.gov/track</text>
+
+    <!-- Search card -->
+    <rect x="180" y="120" width="600" height="128" rx="10" fill="#111111" stroke="#FAFAFA" stroke-width="1.5" />
+    <circle cx="212" cy="152" r="8" fill="none" stroke="#3B82F6" stroke-width="2" />
+    <line x1="218" y1="158" x2="224" y2="164" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" />
+    <text x="234" y="158" font-size="15" font-weight="600" fill="#FAFAFA">Track Complaint Progress</text>
+
+    <rect x="204" y="182" width="440" height="42" rx="6" fill="#0A0A0A" stroke="#272727" />
+    <text x="220" y="208" font-size="13" fill="#6E6E6E" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">Enter Tracking ID (e.g. COMP-XXXXX-X)</text>
+
+    <rect x="656" y="182" width="100" height="42" rx="6" fill="#1D4ED8" />
+    <text x="706" y="208" font-size="14" font-weight="600" fill="#FFFFFF" text-anchor="middle">Search</text>
+
+    <!-- Result timeline preview -->
+    <rect x="180" y="288" width="600" height="196" rx="10" fill="#111111" stroke="#272727" />
+    <text x="204" y="320" font-size="12" fill="#6E6E6E" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">COMP-20260814-9K3T</text>
+    <text x="204" y="344" font-size="15" font-weight="600" fill="#FAFAFA">Status Timeline</text>
+
+    <line x1="228" y1="392" x2="732" y2="392" stroke="#272727" stroke-width="2" />
+    <line x1="228" y1="392" x2="480" y2="392" stroke="#3B82F6" stroke-width="2" />
+
+    <circle cx="228" cy="392" r="9" fill="#3B82F6" />
+    <text x="228" y="426" font-size="11" fill="#ADADAD" text-anchor="middle">PENDING</text>
+
+    <circle cx="480" cy="392" r="9" fill="#3B82F6" />
+    <text x="480" y="426" font-size="11" fill="#ADADAD" text-anchor="middle">IN PROGRESS</text>
+
+    <circle cx="732" cy="392" r="9" fill="none" stroke="#272727" stroke-width="2" />
+    <text x="732" y="426" font-size="11" fill="#6E6E6E" text-anchor="middle">RESOLVED</text>
+
+    <rect x="204" y="446" width="552" height="16" rx="3" fill="#161616" />
+    <rect x="204" y="446" width="380" height="16" rx="3" fill="none" stroke="#1F1F1F" />
+
+    <!-- Cursor, over the Search button -->
+    <g transform="translate(716, 178)">
+      <path d="M4.037 4.688a.495.495 0 0 1 .651-.651l16 6.5a.5.5 0 0 1-.063.947l-6.124 1.58a2 2 0 0 0-1.438 1.435l-1.579 6.126a.5.5 0 0 1-.947.063z"
+            transform="scale(1.7)" fill="#FAFAFA" stroke="#0A0A0A" stroke-width="1.1" stroke-linejoin="round" />
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 580" role="img" aria-label="Mockup of the category and questionnaire step of the complaint filing form">
+  <defs>
+    <clipPath id="winClip1">
+      <rect x="0" y="0" width="960" height="580" rx="14" ry="14" />
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#winClip1)" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif">
+    <rect x="0" y="0" width="960" height="580" fill="#0A0A0A" />
+
+    <!-- Title bar -->
+    <rect x="0" y="0" width="960" height="44" fill="#111111" />
+    <line x1="0" y1="44" x2="960" y2="44" stroke="#1F1F1F" stroke-width="1" />
+    <circle cx="28" cy="22" r="6" fill="#FF5F57" />
+    <circle cx="50" cy="22" r="6" fill="#FFBD2E" />
+    <circle cx="72" cy="22" r="6" fill="#28C840" />
+    <rect x="360" y="11" width="240" height="22" rx="6" fill="#1A1A1A" stroke="#272727" />
+    <text x="480" y="26" font-size="11" fill="#6E6E6E" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">urbanfix.gov/file-complaint</text>
+
+    <!-- Page heading -->
+    <text x="40" y="98" font-size="28" font-weight="700" fill="#FAFAFA">File a Public Complaint</text>
+    <text x="40" y="124" font-size="13" fill="#ADADAD">Answer the category questionnaire, describe the issue, and verify via email OTP.</text>
+
+    <!-- Card -->
+    <rect x="40" y="152" width="880" height="392" rx="10" fill="#111111" stroke="#FAFAFA" stroke-width="1.5" />
+
+    <rect x="64" y="180" width="32" height="32" rx="6" fill="none" stroke="#272727" />
+    <path d="M74 191 h12 M74 196 h8" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" />
+    <text x="108" y="193" font-size="16" font-weight="600" fill="#FAFAFA">Select Issue Category</text>
+    <text x="108" y="211" font-size="12" fill="#6E6E6E">Choose the type of issue you're reporting, then continue</text>
+    <line x1="64" y1="230" x2="856" y2="230" stroke="#1F1F1F" />
+
+    <!-- Category list (vertical, matches the live picker) -->
+    <rect x="64" y="248" width="792" height="40" rx="6" fill="#1D4ED8" />
+    <circle cx="86" cy="268" r="7" fill="none" stroke="#FFFFFF" stroke-width="1.5" />
+    <path d="M83 268 l2.4 2.6 L90 264.5" stroke="#FFFFFF" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+    <text x="104" y="273" font-size="14" font-weight="600" fill="#FFFFFF">Pothole / Road Damage</text>
+
+    <rect x="64" y="298" width="792" height="40" rx="6" fill="none" stroke="#272727" />
+    <text x="86" y="323" font-size="14" fill="#FAFAFA">Garbage / Litter</text>
+
+    <rect x="64" y="348" width="792" height="40" rx="6" fill="none" stroke="#272727" />
+    <text x="86" y="373" font-size="14" fill="#FAFAFA">Water Leakage</text>
+
+    <line x1="64" y1="410" x2="856" y2="410" stroke="#1F1F1F" />
+
+    <!-- Question -->
+    <rect x="64" y="428" width="70" height="18" rx="4" fill="none" stroke="#272727" />
+    <text x="99" y="441" font-size="10" fill="#ADADAD" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">1/5</text>
+    <text x="64" y="470" font-size="15" fill="#FAFAFA">Has this pothole/damage caused an accident or vehicle damage?</text>
+
+    <rect x="64" y="490" width="388" height="40" rx="6" fill="none" stroke="#272727" />
+    <text x="258" y="515" font-size="14" fill="#FAFAFA" text-anchor="middle">Yes</text>
+
+    <rect x="468" y="490" width="388" height="40" rx="6" fill="#1D4ED8" />
+    <text x="662" y="515" font-size="14" font-weight="600" fill="#FFFFFF" text-anchor="middle">No</text>
+
+    <!-- Cursor -->
+    <g transform="translate(700, 486)">
+      <path d="M4.037 4.688a.495.495 0 0 1 .651-.651l16 6.5a.5.5 0 0 1-.063.947l-6.124 1.58a2 2 0 0 0-1.438 1.435l-1.579 6.126a.5.5 0 0 1-.947.063z"
+            transform="scale(1.7)" fill="#FAFAFA" stroke="#0A0A0A" stroke-width="1.1" stroke-linejoin="round" />
+    </g>
+  </g>
+</svg>

@@ -36,7 +36,7 @@ const TUTORIALS = [
     icon: CirclePlus,
     title: 'How to Submit a Public Complaint',
     subtitle: 'Account-less, friction-free 3-step filing workflow',
-    image: '/TutorialComplaint.png',
+    image: '/TutorialComplaint.svg',
     ctaTo: '/file-complaint',
     ctaLabel: 'Start Filing',
     steps: [
@@ -63,7 +63,7 @@ const TUTORIALS = [
     icon: NotebookText,
     title: 'How to Use the Public Registry',
     subtitle: 'Explore public records, status logs & resolution receipts',
-    image: '/TutorialRegistry.png',
+    image: '/TutorialRegistry.svg',
     ctaTo: '/registry',
     ctaLabel: 'Explore Registry',
     steps: [
@@ -85,7 +85,7 @@ const TUTORIALS = [
     icon: Search,
     title: 'How to Track a Complaint Status',
     subtitle: 'Real-time audit log timeline, official remarks & resolution receipts',
-    image: '/TutorialTrack.png',
+    image: '/TutorialTrack.svg',
     ctaTo: '/track',
     ctaLabel: 'Track Status',
     steps: [
