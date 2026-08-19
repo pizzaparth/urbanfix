@@ -151,6 +151,20 @@ select.input {
   justify-content: flex-start;
 }
 
+/* Every solid-blue button inside the report wizard (selected category, selected
+   "No" answer, Next, Request Email OTP & Submit) uses the same dark blue + pure
+   white text as the navbar CTA and the priority box below — never the brighter
+   --accent blue with near-black text that `.btn-primary` uses elsewhere in the
+   app. Scoped to `.question-card` so it only affects this wizard. */
+.question-card .btn-primary {
+  background: var(--nav-cta-bg);
+  color: var(--white);
+}
+.question-card .btn-primary:hover:not(:disabled) {
+  background: var(--nav-cta-bg-hover);
+  color: var(--white);
+}
+
 /* White-bordered card used for every card in the wizard (category, each question,
    title, description, location, upload, name, email, phone, review) — an
    intentional departure from `.panel`'s default `--border` to give this wizard
