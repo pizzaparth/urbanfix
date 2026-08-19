@@ -19,24 +19,34 @@ export const CHART_COLORS = {
 export const CHART_FONT_SANS = 'Geist Sans';
 export const CHART_FONT_MONO = 'Geist Mono';
 
-// Fixed identity order for category-breakdown charts — the accent leads,
-// the rest step down through the neutral scale, with two extra accent
-// tints/shades folded in to cover all 10 issue categories without leaving
-// the blue+gray family (see "the one accent color" in tokens.css). Kept
-// monochrome on purpose; slices are never told apart by hue alone, so every
-// consumer must pair this with an always-visible label (legend row, direct
-// label), never color alone.
+// Fixed identity order for category-breakdown charts — a genuinely categorical
+// (multi-hue) palette, not tints/shades of the one accent color. This is a
+// deliberate, scoped exception to "the one accent color" elsewhere in the app
+// (tokens.css): with 10 issue categories shown simultaneously in one donut,
+// a monochrome ramp made adjacent slices hard to tell apart at a glance.
+//
+// Slots 1-8 are a validated categorical set (dataviz skill's reference
+// palette, dark-mode steps) — checked with scripts/validate_palette.js
+// against this app's actual dark surface (--surface #111111): lightness
+// band, chroma floor, contrast, and CVD/normal-vision separation all pass on
+// the adjacent-pair list. Slots 9-10 (cyan, brown) extend the set for our
+// 10-category taxonomy and pass the same adjacent-pair checks, but — like
+// the reference palette's own note on its later slots — 10 simultaneous
+// colors can't all clear pairwise separation against *every* other slot
+// (a hard limit past ~3-4 categorical hues), so slices are never told apart
+// by hue alone: every consumer pairs this with an always-visible label
+// (legend row with name + count + percentage), never color alone.
 export const CHART_CATEGORY_COLORS = [
-  '#3B82F6', // accent
-  '#E4E4E4', // gray-100
-  '#6E6E6E', // gray-500
-  '#60A5FA', // accent-hover
-  '#ADADAD', // gray-300
-  '#8C8C8C', // gray-400
-  '#93BBF3', // accent tint (lighter)
-  '#2A63C9', // accent shade (darker)
-  '#5C7699', // muted accent/gray blend
-  '#3F3F3F', // gray-600
+  '#3987E5', // blue
+  '#D95926', // orange
+  '#199E70', // aqua/teal-green
+  '#C98500', // amber
+  '#D55181', // magenta
+  '#008300', // green
+  '#9085E9', // violet
+  '#E66767', // red
+  '#0891B2', // cyan
+  '#A8541A', // brown
 ];
 
 export const getCategoryColor = (index) => CHART_CATEGORY_COLORS[index % CHART_CATEGORY_COLORS.length];
