@@ -28,7 +28,15 @@ const RINGS = 4;
 const SIZE = 240;
 const LABEL_PAD = 30;
 const R = SIZE / 2 - LABEL_PAD;
-const CX = SIZE / 2;
+
+// The east/west axis labels ("In Progress", "Rejected") are the longest strings
+// on the chart and they sit at its extreme left and right, so they ran off a
+// square canvas and got clipped mid-word. The drawing is widened horizontally
+// to make room, and rendered through a viewBox at width="100%" so the whole
+// thing scales to the panel instead of overflowing on a narrow phone.
+const H_PAD = 60;
+const CANVAS_W = SIZE + H_PAD * 2;
+const CX = CANVAS_W / 2;
 const CY = SIZE / 2;
 
 // Start at 12 o'clock and go clockwise, matching Chart.js's radar orientation.
@@ -63,7 +71,12 @@ const RadarChart = ({ statusBreakdown }) => {
         <Text style={s.totalValue}>{total}</Text>
       </View>
 
-      <Svg width={SIZE} height={SIZE}>
+      <Svg
+        width="100%"
+        height={SIZE}
+        viewBox={`0 0 ${CANVAS_W} ${SIZE}`}
+        preserveAspectRatio="xMidYMid meet"
+      >
         {/* Concentric grid rings */}
         {Array.from({ length: RINGS }, (_, ring) => {
           const ratio = (ring + 1) / RINGS;
@@ -121,18 +134,22 @@ const RadarChart = ({ statusBreakdown }) => {
           );
         })}
 
-        {/* Axis labels, nudged outside the outer ring */}
+        {/* Axis labels, nudged outside the outer ring. The side labels anchor
+            away from the circle rather than on their own centre, so they read
+            as belonging to their axis and stay clear of the plot. */}
         {METRICS.map((label, i) => {
-          const [x, y] = pointAt(i, METRICS.length, 1.18);
+          const [x, y] = pointAt(i, METRICS.length, 1.14);
+          const dx = Math.round(x - CX);
+          const anchor = Math.abs(dx) < 1 ? 'middle' : dx > 0 ? 'start' : 'end';
           return (
             <SvgText
               key={`label-${i}`}
-              x={x}
+              x={x + (anchor === 'start' ? 4 : anchor === 'end' ? -4 : 0)}
               y={y + 4}
               fill={color.textSecondary}
               fontSize={11}
               fontFamily={font.sans}
-              textAnchor="middle"
+              textAnchor={anchor}
             >
               {label}
             </SvgText>

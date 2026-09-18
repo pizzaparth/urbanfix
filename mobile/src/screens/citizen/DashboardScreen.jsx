@@ -1,5 +1,7 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, FlatList, RefreshControl, StyleSheet } from 'react-native';
+import { View, Text, RefreshControl, StyleSheet } from 'react-native';
+import { FlashList } from '@shopify/flash-list';
+import { SkeletonList } from '../../components/Skeleton.jsx';
 import { useFocusEffect } from '@react-navigation/native';
 import { CirclePlus, FileDown, LogOut } from 'lucide-react-native';
 import StatusBadge from '../../components/StatusBadge.jsx';
@@ -72,7 +74,7 @@ const DashboardScreen = ({ navigation }) => {
   );
 
   return (
-    <FlatList
+    <FlashList
       style={s.screen}
       contentContainerStyle={s.content}
       data={loading ? [] : complaints}
@@ -81,7 +83,7 @@ const DashboardScreen = ({ navigation }) => {
       ItemSeparatorComponent={() => <View style={{ height: space[3] }} />}
       ListEmptyComponent={
         loading ? (
-          <Loading label="Loading your complaints…" />
+          <SkeletonList count={4} />
         ) : (
           <EmptyState
             title="No complaints yet"

@@ -8,12 +8,16 @@ import {
   StyleSheet,
 } from 'react-native';
 import { color, space, radius, font, text } from '../theme.js';
+import { tapFeedback } from '../utils/haptics.js';
 
 // Shared primitives: button, input, field and panel. Four button variants, no
 // pill radius.
 //
 // There's no hover on touch, so each variant expresses its active state as a
-// pressed state via Pressable's ({ pressed }) style callback.
+// pressed state via Pressable's ({ pressed }) style callback — plus a haptic
+// tick, so a press is confirmed by feel as well as by sight. Routing it through
+// Button means every button in the app gets it without each call site
+// remembering; `haptic={false}` opts out where a tap isn't a commitment.
 
 const btnVariant = {
   primary: { bg: color.accent, fg: color.gray950, border: 'transparent', pressedBg: color.accentHover },
@@ -32,13 +36,19 @@ export const Button = ({
   loading,
   icon,
   style,
+  haptic = true,
 }) => {
   const v = btnVariant[variant] || btnVariant.primary;
   const isOff = disabled || loading;
 
+  const handlePress = (event) => {
+    if (haptic) tapFeedback();
+    onPress?.(event);
+  };
+
   return (
     <Pressable
-      onPress={onPress}
+      onPress={handlePress}
       disabled={isOff}
       style={({ pressed }) => [
         s.btn,

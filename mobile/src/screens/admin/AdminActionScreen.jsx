@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, FlatList, Pressable, RefreshControl, StyleSheet } from 'react-native';
+import { View, Text, Pressable, RefreshControl, StyleSheet } from 'react-native';
+import { FlashList } from '@shopify/flash-list';
+import { SkeletonList } from '../../components/Skeleton.jsx';
 import { useFocusEffect } from '@react-navigation/native';
 import { ChevronRight, Search, CircleX } from 'lucide-react-native';
 import StatusBadge from '../../components/StatusBadge.jsx';
@@ -161,7 +163,7 @@ const AdminActionScreen = ({ navigation }) => {
     ) : null;
 
   return (
-    <FlatList
+    <FlashList
       style={s.screen}
       contentContainerStyle={s.content}
       data={loading ? [] : complaints}
@@ -172,7 +174,7 @@ const AdminActionScreen = ({ navigation }) => {
       keyboardShouldPersistTaps="handled"
       ListEmptyComponent={
         loading ? (
-          <Loading label="Loading complaints…" />
+          <SkeletonList count={5} />
         ) : (
           <EmptyState title="No complaints found" hint="Try clearing the filters above." />
         )

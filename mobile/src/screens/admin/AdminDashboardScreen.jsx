@@ -1,13 +1,16 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, ScrollView, RefreshControl, useWindowDimensions, StyleSheet } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
-import { PieChart, LineChart } from 'react-native-gifted-charts';
+import { View, Text, ScrollView, RefreshControl, StyleSheet } from 'react-native';
 import { ClipboardList, LogOut } from 'lucide-react-native';
-import { Panel, Button, Loading } from '../../components/ui.jsx';
+import DonutChart from '../../components/charts/DonutChart.jsx';
+import TrendChart from '../../components/charts/TrendChart.jsx';
+import RefreshBar from '../../components/RefreshBar.jsx';
+import { SkeletonBlock, SkeletonPanel } from '../../components/Skeleton.jsx';
+import { useAutoRefresh } from '../../hooks/useAutoRefresh.js';
+import { Panel, Button } from '../../components/ui.jsx';
 import { useAuth } from '../../hooks/useAuth.js';
 import api from '../../services/api.js';
 import { ICON_STROKE } from '../../constants/icons.js';
-import { CHART_COLORS, CHART_CATEGORY_COLORS, getCategoryColor } from '../../config/chartTheme.js';
+import { getCategoryColor } from '../../config/chartTheme.js';
 import { color, space, radius, font, text, statusColor } from '../../theme.js';
 
 const STATUS_KEYS = ['Pending', 'In Progress', 'Resolved', 'Rejected'];
@@ -20,10 +23,8 @@ const URGENCY_COLORS = {
 
 const AdminDashboardScreen = ({ navigation }) => {
   const { user, logoutUser } = useAuth();
-  const { width } = useWindowDimensions();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
 
   const fetchStats = useCallback(async () => {
     try {
@@ -33,19 +34,25 @@ const AdminDashboardScreen = ({ navigation }) => {
       console.error('Error fetching admin stats:', err?.message);
     } finally {
       setLoading(false);
-      setRefreshing(false);
     }
   }, []);
 
-  // Replaces the web app's window 'focus' listener + 10s polling interval.
-  // Polling a phone on cellular would be wasteful; refocus is the right trigger.
-  useFocusEffect(
-    useCallback(() => {
-      fetchStats();
-    }, [fetchStats])
-  );
+  // An admin watching this dashboard needs the numbers to move as complaints
+  // land, so it polls while focused and stops when it isn't — see the hook for
+  // why that's still battery-safe on a phone.
+  const { refreshing, refresh, lastUpdatedAt } = useAutoRefresh(fetchStats);
 
-  if (loading) return <Loading label="Loading dashboard…" />;
+  // A dashboard is mostly panels and charts, so the skeleton mirrors that shape
+  // rather than showing a spinner over an empty screen.
+  if (loading) {
+    return (
+      <View style={[s.screen, s.content]}>
+        <SkeletonBlock height={18} width="45%" />
+        <SkeletonPanel chartHeight={120} />
+        <SkeletonPanel chartHeight={190} />
+      </View>
+    );
+  }
 
   const breakdown = stats?.statusBreakdown || {};
   const categories = stats?.categoryDistribution || [];
@@ -57,34 +64,30 @@ const AdminDashboardScreen = ({ navigation }) => {
   const categoryPie = categories.map((c, i) => ({
     value: c.count || 0,
     color: getCategoryColor(i),
-    text: '',
+    label: c._id || 'Other',
   }));
 
   const urgencyPie = urgency.map((u) => ({
     value: u.count || 0,
     color: URGENCY_COLORS[u._id] || color.gray600,
+    label: u._id || 'Unknown',
   }));
 
-  const lineData = timeline.map((t) => ({
-    value: t.totalCount || 0,
-    label: t._id?.slice(5), // MM-DD — the full date won't fit on a phone axis
+  // CartesianChart plots against a numeric x, so the index is the x value and
+  // the MM-DD string rides along for the axis label — the full date won't fit
+  // on a phone axis.
+  const lineData = timeline.map((t, i) => ({
+    x: i,
+    y: t.totalCount || 0,
+    label: t._id?.slice(5),
   }));
-
-  const chartWidth = width - space[4] * 2 - space[5] * 2;
 
   return (
     <ScrollView
       style={s.screen}
       contentContainerStyle={s.content}
       refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={() => {
-            setRefreshing(true);
-            fetchStats();
-          }}
-          tintColor={color.accent}
-        />
+        <RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={color.accent} />
       }
     >
       <View style={s.userRow}>
@@ -100,6 +103,8 @@ const AdminDashboardScreen = ({ navigation }) => {
           icon={<LogOut size={14} strokeWidth={ICON_STROKE} />}
         />
       </View>
+
+      <RefreshBar lastUpdatedAt={lastUpdatedAt} refreshing={refreshing} onRefresh={refresh} />
 
       {/* KPI tiles — the web grid of counters, stacked two-up for a phone. */}
       <View style={s.kpiGrid}>
@@ -125,66 +130,14 @@ const AdminDashboardScreen = ({ navigation }) => {
       {timeline.length > 0 ? (
         <Panel style={s.panelGap}>
           <Text style={s.panelTitle}>Filing Timeline</Text>
-          {/* The web line chart carried a hand-written Canvas 2D crosshair plugin.
-              That's raw canvas with no RN analogue, so it's dropped — gifted-charts'
-              built-in pointer covers the same intent. */}
-          <LineChart
-            data={lineData}
-            width={chartWidth}
-            height={160}
-            initialSpacing={10}
-            spacing={Math.max(28, chartWidth / Math.max(lineData.length, 1))}
-            thickness={2}
-            color={CHART_COLORS.accent}
-            dataPointsColor={CHART_COLORS.accent}
-            startFillColor={CHART_COLORS.accent}
-            endFillColor={color.surface}
-            startOpacity={0.25}
-            endOpacity={0}
-            areaChart
-            hideRules={false}
-            rulesColor={CHART_COLORS.grid}
-            rulesType="dashed"
-            yAxisColor={CHART_COLORS.grid}
-            xAxisColor={CHART_COLORS.grid}
-            yAxisTextStyle={s.axisText}
-            xAxisLabelTextStyle={s.axisText}
-            noOfSections={4}
-            pointerConfig={{
-              pointerStripColor: CHART_COLORS.accent,
-              pointerStripWidth: 1,
-              pointerColor: CHART_COLORS.accent,
-              radius: 4,
-              pointerLabelWidth: 90,
-              pointerLabelHeight: 34,
-              pointerLabelComponent: (items) => (
-                <View style={s.tooltip}>
-                  <Text style={s.tooltipText}>{items[0]?.value} filed</Text>
-                </View>
-              ),
-            }}
-          />
+          <TrendChart data={lineData} />
         </Panel>
       ) : null}
 
       {categoryPie.length > 0 ? (
         <Panel style={s.panelGap}>
           <Text style={s.panelTitle}>Issues by Category</Text>
-          <View style={s.chartCenter}>
-            <PieChart
-              data={categoryPie}
-              donut
-              radius={90}
-              innerRadius={58}
-              innerCircleColor={color.surface}
-              centerLabelComponent={() => (
-                <View style={s.center}>
-                  <Text style={s.donutCenterValue}>{categoryTotal}</Text>
-                  <Text style={s.donutCenterLabel}>total</Text>
-                </View>
-              )}
-            />
-          </View>
+          <DonutChart data={categoryPie} size={200} centerValue={categoryTotal} centerLabel="total" />
           {/* A slice is never identified by color alone — every category keeps a
               visible label with its count and share. */}
           <View style={s.legend}>
@@ -207,15 +160,7 @@ const AdminDashboardScreen = ({ navigation }) => {
       {urgencyPie.length > 0 ? (
         <Panel style={s.panelGap}>
           <Text style={s.panelTitle}>Urgency Distribution</Text>
-          <View style={s.chartCenter}>
-            <PieChart
-              data={urgencyPie}
-              donut
-              radius={78}
-              innerRadius={48}
-              innerCircleColor={color.surface}
-            />
-          </View>
+          <DonutChart data={urgencyPie} size={176} />
           <View style={s.legend}>
             {urgency.map((u) => (
               <View key={u._id} style={s.legendRow}>
@@ -262,10 +207,7 @@ const s = StyleSheet.create({
   panelTitle: { fontFamily: font.sansSemibold, fontSize: text.h3, color: color.textPrimary },
   bigNumber: { fontFamily: font.monoMedium, fontSize: 34, color: color.textPrimary },
 
-  chartCenter: { alignItems: 'center', paddingVertical: space[2] },
   center: { alignItems: 'center' },
-  donutCenterValue: { fontFamily: font.monoMedium, fontSize: 22, color: color.textPrimary },
-  donutCenterLabel: { fontFamily: font.mono, fontSize: 11, color: color.textMuted },
 
   legend: { gap: space[2] },
   legendRow: { flexDirection: 'row', alignItems: 'center', gap: space[2] },
@@ -274,16 +216,6 @@ const s = StyleSheet.create({
   legendValue: { fontFamily: font.monoMedium, fontSize: text.monoSm, color: color.textPrimary },
   legendPct: { width: 38, textAlign: 'right', fontFamily: font.mono, fontSize: 11, color: color.textMuted },
 
-  axisText: { color: color.textMuted, fontSize: 9, fontFamily: font.mono },
-  tooltip: {
-    backgroundColor: color.surfaceRaised,
-    borderWidth: 1,
-    borderColor: color.border,
-    borderRadius: radius.sm,
-    paddingHorizontal: space[2],
-    paddingVertical: space[1],
-  },
-  tooltipText: { fontFamily: font.mono, fontSize: 11, color: color.textPrimary },
 });
 
 export default AdminDashboardScreen;

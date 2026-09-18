@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useFonts } from 'expo-font';
 // Imported by weight-specific subpath, not from the package root: the root index
@@ -37,16 +38,23 @@ export default function App() {
     return <View style={s.boot} />;
   }
 
+  // GestureHandlerRootView has to sit above the navigators: React Navigation's
+  // pressables route through react-native-gesture-handler, and without this
+  // wrapper their touches are swallowed — on web that shows up as tab buttons
+  // that highlight but never actually change screen.
   return (
-    <SafeAreaProvider onLayout={onLayout}>
-      <StatusBar style="light" backgroundColor={color.bg} />
-      <AuthProvider>
-        <RootNavigator />
-      </AuthProvider>
-    </SafeAreaProvider>
+    <GestureHandlerRootView style={s.fill}>
+      <SafeAreaProvider onLayout={onLayout}>
+        <StatusBar style="light" backgroundColor={color.bg} />
+        <AuthProvider>
+          <RootNavigator />
+        </AuthProvider>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }
 
 const s = StyleSheet.create({
   boot: { flex: 1, backgroundColor: color.bg },
+  fill: { flex: 1 },
 });

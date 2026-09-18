@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, Text, ScrollView, Pressable, RefreshControl, StyleSheet } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
 import { NotebookText, CirclePlus, Search, ArrowRight } from 'lucide-react-native';
 import RadarChart from '../../components/RadarChart.jsx';
+import RefreshBar from '../../components/RefreshBar.jsx';
 import { Panel } from '../../components/ui.jsx';
+import { useAutoRefresh } from '../../hooks/useAutoRefresh.js';
 import api from '../../services/api.js';
 import { ICON_STROKE } from '../../constants/icons.js';
 import { CHART_CATEGORY_COLORS } from '../../config/chartTheme.js';
@@ -38,7 +39,6 @@ const FEATURE_CARDS = [
 
 const HomeScreen = ({ navigation }) => {
   const [stats, setStats] = useState(null);
-  const [refreshing, setRefreshing] = useState(false);
 
   const fetchStats = useCallback(async () => {
     try {
@@ -46,22 +46,13 @@ const HomeScreen = ({ navigation }) => {
       setStats(res.data.stats);
     } catch (err) {
       console.error('Error fetching portal statistics:', err?.message);
-    } finally {
-      setRefreshing(false);
     }
   }, []);
 
-  useEffect(() => {
-    fetchStats();
-  }, [fetchStats]);
-
-  // Refresh whenever the tab regains focus — the native stand-in for the web
-  // app's window 'focus' listener.
-  useFocusEffect(
-    useCallback(() => {
-      fetchStats();
-    }, [fetchStats])
-  );
+  // Fetches on focus, then keeps polling while the screen is open, so the
+  // charts track new complaints instead of freezing at whatever was true when
+  // the tab was first opened.
+  const { refreshing, refresh, lastUpdatedAt } = useAutoRefresh(fetchStats);
 
   const categories = stats?.categoryDistribution || [];
   const maxCategory = Math.max(...categories.map((c) => c.count || 0), 1);
@@ -71,14 +62,7 @@ const HomeScreen = ({ navigation }) => {
       style={s.screen}
       contentContainerStyle={s.content}
       refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={() => {
-            setRefreshing(true);
-            fetchStats();
-          }}
-          tintColor={color.accent}
-        />
+        <RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={color.accent} />
       }
     >
       <View style={s.hero}>
@@ -88,6 +72,8 @@ const HomeScreen = ({ navigation }) => {
           progress, and access transparent public records.
         </Text>
       </View>
+
+      <RefreshBar lastUpdatedAt={lastUpdatedAt} refreshing={refreshing} onRefresh={refresh} />
 
       <Panel>
         <RadarChart statusBreakdown={stats?.statusBreakdown} />

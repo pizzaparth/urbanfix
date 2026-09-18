@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { View, Text, FlatList, Pressable, RefreshControl, StyleSheet } from 'react-native';
+import { View, Text, Pressable, RefreshControl, StyleSheet } from 'react-native';
+import { FlashList } from '@shopify/flash-list';
+import { SkeletonList } from '../../components/Skeleton.jsx';
 import { FolderX, RotateCcw, Search, CircleX } from 'lucide-react-native';
 import ComplaintCard from '../../components/ComplaintCard.jsx';
 import SelectSheet from '../../components/SelectSheet.jsx';
@@ -141,7 +143,7 @@ const RegistryScreen = () => {
   );
 
   const empty = loading ? (
-    <Loading label="Loading registry tickets…" />
+    <SkeletonList count={5} />
   ) : (
     <View style={s.emptyPanel}>
       <FolderX size={32} strokeWidth={ICON_STROKE} color={color.textMuted} />
@@ -162,7 +164,7 @@ const RegistryScreen = () => {
   );
 
   return (
-    <FlatList
+    <FlashList
       style={s.screen}
       contentContainerStyle={s.content}
       data={loading ? [] : sortedComplaints}

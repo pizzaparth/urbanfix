@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, ActivityIndicator, Platform, StyleSheet } from 'react-native';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -54,15 +54,25 @@ const tabOptions = ({ icon: Icon, title }) => ({
   tabBarIcon: ({ color: c, size }) => <Icon size={size} strokeWidth={ICON_STROKE} color={c} />,
 });
 
+// On a device the tab bar grows by the bottom safe-area inset, which leaves the
+// label comfortable room. A browser reports no inset, so the bar collapsed to
+// 44px and the labels sat 5px off the window edge — legible but visibly
+// cramped. Web gets that breathing room back explicitly.
+const tabBarStyle = {
+  backgroundColor: color.surface,
+  borderTopColor: color.border,
+  paddingTop: space[1],
+  ...Platform.select({
+    web: { height: 64, paddingBottom: space[2] },
+    default: {},
+  }),
+};
+
 const CitizenTabs = () => (
   <Tab.Navigator
     screenOptions={{
       ...screenOptions,
-      tabBarStyle: {
-        backgroundColor: color.surface,
-        borderTopColor: color.border,
-        paddingTop: space[1],
-      },
+      tabBarStyle,
       tabBarActiveTintColor: color.accent,
       tabBarInactiveTintColor: color.textMuted,
       tabBarLabelStyle: { fontFamily: font.sansMedium, fontSize: 11 },
@@ -99,7 +109,7 @@ const AdminTabs = () => (
   <Tab.Navigator
     screenOptions={{
       ...screenOptions,
-      tabBarStyle: { backgroundColor: color.surface, borderTopColor: color.border, paddingTop: space[1] },
+      tabBarStyle,
       tabBarActiveTintColor: color.accent,
       tabBarInactiveTintColor: color.textMuted,
       tabBarLabelStyle: { fontFamily: font.sansMedium, fontSize: 11 },
