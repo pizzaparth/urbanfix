@@ -30,9 +30,9 @@ const COUNT = getNumericFlag('count', 60);
 const DAYS = getNumericFlag('days', 365);
 const FRESH = args.includes('--fresh');
 
-// ---- Static reference data mirrored from frontend/src/constants/categories.js ----
-// (scripts run standalone via `node`, outside the Vite build, so this can't easily
-// import the frontend ESM module without a build-path change — kept in sync by hand.)
+// ---- Static reference data mirrored from mobile/src/constants/categories.js ----
+// (scripts run standalone via `node`, outside the app's Metro bundle, so this can't
+// import that ESM module directly — kept in sync by hand.)
 const CATEGORY_QUESTIONNAIRES = {
   'Pothole / Road Damage': [
     { id: 'q_accident', question: 'Has this pothole/damage caused an accident or vehicle damage?', weight: 2 },
@@ -429,7 +429,7 @@ const buildComplaintDoc = (context) => {
   questions.forEach((q) => {
     answers[q.id] = Math.random() < 0.35 ? 'Yes' : 'No';
   });
-  // Mirrors frontend/src/utils/urgency.js's weighted-ratio calculation: each question's
+  // Mirrors mobile/src/utils/urgency.js's weighted-ratio calculation: each question's
   // severity `weight` (2 = safety-critical, 1 = standard) is summed for "Yes" answers and
   // scored as a proportion of the category's total possible weight.
   const totalWeight = questions.reduce((sum, q) => sum + (q.weight || 1), 0);
