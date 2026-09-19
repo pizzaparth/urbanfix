@@ -1,15 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
-import { ShieldCheck, AlertCircle } from 'lucide-react-native';
+import { View, Text, Pressable, StyleSheet, TextInput } from 'react-native';
 import AuthCard from '../../components/AuthCard.jsx';
-import { Field, Input, Button, Alert } from '../../components/ui.jsx';
 import { useAuth } from '../../hooks/useAuth.js';
-import { ICON_STROKE } from '../../constants/icons.js';
-import { color, space, font, text } from '../../theme.js';
+import { color, font } from '../../theme.js';
 
-// On success the web app called navigate('/admin/dashboard' | '/dashboard').
-// Here the root navigator swaps tab sets off `user.role` as soon as the context
-// updates, so there's nothing to navigate to — the redirect is implicit.
 const LoginScreen = ({ navigation }) => {
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
@@ -24,7 +18,6 @@ const LoginScreen = ({ navigation }) => {
     try {
       await loginUser(form.email.trim(), form.password);
     } catch (err) {
-      // 403 means the account exists but was never email-verified.
       if (err.response?.status === 403) {
         navigation.navigate('VerifyOtp', { email: form.email.trim() });
       } else {
@@ -37,61 +30,147 @@ const LoginScreen = ({ navigation }) => {
 
   return (
     <AuthCard
-      icon={ShieldCheck}
-      title="Sign In"
-      subtitle="Citizens and administrators sign in here"
+      title="Sign in"
+      subtitle="Citizens and staff, one door."
       footer={
-        <View style={s.footerRow}>
-          <Text style={s.muted}>Don't have an account? </Text>
-          <Pressable onPress={() => navigation.navigate('Register')} hitSlop={8}>
-            <Text style={s.link}>Register</Text>
-          </Pressable>
-        </View>
+        <Text style={s.muted}>
+          No account?{' '}
+          <Text style={s.link} onPress={() => navigation.navigate('Register')}>
+            Create one
+          </Text>
+        </Text>
       }
     >
       {error ? (
-        <Alert tone="danger" icon={<AlertCircle size={15} strokeWidth={ICON_STROKE} />}>
-          {error}
-        </Alert>
+        <View style={s.errorAlert}>
+          <Text style={s.errorAlertText}>{error}</Text>
+        </View>
       ) : null}
 
-      <Field label="Email Address">
-        <Input
-          value={form.email}
-          onChangeText={set('email')}
-          keyboardType="email-address"
-          autoCapitalize="none"
-          autoComplete="email"
-          textContentType="emailAddress"
-        />
-      </Field>
+      <View style={s.formGroup}>
+        <View>
+          <Text style={s.inputLabel}>Email</Text>
+          <TextInput
+            value={form.email}
+            onChangeText={set('email')}
+            placeholder="you@example.com"
+            placeholderTextColor="rgba(255,255,255,0.4)"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            style={s.giantInput}
+          />
+        </View>
 
-      <Field label="Password">
-        <Input
-          value={form.password}
-          onChangeText={set('password')}
-          secureTextEntry
-          autoCapitalize="none"
-          textContentType="password"
-          returnKeyType="go"
-          onSubmitEditing={handleSubmit}
-        />
-      </Field>
+        <View>
+          <Text style={s.inputLabel}>Password</Text>
+          <TextInput
+            value={form.password}
+            onChangeText={set('password')}
+            placeholder="••••••••"
+            placeholderTextColor="rgba(255,255,255,0.4)"
+            secureTextEntry
+            autoCapitalize="none"
+            style={s.giantInput}
+            onSubmitEditing={handleSubmit}
+          />
+        </View>
+      </View>
 
-      <Button
-        title="Sign In"
-        onPress={handleSubmit}
-        loading={loading}
-        disabled={!form.email.trim() || !form.password}
-      />
+      <Pressable 
+        style={s.primaryBtn} 
+        onPress={handleSubmit} 
+        disabled={loading || !form.email.trim() || !form.password}
+      >
+        <Text style={s.primaryBtnText}>{loading ? '...' : 'Sign in'}</Text>
+      </Pressable>
+      
+      <Pressable 
+        style={s.secondaryBtn} 
+        onPress={() => {
+          set('email')('admin@urbanfix.org');
+          set('password')('admin123');
+        }} 
+      >
+        <Text style={s.secondaryBtnText}>Peek admin view</Text>
+      </Pressable>
     </AuthCard>
   );
 };
 
 const s = StyleSheet.create({
-  footerRow: { flexDirection: 'row', alignItems: 'center' },
-  muted: { fontFamily: font.sans, fontSize: text.small, color: color.textMuted },
-  link: { fontFamily: font.sansMedium, fontSize: text.small, color: color.accent },
+  formGroup: { gap: 20 },
+  inputLabel: {
+    fontSize: 17,
+    fontFamily: font.sansBold,
+    color: color.white,
+    marginBottom: 10,
+  },
+  giantInput: {
+    width: '100%',
+    height: 62,
+    paddingHorizontal: 18,
+    backgroundColor: '#120E13',
+    borderWidth: 1.5,
+    borderColor: '#2C222B',
+    borderRadius: 18,
+    color: color.white,
+    fontSize: 18,
+    fontFamily: font.sansBold,
+  },
+  primaryBtn: {
+    width: '100%',
+    height: 66,
+    borderRadius: 100,
+    backgroundColor: color.accent,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 8,
+  },
+  primaryBtnText: {
+    fontFamily: font.sansBold,
+    fontSize: 20,
+    color: '#1C0512',
+  },
+  secondaryBtn: {
+    width: '100%',
+    height: 58,
+    borderRadius: 100,
+    backgroundColor: 'transparent',
+    borderWidth: 1.5,
+    borderColor: '#2C222B',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  secondaryBtnText: {
+    fontFamily: font.sansBold,
+    fontSize: 17,
+    color: '#C08BFF',
+  },
+  muted: {
+    fontFamily: font.sansBold,
+    fontSize: 17,
+    color: color.white,
+    opacity: 0.62,
+  },
+  link: {
+    fontFamily: font.sansBold,
+    fontSize: 17,
+    textDecorationLine: 'underline',
+    color: color.white,
+  },
+  errorAlert: {
+    padding: 16,
+    backgroundColor: '#1C0F15',
+    borderWidth: 1.5,
+    borderColor: '#FF5A7A',
+    borderRadius: 18,
+    marginBottom: -2,
+  },
+  errorAlertText: {
+    color: '#FF5A7A',
+    fontFamily: font.sansBold,
+    fontSize: 16,
+  },
 });
 
 export default LoginScreen;

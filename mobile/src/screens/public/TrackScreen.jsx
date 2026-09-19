@@ -1,17 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, ScrollView, Image, StyleSheet, Pressable } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Pressable, TextInput } from 'react-native';
 import { useRoute } from '@react-navigation/native';
-import { Search, AlertTriangle, FileDown } from 'lucide-react-native';
+import { Search } from 'lucide-react-native';
 import StatusBadge from '../../components/StatusBadge.jsx';
 import StatusTimeline from '../../components/StatusTimeline.jsx';
-import { Input, Button, Panel } from '../../components/ui.jsx';
 import { downloadReceipt } from '../../utils/downloadReceipt.js';
-import api, { getUploadsBaseUrl } from '../../services/api.js';
-import { ICON_STROKE } from '../../constants/icons.js';
-import { color, space, radius, font, text } from '../../theme.js';
+import api from '../../services/api.js';
+import { color, space, radius, font, text, statusColor } from '../../theme.js';
 
-// Replaces useSearchParams('id') — the ID now arrives as a navigation param,
-// either from a ComplaintCard tap or the dsn://track?id=... deep link.
 const TrackScreen = () => {
   const route = useRoute();
   const idParam = route.params?.id || '';
@@ -20,17 +16,19 @@ const TrackScreen = () => {
   const [complaint, setComplaint] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [zoomed, setZoomed] = useState(null);
+  const [searched, setSearched] = useState(false);
+  const [receiptMsg, setReceiptMsg] = useState('');
 
   const fetchComplaint = useCallback(async (id) => {
     setLoading(true);
     setError('');
     setComplaint(null);
+    setSearched(true);
     try {
       const response = await api.get(`/complaints/track/${id}`);
       setComplaint(response.data.complaint);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to locate complaint records.');
+      setError('No complaint found for that ID.');
     } finally {
       setLoading(false);
     }
@@ -48,142 +46,263 @@ const TrackScreen = () => {
     if (id) fetchComplaint(id);
   };
 
+  const handleDownload = async () => {
+    if (!complaint) return;
+    setReceiptMsg('Downloading...');
+    await downloadReceipt(complaint.trackingId);
+    setReceiptMsg('Downloaded!');
+    setTimeout(() => setReceiptMsg(''), 3000);
+  };
+
   return (
     <ScrollView
       style={s.screen}
       contentContainerStyle={s.content}
       keyboardShouldPersistTaps="handled"
     >
-      <Panel style={s.searchPanel}>
-        <View style={s.rowCenter}>
-          <Search size={18} strokeWidth={ICON_STROKE} color={color.accent} />
-          <Text style={s.panelTitle}>Track Complaint Progress</Text>
-        </View>
-        <Input
-          placeholder="Enter Tracking ID (e.g. COMP-XXXXX-X)"
+      <View style={s.header}>
+        <Text style={s.h1}>Track</Text>
+        <Text style={s.lede}>Enter your tracking ID.</Text>
+      </View>
+
+      <View style={s.inputSection}>
+        <TextInput
+          placeholder="UF-XXXXX-X"
+          placeholderTextColor="rgba(255,255,255,0.4)"
           value={trackingId}
           onChangeText={setTrackingId}
           autoCapitalize="characters"
           autoCorrect={false}
           returnKeyType="search"
           onSubmitEditing={handleSearch}
+          style={s.giantInput}
         />
-        <Button title="Search" onPress={handleSearch} loading={loading} disabled={!trackingId.trim()} />
-      </Panel>
+        <Pressable
+          onPress={handleSearch}
+          disabled={loading || !trackingId.trim()}
+          style={({ pressed }) => [s.searchBtn, pressed && { transform: [{ scale: 0.97 }] }]}
+        >
+          <Search size={22} strokeWidth={2.6} color="#1C0512" />
+          <Text style={s.searchBtnText}>Find my complaint</Text>
+        </Pressable>
+      </View>
 
-      {error ? (
-        <View style={s.alert}>
-          <AlertTriangle size={16} strokeWidth={ICON_STROKE} color={color.statusRejected} />
-          <Text style={s.alertText}>{error}</Text>
-        </View>
-      ) : null}
-
-      {complaint ? (
-        <Panel style={s.resultPanel}>
-          <View style={s.resultHead}>
-            <View style={s.flex1}>
-              <Text style={s.title}>{complaint.title}</Text>
-              <Text style={s.mono}>ID: {complaint.trackingId}</Text>
-            </View>
-            <StatusBadge status={complaint.status} />
+      <View style={s.resultSection}>
+        {error ? (
+          <View style={s.emptyState}>
+            <Text style={s.emptyText}>{error}</Text>
           </View>
+        ) : null}
 
-          <View style={s.section}>
-            <Text style={s.sectionLabel}>ISSUE DESCRIPTION</Text>
-            <Text style={s.body}>{complaint.description}</Text>
-          </View>
-
-          {complaint.images?.length > 0 ? (
-            <View style={s.section}>
-              <Text style={s.sectionLabel}>UPLOADED PROOFS</Text>
-              <View style={s.thumbRow}>
-                {complaint.images.map((img, idx) => {
-                  const uri = `${getUploadsBaseUrl()}${img}`;
-                  return (
-                    <Pressable key={idx} onPress={() => setZoomed(zoomed === uri ? null : uri)}>
-                      <Image source={{ uri }} style={zoomed === uri ? s.thumbLarge : s.thumb} />
-                    </Pressable>
-                  );
-                })}
+        {complaint ? (
+          <View style={s.resultCard}>
+            <View style={s.rowSpace}>
+              <View style={s.flex1}>
+                <Text style={s.cardTitle}>{complaint.title}</Text>
+                <Text style={s.cardId}>{complaint.trackingId}</Text>
               </View>
-              <Text style={s.hint}>Tap an image to enlarge</Text>
+              <View style={s.statusRow}>
+                <View style={[s.statusDot, { backgroundColor: statusColor[complaint.status] || color.accent }]} />
+                <Text style={[s.statusText, { color: statusColor[complaint.status] || color.accent }]}>{complaint.status}</Text>
+              </View>
             </View>
-          ) : null}
 
-          <View style={s.section}>
-            <Text style={s.sectionLabel}>STATUS LOG HISTORY</Text>
-            <StatusTimeline statusHistory={complaint.statusHistory} />
+            <View>
+              <Text style={s.label}>DESCRIPTION</Text>
+              <Text style={s.descText}>{complaint.description}</Text>
+            </View>
+
+            <View style={s.row}>
+              <View style={s.halfCol}>
+                <Text style={s.label}>CATEGORY</Text>
+                <Text style={s.valText}>{complaint.category}</Text>
+              </View>
+              <View style={s.halfCol}>
+                <Text style={s.label}>FILED</Text>
+                <Text style={s.valText}>{new Date(complaint.createdAt).toLocaleDateString()}</Text>
+              </View>
+            </View>
+            
+            <View>
+              <Text style={[s.label, {marginTop: 10}]}>STATUS LOG HISTORY</Text>
+              <StatusTimeline statusHistory={complaint.statusHistory} />
+            </View>
+
+            {complaint.status === 'Resolved' && (
+              <Pressable onPress={handleDownload} style={s.receiptBtn}>
+                <Text style={s.receiptBtnText}>Download receipt</Text>
+              </Pressable>
+            )}
+            {!!receiptMsg && (
+              <Text style={s.receiptMsgText}>{receiptMsg}</Text>
+            )}
           </View>
-
-          {complaint.status === 'Resolved' ? (
-            <Button
-              title="Download PDF Receipt"
-              variant="secondary"
-              onPress={() => downloadReceipt(complaint.trackingId)}
-              icon={<FileDown size={14} strokeWidth={ICON_STROKE} />}
-            />
-          ) : null}
-        </Panel>
-      ) : null}
+        ) : null}
+      </View>
     </ScrollView>
   );
 };
 
 const s = StyleSheet.create({
   screen: { flex: 1, backgroundColor: color.bg },
-  content: { padding: space[4], paddingBottom: space[8], gap: space[4] },
-  searchPanel: { gap: space[3] },
-  resultPanel: { gap: space[4] },
-  rowCenter: { flexDirection: 'row', alignItems: 'center', gap: space[2] },
-  panelTitle: { fontFamily: font.sansSemibold, fontSize: 17, color: color.textPrimary },
-  flex1: { flex: 1 },
+  content: { paddingBottom: 104 },
+  header: {
+    paddingHorizontal: 20,
+    paddingTop: 24,
+    paddingBottom: 12,
+  },
+  h1: {
+    fontFamily: font.sansBold,
+    fontSize: 38,
+    lineHeight: 40,
+    color: color.white,
+  },
+  lede: {
+    fontFamily: font.sans,
+    fontSize: 17,
+    color: color.textSecondary,
+    marginTop: 8,
+  },
 
-  alert: {
+  inputSection: {
+    paddingHorizontal: 20,
+    paddingTop: 10,
+    paddingBottom: 4,
+    gap: 14,
+  },
+  giantInput: {
+    width: '100%',
+    height: 104,
+    paddingHorizontal: 20,
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.16)',
+    borderRadius: 28,
+    color: color.white,
+    fontSize: 30,
+    fontFamily: font.sansBold,
+    letterSpacing: 1.8,
+    textAlign: 'center',
+    textTransform: 'uppercase',
+  },
+  searchBtn: {
+    width: '100%',
+    height: 66,
+    borderRadius: 100,
+    backgroundColor: color.accent,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: space[2],
-    backgroundColor: 'rgba(239, 90, 90, 0.1)',
-    borderWidth: 1,
-    borderColor: color.statusRejected,
-    borderRadius: radius.md,
-    padding: space[3],
+    justifyContent: 'center',
+    gap: 12,
   },
-  alertText: { flex: 1, fontFamily: font.sans, fontSize: text.small, color: color.textPrimary },
+  searchBtnText: {
+    fontFamily: font.sansBold,
+    fontSize: 18,
+    color: '#1C0512',
+  },
 
-  resultHead: {
+  resultSection: {
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 24,
+  },
+  emptyState: {
+    paddingVertical: 36,
+    alignItems: 'center',
+  },
+  emptyText: {
+    fontSize: 13,
+    color: color.textSecondary,
+    fontFamily: font.sans,
+  },
+
+  resultCard: {
+    padding: 18,
+    backgroundColor: color.surface,
+    borderWidth: 1,
+    borderColor: color.borderStrong,
+    borderRadius: 18,
+    gap: 14,
+  },
+  rowSpace: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    gap: space[3],
-    borderBottomWidth: 1,
-    borderBottomColor: color.border,
-    paddingBottom: space[3],
+    alignItems: 'flex-start',
+    gap: 8,
   },
-  title: { fontFamily: font.sansSemibold, fontSize: text.h3, color: color.textPrimary, marginBottom: space[1] },
-  mono: { fontFamily: font.mono, fontSize: text.monoSm, color: color.textMuted },
+  flex1: { flex: 1 },
+  cardTitle: {
+    fontFamily: font.sansSemibold,
+    fontSize: 17,
+    color: color.white,
+  },
+  cardId: {
+    fontFamily: font.sans,
+    fontSize: 11,
+    color: color.textMuted,
+    marginTop: 3,
+  },
+  statusRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  statusDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+  },
+  statusText: {
+    fontSize: 12,
+    fontFamily: font.sansBold,
+  },
 
-  section: { gap: space[2] },
-  sectionLabel: { fontFamily: font.mono, fontSize: 11, color: color.textMuted, letterSpacing: 0.5 },
-  body: { fontFamily: font.sans, fontSize: text.small, color: color.textSecondary, lineHeight: 21 },
+  label: {
+    fontSize: 10,
+    letterSpacing: 0.8,
+    color: color.textMuted,
+    textTransform: 'uppercase',
+    marginBottom: 5,
+    fontFamily: font.sans,
+  },
+  descText: {
+    fontSize: 13,
+    color: '#D2C6CE',
+    lineHeight: 19.5,
+    fontFamily: font.sans,
+  },
+  row: {
+    flexDirection: 'row',
+    gap: 20,
+  },
+  halfCol: {
+    flex: 1,
+  },
+  valText: {
+    fontSize: 12,
+    color: color.white,
+    fontFamily: font.sans,
+  },
 
-  thumbRow: { flexDirection: 'row', flexWrap: 'wrap', gap: space[2] },
-  thumb: {
-    width: 110,
-    height: 110,
-    borderRadius: radius.sm,
+  receiptBtn: {
+    height: 42,
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: color.border,
-    backgroundColor: color.surfaceRaised,
+    borderColor: '#352A34',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  thumbLarge: {
-    width: '100%',
-    minWidth: 280,
-    height: 260,
-    borderRadius: radius.sm,
-    borderWidth: 1,
-    borderColor: color.accent,
-    backgroundColor: color.surfaceRaised,
+  receiptBtnText: {
+    fontSize: 13,
+    fontFamily: font.sansBold,
+    color: color.white,
   },
-  hint: { fontFamily: font.sans, fontSize: 11, color: color.textMuted },
+  receiptMsgText: {
+    fontSize: 12,
+    color: color.success,
+    textAlign: 'center',
+    fontFamily: font.sans,
+  }
 });
 
 export default TrackScreen;

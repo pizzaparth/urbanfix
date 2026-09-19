@@ -1,107 +1,158 @@
 import React, { useState } from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
-import { UserPlus, AlertCircle } from 'lucide-react-native';
+import { View, Text, Pressable, StyleSheet, TextInput } from 'react-native';
 import AuthCard from '../../components/AuthCard.jsx';
-import { Field, Input, Button, Alert } from '../../components/ui.jsx';
-import { useAuth } from '../../hooks/useAuth.js';
-import { ICON_STROKE } from '../../constants/icons.js';
-import { color, space, font, text } from '../../theme.js';
+import api from '../../services/api.js';
+import { color, font } from '../../theme.js';
 
 const RegisterScreen = ({ navigation }) => {
-  const [form, setForm] = useState({ name: '', email: '', password: '', phone: '' });
+  const [form, setForm] = useState({ name: '', email: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { registerUser } = useAuth();
 
   const set = (k) => (v) => setForm((f) => ({ ...f, [k]: v }));
 
-  // The web form leaned on HTML validation (required, pattern="\d{10}",
-  // min 8 chars). RN has no form validation, so the same rules are explicit.
-  const phoneOk = /^\d{10}$/.test(form.phone);
-  const canSubmit =
-    form.name.trim() && form.email.trim() && phoneOk && form.password.length >= 8;
-
   const handleSubmit = async () => {
     setError('');
+    if (form.password.length < 8) return setError('Password must be at least 8 characters long.');
     setLoading(true);
     try {
-      await registerUser(form.name.trim(), form.email.trim(), form.password, form.phone);
-      navigation.navigate('VerifyOtp', { email: form.email.trim() });
+      await api.post('/auth/register', form);
+      navigation.navigate('VerifyOtp', { email: form.email });
     } catch (err) {
-      setError(err.response?.data?.message || 'Registration failed. Please check inputs.');
+      setError(err.response?.data?.message || 'Registration failed. Please try again.');
     } finally {
       setLoading(false);
     }
+    return undefined;
   };
 
   return (
     <AuthCard
-      icon={UserPlus}
-      title="Create Citizen Account"
-      subtitle="Register to report issues and track resolutions"
+      title="Join us"
+      subtitle="Help build a better city today."
       footer={
-        <View style={s.footerRow}>
-          <Text style={s.muted}>Already have an account? </Text>
-          <Pressable onPress={() => navigation.navigate('Login')} hitSlop={8}>
-            <Text style={s.link}>Login here</Text>
-          </Pressable>
-        </View>
+        <Text style={s.muted}>
+          Already registered?{' '}
+          <Text style={s.link} onPress={() => navigation.navigate('Login')}>
+            Sign in
+          </Text>
+        </Text>
       }
     >
       {error ? (
-        <Alert tone="danger" icon={<AlertCircle size={15} strokeWidth={ICON_STROKE} />}>
-          {error}
-        </Alert>
+        <View style={s.errorAlert}>
+          <Text style={s.errorAlertText}>{error}</Text>
+        </View>
       ) : null}
 
-      <Field label="Full Name">
-        <Input value={form.name} onChangeText={set('name')} autoComplete="name" />
-      </Field>
+      <View style={s.formGroup}>
+        <View>
+          <Text style={s.inputLabel}>Full name</Text>
+          <TextInput
+            value={form.name}
+            onChangeText={set('name')}
+            placeholder="Jane Doe"
+            placeholderTextColor="rgba(255,255,255,0.4)"
+            style={s.giantInput}
+          />
+        </View>
+        <View>
+          <Text style={s.inputLabel}>Email</Text>
+          <TextInput
+            value={form.email}
+            onChangeText={set('email')}
+            placeholder="you@example.com"
+            placeholderTextColor="rgba(255,255,255,0.4)"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            style={s.giantInput}
+          />
+        </View>
+        <View>
+          <Text style={s.inputLabel}>Password</Text>
+          <TextInput
+            value={form.password}
+            onChangeText={set('password')}
+            placeholder="••••••••"
+            placeholderTextColor="rgba(255,255,255,0.4)"
+            secureTextEntry
+            autoCapitalize="none"
+            style={s.giantInput}
+            onSubmitEditing={handleSubmit}
+          />
+        </View>
+      </View>
 
-      <Field label="Email Address">
-        <Input
-          value={form.email}
-          onChangeText={set('email')}
-          keyboardType="email-address"
-          autoCapitalize="none"
-          autoComplete="email"
-        />
-      </Field>
-
-      <Field
-        label="Phone Number (10 digits)"
-        error={form.phone && !phoneOk ? 'Enter exactly 10 digits.' : ''}
+      <Pressable 
+        style={s.primaryBtn} 
+        onPress={handleSubmit} 
+        disabled={loading || !form.name.trim() || !form.email.trim() || !form.password}
       >
-        <Input
-          value={form.phone}
-          onChangeText={(v) => set('phone')(v.replace(/\D/g, '').slice(0, 10))}
-          keyboardType="number-pad"
-          placeholder="e.g. 9876543210"
-          maxLength={10}
-        />
-      </Field>
-
-      <Field
-        label="Password (Min 8 characters)"
-        error={form.password && form.password.length < 8 ? 'At least 8 characters.' : ''}
-      >
-        <Input
-          value={form.password}
-          onChangeText={set('password')}
-          secureTextEntry
-          autoCapitalize="none"
-        />
-      </Field>
-
-      <Button title="Register" onPress={handleSubmit} loading={loading} disabled={!canSubmit} />
+        <Text style={s.primaryBtnText}>{loading ? '...' : 'Create account'}</Text>
+      </Pressable>
     </AuthCard>
   );
 };
 
 const s = StyleSheet.create({
-  footerRow: { flexDirection: 'row', alignItems: 'center' },
-  muted: { fontFamily: font.sans, fontSize: text.small, color: color.textMuted },
-  link: { fontFamily: font.sansMedium, fontSize: text.small, color: color.accent },
+  formGroup: { gap: 20 },
+  inputLabel: {
+    fontSize: 17,
+    fontFamily: font.sansBold,
+    color: color.white,
+    marginBottom: 10,
+  },
+  giantInput: {
+    width: '100%',
+    height: 62,
+    paddingHorizontal: 18,
+    backgroundColor: '#120E13',
+    borderWidth: 1.5,
+    borderColor: '#2C222B',
+    borderRadius: 18,
+    color: color.white,
+    fontSize: 18,
+    fontFamily: font.sansBold,
+  },
+  primaryBtn: {
+    width: '100%',
+    height: 66,
+    borderRadius: 100,
+    backgroundColor: color.accent,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 8,
+  },
+  primaryBtnText: {
+    fontFamily: font.sansBold,
+    fontSize: 20,
+    color: '#1C0512',
+  },
+  muted: {
+    fontFamily: font.sansBold,
+    fontSize: 17,
+    color: color.white,
+    opacity: 0.62,
+  },
+  link: {
+    fontFamily: font.sansBold,
+    fontSize: 17,
+    textDecorationLine: 'underline',
+    color: color.white,
+  },
+  errorAlert: {
+    padding: 16,
+    backgroundColor: '#1C0F15',
+    borderWidth: 1.5,
+    borderColor: '#FF5A7A',
+    borderRadius: 18,
+    marginBottom: -2,
+  },
+  errorAlertText: {
+    color: '#FF5A7A',
+    fontFamily: font.sansBold,
+    fontSize: 16,
+  },
 });
 
 export default RegisterScreen;

@@ -1,22 +1,19 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, RefreshControl, StyleSheet } from 'react-native';
+import { View, Text, RefreshControl, StyleSheet, Pressable } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
-import { SkeletonList } from '../../components/Skeleton.jsx';
 import { useFocusEffect } from '@react-navigation/native';
-import { CirclePlus, FileDown, LogOut } from 'lucide-react-native';
-import StatusBadge from '../../components/StatusBadge.jsx';
-import { Button, Loading, Alert, EmptyState } from '../../components/ui.jsx';
 import { downloadReceipt } from '../../utils/downloadReceipt.js';
 import { useAuth } from '../../hooks/useAuth.js';
 import api from '../../services/api.js';
-import { ICON_STROKE } from '../../constants/icons.js';
-import { color, space, radius, font, text } from '../../theme.js';
+import { color, font } from '../../theme.js';
 
-// The web dashboard had an inline "new complaint" modal that POSTed to
-// /complaints with only title/description/category. That endpoint requires a
-// valid OTP plus name/email/location and rejects anything else with a 400, so
-// that form could never have succeeded. Rather than port a broken path, the
-// button here routes to the real OTP-backed filing wizard.
+const STATUS_COLORS = {
+  'Filed': '#4ADE9B',
+  'In Progress': '#FFB86B',
+  'Resolved': '#FF5A7A',
+  'Rejected': '#A094A0'
+};
+
 const DashboardScreen = ({ navigation }) => {
   const { user, logoutUser } = useAuth();
   const [complaints, setComplaints] = useState([]);
@@ -44,126 +41,227 @@ const DashboardScreen = ({ navigation }) => {
   );
 
   const header = (
-    <View style={s.header}>
+    <View style={s.headerGroup}>
       <View style={s.userRow}>
         <View style={s.flex1}>
-          <Text style={s.hello}>{user?.name}</Text>
-          <Text style={s.email}>{user?.email}</Text>
+          <Text style={s.userName}>{user?.name}</Text>
+          <Text style={s.userEmail}>{user?.email}</Text>
         </View>
-        <Button
-          title="Sign out"
-          variant="ghost"
-          size="sm"
-          onPress={logoutUser}
-          icon={<LogOut size={14} strokeWidth={ICON_STROKE} />}
-        />
+        <Pressable style={s.signOutBtn} onPress={logoutUser}>
+          <Text style={s.signOutText}>Sign out</Text>
+        </Pressable>
       </View>
 
-      <Button
-        title="File a New Complaint"
-        onPress={() => navigation.navigate('File')}
-        icon={<CirclePlus size={16} strokeWidth={ICON_STROKE} />}
-      />
+      <View style={s.fileNewWrap}>
+        <Pressable style={s.fileNewBtn} onPress={() => navigation.navigate('File')}>
+          <Text style={s.fileNewText}>File a new complaint</Text>
+        </Pressable>
+      </View>
 
-      {error ? <Alert tone="danger">{error}</Alert> : null}
+      {error ? (
+        <View style={s.errorAlert}>
+          <Text style={s.errorAlertText}>{error}</Text>
+        </View>
+      ) : null}
 
-      <Text style={s.countLabel}>
-        {complaints.length} complaint{complaints.length === 1 ? '' : 's'} filed
-      </Text>
+      <View style={s.countWrap}>
+        <Text style={s.countLabel}>{complaints.length} complaints</Text>
+      </View>
     </View>
   );
 
   return (
-    <FlashList
-      style={s.screen}
-      contentContainerStyle={s.content}
-      data={loading ? [] : complaints}
-      keyExtractor={(item) => item._id}
-      ListHeaderComponent={header}
-      ItemSeparatorComponent={() => <View style={{ height: space[3] }} />}
-      ListEmptyComponent={
-        loading ? (
-          <SkeletonList count={4} />
-        ) : (
-          <EmptyState
-            title="No complaints yet"
-            hint="Anything you file will appear here with its live status."
+    <View style={s.screen}>
+      <FlashList
+        data={loading ? [] : complaints}
+        keyExtractor={(item) => item._id}
+        ListHeaderComponent={header}
+        contentContainerStyle={s.listContent}
+        ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={() => {
+              setRefreshing(true);
+              fetchMyComplaints();
+            }}
+            tintColor={color.accent}
           />
-        )
-      }
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={() => {
-            setRefreshing(true);
-            fetchMyComplaints();
-          }}
-          tintColor={color.accent}
-        />
-      }
-      renderItem={({ item }) => (
-        <View style={s.card}>
-          <View style={s.cardHead}>
-            <Text style={s.cardTitle} numberOfLines={2}>
-              {item.title}
-            </Text>
-            <StatusBadge status={item.status} variant="solid" />
-          </View>
-          <Text style={s.mono}>{item.trackingId}</Text>
-          <Text style={s.cardMeta}>
-            {item.category} · {new Date(item.createdAt).toLocaleDateString()}
-          </Text>
-          <View style={s.cardActions}>
-            <Button
-              title="Track"
-              variant="secondary"
-              size="sm"
-              onPress={() => navigation.navigate('Track', { id: item.trackingId })}
-            />
-            {item.status === 'Resolved' ? (
-              <Button
-                title="Receipt"
-                variant="ghost"
-                size="sm"
-                onPress={() => downloadReceipt(item.trackingId)}
-                icon={<FileDown size={14} strokeWidth={ICON_STROKE} />}
-              />
-            ) : null}
-          </View>
-        </View>
-      )}
-    />
+        }
+        renderItem={({ item }) => {
+          const statusColor = STATUS_COLORS[item.status] || '#FFFFFF';
+          return (
+            <View style={s.card}>
+              <View style={s.cardHead}>
+                <Text style={s.cardTitle} numberOfLines={2}>{item.title}</Text>
+                <View style={s.badgeWrap}>
+                  <View style={[s.badgeDot, { backgroundColor: statusColor }]} />
+                  <Text style={[s.badgeLabel, { color: statusColor }]}>{item.status}</Text>
+                </View>
+              </View>
+              
+              <Text style={s.cardMeta}>
+                {item.trackingId} · {item.category} · {new Date(item.createdAt).toLocaleDateString()}
+              </Text>
+              
+              <View style={s.cardActions}>
+                <Pressable onPress={() => navigation.navigate('Track', { id: item.trackingId })}>
+                  <Text style={s.trackBtnText}>Track</Text>
+                </Pressable>
+                
+                {item.status === 'Resolved' && (
+                  <Pressable onPress={() => downloadReceipt(item.trackingId)}>
+                    <Text style={s.receiptBtnText}>Receipt</Text>
+                  </Pressable>
+                )}
+              </View>
+            </View>
+          );
+        }}
+      />
+    </View>
   );
 };
 
 const s = StyleSheet.create({
   screen: { flex: 1, backgroundColor: color.bg },
-  content: { padding: space[4], paddingBottom: space[8] },
-  header: { gap: space[3], marginBottom: space[4] },
-  userRow: { flexDirection: 'row', alignItems: 'center', gap: space[2] },
+  listContent: { paddingBottom: 104 },
+  
+  headerGroup: { },
+  userRow: {
+    paddingHorizontal: 20,
+    paddingTop: 22,
+    paddingBottom: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
   flex1: { flex: 1 },
-  hello: { fontFamily: font.sansSemibold, fontSize: text.h3, color: color.textPrimary },
-  email: { fontFamily: font.sans, fontSize: text.small, color: color.textMuted },
-  countLabel: { fontFamily: font.mono, fontSize: text.monoSm, color: color.textMuted },
+  userName: {
+    fontFamily: font.sansBold,
+    fontSize: 19,
+    color: color.white,
+  },
+  userEmail: {
+    fontSize: 12,
+    color: '#8E8290',
+    marginTop: 2,
+    fontFamily: font.sans,
+  },
+  signOutBtn: {
+    backgroundColor: '#7E1038',
+    borderWidth: 1,
+    borderColor: '#B02159',
+    borderRadius: 100,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+  },
+  signOutText: {
+    color: color.white,
+    fontSize: 12,
+    fontFamily: font.sansBold,
+  },
+  
+  fileNewWrap: {
+    paddingHorizontal: 20,
+    paddingTop: 6,
+    paddingBottom: 16,
+  },
+  fileNewBtn: {
+    width: '100%',
+    height: 48,
+    borderRadius: 100,
+    backgroundColor: color.accent,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  fileNewText: {
+    fontFamily: font.sansBold,
+    fontSize: 14,
+    color: '#0A0A0A',
+  },
+  
+  countWrap: {
+    paddingHorizontal: 20,
+    paddingVertical: 4,
+  },
+  countLabel: {
+    fontSize: 11,
+    color: '#8E8290',
+    fontFamily: font.monoMedium,
+  },
+  
+  errorAlert: {
+    marginHorizontal: 20,
+    marginBottom: 10,
+    padding: 12,
+    backgroundColor: 'rgba(255, 90, 122, 0.1)',
+    borderWidth: 1,
+    borderColor: '#FF5A7A',
+    borderRadius: 12,
+  },
+  errorAlertText: {
+    color: '#FF5A7A',
+    fontFamily: font.sansBold,
+    fontSize: 13,
+  },
 
   card: {
-    backgroundColor: color.surface,
+    marginHorizontal: 20,
+    padding: 18,
+    backgroundColor: '#120E13',
     borderWidth: 1,
-    borderColor: color.border,
-    borderRadius: radius.md,
-    padding: space[4],
-    gap: space[2],
+    borderColor: '#231B22',
+    borderRadius: 22,
+    gap: 9,
   },
-  cardHead: { flexDirection: 'row', justifyContent: 'space-between', gap: space[2] },
-  cardTitle: { flex: 1, fontFamily: font.sansSemibold, fontSize: text.body, color: color.textPrimary },
-  mono: { fontFamily: font.mono, fontSize: text.monoSm, color: color.accent },
-  cardMeta: { fontFamily: font.sans, fontSize: text.small, color: color.textSecondary },
+  cardHead: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    gap: 8,
+  },
+  cardTitle: {
+    flex: 1,
+    fontFamily: font.sansBold,
+    fontSize: 14,
+    color: color.white,
+  },
+  badgeWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  badgeDot: {
+    width: 7,
+    height: 7,
+    borderRadius: 3.5,
+  },
+  badgeLabel: {
+    fontSize: 11,
+    fontFamily: font.sansBold,
+  },
+  cardMeta: {
+    fontSize: 11,
+    color: '#8E8290',
+    fontFamily: font.monoMedium,
+  },
   cardActions: {
     flexDirection: 'row',
-    gap: space[2],
+    gap: 16,
+    paddingTop: 8,
     borderTopWidth: 1,
-    borderTopColor: color.border,
-    paddingTop: space[3],
+    borderTopColor: '#231B22',
+  },
+  trackBtnText: {
+    color: color.accent,
+    fontSize: 12,
+    fontFamily: font.sansBold,
+  },
+  receiptBtnText: {
+    color: '#B5A8B2',
+    fontSize: 12,
+    fontFamily: font.sansBold,
   },
 });
 

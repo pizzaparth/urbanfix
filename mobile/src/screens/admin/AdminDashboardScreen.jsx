@@ -1,25 +1,10 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, ScrollView, RefreshControl, StyleSheet } from 'react-native';
-import { ClipboardList, LogOut } from 'lucide-react-native';
-import DonutChart from '../../components/charts/DonutChart.jsx';
-import TrendChart from '../../components/charts/TrendChart.jsx';
-import RefreshBar from '../../components/RefreshBar.jsx';
-import { SkeletonBlock, SkeletonPanel } from '../../components/Skeleton.jsx';
+import { View, Text, ScrollView, RefreshControl, StyleSheet, Pressable } from 'react-native';
+import { Activity } from 'lucide-react-native';
 import { useAutoRefresh } from '../../hooks/useAutoRefresh.js';
-import { Panel, Button } from '../../components/ui.jsx';
 import { useAuth } from '../../hooks/useAuth.js';
 import api from '../../services/api.js';
-import { ICON_STROKE } from '../../constants/icons.js';
-import { getCategoryColor } from '../../config/chartTheme.js';
-import { color, space, radius, font, text, statusColor } from '../../theme.js';
-
-const STATUS_KEYS = ['Pending', 'In Progress', 'Resolved', 'Rejected'];
-
-const URGENCY_COLORS = {
-  'High Urgency': color.statusRejected,
-  'Medium Urgency': color.statusPending,
-  'Standard Urgency': color.accent,
-};
+import { color, font } from '../../theme.js';
 
 const AdminDashboardScreen = ({ navigation }) => {
   const { user, logoutUser } = useAuth();
@@ -37,50 +22,9 @@ const AdminDashboardScreen = ({ navigation }) => {
     }
   }, []);
 
-  // An admin watching this dashboard needs the numbers to move as complaints
-  // land, so it polls while focused and stops when it isn't — see the hook for
-  // why that's still battery-safe on a phone.
-  const { refreshing, refresh, lastUpdatedAt } = useAutoRefresh(fetchStats);
-
-  // A dashboard is mostly panels and charts, so the skeleton mirrors that shape
-  // rather than showing a spinner over an empty screen.
-  if (loading) {
-    return (
-      <View style={[s.screen, s.content]}>
-        <SkeletonBlock height={18} width="45%" />
-        <SkeletonPanel chartHeight={120} />
-        <SkeletonPanel chartHeight={190} />
-      </View>
-    );
-  }
+  const { refreshing, refresh } = useAutoRefresh(fetchStats);
 
   const breakdown = stats?.statusBreakdown || {};
-  const categories = stats?.categoryDistribution || [];
-  const urgency = stats?.urgencyDistribution || [];
-  const timeline = stats?.timelineTrend || [];
-
-  const categoryTotal = categories.reduce((sum, c) => sum + (c.count || 0), 0) || 1;
-
-  const categoryPie = categories.map((c, i) => ({
-    value: c.count || 0,
-    color: getCategoryColor(i),
-    label: c._id || 'Other',
-  }));
-
-  const urgencyPie = urgency.map((u) => ({
-    value: u.count || 0,
-    color: URGENCY_COLORS[u._id] || color.gray600,
-    label: u._id || 'Unknown',
-  }));
-
-  // CartesianChart plots against a numeric x, so the index is the x value and
-  // the MM-DD string rides along for the axis label — the full date won't fit
-  // on a phone axis.
-  const lineData = timeline.map((t, i) => ({
-    x: i,
-    y: t.totalCount || 0,
-    label: t._id?.slice(5),
-  }));
 
   return (
     <ScrollView
@@ -90,132 +34,152 @@ const AdminDashboardScreen = ({ navigation }) => {
         <RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={color.accent} />
       }
     >
-      <View style={s.userRow}>
+      <View style={s.headerGroup}>
         <View style={s.flex1}>
-          <Text style={s.hello}>{user?.name}</Text>
-          <Text style={s.email}>Administrator</Text>
+          <Text style={s.h1}>Admin{'\n'}Dashboard</Text>
+          <Text style={s.subText}>Viewing as {user?.name}</Text>
         </View>
-        <Button
-          title="Sign out"
-          variant="ghost"
-          size="sm"
-          onPress={logoutUser}
-          icon={<LogOut size={14} strokeWidth={ICON_STROKE} />}
-        />
+        <Pressable style={s.signOutBtn} onPress={logoutUser}>
+          <Text style={s.signOutText}>Sign out</Text>
+        </Pressable>
       </View>
 
-      <RefreshBar lastUpdatedAt={lastUpdatedAt} refreshing={refreshing} onRefresh={refresh} />
-
-      {/* KPI tiles — the web grid of counters, stacked two-up for a phone. */}
-      <View style={s.kpiGrid}>
-        {STATUS_KEYS.map((k) => (
-          <View key={k} style={s.kpiTile}>
-            <Text style={[s.kpiValue, { color: statusColor[k] }]}>{breakdown[k] || 0}</Text>
-            <Text style={s.kpiLabel}>{k}</Text>
-          </View>
-        ))}
+      <View style={s.actionWrap}>
+        <Pressable style={s.manageBtn} onPress={() => navigation.navigate('AdminAction')}>
+          <Text style={s.manageBtnText}>Manage Complaints</Text>
+        </Pressable>
       </View>
 
-      <Panel style={s.panelGap}>
-        <Text style={s.panelTitle}>Total Issues</Text>
-        <Text style={s.bigNumber}>{breakdown.total || 0}</Text>
-      </Panel>
-
-      <Button
-        title="Manage Complaints"
-        onPress={() => navigation.navigate('AdminAction')}
-        icon={<ClipboardList size={16} strokeWidth={ICON_STROKE} />}
-      />
-
-      {timeline.length > 0 ? (
-        <Panel style={s.panelGap}>
-          <Text style={s.panelTitle}>Filing Timeline</Text>
-          <TrendChart data={lineData} />
-        </Panel>
-      ) : null}
-
-      {categoryPie.length > 0 ? (
-        <Panel style={s.panelGap}>
-          <Text style={s.panelTitle}>Issues by Category</Text>
-          <DonutChart data={categoryPie} size={200} centerValue={categoryTotal} centerLabel="total" />
-          {/* A slice is never identified by color alone — every category keeps a
-              visible label with its count and share. */}
-          <View style={s.legend}>
-            {categories.map((c, i) => (
-              <View key={c._id || i} style={s.legendRow}>
-                <View style={[s.swatch, { backgroundColor: getCategoryColor(i) }]} />
-                <Text style={s.legendLabel} numberOfLines={1}>
-                  {c._id}
-                </Text>
-                <Text style={s.legendValue}>{c.count}</Text>
-                <Text style={s.legendPct}>
-                  {Math.round(((c.count || 0) / categoryTotal) * 100)}%
-                </Text>
-              </View>
-            ))}
+      <View style={s.statsGrid}>
+        <View style={s.statsRow}>
+          <View style={s.statBox}>
+            <Text style={s.statLabel}>Pending</Text>
+            <Text style={[s.statValue, { color: '#FFB86B' }]}>{breakdown['Pending'] || 0}</Text>
           </View>
-        </Panel>
-      ) : null}
-
-      {urgencyPie.length > 0 ? (
-        <Panel style={s.panelGap}>
-          <Text style={s.panelTitle}>Urgency Distribution</Text>
-          <DonutChart data={urgencyPie} size={176} />
-          <View style={s.legend}>
-            {urgency.map((u) => (
-              <View key={u._id} style={s.legendRow}>
-                <View
-                  style={[s.swatch, { backgroundColor: URGENCY_COLORS[u._id] || color.gray600 }]}
-                />
-                <Text style={s.legendLabel} numberOfLines={1}>
-                  {u._id}
-                </Text>
-                <Text style={s.legendValue}>{u.count}</Text>
-              </View>
-            ))}
+          <View style={s.statBox}>
+            <Text style={s.statLabel}>Resolved</Text>
+            <Text style={[s.statValue, { color: '#4ADE9B' }]}>{breakdown['Resolved'] || 0}</Text>
           </View>
-        </Panel>
-      ) : null}
+        </View>
+        
+        <View style={[s.statBox, s.totalBox]}>
+          <View>
+            <Text style={s.statLabel}>Total</Text>
+            <Text style={[s.statValue, { color: color.white }]}>{breakdown.total || 0}</Text>
+          </View>
+          <View style={s.totalIcon}>
+            <Activity size={20} color="#FF5FA2" strokeWidth={2} />
+          </View>
+        </View>
+      </View>
     </ScrollView>
   );
 };
 
 const s = StyleSheet.create({
   screen: { flex: 1, backgroundColor: color.bg },
-  content: { padding: space[4], paddingBottom: space[8], gap: space[4] },
-  flex1: { flex: 1 },
-  panelGap: { gap: space[3] },
-
-  userRow: { flexDirection: 'row', alignItems: 'center', gap: space[2] },
-  hello: { fontFamily: font.sansSemibold, fontSize: text.h3, color: color.textPrimary },
-  email: { fontFamily: font.sans, fontSize: text.small, color: color.textMuted },
-
-  kpiGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: space[3] },
-  kpiTile: {
-    flexGrow: 1,
-    flexBasis: '45%',
-    backgroundColor: color.surface,
-    borderWidth: 1,
-    borderColor: color.border,
-    borderRadius: radius.md,
-    padding: space[4],
-    gap: space[1],
+  content: { paddingBottom: 104 },
+  
+  headerGroup: {
+    paddingHorizontal: 20,
+    paddingTop: 22,
+    paddingBottom: 8,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
   },
-  kpiValue: { fontFamily: font.monoMedium, fontSize: 26 },
-  kpiLabel: { fontFamily: font.sans, fontSize: text.small, color: color.textMuted },
-
-  panelTitle: { fontFamily: font.sansSemibold, fontSize: text.h3, color: color.textPrimary },
-  bigNumber: { fontFamily: font.monoMedium, fontSize: 34, color: color.textPrimary },
-
-  center: { alignItems: 'center' },
-
-  legend: { gap: space[2] },
-  legendRow: { flexDirection: 'row', alignItems: 'center', gap: space[2] },
-  swatch: { width: 10, height: 10, borderRadius: 2 },
-  legendLabel: { flex: 1, fontFamily: font.sans, fontSize: text.small, color: color.textSecondary },
-  legendValue: { fontFamily: font.monoMedium, fontSize: text.monoSm, color: color.textPrimary },
-  legendPct: { width: 38, textAlign: 'right', fontFamily: font.mono, fontSize: 11, color: color.textMuted },
-
+  flex1: { flex: 1 },
+  h1: {
+    fontFamily: font.sansBold,
+    fontSize: 28,
+    lineHeight: 31,
+    letterSpacing: -0.5,
+    color: color.white,
+  },
+  subText: {
+    fontSize: 13,
+    color: '#8E8290',
+    marginTop: 6,
+    fontFamily: font.sans,
+  },
+  signOutBtn: {
+    backgroundColor: '#7E1038',
+    borderWidth: 1,
+    borderColor: '#B02159',
+    borderRadius: 100,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+  },
+  signOutText: {
+    color: color.white,
+    fontSize: 12,
+    fontFamily: font.sansBold,
+  },
+  
+  actionWrap: {
+    paddingHorizontal: 20,
+    paddingVertical: 14,
+  },
+  manageBtn: {
+    width: '100%',
+    height: 58,
+    borderRadius: 100,
+    backgroundColor: '#C08BFF',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+  },
+  manageBtnText: {
+    fontFamily: font.sansBold,
+    fontSize: 16,
+    color: '#18062B',
+  },
+  
+  statsGrid: {
+    paddingHorizontal: 20,
+    paddingTop: 4,
+    paddingBottom: 24,
+    gap: 12,
+  },
+  statsRow: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  statBox: {
+    flex: 1,
+    padding: 18,
+    backgroundColor: '#120E13',
+    borderWidth: 1,
+    borderColor: '#231B22',
+    borderRadius: 22,
+  },
+  totalBox: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  statLabel: {
+    fontSize: 11,
+    color: '#8E8290',
+    fontFamily: font.sansBold,
+    textTransform: 'uppercase',
+    letterSpacing: 0.4,
+  },
+  statValue: {
+    fontFamily: font.sansBold,
+    fontSize: 28,
+    marginTop: 4,
+  },
+  totalIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    borderWidth: 2,
+    borderColor: '#3B2E3A',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
 
 export default AdminDashboardScreen;

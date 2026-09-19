@@ -1,13 +1,8 @@
 import React from 'react';
 import { View, Text, ScrollView, KeyboardAvoidingView, Platform, StyleSheet } from 'react-native';
-import { ICON_STROKE } from '../constants/icons.js';
 import { color, space, radius, font, text } from '../theme.js';
 
-// Shared chrome for Login / Register / VerifyOtp — the bordered icon badge,
-// title and subtitle those three pages each repeated inline on the web.
-// KeyboardAvoidingView is new: on a phone the keyboard would otherwise cover
-// the submit button.
-const AuthCard = ({ icon: Icon, title, subtitle, children, footer }) => (
+const AuthCard = ({ title, subtitle, children, footer, header }) => (
   <KeyboardAvoidingView
     style={s.flex}
     behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -15,13 +10,14 @@ const AuthCard = ({ icon: Icon, title, subtitle, children, footer }) => (
   >
     <ScrollView contentContainerStyle={s.content} keyboardShouldPersistTaps="handled">
       <View style={s.panel}>
-        <View style={s.head}>
-          <View style={s.badge}>
-            <Icon size={20} strokeWidth={ICON_STROKE} color={color.accent} />
+        {header ? (
+          header
+        ) : (
+          <View style={s.head}>
+            <Text style={s.title}>{title}</Text>
+            {subtitle ? <Text style={s.subtitle}>{subtitle}</Text> : null}
           </View>
-          <Text style={s.title}>{title}</Text>
-          {subtitle ? <Text style={s.subtitle}>{subtitle}</Text> : null}
-        </View>
+        )}
         <View style={s.body}>{children}</View>
         {footer ? <View style={s.footer}>{footer}</View> : null}
       </View>
@@ -31,39 +27,31 @@ const AuthCard = ({ icon: Icon, title, subtitle, children, footer }) => (
 
 const s = StyleSheet.create({
   flex: { flex: 1, backgroundColor: color.bg },
-  content: { flexGrow: 1, justifyContent: 'center', padding: space[4] },
+  content: { flexGrow: 1, justifyContent: 'center', padding: 24, paddingBottom: 104 },
   panel: {
-    backgroundColor: color.surface,
-    borderWidth: 1,
-    borderColor: color.border,
-    borderRadius: radius.md,
-    padding: space[5],
+    // No background, no border
+    paddingVertical: 28,
   },
-  head: { alignItems: 'center', marginBottom: space[4] },
-  badge: {
-    width: 44,
-    height: 44,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: color.borderStrong,
-    borderRadius: radius.md,
-    marginBottom: space[3],
+  head: {
+    marginBottom: 30,
   },
-  title: { fontFamily: font.sansSemibold, fontSize: 20, color: color.textPrimary, marginBottom: space[1] },
+  title: { 
+    fontFamily: font.sansBold, 
+    fontSize: 46, 
+    lineHeight: 48,
+    letterSpacing: -0.5,
+    color: color.white 
+  },
   subtitle: {
-    fontFamily: font.sans,
-    fontSize: text.small,
-    color: color.textMuted,
-    textAlign: 'center',
-    lineHeight: 19,
+    fontFamily: font.sansBold,
+    fontSize: 18,
+    color: color.white,
+    opacity: 0.62,
+    marginTop: 10,
   },
-  body: { gap: space[3] },
+  body: { gap: 20 },
   footer: {
-    marginTop: space[4],
-    paddingTop: space[3],
-    borderTopWidth: 1,
-    borderTopColor: color.border,
+    marginTop: 24,
     alignItems: 'center',
   },
 });

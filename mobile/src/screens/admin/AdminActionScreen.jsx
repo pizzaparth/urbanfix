@@ -1,32 +1,30 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, Pressable, RefreshControl, StyleSheet } from 'react-native';
+import { View, Text, Pressable, RefreshControl, StyleSheet, TextInput } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
-import { SkeletonList } from '../../components/Skeleton.jsx';
 import { useFocusEffect } from '@react-navigation/native';
 import { ChevronRight, Search, CircleX } from 'lucide-react-native';
 import StatusBadge from '../../components/StatusBadge.jsx';
 import SelectSheet from '../../components/SelectSheet.jsx';
-import ActivityHeatmap from '../../components/ActivityHeatmap.jsx';
-import { Input, Button, Loading, Alert, EmptyState } from '../../components/ui.jsx';
 import { CATEGORIES } from '../../constants/categories.js';
 import api from '../../services/api.js';
-import { ICON_STROKE } from '../../constants/icons.js';
-import { color, space, radius, font, text } from '../../theme.js';
+import { color, font } from '../../theme.js';
 
-const HEATMAP_DAYS = 365;
+const STATUS_COLORS = {
+  'Filed': '#4ADE9B',
+  'Pending': '#FFB86B',
+  'In Progress': '#C08BFF',
+  'Resolved': '#FF5FA2',
+  'Rejected': '#A094A0'
+};
+
 const STATUSES = ['Pending', 'In Progress', 'Resolved', 'Rejected'];
 const toOptions = (arr) => arr.map((v) => ({ label: v, value: v }));
 
-// The web version rendered a real <table> with overflow-x. RN has no table, and a
-// horizontally-scrolling grid is miserable on a phone, so each complaint is a
-// tappable card instead.
 const AdminActionScreen = ({ navigation }) => {
   const [complaints, setComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState('');
-
-  const [heatmap, setHeatmap] = useState({ activity: [], maxCount: 0 });
 
   const [statusFilter, setStatusFilter] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
@@ -76,89 +74,87 @@ const AdminActionScreen = ({ navigation }) => {
     }, [fetchComplaints])
   );
 
-  useEffect(() => {
-    const fetchHeatmap = async () => {
-      try {
-        const response = await api.get('/admin/activity-heatmap', {
-          params: { days: HEATMAP_DAYS },
-        });
-        setHeatmap({ activity: response.data.activity || [], maxCount: response.data.maxCount || 0 });
-      } catch {
-        // The heatmap is supplementary — a failure here shouldn't block the list.
-      }
-    };
-    fetchHeatmap();
-  }, []);
-
   const header = (
-    <View style={s.header}>
-      <ActivityHeatmap activity={heatmap.activity} maxCount={heatmap.maxCount} />
-
-      <View style={s.searchWrap}>
-        <Search size={15} strokeWidth={ICON_STROKE} color={color.textMuted} style={s.searchIcon} />
-        <Input
-          placeholder="Search title, tracking ID, or citizen"
-          value={search}
-          onChangeText={setSearch}
-          style={s.searchInput}
-          autoCorrect={false}
-        />
-        {search ? (
-          <Pressable onPress={() => setSearch('')} hitSlop={10} style={s.clearBtn}>
-            <CircleX size={15} strokeWidth={ICON_STROKE} color={color.textMuted} />
-          </Pressable>
-        ) : null}
+    <View style={s.headerGroup}>
+      <View style={s.headerRow}>
+        <Pressable style={s.topBackBtn} onPress={() => navigation.goBack()}>
+          <Text style={{color: '#FFF', fontSize: 18, fontFamily: font.sansBold}}>{'<'}</Text>
+        </Pressable>
+        <Text style={s.h1}>Action Desk</Text>
       </View>
 
-      <View style={s.filterRow}>
-        <SelectSheet
-          label="Status"
-          value={statusFilter}
-          onChange={(v) => {
-            setStatusFilter(v);
-            setPage(1);
-          }}
-          options={toOptions(STATUSES)}
-          placeholder="All Statuses"
-          style={s.flex1}
-        />
-        <SelectSheet
-          label="Category"
-          value={categoryFilter}
-          onChange={(v) => {
-            setCategoryFilter(v);
-            setPage(1);
-          }}
-          options={toOptions(CATEGORIES)}
-          placeholder="All"
-          style={s.flex1}
-        />
+      <View style={s.controlsWrap}>
+        <View style={s.searchWrap}>
+          <Search size={20} color="#8E8290" style={s.searchIcon} strokeWidth={2} />
+          <TextInput
+            placeholder="Search ID or name"
+            placeholderTextColor="rgba(255,255,255,0.4)"
+            value={search}
+            onChangeText={setSearch}
+            style={s.searchInput}
+            autoCorrect={false}
+          />
+          {search ? (
+            <Pressable onPress={() => setSearch('')} hitSlop={10} style={s.clearBtn}>
+              <CircleX size={20} color="#8E8290" strokeWidth={2} />
+            </Pressable>
+          ) : null}
+        </View>
+
+        <View style={s.filterRow}>
+          <SelectSheet
+            label="Status"
+            value={statusFilter}
+            onChange={(v) => {
+              setStatusFilter(v);
+              setPage(1);
+            }}
+            options={toOptions(STATUSES)}
+            placeholder="All statuses"
+            style={s.flex1}
+          />
+          <SelectSheet
+            label="Category"
+            value={categoryFilter}
+            onChange={(v) => {
+              setCategoryFilter(v);
+              setPage(1);
+            }}
+            options={toOptions(CATEGORIES)}
+            placeholder="All categories"
+            style={s.flex1}
+          />
+        </View>
       </View>
 
-      {error ? <Alert tone="danger">{error}</Alert> : null}
+      {error ? (
+        <View style={s.errorAlert}>
+          <Text style={s.errorAlertText}>{error}</Text>
+        </View>
+      ) : null}
     </View>
   );
 
   const footer =
     totalPages > 1 ? (
       <View style={s.pager}>
-        <Button
-          title="Previous"
-          variant="secondary"
-          size="sm"
+        <Pressable 
+          style={[s.pagerBtn, page <= 1 && s.pagerBtnDisabled]} 
           onPress={() => setPage((p) => Math.max(1, p - 1))}
           disabled={page <= 1}
-        />
+        >
+          <Text style={[s.pagerBtnText, page <= 1 && s.pagerBtnTextDisabled]}>Prev</Text>
+        </Pressable>
         <Text style={s.pagerLabel}>
-          Page {page} of {totalPages}
+          {page} / {totalPages}
         </Text>
-        <Button
-          title="Next"
-          variant="secondary"
-          size="sm"
+        <Pressable 
+          style={[s.pagerBtn, page >= totalPages && s.pagerBtnDisabled]}
           onPress={() => setPage((p) => Math.min(totalPages, p + 1))}
           disabled={page >= totalPages}
-        />
+        >
+          <Text style={[s.pagerBtnText, page >= totalPages && s.pagerBtnTextDisabled]}>Next</Text>
+        </Pressable>
       </View>
     ) : null;
 
@@ -170,15 +166,8 @@ const AdminActionScreen = ({ navigation }) => {
       keyExtractor={(item) => item._id}
       ListHeaderComponent={header}
       ListFooterComponent={footer}
-      ItemSeparatorComponent={() => <View style={{ height: space[3] }} />}
+      ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
       keyboardShouldPersistTaps="handled"
-      ListEmptyComponent={
-        loading ? (
-          <SkeletonList count={5} />
-        ) : (
-          <EmptyState title="No complaints found" hint="Try clearing the filters above." />
-        )
-      }
       refreshControl={
         <RefreshControl
           refreshing={refreshing}
@@ -189,69 +178,183 @@ const AdminActionScreen = ({ navigation }) => {
           tintColor={color.accent}
         />
       }
-      renderItem={({ item }) => (
-        <Pressable
-          onPress={() => navigation.navigate('ComplaintDetail', { id: item._id })}
-          style={({ pressed }) => [s.row, pressed && { borderColor: color.accentBorder }]}
-        >
-          <View style={s.rowMain}>
-            <View style={s.rowHead}>
-              <Text style={s.rowTitle} numberOfLines={2}>
-                {item.title}
+      renderItem={({ item }) => {
+        const statusColor = STATUS_COLORS[item.status] || '#FFFFFF';
+        return (
+          <Pressable
+            onPress={() => navigation.navigate('ComplaintDetail', { id: item._id })}
+            style={({ pressed }) => [s.row, pressed && { transform: [{scale: 0.98}] }]}
+          >
+            <View style={s.rowMain}>
+              <View style={s.rowHead}>
+                <Text style={s.rowTitle} numberOfLines={2}>
+                  {item.title}
+                </Text>
+                <View style={s.badgeWrap}>
+                  <View style={[s.badgeDot, { backgroundColor: statusColor }]} />
+                  <Text style={[s.badgeLabel, { color: statusColor }]}>{item.status}</Text>
+                </View>
+              </View>
+              <Text style={s.rowMeta} numberOfLines={1}>
+                {item.trackingId} · {item.category}
               </Text>
-              <StatusBadge status={item.status} variant="solid" />
+              <Text style={s.rowCitizen} numberOfLines={1}>
+                {item.citizenId?.name || '—'} · {item.citizenId?.email || '—'}
+              </Text>
             </View>
-            <Text style={s.mono}>{item.trackingId}</Text>
-            <Text style={s.rowMeta} numberOfLines={1}>
-              {item.category} · {item.location}
-            </Text>
-            <Text style={s.rowCitizen} numberOfLines={1}>
-              {item.citizenId?.name || '—'} · {item.citizenId?.email || '—'}
-            </Text>
-          </View>
-          <ChevronRight size={18} strokeWidth={ICON_STROKE} color={color.textMuted} />
-        </Pressable>
-      )}
+            <ChevronRight size={20} strokeWidth={2.4} color="rgba(255,255,255,0.4)" style={{flex: 'none'}} />
+          </Pressable>
+        );
+      }}
     />
   );
 };
 
 const s = StyleSheet.create({
   screen: { flex: 1, backgroundColor: color.bg },
-  content: { padding: space[4], paddingBottom: space[8] },
-  header: { gap: space[3], marginBottom: space[4] },
-  flex1: { flex: 1 },
-
-  searchWrap: { justifyContent: 'center' },
-  searchIcon: { position: 'absolute', left: space[3], zIndex: 1 },
-  searchInput: { paddingLeft: space[7], paddingRight: space[7] },
-  clearBtn: { position: 'absolute', right: space[3] },
-  filterRow: { flexDirection: 'row', gap: space[3] },
-
-  row: {
+  content: { paddingBottom: 104 },
+  
+  headerGroup: { },
+  headerRow: { 
+    paddingHorizontal: 20, 
+    paddingTop: 22, 
+    paddingBottom: 8,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: space[2],
-    backgroundColor: color.surface,
-    borderWidth: 1,
-    borderColor: color.border,
-    borderRadius: radius.md,
-    padding: space[4],
+    gap: 14,
   },
-  rowMain: { flex: 1, gap: space[1] },
-  rowHead: { flexDirection: 'row', justifyContent: 'space-between', gap: space[2] },
-  rowTitle: { flex: 1, fontFamily: font.sansSemibold, fontSize: text.body, color: color.textPrimary },
-  mono: { fontFamily: font.mono, fontSize: text.monoSm, color: color.accent },
-  rowMeta: { fontFamily: font.sans, fontSize: text.small, color: color.textSecondary },
-  rowCitizen: { fontFamily: font.sans, fontSize: 11, color: color.textMuted },
+  topBackBtn: {
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    borderWidth: 1.5,
+    borderColor: '#2C222B',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 'none',
+  },
+  h1: {
+    fontFamily: font.sansBold,
+    fontSize: 28,
+    lineHeight: 31,
+    letterSpacing: -0.5,
+    color: color.white,
+  },
+  
+  controlsWrap: {
+    paddingHorizontal: 20,
+    paddingTop: 14,
+    paddingBottom: 24,
+    gap: 12,
+  },
+  searchWrap: {
+    position: 'relative',
+    justifyContent: 'center',
+  },
+  searchIcon: {
+    position: 'absolute',
+    left: 18,
+    zIndex: 1,
+  },
+  searchInput: {
+    width: '100%',
+    height: 62,
+    paddingLeft: 48,
+    paddingRight: 48,
+    backgroundColor: '#120E13',
+    borderWidth: 1.5,
+    borderColor: '#2C222B',
+    borderRadius: 18,
+    color: color.white,
+    fontSize: 16,
+    fontFamily: font.sansBold,
+  },
+  clearBtn: {
+    position: 'absolute',
+    right: 18,
+  },
+  
+  filterRow: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  flex1: { flex: 1 },
+  
+  errorAlert: {
+    marginHorizontal: 20,
+    marginBottom: 10,
+    padding: 12,
+    backgroundColor: 'rgba(255, 90, 122, 0.1)',
+    borderWidth: 1,
+    borderColor: '#FF5A7A',
+    borderRadius: 12,
+  },
+  errorAlertText: {
+    color: '#FF5A7A',
+    fontFamily: font.sansBold,
+    fontSize: 13,
+  },
+
+  row: {
+    marginHorizontal: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    backgroundColor: '#120E13',
+    borderWidth: 1,
+    borderColor: '#231B22',
+    borderRadius: 22,
+    padding: 18,
+  },
+  rowMain: { flex: 1, gap: 4 },
+  rowHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 },
+  rowTitle: { flex: 1, fontFamily: font.sansBold, fontSize: 14, color: color.white },
+  badgeWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    flex: 'none',
+  },
+  badgeDot: {
+    width: 7,
+    height: 7,
+    borderRadius: 3.5,
+  },
+  badgeLabel: {
+    fontSize: 11,
+    fontFamily: font.sansBold,
+  },
+  rowMeta: { fontFamily: font.monoMedium, fontSize: 11, color: '#8E8290', marginTop: 2 },
+  rowCitizen: { fontFamily: font.sansBold, fontSize: 11, color: color.textMuted },
 
   pager: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: space[4],
+    justifyContent: 'center',
+    gap: 20,
+    marginTop: 20,
+    paddingBottom: 20,
   },
-  pagerLabel: { fontFamily: font.mono, fontSize: text.monoSm, color: color.textMuted },
+  pagerBtn: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 100,
+    backgroundColor: '#3B2E3A',
+  },
+  pagerBtnDisabled: {
+    backgroundColor: '#120E13',
+    borderWidth: 1,
+    borderColor: '#231B22',
+  },
+  pagerBtnText: {
+    fontFamily: font.sansBold,
+    fontSize: 14,
+    color: color.white,
+  },
+  pagerBtnTextDisabled: {
+    color: '#8E8290',
+  },
+  pagerLabel: { fontFamily: font.monoMedium, fontSize: 14, color: '#8E8290' },
 });
 
 export default AdminActionScreen;

@@ -271,7 +271,7 @@ const FileComplaintScreen = ({ navigation }) => {
     RNAlert.alert('Copied', 'Tracking ID copied to clipboard.');
   };
 
-  const progress = (cardIndex + 1) / cards.length;
+  const progress = ((cardIndex + 1) / cards.length) * 100;
 
   return (
     <KeyboardAvoidingView
@@ -280,26 +280,28 @@ const FileComplaintScreen = ({ navigation }) => {
       keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
     >
       <ScrollView contentContainerStyle={s.content} keyboardShouldPersistTaps="handled">
-        <View style={s.intro}>
-          <Text style={s.h1}>File a Public Complaint</Text>
-          <Text style={s.lede}>
-            Answer the category questionnaire, describe the issue, and verify via email OTP.
-          </Text>
+        <View style={s.headerRow}>
+          {cardIndex > 0 && (
+            <Pressable style={s.topBackBtn} onPress={handleCardBack}>
+              <Text style={{color: '#FFF', fontSize: 18, fontFamily: font.sansBold}}>{'<'}</Text>
+            </Pressable>
+          )}
+          <View style={s.flex1}>
+            <Text style={s.h1}>Report an issue</Text>
+            <Text style={s.lede}>{currentCard.type.toUpperCase()}</Text>
+          </View>
         </View>
 
-        {/* Replaces the web wizard's implicit position cue — on a small screen a
-            10+ card sequence needs an explicit progress bar. */}
-        <View style={s.progressTrack}>
-          <View style={[s.progressFill, { width: `${progress * 100}%` }]} />
+        <View style={s.progressContainer}>
+          <View style={s.progressTrack}>
+            <View style={[s.progressFill, { width: `${progress}%` }]} />
+          </View>
         </View>
-        <Text style={s.progressLabel}>
-          Step {cardIndex + 1} of {cards.length}
-        </Text>
 
         {formError ? (
-          <Alert tone="danger" icon={<AlertCircle size={16} strokeWidth={ICON_STROKE} />}>
-            {formError}
-          </Alert>
+          <View style={s.errorAlert}>
+            <Text style={s.errorAlertText}>{formError}</Text>
+          </View>
         ) : null}
 
         <ReportStep
@@ -439,25 +441,71 @@ const FileComplaintScreen = ({ navigation }) => {
 
 const s = StyleSheet.create({
   flex: { flex: 1, backgroundColor: color.bg },
-  content: { padding: space[4], paddingBottom: space[8], gap: space[3] },
-  intro: { alignItems: 'center', gap: space[2] },
-  h1: { fontFamily: font.sansBold, fontSize: text.h1, color: color.textPrimary, textAlign: 'center' },
+  content: { paddingBottom: 104 },
+  headerRow: { 
+    paddingHorizontal: 20, 
+    paddingTop: 22, 
+    paddingBottom: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+  },
+  topBackBtn: {
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    borderWidth: 1.5,
+    borderColor: '#2C222B',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  flex1: { flex: 1 },
+  h1: { 
+    fontFamily: font.sansBold, 
+    fontSize: 38, 
+    lineHeight: 40,
+    letterSpacing: -0.5,
+    color: color.white 
+  },
   lede: {
-    fontFamily: font.sans,
-    fontSize: text.body,
-    color: color.textSecondary,
-    textAlign: 'center',
-    lineHeight: 21,
+    fontFamily: font.sansBold,
+    fontSize: 18,
+    color: color.white,
+    opacity: 0.6,
+    marginTop: 9,
   },
 
+  progressContainer: {
+    paddingHorizontal: 20,
+    paddingTop: 4,
+    paddingBottom: 24,
+  },
   progressTrack: {
-    height: 3,
-    backgroundColor: color.border,
-    borderRadius: radius.sm,
+    height: 4,
+    backgroundColor: '#231B22',
+    borderRadius: 2,
     overflow: 'hidden',
   },
-  progressFill: { height: 3, backgroundColor: color.accent },
-  progressLabel: { fontFamily: font.mono, fontSize: 11, color: color.textMuted, textAlign: 'right' },
+  progressFill: { 
+    height: 4, 
+    backgroundColor: color.accent, 
+    borderRadius: 2 
+  },
+
+  errorAlert: {
+    marginHorizontal: 20,
+    marginBottom: 10,
+    padding: 12,
+    backgroundColor: 'rgba(255, 90, 122, 0.1)',
+    borderWidth: 1,
+    borderColor: '#FF5A7A',
+    borderRadius: 12,
+  },
+  errorAlertText: {
+    color: '#FF5A7A',
+    fontFamily: font.sansBold,
+    fontSize: 13,
+  },
 
   modalBackdrop: {
     flex: 1,

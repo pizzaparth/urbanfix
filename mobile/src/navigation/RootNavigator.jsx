@@ -6,8 +6,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Home as HomeIcon, List, Search, PlusCircle, User, LayoutDashboard } from 'lucide-react-native';
 
 import { useAuth } from '../hooks/useAuth.js';
-import { ICON_STROKE } from '../constants/icons.js';
-import { color, font, text, space } from '../theme.js';
+import { color, font } from '../theme.js';
 
 import HomeScreen from '../screens/public/HomeScreen.jsx';
 import RegistryScreen from '../screens/public/RegistryScreen.jsx';
@@ -24,9 +23,6 @@ import ComplaintDetailScreen from '../screens/admin/ComplaintDetailScreen.jsx';
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
-// The web app's 14 flat routes map onto tabs + stacks. `ProtectedRoute` is gone:
-// instead of mounting a screen that redirects, we render a different tab set per
-// role, which is the idiomatic RN pattern and avoids a visible redirect flash.
 const navTheme = {
   ...DefaultTheme,
   dark: true,
@@ -34,38 +30,40 @@ const navTheme = {
     ...DefaultTheme.colors,
     primary: color.accent,
     background: color.bg,
-    card: color.surface,
+    card: color.bg, // removed surface header for seamless look
     text: color.textPrimary,
-    border: color.border,
+    border: 'transparent',
     notification: color.accent,
   },
 };
 
 const screenOptions = {
-  headerStyle: { backgroundColor: color.surface },
-  headerTitleStyle: { fontFamily: font.sansSemibold, fontSize: text.h3, color: color.textPrimary },
-  headerTintColor: color.textPrimary,
+  headerStyle: { backgroundColor: color.bg },
+  headerTitleStyle: { fontFamily: font.sansBold, fontSize: 18, color: color.white },
+  headerTintColor: color.white,
   headerShadowVisible: false,
   contentStyle: { backgroundColor: color.bg },
+  headerShown: false,
 };
 
 const tabOptions = ({ icon: Icon, title }) => ({
   title,
-  tabBarIcon: ({ color: c, size }) => <Icon size={size} strokeWidth={ICON_STROKE} color={c} />,
+  tabBarIcon: ({ color: c, size }) => <Icon size={size} strokeWidth={2.4} color={c} />,
 });
 
-// On a device the tab bar grows by the bottom safe-area inset, which leaves the
-// label comfortable room. A browser reports no inset, so the bar collapsed to
-// 44px and the labels sat 5px off the window edge — legible but visibly
-// cramped. Web gets that breathing room back explicitly.
 const tabBarStyle = {
-  backgroundColor: color.surface,
-  borderTopColor: color.border,
-  paddingTop: space[1],
-  ...Platform.select({
-    web: { height: 64, paddingBottom: space[2] },
-    default: {},
-  }),
+  position: 'absolute',
+  left: 14,
+  right: 14,
+  bottom: 14,
+  height: 72,
+  paddingBottom: 0,
+  paddingHorizontal: 7,
+  backgroundColor: 'rgba(30,22,28,0.85)', // simulated blur
+  borderWidth: 1,
+  borderColor: 'rgba(255,255,255,0.1)',
+  borderRadius: 38,
+  elevation: 5,
 };
 
 const CitizenTabs = () => (
@@ -74,31 +72,34 @@ const CitizenTabs = () => (
       ...screenOptions,
       tabBarStyle,
       tabBarActiveTintColor: color.accent,
-      tabBarInactiveTintColor: color.textMuted,
-      tabBarLabelStyle: { fontFamily: font.sansMedium, fontSize: 11 },
+      tabBarInactiveTintColor: '#8E8290',
+      tabBarItemStyle: {
+        borderRadius: 100,
+        marginVertical: 4,
+        paddingTop: 8,
+      },
+      tabBarLabelStyle: { fontFamily: font.sansBold, fontSize: 11, marginBottom: 4 },
     }}
   >
     <Tab.Screen name="Home" component={HomeScreen} options={tabOptions({ icon: HomeIcon, title: 'Overview' })} />
     <Tab.Screen name="Registry" component={RegistryScreen} options={tabOptions({ icon: List, title: 'Registry' })} />
     <Tab.Screen name="File" component={FileComplaintScreen} options={tabOptions({ icon: PlusCircle, title: 'Report' })} />
     <Tab.Screen name="Track" component={TrackScreen} options={tabOptions({ icon: Search, title: 'Track' })} />
-    <Tab.Screen name="Account" component={AccountStack} options={{ ...tabOptions({ icon: User, title: 'Account' }), headerShown: false }} />
+    <Tab.Screen name="Account" component={AccountStack} options={{ ...tabOptions({ icon: User, title: 'Account' }) }} />
   </Tab.Navigator>
 );
 
-// Logged-out users get Login/Register/VerifyOtp here; logged-in citizens get
-// their dashboard in the same tab slot.
 function AccountStack() {
   const { user } = useAuth();
   return (
     <Stack.Navigator screenOptions={screenOptions}>
       {user ? (
-        <Stack.Screen name="CitizenDashboard" component={CitizenDashboardScreen} options={{ title: 'My Complaints' }} />
+        <Stack.Screen name="CitizenDashboard" component={CitizenDashboardScreen} />
       ) : (
         <>
-          <Stack.Screen name="Login" component={LoginScreen} options={{ title: 'Sign In' }} />
-          <Stack.Screen name="Register" component={RegisterScreen} options={{ title: 'Create Account' }} />
-          <Stack.Screen name="VerifyOtp" component={VerifyOtpScreen} options={{ title: 'Verify Email' }} />
+          <Stack.Screen name="Login" component={LoginScreen} />
+          <Stack.Screen name="Register" component={RegisterScreen} />
+          <Stack.Screen name="VerifyOtp" component={VerifyOtpScreen} />
         </>
       )}
     </Stack.Navigator>
@@ -111,33 +112,32 @@ const AdminTabs = () => (
       ...screenOptions,
       tabBarStyle,
       tabBarActiveTintColor: color.accent,
-      tabBarInactiveTintColor: color.textMuted,
-      tabBarLabelStyle: { fontFamily: font.sansMedium, fontSize: 11 },
+      tabBarInactiveTintColor: '#8E8290',
+      tabBarItemStyle: {
+        borderRadius: 100,
+        marginVertical: 4,
+        paddingTop: 8,
+      },
+      tabBarLabelStyle: { fontFamily: font.sansBold, fontSize: 11, marginBottom: 4 },
     }}
   >
-    <Tab.Screen
-      name="AdminHome"
-      component={AdminStack}
-      options={{ ...tabOptions({ icon: LayoutDashboard, title: 'Dashboard' }), headerShown: false }}
-    />
+    <Tab.Screen name="AdminHome" component={AdminStack} options={{ ...tabOptions({ icon: LayoutDashboard, title: 'Dashboard' }) }} />
     <Tab.Screen name="Registry" component={RegistryScreen} options={tabOptions({ icon: List, title: 'Registry' })} />
     <Tab.Screen name="Track" component={TrackScreen} options={tabOptions({ icon: Search, title: 'Track' })} />
-    <Tab.Screen name="Account" component={AccountStack} options={{ ...tabOptions({ icon: User, title: 'Account' }), headerShown: false }} />
+    <Tab.Screen name="Account" component={AccountStack} options={{ ...tabOptions({ icon: User, title: 'Account' }) }} />
   </Tab.Navigator>
 );
 
 function AdminStack() {
   return (
     <Stack.Navigator screenOptions={screenOptions}>
-      <Stack.Screen name="AdminDashboard" component={AdminDashboardScreen} options={{ title: 'Admin Dashboard' }} />
-      <Stack.Screen name="AdminAction" component={AdminActionScreen} options={{ title: 'Manage Complaints' }} />
-      <Stack.Screen name="ComplaintDetail" component={ComplaintDetailScreen} options={{ title: 'Complaint' }} />
+      <Stack.Screen name="AdminDashboard" component={AdminDashboardScreen} />
+      <Stack.Screen name="AdminAction" component={AdminActionScreen} />
+      <Stack.Screen name="ComplaintDetail" component={ComplaintDetailScreen} />
     </Stack.Navigator>
   );
 }
 
-// dsn://track?id=COMP-XXXXX-X opens the Track tab with the ID prefilled — the
-// native equivalent of the web app's /track?id= query-string links.
 const linking = {
   prefixes: ['dsn://'],
   config: {
