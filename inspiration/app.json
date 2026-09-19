@@ -1,0 +1,20 @@
+{
+  "expo": {
+    "name": "UrbanFix",
+    "slug": "urbanfix",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#000000",
+    "splash": {
+      "backgroundColor": "#000000",
+      "resizeMode": "contain"
+    },
+    "android": {
+      "package": "com.urbanfix.app"
+    },
+    "ios": {
+      "bundleIdentifier": "com.urbanfix.app"
+    }
+  }
+}

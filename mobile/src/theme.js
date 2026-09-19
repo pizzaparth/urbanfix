@@ -96,4 +96,83 @@ export const motion = {
   base: 180,
 };
 
+// ---------------------------------------------------------------------------
+// UrbanFix tokens, carried over verbatim from inspiration/src/theme.js.
+//
+// The `color`/`font` exports above keep their original names so the screens that
+// haven't been restyled yet still compile; these are the names the ported
+// UrbanFix components use. Both sets describe the same palette — this one is
+// just complete, with the surface and chart values the original theme dropped.
+// ---------------------------------------------------------------------------
+export const colors = {
+  bg: '#000000',
+  surface: '#120E13',
+  surfaceSunken: '#0D0A0D',
+  surfaceInput: '#1A141A',
+  border: '#231B22',
+  borderStrong: '#2C222B',
+  borderDashed: '#3B2E3A',
+
+  text: '#FFFFFF',
+  muted: '#B5A8B2',
+  dim: '#8E8290',
+  faint: '#978A95',
+  body: '#D2C6CE',
+  placeholder: '#6B5F68',
+
+  accent: '#FF5FA2',
+  accentInk: '#1C0512',
+  accentSoft: '#FFA3C8',
+  secondary: '#C08BFF',
+
+  dangerFill: '#7E1038',
+  dangerBorder: '#B02159',
+  errorBg: '#1C0F15',
+};
+
+export const statusColors = {
+  Pending: '#FFB86B',
+  'In Progress': '#C08BFF',
+  Resolved: '#4ADE9B',
+  Rejected: '#FF5A7A',
+};
+
+// The API returns urgency as "High Urgency" / "Medium Urgency" / "Standard
+// Urgency"; the reference app used the bare word. Both keys are present so
+// either shape resolves to a colour.
+export const urgencyColors = {
+  Standard: '#4ADE9B',
+  Medium: '#FFB86B',
+  High: '#FF5A7A',
+  'Standard Urgency': '#4ADE9B',
+  'Medium Urgency': '#FFB86B',
+  'High Urgency': '#FF5A7A',
+};
+
+// Deliberately distinct from the UI palette so data never reads as chrome.
+export const chartPalette = ['#C08BFF', '#7BE0D6', '#FFC77D', '#FF8FC7'];
+export const chartUrgency = {
+  High: '#FF8FC7',
+  Medium: '#FFC77D',
+  Standard: '#7BE0D6',
+  'High Urgency': '#FF8FC7',
+  'Medium Urgency': '#FFC77D',
+  'Standard Urgency': '#7BE0D6',
+};
+
+// The reference app's radius/space scales. They are NOT the same numbers as the
+// `radius`/`space` exports above (its lg is 28, this project's lg is 22), so the
+// ported components use these to stay pixel-accurate rather than silently
+// rounding a card 6px less than the design.
+export const ufRadius = { sm: 14, md: 22, lg: 28, xl: 38, pill: 100 };
+export const ufSpace = { xs: 6, sm: 10, md: 16, lg: 22, xl: 30 };
+
+// Space Grotesk for display, Plus Jakarta for body — the reference app's names.
+export const uf = {
+  display: 'SpaceGrotesk_700Bold',
+  displayMed: 'SpaceGrotesk_600SemiBold',
+  body: 'PlusJakartaSans_500Medium',
+  bodyBold: 'PlusJakartaSans_700Bold',
+};
+
 export default { color, statusColor, space, radius, font, text, motion };

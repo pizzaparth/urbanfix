@@ -1,22 +1,23 @@
-import React from 'react';
-import { View, Text, Image, Pressable, ScrollView, StyleSheet, TextInput } from 'react-native';
+import React, { useRef } from 'react';
+import { View, Text, Image, StyleSheet } from 'react-native';
+
+import { Card, Field, PrimaryButton, Tappable } from '../../components/uikit.jsx';
+import Icon from '../../components/Icon.jsx';
+import SwipeQuestionCard from '../../components/SwipeQuestionCard.jsx';
 import { CATEGORIES } from '../../constants/categories.js';
-import { color, font } from '../../theme.js';
-import { X, Camera, ImagePlus, CheckCircle2 } from 'lucide-react-native';
+import { colors, uf as font, ufRadius as radius, urgencyColors } from '../../theme.js';
 
-const PRIORITY_BG = {
-  'High Urgency': '#FF5A7A',
-  'Medium Urgency': '#FFB86B',
-  'Standard Urgency': '#4ADE9B',
-};
-
+// Renders one card of the filing wizard. The reference kept all of this inline
+// in ReportScreen; here it stays a separate component because FileComplaintScreen
+// owns the API calls (OTP, multipart upload) and is long enough already.
 const ReportStep = ({
   card,
-  cardIndex,
   category,
   onSelectCategory,
   answers,
-  onToggleAnswer,
+  questions,
+  questionIndex,
+  onAnswerQuestion,
   urgency,
   formData,
   onInputChange,
@@ -25,571 +26,343 @@ const ReportStep = ({
   onPickFromLibrary,
   onRemoveFile,
   onNext,
-  onBack,
   submittingForm,
-  onSubmit,
 }) => {
-  const showBack = cardIndex > 0;
+  const swipeRef = useRef(null);
+  const type = card.type;
 
-  if (card.type === 'category') {
-    return (
-      <View style={s.container}>
-        <Text style={s.bigTitle}>What's the issue?</Text>
-        <View style={s.categoryList}>
-          {CATEGORIES.map((cat) => {
-            const active = category === cat;
-            return (
-              <Pressable
-                key={cat}
-                onPress={() => onSelectCategory(cat)}
-                style={({ pressed }) => [
-                  s.catBtn,
-                  { borderColor: active ? color.accent : '#2C222B' },
-                  pressed && { transform: [{ scale: 0.98 }] },
+  // calculateUrgency returns { label: 'High Urgency', … }; the palette is keyed
+  // by both that and the bare word.
+  const urgencyLabel = urgency?.label || 'Standard Urgency';
+  const urgencyTone = urgencyColors[urgencyLabel] || colors.success;
+
+  return (
+    <View style={s.stepBody}>
+      {type === 'category' ? (
+        <View>
+          <Text style={s.stepTitle}>What's the issue?</Text>
+          <View style={s.stack12}>
+            {CATEGORIES.map((c) => {
+              const selected = c === category;
+              return (
+                <Tappable
+                  key={c}
+                  onPress={() => onSelectCategory(c)}
+                  scaleTo={0.98}
+                  style={[
+                    s.categoryRow,
+                    { borderColor: selected ? colors.accent : colors.borderStrong },
+                  ]}
+                >
+                  <Text style={s.categoryLabel}>{c}</Text>
+                  {selected ? (
+                    <Icon name="check" size={24} color={colors.accent} strokeWidth={3} />
+                  ) : null}
+                </Tappable>
+              );
+            })}
+          </View>
+        </View>
+      ) : null}
+
+      {type === 'questions' ? (
+        <View>
+          <View style={s.dots}>
+            {questions.map((q, i) => (
+              <View
+                key={q.id}
+                style={[
+                  s.dot,
+                  {
+                    width: i === questionIndex ? 22 : 8,
+                    backgroundColor:
+                      i < questionIndex
+                        ? colors.secondary
+                        : i === questionIndex
+                          ? colors.accent
+                          : colors.borderStrong,
+                  },
                 ]}
-              >
-                <Text style={s.catLabel}>{cat}</Text>
-                {active && (
-                  <CheckCircle2 size={24} strokeWidth={3} color={color.accent} />
-                )}
-              </Pressable>
-            );
-          })}
-        </View>
-        <Pressable style={s.nextBtn} onPress={onNext}>
-          <Text style={s.nextBtnText}>Next</Text>
-        </Pressable>
-      </View>
-    );
-  }
-
-  if (card.type === 'question') {
-    const q = card.question;
-    const total = card.totalQuestions;
-    const current = card.questionIndex;
-
-    return (
-      <View style={s.container}>
-        <View style={s.dotsRow}>
-          {Array.from({ length: total }).map((_, i) => (
-            <View key={i} style={[s.dot, i === current ? s.dotActive : null]} />
-          ))}
-        </View>
-
-        <View style={s.questionCard}>
-          <Text style={s.qCatLabel}>{category}</Text>
-          <Text style={s.qText}>{q.question}</Text>
-        </View>
-
-        <View style={s.qActionRow}>
-          <Pressable style={[s.qBtn, s.qBtnNo]} onPress={() => { onToggleAnswer(q.id, 'No'); onNext(); }}>
-            <X size={26} strokeWidth={2.8} color="#FF5A7A" />
-          </Pressable>
-          <Pressable style={[s.qBtn, s.qBtnYes]} onPress={() => { onToggleAnswer(q.id, 'Yes'); onNext(); }}>
-            <CheckCircle2 size={29} strokeWidth={3.2} color="#06140D" />
-          </Pressable>
-        </View>
-
-        <View style={s.urgencyRow}>
-          <View style={[s.urgencyDot, { backgroundColor: PRIORITY_BG[urgency.level] }]} />
-          <Text style={s.urgencyText}>Priority <Text style={{ color: PRIORITY_BG[urgency.level], fontFamily: font.sansBold }}>{urgency.level}</Text></Text>
-        </View>
-      </View>
-    );
-  }
-
-  if (card.type === 'title' || card.type === 'description' || card.type === 'location') {
-    // we combine them into details! Wait, the cards array has them separate.
-    // In the HTML it is combined: fIsDetails.
-    // If we want to strictly match HTML, we should show all 3 when card.type is 'title'.
-    // Let's just render the 'title' one as the unified details page.
-    if (card.type === 'title') {
-      return (
-        <View style={s.container}>
-          <Text style={s.bigTitle}>Describe it</Text>
-          <View style={s.formGroup}>
-            <View>
-              <Text style={s.inputLabel}>Title</Text>
-              <TextInput
-                value={formData.title}
-                onChangeText={(v) => onInputChange('title', v)}
-                placeholder="e.g. Pothole near bus stop"
-                placeholderTextColor="rgba(255,255,255,0.4)"
-                style={s.giantInput}
               />
-            </View>
-            <View>
-              <Text style={s.inputLabel}>Details</Text>
-              <TextInput
-                value={formData.description}
-                onChangeText={(v) => onInputChange('description', v)}
-                placeholder="What did you see?"
-                placeholderTextColor="rgba(255,255,255,0.4)"
-                multiline
-                style={[s.giantInput, s.textArea]}
-              />
-            </View>
-            <View>
-              <Text style={s.inputLabel}>Location</Text>
-              <TextInput
-                value={formData.location}
-                onChangeText={(v) => onInputChange('location', v)}
-                placeholder="Ward, street or landmark"
-                placeholderTextColor="rgba(255,255,255,0.4)"
-                style={s.giantInput}
-              />
-            </View>
+            ))}
           </View>
-          
-          <View style={s.navRow}>
-            {showBack && <Pressable style={s.backBtn} onPress={onBack}><Text style={s.backBtnText}>Back</Text></Pressable>}
-            <Pressable style={s.nextBtnFlex} onPress={() => {
-              // skip description and location cards
-              onNext(); onNext(); onNext();
-            }}><Text style={s.nextBtnText}>Next</Text></Pressable>
+
+          <SwipeQuestionCard
+            key={questionIndex}
+            ref={swipeRef}
+            question={questions[questionIndex]?.question || ''}
+            category={category}
+            onAnswer={onAnswerQuestion}
+          />
+
+          <View style={s.swipeActions}>
+            <Tappable
+              onPress={() => swipeRef.current && swipeRef.current.swipe(-1)}
+              scaleTo={0.86}
+              style={s.noBtn}
+            >
+              <Icon name="close" size={26} color="#FF5A7A" strokeWidth={2.8} />
+            </Tappable>
+            <Tappable
+              onPress={() => swipeRef.current && swipeRef.current.swipe(1)}
+              scaleTo={0.86}
+              style={s.yesBtn}
+            >
+              <Icon name="check" size={29} color="#06140D" strokeWidth={3.2} />
+            </Tappable>
+          </View>
+
+          <View style={s.priorityRow}>
+            <View style={[s.priorityDot, { backgroundColor: urgencyTone }]} />
+            <Text style={s.priorityLabel}>Priority </Text>
+            <Text style={[s.priorityValue, { color: urgencyTone }]}>
+              {urgencyLabel.replace(' Urgency', '')}
+            </Text>
           </View>
         </View>
-      );
-    }
-    return null; // Skip rendering separate cards for description and location
-  }
+      ) : null}
 
-  if (card.type === 'upload') {
-    return (
-      <View style={s.container}>
-        <Text style={s.bigTitle}>Add photos</Text>
-        <Text style={s.subTitle}>Optional — up to 3</Text>
-        
-        <View style={s.uploadGrid}>
-          <Pressable style={[s.uploadBox, s.uploadBoxMain]} onPress={onPickFromCamera}>
-            <Camera size={32} color="#3B2E3A" />
-            <Text style={s.uploadMeta}>Take Photo</Text>
-          </Pressable>
-          <View style={s.uploadRow}>
-            <Pressable style={[s.uploadBox, s.uploadBoxSmall]} onPress={onPickFromLibrary}>
-              <ImagePlus size={24} color="#3B2E3A" />
-              <Text style={s.uploadMeta}>Library</Text>
-            </Pressable>
-            <View style={s.uploadPreviewContainer}>
-              {files.slice(0,2).map((f, i) => (
-                <View key={i} style={s.uploadPreviewBox}>
-                  <Image source={{ uri: f.uri }} style={s.previewImg} />
-                  <Pressable style={s.removeBtn} onPress={() => onRemoveFile(i)}>
-                    <X size={14} color="#FFF" />
-                  </Pressable>
-                </View>
-              ))}
-            </View>
+      {type === 'details' ? (
+        <View>
+          <Text style={s.stepTitle}>Describe it</Text>
+          <View style={s.stack22}>
+            <Field
+              label="Title"
+              value={formData.title}
+              onChangeText={(v) => onInputChange('title', v)}
+              placeholder="e.g. Pothole near bus stop"
+            />
+            <Field
+              label="Details"
+              value={formData.description}
+              onChangeText={(v) => onInputChange('description', v)}
+              placeholder="What did you see?"
+              multiline
+            />
+            <Field
+              label="Location"
+              value={formData.location}
+              onChangeText={(v) => onInputChange('location', v)}
+              placeholder="Ward, street or landmark"
+            />
           </View>
         </View>
-        <Text style={s.photoHint}>Photos speed up triage.</Text>
-        
-        <View style={[s.navRow, {marginTop: 30}]}>
-          {showBack && <Pressable style={s.backBtn} onPress={() => {
-            // go back to title card
-            onBack(); onBack(); onBack();
-          }}><Text style={s.backBtnText}>Back</Text></Pressable>}
-          <Pressable style={s.nextBtnFlex} onPress={onNext}><Text style={s.nextBtnText}>Next</Text></Pressable>
-        </View>
-      </View>
-    );
-  }
+      ) : null}
 
-  // Combine name, email, phone into one contact page
-  if (card.type === 'name') {
-    return (
-      <View style={s.container}>
-        <Text style={s.bigTitle}>Your contact</Text>
-        
-        <View style={s.formGroup}>
-          <View>
-            <Text style={s.inputLabel}>Full name</Text>
-            <TextInput
+      {type === 'upload' ? (
+        <View>
+          <Text style={s.stepTitle}>Add photos</Text>
+          <Text style={s.stepSub}>Optional — up to 3</Text>
+
+          {/* The reference's slots were decorative. These actually pick images,
+              so a filled slot shows the photo with a remove control. */}
+          <View style={s.stack12}>
+            {files.map((f, i) => (
+              <View key={f.uri + i} style={s.thumbWrap}>
+                <Image source={{ uri: f.uri }} style={s.thumb} resizeMode="cover" />
+                <Tappable onPress={() => onRemoveFile(i)} scaleTo={0.9} style={s.thumbRemove}>
+                  <Icon name="close" size={16} color={colors.text} strokeWidth={2.6} />
+                </Tappable>
+              </View>
+            ))}
+
+            {files.length < 3 ? (
+              <View style={s.slotRow}>
+                <Tappable onPress={onPickFromCamera} scaleTo={0.97} style={[s.photoSlot, s.flex1]}>
+                  <Icon name="camera" size={24} color={colors.dim} />
+                  <Text style={s.photoSlotText}>Take a photo</Text>
+                </Tappable>
+                <Tappable onPress={onPickFromLibrary} scaleTo={0.97} style={[s.photoSlot, s.flex1]}>
+                  <Icon name="plusBare" size={24} color={colors.dim} />
+                  <Text style={s.photoSlotText}>From library</Text>
+                </Tappable>
+              </View>
+            ) : null}
+          </View>
+
+          <View style={s.photoHint}>
+            <Icon name="camera" size={20} color={colors.accent} />
+            <Text style={s.photoHintText}>Photos speed up triage.</Text>
+          </View>
+        </View>
+      ) : null}
+
+      {type === 'contact' ? (
+        <View>
+          <Text style={s.stepTitle}>Your contact</Text>
+          <View style={s.stack22}>
+            <Field
+              label="Full name"
               value={formData.name}
               onChangeText={(v) => onInputChange('name', v)}
               placeholder="Your name"
-              placeholderTextColor="rgba(255,255,255,0.4)"
-              style={s.giantInput}
             />
-          </View>
-          <View>
-            <Text style={s.inputLabel}>Email</Text>
-            <TextInput
+            <Field
+              label="Email"
               value={formData.email}
               onChangeText={(v) => onInputChange('email', v)}
               placeholder="you@example.com"
-              placeholderTextColor="rgba(255,255,255,0.4)"
               keyboardType="email-address"
               autoCapitalize="none"
-              style={s.giantInput}
             />
-          </View>
-          <View>
-            <Text style={s.inputLabel}>Phone (optional)</Text>
-            <TextInput
+            <Field
+              label="Phone (optional)"
               value={formData.phone}
               onChangeText={(v) => onInputChange('phone', v)}
               placeholder="9876543210"
-              placeholderTextColor="rgba(255,255,255,0.4)"
-              keyboardType="number-pad"
-              style={s.giantInput}
+              keyboardType="phone-pad"
             />
           </View>
         </View>
-        
-        <View style={[s.navRow, {marginTop: 30}]}>
-          {showBack && <Pressable style={s.backBtn} onPress={onBack}><Text style={s.backBtnText}>Back</Text></Pressable>}
-          <Pressable style={s.nextBtnFlex} onPress={() => {
-            onNext(); onNext(); onNext();
-          }}><Text style={s.nextBtnText}>Next</Text></Pressable>
-        </View>
-      </View>
-    );
-  }
-  
-  if (card.type === 'email' || card.type === 'phone') return null;
+      ) : null}
 
-  if (card.type === 'review') {
-    return (
-      <View style={s.container}>
-        <Text style={s.bigTitle}>Review</Text>
-        <View style={s.reviewCard}>
-          <View style={s.reviewRow}>
-            <Text style={s.reviewLabel}>Category</Text>
-            <Text style={s.reviewVal}>{formData.category}</Text>
-          </View>
-          <View style={s.reviewRow}>
-            <Text style={s.reviewLabel}>Priority</Text>
-            <Text style={[s.reviewVal, { color: PRIORITY_BG[urgency.level] }]}>{urgency.level}</Text>
-          </View>
-          <View style={s.reviewRow}>
-            <Text style={s.reviewLabel}>Subject</Text>
-            <Text style={s.reviewVal}>{formData.title}</Text>
-          </View>
-          <View style={s.reviewRow}>
-            <Text style={s.reviewLabel}>Location</Text>
-            <Text style={s.reviewVal}>{formData.location}</Text>
-          </View>
-          <View style={s.reviewRow}>
-            <Text style={s.reviewLabel}>Name</Text>
-            <Text style={s.reviewVal}>{formData.name}</Text>
-          </View>
+      {type === 'review' ? (
+        <View>
+          <Text style={s.stepTitle}>Review</Text>
+          <Card style={s.reviewCard}>
+            <ReviewRow label="Category" value={category} />
+            <ReviewRow label="Priority" value={urgencyLabel.replace(' Urgency', '')} />
+            <ReviewRow label="Title" value={formData.title || '—'} />
+            <ReviewRow label="Location" value={formData.location || '—'} />
+            <ReviewRow label="Photos" value={String(files.length)} />
+            <ReviewRow label="Name" value={formData.name || '—'} />
+            <ReviewRow label="Email" value={formData.email || '—'} last />
+          </Card>
         </View>
-        
-        <View style={[s.navRow, {marginTop: 30}]}>
-          {showBack && <Pressable style={s.backBtn} onPress={() => {
-            onBack(); onBack(); onBack();
-          }}><Text style={s.backBtnText}>Back</Text></Pressable>}
-          <Pressable style={s.submitBtnFlex} onPress={onSubmit} disabled={submittingForm}>
-            <Text style={s.submitBtnText}>{submittingForm ? '...' : 'Request OTP'}</Text>
-          </Pressable>
-        </View>
-      </View>
-    );
-  }
+      ) : null}
 
-  return null;
+      {type !== 'questions' ? (
+        <PrimaryButton
+          label={type === 'review' ? (submittingForm ? 'Sending code…' : 'Request code') : 'Next'}
+          onPress={onNext}
+          style={s.next}
+        />
+      ) : null}
+    </View>
+  );
 };
 
+function ReviewRow({ label, value, last }) {
+  return (
+    <View style={[s.reviewRow, last && s.reviewRowLast]}>
+      <Text style={s.reviewLabel}>{label}</Text>
+      <Text style={s.reviewValue} numberOfLines={2}>
+        {value}
+      </Text>
+    </View>
+  );
+}
+
 const s = StyleSheet.create({
-  container: {
-    paddingTop: 10,
-    paddingHorizontal: 20,
-    paddingBottom: 40,
-  },
-  bigTitle: {
-    fontFamily: font.sansBold,
+  flex1: { flex: 1 },
+  stack12: { gap: 12 },
+  stack22: { gap: 22 },
+  stepBody: { paddingHorizontal: 20 },
+  stepTitle: {
+    fontFamily: font.display,
     fontSize: 30,
-    lineHeight: 33,
-    color: color.white,
+    lineHeight: 34,
+    color: colors.text,
     marginBottom: 22,
   },
-  subTitle: {
+  stepSub: {
+    fontFamily: font.bodyBold,
     fontSize: 17,
-    fontFamily: font.sansBold,
-    color: color.white,
-    opacity: 0.6,
-    marginBottom: 20,
+    color: colors.muted,
     marginTop: -14,
+    marginBottom: 20,
   },
-  categoryList: {
-    gap: 12,
-  },
-  catBtn: {
+  categoryRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: 12,
-    paddingVertical: 20,
     paddingHorizontal: 22,
-    borderRadius: 22,
-    backgroundColor: '#120E13',
+    paddingVertical: 20,
+    backgroundColor: colors.surface,
     borderWidth: 2,
+    borderRadius: radius.md,
   },
-  catLabel: {
-    fontFamily: font.sansBold,
-    fontSize: 20,
-    color: color.white,
-  },
-  nextBtn: {
-    marginTop: 30,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: color.accent,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  nextBtnText: {
-    fontFamily: font.sansBold,
-    fontSize: 18,
-    color: '#1C0512',
-  },
-  
-  dotsRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: 6,
-    marginBottom: 18,
-  },
-  dot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-  },
-  dotActive: {
-    width: 20,
-    backgroundColor: color.white,
-  },
-  
-  questionCard: {
-    minHeight: 380,
-    paddingVertical: 44,
-    paddingHorizontal: 28,
-    backgroundColor: 'rgba(255,255,255,0.055)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.18)',
-    borderRadius: 38,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 22,
-  },
-  qCatLabel: {
-    fontSize: 14,
-    letterSpacing: 1.6,
-    textTransform: 'uppercase',
-    color: color.white,
-    fontFamily: font.sansBold,
-    opacity: 0.7,
-  },
-  qText: {
-    fontFamily: font.sansBold,
-    fontSize: 34,
-    lineHeight: 38,
-    color: color.white,
-    textAlign: 'center',
-  },
-  
-  qActionRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: 26,
-    marginTop: 22,
-  },
-  qBtn: {
+  categoryLabel: { flex: 1, fontFamily: font.display, fontSize: 20, lineHeight: 25, color: colors.text },
+  dots: { flexDirection: 'row', justifyContent: 'center', gap: 6, marginBottom: 18 },
+  dot: { height: 6, borderRadius: 3 },
+  swipeActions: { flexDirection: 'row', justifyContent: 'center', gap: 26, marginTop: 22 },
+  noBtn: {
     width: 70,
     height: 70,
     borderRadius: 35,
+    borderWidth: 2,
+    borderColor: '#FF5A7A',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  qBtnNo: {
-    backgroundColor: 'transparent',
-    borderWidth: 2,
-    borderColor: '#FF5A7A',
-  },
-  qBtnYes: {
+  yesBtn: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
     backgroundColor: '#4ADE9B',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  
-  urgencyRow: {
+  priorityRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
     marginTop: 20,
   },
-  urgencyDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-  },
-  urgencyText: {
-    fontSize: 13,
-    color: color.textSecondary,
-    fontFamily: font.sans,
-  },
-  
-  formGroup: {
-    gap: 22,
-  },
-  inputLabel: {
-    fontSize: 17,
-    fontFamily: font.sansBold,
-    color: color.white,
-    marginBottom: 10,
-  },
-  giantInput: {
-    width: '100%',
-    height: 60,
-    paddingHorizontal: 18,
-    backgroundColor: '#120E13',
-    borderWidth: 1.5,
-    borderColor: '#2C222B',
-    borderRadius: 18,
-    color: color.white,
-    fontSize: 18,
-    fontFamily: font.sansBold,
-  },
-  textArea: {
-    height: 120,
-    paddingTop: 16,
-    textAlignVertical: 'top',
-  },
-  
-  uploadGrid: {
-    gap: 12,
-  },
-  uploadBox: {
+  priorityDot: { width: 8, height: 8, borderRadius: 4 },
+  priorityLabel: { fontFamily: font.body, fontSize: 15, color: colors.muted },
+  priorityValue: { fontFamily: font.bodyBold, fontSize: 15 },
+  slotRow: { flexDirection: 'row', gap: 12 },
+  photoSlot: {
+    height: 150,
+    borderRadius: 24,
     borderWidth: 2,
-    borderColor: '#3B2E3A',
     borderStyle: 'dashed',
-    backgroundColor: '#0D0A0D',
+    borderColor: colors.borderDashed,
+    backgroundColor: colors.surfaceSunken,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 10,
   },
-  uploadBoxMain: {
-    height: 210,
-    borderRadius: 24,
-  },
-  uploadRow: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  uploadBoxSmall: {
-    flex: 1,
-    height: 130,
-    borderRadius: 22,
-  },
-  uploadPreviewContainer: {
-    flex: 1,
-    height: 130,
-    flexDirection: 'row',
-    gap: 12,
-  },
-  uploadPreviewBox: {
-    flex: 1,
-    height: '100%',
-    borderRadius: 22,
-    overflow: 'hidden',
-    position: 'relative',
-  },
-  previewImg: {
-    width: '100%',
-    height: '100%',
-  },
-  removeBtn: {
+  photoSlotText: { fontFamily: font.bodyBold, fontSize: 14, color: colors.dim },
+  thumbWrap: { borderRadius: 24, overflow: 'hidden' },
+  thumb: { width: '100%', height: 200, backgroundColor: colors.surfaceInput },
+  thumbRemove: {
     position: 'absolute',
-    top: 8,
-    right: 8,
-    backgroundColor: '#FF5A7A',
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  uploadMeta: {
-    color: '#8E8290',
-    fontFamily: font.sansBold,
-    fontSize: 13,
-  },
-  photoHint: {
-    fontSize: 15,
-    fontFamily: font.sansBold,
-    color: color.white,
-    opacity: 0.6,
-    marginTop: 18,
-  },
-  
-  navRow: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  backBtn: {
-    height: 60,
-    paddingHorizontal: 24,
-    borderRadius: 30,
-    borderWidth: 1.5,
-    borderColor: '#2C222B',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  backBtnText: {
-    fontFamily: font.sansBold,
-    fontSize: 18,
-    color: color.white,
-  },
-  nextBtnFlex: {
-    flex: 1,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: color.accent,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  submitBtnFlex: {
-    flex: 1,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: '#4ADE9B',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  submitBtnText: {
-    fontFamily: font.sansBold,
-    fontSize: 18,
-    color: '#06140D',
-  },
-  
-  reviewCard: {
-    backgroundColor: '#120E13',
+    top: 12,
+    right: 12,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'rgba(0,0,0,0.65)',
     borderWidth: 1,
-    borderColor: '#2C222B',
-    borderRadius: 22,
-    padding: 20,
-    gap: 16,
+    borderColor: colors.borderStrong,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
+  photoHint: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 18 },
+  photoHintText: { fontFamily: font.body, fontSize: 15, color: colors.muted },
+  reviewCard: { gap: 0, paddingVertical: 6 },
   reviewRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    gap: 12,
+    paddingVertical: 13,
     borderBottomWidth: 1,
-    borderBottomColor: '#231B22',
-    paddingBottom: 16,
+    borderBottomColor: colors.border,
   },
-  reviewLabel: {
-    fontFamily: font.sans,
-    fontSize: 13,
-    color: color.textSecondary,
-  },
-  reviewVal: {
-    fontFamily: font.sansBold,
-    fontSize: 14,
-    color: color.white,
+  reviewRowLast: { borderBottomWidth: 0 },
+  reviewLabel: { fontFamily: font.body, fontSize: 15, color: colors.dim },
+  reviewValue: {
+    flex: 1,
     textAlign: 'right',
-    maxWidth: '70%',
+    fontFamily: font.bodyBold,
+    fontSize: 15,
+    color: colors.text,
   },
+  next: { marginTop: 22 },
 });
 
 export default ReportStep;

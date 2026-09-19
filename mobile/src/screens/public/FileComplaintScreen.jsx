@@ -2,25 +2,26 @@ import React, { useState, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
-  ScrollView,
   Modal,
-  Alert as RNAlert,
+  TextInput,
+  ScrollView,
   KeyboardAvoidingView,
   Platform,
-  Pressable,
   StyleSheet,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Animated, { FadeIn, FadeInDown, SlideInUp } from 'react-native-reanimated';
 import * as ImagePicker from 'expo-image-picker';
 import * as Clipboard from 'expo-clipboard';
-import { AlertCircle, ShieldCheck, BadgeCheck, Timer, RotateCw, X } from 'lucide-react-native';
 
+import { PrimaryButton, GhostButton, Tappable, ErrorNote } from '../../components/uikit.jsx';
+import Icon from '../../components/Icon.jsx';
 import ReportStep from './ReportStep.jsx';
-import { Input, Button, Alert } from '../../components/ui.jsx';
 import { CATEGORY_QUESTIONNAIRES } from '../../constants/categories.js';
 import { calculateUrgency } from '../../utils/urgency.js';
-import { ICON_STROKE } from '../../constants/icons.js';
+import { notify } from '../../utils/notify.js';
 import api from '../../services/api.js';
-import { color, space, radius, font, text } from '../../theme.js';
+import { colors, uf as font } from '../../theme.js';
 
 const INITIAL_FORM_DATA = {
   name: '',
@@ -32,30 +33,8 @@ const INITIAL_FORM_DATA = {
   location: '',
 };
 
-// The whole filing flow is one continuous, one-card-at-a-time wizard: category
-// selection, one card per questionnaire question, then title/description/location/
-// upload, then name/email/phone, then a final review + submit card.
-const buildCards = (questions) => [
-  { type: 'category' },
-  ...questions.map((q, idx) => ({
-    type: 'question',
-    question: q,
-    questionIndex: idx,
-    totalQuestions: questions.length,
-  })),
-  { type: 'title' },
-  { type: 'description' },
-  { type: 'location' },
-  { type: 'upload' },
-  { type: 'name' },
-  { type: 'email' },
-  { type: 'phone' },
-  { type: 'review' },
-];
+const STEPS = ['category', 'questions', 'details', 'upload', 'contact', 'review'];
 
-// multer's allowlist is jpeg/png/webp only, so the mime type we send has to be
-// right or the upload 400s. expo-image-picker gives us a uri and (usually) a
-// mimeType; we derive from the extension when it doesn't.
 const mimeFromUri = (uri, provided) => {
   if (provided && /^image\/(jpeg|png|webp)$/.test(provided)) return provided;
   const ext = uri.split('.').pop()?.toLowerCase();
@@ -75,7 +54,10 @@ const assetToFile = (asset, idx) => {
 };
 
 const FileComplaintScreen = ({ navigation }) => {
-  const [cardIndex, setCardIndex] = useState(0);
+  const insets = useSafeAreaInsets();
+
+  const [step, setStep] = useState(0);
+  const [questionIndex, setQuestionIndex] = useState(0);
   const [formData, setFormData] = useState(INITIAL_FORM_DATA);
   const [answers, setAnswers] = useState({});
   const [files, setFiles] = useState([]);
@@ -91,19 +73,22 @@ const FileComplaintScreen = ({ navigation }) => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [createdTrackingId, setCreatedTrackingId] = useState('');
 
-  const questions = CATEGORY_QUESTIONNAIRES[formData.category] || [];
-  const cards = useMemo(() => buildCards(questions), [questions]);
-  const currentCard = cards[Math.min(cardIndex, cards.length - 1)];
+  const questions = useMemo(
+    () => CATEGORY_QUESTIONNAIRES[formData.category] || [],
+    [formData.category]
+  );
+  const type = STEPS[step];
   const urgency = calculateUrgency(answers, questions);
 
-  // Reset questionnaire answers whenever the category changes.
+  // Every question defaults to No, so urgency is well-defined before the first
+  // swipe and a skipped questionnaire still scores.
   useEffect(() => {
-    const currentQuestions = CATEGORY_QUESTIONNAIRES[formData.category] || [];
     const initial = {};
-    currentQuestions.forEach((q) => {
+    (CATEGORY_QUESTIONNAIRES[formData.category] || []).forEach((q) => {
       initial[q.id] = 'No';
     });
     setAnswers(initial);
+    setQuestionIndex(0);
   }, [formData.category]);
 
   useEffect(() => {
@@ -114,7 +99,14 @@ const FileComplaintScreen = ({ navigation }) => {
 
   const handleInputChange = (field, value) => setFormData((f) => ({ ...f, [field]: value }));
   const handleSelectCategory = (cat) => setFormData((f) => ({ ...f, category: cat }));
-  const handleQuestionToggle = (id, value) => setAnswers((prev) => ({ ...prev, [id]: value }));
+
+  // One swipe answers one question and advances; the last one moves the wizard on.
+  const handleAnswerQuestion = (value) => {
+    const q = questions[questionIndex];
+    if (q) setAnswers((a) => ({ ...a, [q.id]: value }));
+    if (questionIndex < questions.length - 1) setQuestionIndex((i) => i + 1);
+    else setStep((sIdx) => sIdx + 1);
+  };
 
   const addAssets = (assets) => {
     const room = 3 - files.length;
@@ -153,32 +145,42 @@ const FileComplaintScreen = ({ navigation }) => {
 
   const removeFile = (idx) => setFiles((prev) => prev.filter((_, i) => i !== idx));
 
-  const handleCardNext = () => {
+  const handleBack = () => {
     setFormError('');
-    const t = currentCard.type;
+    if (type === 'questions' && questionIndex > 0) {
+      setQuestionIndex((i) => i - 1);
+      return;
+    }
+    if (step > 0) {
+      setStep((prev) => prev - 1);
+      setQuestionIndex(0);
+    }
+  };
 
-    if (t === 'title') {
+  const handleNext = () => {
+    setFormError('');
+
+    // Server-side minimums, checked here so the user isn't told by a 400 after
+    // sitting through the OTP round trip.
+    if (type === 'details') {
       if (!formData.title) return setFormError('Please enter a subject/title.');
       if (formData.title.length < 5)
         return setFormError('Subject title must be at least 5 characters long.');
-    }
-    if (t === 'description') {
       if (!formData.description) return setFormError('Please enter a detailed description.');
       if (formData.description.length < 15)
         return setFormError('Detailed description must be at least 15 characters long.');
+      if (!formData.location) return setFormError('Please enter the specific location.');
     }
-    if (t === 'location' && !formData.location)
-      return setFormError('Please enter the specific location.');
-    if (t === 'name' && !formData.name) return setFormError('Please enter your full name.');
-    if (t === 'email' && !formData.email) return setFormError('Please enter your email address.');
+    if (type === 'contact') {
+      if (!formData.name) return setFormError('Please enter your full name.');
+      if (!formData.email) return setFormError('Please enter your email address.');
+    }
 
-    if (cardIndex < cards.length - 1) setCardIndex((prev) => prev + 1);
-    return undefined;
-  };
-
-  const handleCardBack = () => {
-    setFormError('');
-    setCardIndex((prev) => Math.max(prev - 1, 0));
+    if (step < STEPS.length - 1) {
+      setStep((prev) => prev + 1);
+      return undefined;
+    }
+    return handleVerifyEmailRequest();
   };
 
   const handleVerifyEmailRequest = async () => {
@@ -208,7 +210,7 @@ const FileComplaintScreen = ({ navigation }) => {
     try {
       await api.post('/complaints/request-otp', { email: formData.email });
       setTimer(30);
-      RNAlert.alert('OTP resent', 'Verification code resent successfully.');
+      notify('OTP resent', 'Verification code resent successfully.');
     } catch (err) {
       setOtpError(err.response?.data?.message || 'Failed to resend OTP.');
     }
@@ -222,11 +224,10 @@ const FileComplaintScreen = ({ navigation }) => {
     setVerifyingOtp(true);
     setOtpError('');
 
-    // Format questionnaire responses into a textual audit block, exactly as the
-    // web app did — the backend stores this whole string as `description`.
-    const questionsList = CATEGORY_QUESTIONNAIRES[formData.category] || [];
+    // The questionnaire is flattened into a textual audit block; the backend
+    // stores this whole string as `description`.
     let summary = '[CATEGORY QUESTIONNAIRE RESPONSES]\n';
-    questionsList.forEach((q) => {
+    questions.forEach((q) => {
       summary += `• ${q.question}: ${answers[q.id] || 'No'}\n`;
     });
     summary += `\n[CITIZEN DESCRIPTION]\n${formData.description}`;
@@ -255,7 +256,8 @@ const FileComplaintScreen = ({ navigation }) => {
       setFiles([]);
       setOtpValue('');
       setShowOtpModal(false);
-      setCardIndex(0);
+      setStep(0);
+      setQuestionIndex(0);
 
       setCreatedTrackingId(response.data.complaint.trackingId);
       setShowSuccessModal(true);
@@ -268,296 +270,258 @@ const FileComplaintScreen = ({ navigation }) => {
 
   const copyTrackingId = async () => {
     await Clipboard.setStringAsync(createdTrackingId);
-    RNAlert.alert('Copied', 'Tracking ID copied to clipboard.');
+    notify('Copied', 'Tracking ID copied to clipboard.');
   };
 
-  const progress = ((cardIndex + 1) / cards.length) * 100;
-
   return (
-    <KeyboardAvoidingView
-      style={s.flex}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
-    >
-      <ScrollView contentContainerStyle={s.content} keyboardShouldPersistTaps="handled">
-        <View style={s.headerRow}>
-          {cardIndex > 0 && (
-            <Pressable style={s.topBackBtn} onPress={handleCardBack}>
-              <Text style={{color: '#FFF', fontSize: 18, fontFamily: font.sansBold}}>{'<'}</Text>
-            </Pressable>
-          )}
-          <View style={s.flex1}>
-            <Text style={s.h1}>Report an issue</Text>
-            <Text style={s.lede}>{currentCard.type.toUpperCase()}</Text>
-          </View>
-        </View>
-
-        <View style={s.progressContainer}>
-          <View style={s.progressTrack}>
-            <View style={[s.progressFill, { width: `${progress}%` }]} />
-          </View>
-        </View>
-
-        {formError ? (
-          <View style={s.errorAlert}>
-            <Text style={s.errorAlertText}>{formError}</Text>
-          </View>
-        ) : null}
-
-        <ReportStep
-          card={currentCard}
-          cardIndex={cardIndex}
-          category={formData.category}
-          onSelectCategory={handleSelectCategory}
-          answers={answers}
-          onToggleAnswer={handleQuestionToggle}
-          urgency={urgency}
-          formData={formData}
-          onInputChange={handleInputChange}
-          files={files}
-          onPickFromCamera={pickFromCamera}
-          onPickFromLibrary={pickFromLibrary}
-          onRemoveFile={removeFile}
-          onNext={handleCardNext}
-          onBack={handleCardBack}
-          submittingForm={submittingForm}
-          onSubmit={handleVerifyEmailRequest}
-        />
-      </ScrollView>
-
-      {/* OTP verification — the web Modal.jsx (portal + focus trap) is replaced
-          wholesale by RN's built-in Modal. */}
-      <Modal visible={showOtpModal} animationType="slide" transparent onRequestClose={() => setShowOtpModal(false)}>
-        <View style={s.modalBackdrop}>
-          <View style={s.modalCard}>
-            <View style={s.modalHead}>
-              <Text style={s.modalTitle}>OTP Verification</Text>
-              <Pressable onPress={() => setShowOtpModal(false)} hitSlop={12}>
-                <X size={20} strokeWidth={ICON_STROKE} color={color.textSecondary} />
-              </Pressable>
-            </View>
-
-            <View style={s.modalCenter}>
-              <View style={s.modalBadge}>
-                <ShieldCheck size={22} strokeWidth={ICON_STROKE} color={color.accent} />
-              </View>
-              <Text style={s.modalSmall}>We sent a verification code to</Text>
-              <Text style={s.modalEmail}>{formData.email}</Text>
-            </View>
-
-            {otpError ? (
-              <Alert tone="danger" icon={<AlertCircle size={15} strokeWidth={ICON_STROKE} />}>
-                {otpError}
-              </Alert>
+    <>
+      <KeyboardAvoidingView
+        style={s.flex}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
+      >
+        <ScrollView
+          style={s.flex}
+          contentContainerStyle={[s.content, { paddingTop: insets.top }]}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={s.header}>
+            {step > 0 || questionIndex > 0 ? (
+              <Tappable onPress={handleBack} scaleTo={0.9} style={s.backBtn}>
+                <Icon name="chevronLeft" size={20} color={colors.text} strokeWidth={2.6} />
+              </Tappable>
             ) : null}
+            <View style={s.flex1}>
+              <Text style={s.title}>Report an issue</Text>
+              <Text style={s.stepLabel}>
+                {type === 'questions'
+                  ? 'Question ' + (questionIndex + 1) + ' of ' + questions.length
+                  : 'Step ' + (step + 1) + ' of ' + STEPS.length}
+              </Text>
+            </View>
+          </View>
 
-            <Input
+          <View style={s.progressTrack}>
+            <View style={[s.progressFill, { width: ((step + 1) / STEPS.length) * 100 + '%' }]} />
+          </View>
+
+          <View style={s.errorWrap}>
+            <ErrorNote>{formError}</ErrorNote>
+          </View>
+
+          <ReportStep
+            card={{ type }}
+            category={formData.category}
+            onSelectCategory={handleSelectCategory}
+            answers={answers}
+            questions={questions}
+            questionIndex={questionIndex}
+            onAnswerQuestion={handleAnswerQuestion}
+            urgency={urgency}
+            formData={formData}
+            onInputChange={handleInputChange}
+            files={files}
+            onPickFromCamera={pickFromCamera}
+            onPickFromLibrary={pickFromLibrary}
+            onRemoveFile={removeFile}
+            onNext={handleNext}
+            submittingForm={submittingForm}
+          />
+        </ScrollView>
+      </KeyboardAvoidingView>
+
+      {/* OTP sheet */}
+      <Modal
+        visible={showOtpModal}
+        transparent
+        animationType="none"
+        onRequestClose={() => setShowOtpModal(false)}
+      >
+        <Animated.View entering={FadeIn.duration(220)} style={s.backdrop}>
+          <Animated.View entering={SlideInUp.duration(320)} style={s.sheet}>
+            <View style={s.sheetHead}>
+              <Text style={s.sheetTitle}>Verify email</Text>
+              <Tappable onPress={() => setShowOtpModal(false)} scaleTo={0.9}>
+                <Icon name="close" size={20} color={colors.muted} strokeWidth={2.4} />
+              </Tappable>
+            </View>
+            <Text style={s.sheetSub}>{'Code sent to ' + (formData.email || 'your inbox')}</Text>
+            <ErrorNote>{otpError}</ErrorNote>
+            <TextInput
               value={otpValue}
               onChangeText={(v) => setOtpValue(v.replace(/\D/g, '').slice(0, 6))}
               placeholder="000000"
+              placeholderTextColor={colors.placeholder}
               keyboardType="number-pad"
               maxLength={6}
               textContentType="oneTimeCode"
               style={s.otpInput}
             />
-
-            <View style={s.timerRow}>
-              {timer > 0 ? (
-                <>
-                  <Timer size={14} strokeWidth={ICON_STROKE} color={color.textMuted} />
-                  <Text style={s.modalSmall}>Resend OTP in {timer}s</Text>
-                </>
-              ) : (
-                <Button
-                  title="Resend OTP"
-                  variant="ghost"
-                  size="sm"
-                  onPress={handleResendOtp}
-                  icon={<RotateCw size={14} strokeWidth={ICON_STROKE} />}
-                />
-              )}
-            </View>
-
-            <View style={s.modalActions}>
-              <Button
-                title="Cancel"
-                variant="secondary"
-                onPress={() => setShowOtpModal(false)}
-                style={s.flex1}
-              />
-              <Button
-                title="Submit"
-                onPress={handleOtpSubmit}
-                loading={verifyingOtp}
-                style={s.flex1}
-              />
-            </View>
-          </View>
-        </View>
+            <Tappable onPress={handleResendOtp} disabled={timer > 0} scaleTo={0.96}>
+              <Text style={s.resend}>
+                {timer > 0 ? `Resend code in ${timer}s` : 'Resend code'}
+              </Text>
+            </Tappable>
+            <PrimaryButton
+              label={verifyingOtp ? 'Submitting…' : 'Submit complaint'}
+              onPress={handleOtpSubmit}
+              style={s.sheetCta}
+            />
+          </Animated.View>
+        </Animated.View>
       </Modal>
 
-      <Modal visible={showSuccessModal} animationType="fade" transparent>
-        <View style={s.modalBackdrop}>
-          <View style={s.modalCard}>
-            <View style={s.modalCenter}>
-              <View style={[s.modalBadge, { borderColor: color.statusResolved }]}>
-                <BadgeCheck size={22} strokeWidth={ICON_STROKE} color={color.statusResolved} />
-              </View>
-              <Text style={s.modalSmall}>
-                Your complaint has been registered. A confirmation email has been dispatched.
-              </Text>
+      {/* Success dialog */}
+      <Modal
+        visible={showSuccessModal}
+        transparent
+        animationType="none"
+        onRequestClose={() => setShowSuccessModal(false)}
+      >
+        <Animated.View entering={FadeIn.duration(220)} style={s.backdropCenter}>
+          <Animated.View entering={FadeInDown.duration(340)} style={s.dialog}>
+            <View style={s.successRing}>
+              <Icon name="check" size={22} color="#4ADE9B" strokeWidth={2.8} />
             </View>
-
-            <View style={s.idPanel}>
-              <Text style={s.idLabel}>Your Unique Tracking ID</Text>
-              <Text style={s.idValue}>{createdTrackingId}</Text>
-            </View>
-
-            <View style={s.modalActions}>
-              <Button title="Copy ID" variant="secondary" onPress={copyTrackingId} style={s.flex1} />
-              <Button
-                title="Track Progress"
-                onPress={() => {
-                  setShowSuccessModal(false);
-                  navigation.navigate('Track', { id: createdTrackingId });
-                }}
-                style={s.flex1}
-              />
-            </View>
-            <Button
-              title="Back to Overview"
-              variant="ghost"
+            <Text style={s.sheetTitle}>Complaint filed</Text>
+            <Text style={s.sheetSub}>Save this tracking ID to follow its progress.</Text>
+            <Tappable onPress={copyTrackingId} scaleTo={0.97} style={s.idBox}>
+              <Text style={s.idText}>{createdTrackingId}</Text>
+              <Text style={s.idHint}>Tap to copy</Text>
+            </Tappable>
+            <PrimaryButton
+              label="Track progress"
+              onPress={() => {
+                const id = createdTrackingId;
+                setShowSuccessModal(false);
+                navigation.navigate('Track', { id });
+              }}
+              style={s.fullWidth}
+            />
+            <GhostButton
+              label="Back home"
+              color={colors.muted}
               onPress={() => {
                 setShowSuccessModal(false);
                 navigation.navigate('Home');
               }}
+              style={s.fullWidth}
             />
-          </View>
-        </View>
+          </Animated.View>
+        </Animated.View>
       </Modal>
-    </KeyboardAvoidingView>
+    </>
   );
 };
 
 const s = StyleSheet.create({
-  flex: { flex: 1, backgroundColor: color.bg },
-  content: { paddingBottom: 104 },
-  headerRow: { 
-    paddingHorizontal: 20, 
-    paddingTop: 22, 
-    paddingBottom: 8,
+  flex: { flex: 1, backgroundColor: colors.bg },
+  flex1: { flex: 1 },
+  fullWidth: { width: '100%' },
+  content: { paddingBottom: 130 },
+  header: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 14,
+    paddingHorizontal: 20,
+    paddingTop: 22,
+    paddingBottom: 8,
   },
-  topBackBtn: {
+  backBtn: {
     width: 46,
     height: 46,
     borderRadius: 23,
     borderWidth: 1.5,
-    borderColor: '#2C222B',
+    borderColor: colors.borderStrong,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  flex1: { flex: 1 },
-  h1: { 
-    fontFamily: font.sansBold, 
-    fontSize: 38, 
+  title: {
+    fontFamily: font.display,
+    fontSize: 38,
     lineHeight: 40,
-    letterSpacing: -0.5,
-    color: color.white 
+    color: colors.text,
+    letterSpacing: -0.7,
   },
-  lede: {
-    fontFamily: font.sansBold,
-    fontSize: 18,
-    color: color.white,
-    opacity: 0.6,
-    marginTop: 9,
-  },
-
-  progressContainer: {
-    paddingHorizontal: 20,
-    paddingTop: 4,
-    paddingBottom: 24,
-  },
+  stepLabel: { fontFamily: font.bodyBold, fontSize: 18, color: colors.muted, marginTop: 9 },
   progressTrack: {
     height: 4,
-    backgroundColor: '#231B22',
+    marginHorizontal: 20,
+    marginTop: 10,
+    marginBottom: 34,
     borderRadius: 2,
+    backgroundColor: colors.border,
     overflow: 'hidden',
   },
-  progressFill: { 
-    height: 4, 
-    backgroundColor: color.accent, 
-    borderRadius: 2 
-  },
-
-  errorAlert: {
-    marginHorizontal: 20,
-    marginBottom: 10,
-    padding: 12,
-    backgroundColor: 'rgba(255, 90, 122, 0.1)',
-    borderWidth: 1,
-    borderColor: '#FF5A7A',
-    borderRadius: 12,
-  },
-  errorAlertText: {
-    color: '#FF5A7A',
-    fontFamily: font.sansBold,
-    fontSize: 13,
-  },
-
-  modalBackdrop: {
+  progressFill: { height: 4, borderRadius: 2, backgroundColor: colors.accent },
+  errorWrap: { paddingHorizontal: 20 },
+  backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.72)', justifyContent: 'flex-end' },
+  backdropCenter: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.7)',
-    justifyContent: 'center',
-    padding: space[4],
-  },
-  modalCard: {
-    backgroundColor: color.surface,
-    borderWidth: 1,
-    borderColor: color.borderStrong,
-    borderRadius: radius.md,
-    padding: space[5],
-    gap: space[3],
-  },
-  modalHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  modalTitle: { fontFamily: font.sansSemibold, fontSize: text.h3, color: color.textPrimary },
-  modalCenter: { alignItems: 'center', gap: space[1] },
-  modalBadge: {
-    width: 48,
-    height: 48,
+    backgroundColor: 'rgba(0,0,0,0.78)',
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: color.borderStrong,
-    borderRadius: radius.md,
-    marginBottom: space[2],
+    padding: 24,
   },
-  modalSmall: {
-    fontFamily: font.sans,
-    fontSize: text.small,
-    color: color.textSecondary,
+  sheet: {
+    backgroundColor: colors.surface,
+    borderTopWidth: 1,
+    borderTopColor: colors.borderStrong,
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+    padding: 26,
+    paddingBottom: 34,
+    gap: 14,
+  },
+  sheetHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  sheetTitle: { fontFamily: font.display, fontSize: 20, color: colors.text },
+  sheetSub: { fontFamily: font.body, fontSize: 15, color: colors.muted, textAlign: 'center' },
+  otpInput: {
+    height: 62,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: colors.borderStrong,
+    backgroundColor: colors.surfaceInput,
+    color: colors.text,
+    fontFamily: font.display,
+    fontSize: 26,
+    letterSpacing: 10,
     textAlign: 'center',
-    lineHeight: 20,
   },
-  modalEmail: { fontFamily: font.sansSemibold, fontSize: text.body, color: color.textPrimary },
-  otpInput: { height: 52, fontFamily: font.mono, fontSize: 24, letterSpacing: 8, textAlign: 'center' },
-  timerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space[1] },
-  modalActions: { flexDirection: 'row', gap: space[2] },
-  flex1: { flex: 1 },
-
-  idPanel: {
-    backgroundColor: color.surfaceRaised,
+  resend: { fontFamily: font.bodyBold, fontSize: 15, color: colors.muted, textAlign: 'center' },
+  sheetCta: { marginTop: 4 },
+  dialog: {
+    width: '100%',
+    backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: color.border,
-    borderRadius: radius.md,
-    padding: space[4],
+    borderColor: colors.borderStrong,
+    borderRadius: 28,
+    padding: 28,
     alignItems: 'center',
-    gap: space[1],
+    gap: 14,
   },
-  idLabel: { fontFamily: font.mono, fontSize: 11, color: color.textMuted },
-  idValue: { fontFamily: font.monoMedium, fontSize: 20, color: color.textPrimary },
+  successRing: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    borderWidth: 2,
+    borderColor: '#4ADE9B',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  idBox: {
+    width: '100%',
+    padding: 16,
+    borderRadius: 16,
+    backgroundColor: colors.surfaceInput,
+    borderWidth: 1,
+    borderColor: colors.borderStrong,
+    alignItems: 'center',
+    gap: 4,
+  },
+  idText: { fontFamily: font.display, fontSize: 20, color: colors.text, letterSpacing: 1 },
+  idHint: { fontFamily: font.body, fontSize: 12, color: colors.dim },
 });
 
 export default FileComplaintScreen;

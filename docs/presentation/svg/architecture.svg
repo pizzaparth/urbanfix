@@ -1,0 +1,142 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 640" width="1200" height="640" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" role="img" aria-label="System architecture of the Smart Digital Complaint Management System">
+  <title>System Architecture</title>
+
+  <defs>
+    <!-- Deck palette: crimson / white / violet -->
+    <style>
+      .lbl      { font-size: 17px; font-weight: 700; fill: #1B1020; }
+      .sub      { font-size: 13px; fill: #5B4A66; }
+      .tier     { font-size: 12px; font-weight: 700; letter-spacing: 2px; fill: #8A7794; }
+      .edge     { stroke: #7C3AED; stroke-width: 2.4; fill: none; marker-end: url(#arrow); }
+      .edge-r   { stroke: #DC2626; stroke-width: 2.4; fill: none; marker-end: url(#arrow-r); }
+      .edge-d   { stroke: #A78BFA; stroke-width: 2.2; stroke-dasharray: 7 6; fill: none; marker-end: url(#arrow-d); }
+      .edgelbl  { font-size: 12px; font-weight: 600; fill: #6B5B75; }
+      .card     { fill: #FFFFFF; stroke: #E4DCEA; stroke-width: 1.5; }
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#7C3AED"/>
+    </marker>
+    <marker id="arrow-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#DC2626"/>
+    </marker>
+    <marker id="arrow-d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#A78BFA"/>
+    </marker>
+  </defs>
+
+  <rect width="1200" height="640" fill="#FFFFFF"/>
+
+  <!-- ─────────── Tier bands ─────────── -->
+  <rect x="40"  y="86" width="250" height="470" rx="20" fill="#FAF6FE" stroke="#EDE4F6"/>
+  <rect x="330" y="86" width="330" height="470" rx="20" fill="#FDF4F5" stroke="#F7DFE2"/>
+  <rect x="700" y="86" width="460" height="470" rx="20" fill="#FAF6FE" stroke="#EDE4F6"/>
+
+  <text x="165" y="70" class="tier" text-anchor="middle">CLIENT</text>
+  <text x="495" y="70" class="tier" text-anchor="middle">API TIER</text>
+  <text x="930" y="70" class="tier" text-anchor="middle">DATA &amp; SERVICES</text>
+
+  <!-- ─────────── Client ─────────── -->
+  <g>
+    <rect x="70" y="120" width="190" height="180" rx="16" class="card"/>
+    <rect x="70" y="120" width="190" height="6" rx="3" fill="#7C3AED"/>
+    <!-- phone glyph -->
+    <rect x="145" y="148" width="40" height="70" rx="7" fill="none" stroke="#7C3AED" stroke-width="2.4"/>
+    <line x1="158" y1="158" x2="172" y2="158" stroke="#7C3AED" stroke-width="2.4" stroke-linecap="round"/>
+    <circle cx="165" cy="208" r="3" fill="#DC2626"/>
+    <text x="165" y="246" class="lbl" text-anchor="middle">Expo React Native</text>
+    <text x="165" y="267" class="sub" text-anchor="middle">iOS · Android · Web</text>
+    <text x="165" y="286" class="sub" text-anchor="middle">SDK 57 · RN 0.86</text>
+  </g>
+
+  <g>
+    <rect x="70" y="330" width="190" height="196" rx="16" class="card"/>
+    <text x="165" y="360" class="lbl" text-anchor="middle">On-device</text>
+    <text x="88" y="390" class="sub">• SecureStore (JWT)</text>
+    <text x="88" y="414" class="sub">• AsyncStorage (user)</text>
+    <text x="88" y="438" class="sub">• Image picker</text>
+    <text x="88" y="462" class="sub">• File system + share</text>
+    <text x="88" y="486" class="sub">• Focus-scoped polling</text>
+    <text x="88" y="510" class="sub">• Deep link dsn://</text>
+  </g>
+
+  <!-- ─────────── API tier ─────────── -->
+  <g>
+    <rect x="360" y="120" width="270" height="150" rx="16" class="card"/>
+    <rect x="360" y="120" width="270" height="6" rx="3" fill="#DC2626"/>
+    <text x="495" y="156" class="lbl" text-anchor="middle">Express REST API</text>
+    <text x="495" y="178" class="sub" text-anchor="middle">Node.js · CORS · Morgan</text>
+    <rect x="384" y="196" width="104" height="28" rx="14" fill="#F7EDFD"/>
+    <text x="436" y="215" class="sub" text-anchor="middle" fill="#6D28D9">JWT auth</text>
+    <rect x="500" y="196" width="106" height="28" rx="14" fill="#FDEDEF"/>
+    <text x="553" y="215" class="sub" text-anchor="middle" fill="#B91C1C">Zod validation</text>
+    <text x="495" y="250" class="sub" text-anchor="middle">Role gate: citizen / admin</text>
+  </g>
+
+  <g>
+    <rect x="360" y="300" width="270" height="226" rx="16" class="card"/>
+    <text x="495" y="332" class="lbl" text-anchor="middle">Domain logic</text>
+    <text x="382" y="364" class="sub">• OTP issue + verify (TTL)</text>
+    <text x="382" y="390" class="sub">• Weighted urgency score</text>
+    <text x="382" y="416" class="sub">• Status transition rules</text>
+    <text x="382" y="442" class="sub">• Tracking ID generation</text>
+    <text x="382" y="468" class="sub">• Multipart upload (Multer)</text>
+    <text x="382" y="494" class="sub">• Audit trail append</text>
+  </g>
+
+  <!-- ─────────── Data & services ─────────── -->
+  <g>
+    <rect x="730" y="120" width="190" height="150" rx="16" class="card"/>
+    <ellipse cx="825" cy="160" rx="34" ry="11" fill="none" stroke="#7C3AED" stroke-width="2.4"/>
+    <path d="M791 160 v26 a34 11 0 0 0 68 0 v-26" fill="none" stroke="#7C3AED" stroke-width="2.4"/>
+    <text x="825" y="218" class="lbl" text-anchor="middle">MongoDB</text>
+    <text x="825" y="240" class="sub" text-anchor="middle">Mongoose ODM</text>
+    <text x="825" y="259" class="sub" text-anchor="middle">Users · Complaints · OTPs</text>
+  </g>
+
+  <g>
+    <rect x="950" y="120" width="180" height="150" rx="16" class="card"/>
+    <text x="1040" y="152" class="lbl" text-anchor="middle">Collections</text>
+    <text x="970" y="182" class="sub">users</text>
+    <text x="970" y="206" class="sub">complaints</text>
+    <text x="970" y="230" class="sub">otps  (TTL index)</text>
+    <text x="970" y="254" class="sub">statusHistory[]</text>
+  </g>
+
+  <g>
+    <rect x="730" y="300" width="190" height="104" rx="16" class="card"/>
+    <text x="825" y="334" class="lbl" text-anchor="middle">Nodemailer</text>
+    <text x="825" y="356" class="sub" text-anchor="middle">OTP codes</text>
+    <text x="825" y="376" class="sub" text-anchor="middle">Resolution receipts</text>
+  </g>
+
+  <g>
+    <rect x="950" y="300" width="180" height="104" rx="16" class="card"/>
+    <text x="1040" y="334" class="lbl" text-anchor="middle">PDFKit</text>
+    <text x="1040" y="356" class="sub" text-anchor="middle">Signed receipt PDF</text>
+    <text x="1040" y="376" class="sub" text-anchor="middle">on resolution</text>
+  </g>
+
+  <!-- Proposed AI layer -->
+  <g>
+    <rect x="730" y="434" width="400" height="92" rx="16" fill="#FFFFFF" stroke="#A78BFA" stroke-width="1.8" stroke-dasharray="8 6"/>
+    <text x="930" y="468" class="lbl" text-anchor="middle" fill="#6D28D9">AI Validation Service</text>
+    <text x="930" y="490" class="sub" text-anchor="middle">Per-category YOLO detection · confidence gate</text>
+    <text x="930" y="510" class="sub" text-anchor="middle" font-weight="700" fill="#A78BFA">PROPOSED — not implemented</text>
+  </g>
+
+  <!-- ─────────── Edges ─────────── -->
+  <path d="M262 210 H 356" class="edge-r"/>
+  <text x="309" y="200" class="edgelbl" text-anchor="middle">HTTPS</text>
+  <text x="309" y="232" class="edgelbl" text-anchor="middle">JSON</text>
+
+  <path d="M632 195 H 726" class="edge"/>
+  <text x="679" y="186" class="edgelbl" text-anchor="middle">CRUD</text>
+
+  <path d="M632 350 H 726" class="edge"/>
+  <text x="679" y="342" class="edgelbl" text-anchor="middle">send</text>
+
+  <path d="M600 528 C 600 560, 700 560, 760 536" class="edge-d"/>
+
+  <path d="M922 195 H 946" class="edge"/>
+  <path d="M922 352 H 946" class="edge"/>
+</svg>

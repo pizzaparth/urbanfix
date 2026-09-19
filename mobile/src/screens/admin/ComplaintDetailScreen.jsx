@@ -1,29 +1,19 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  Image,
-  KeyboardAvoidingView,
-  Platform,
-  StyleSheet,
-  Pressable,
-  TextInput,
-} from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
-import StatusBadge from '../../components/StatusBadge.jsx';
+import { View, Text, Image, ScrollView, TextInput, StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { Screen, Card, Tappable, PrimaryButton, ErrorNote } from '../../components/uikit.jsx';
+import FormattedDescription from '../../components/FormattedDescription.jsx';
+import Icon from '../../components/Icon.jsx';
 import StatusTimeline from '../../components/StatusTimeline.jsx';
+import { SkeletonBlock } from '../../components/Skeleton.jsx';
 import api, { getUploadsBaseUrl } from '../../services/api.js';
-import { color, font } from '../../theme.js';
+import { colors, uf as font, statusColors } from '../../theme.js';
 
-const STATUS_COLORS = {
-  'Filed': '#4ADE9B',
-  'Pending': '#FFB86B',
-  'In Progress': '#C08BFF',
-  'Resolved': '#FF5FA2',
-  'Rejected': '#A094A0'
-};
+const STATUS_LIST = ['Pending', 'In Progress', 'Resolved', 'Rejected'];
 
+// The reference let an admin set any status from any status. The API doesn't:
+// these are the only legal transitions, and Resolved/Rejected are terminal.
 const NEXT_STATUSES = {
   Pending: ['In Progress', 'Rejected'],
   'In Progress': ['Resolved', 'Rejected'],
@@ -31,9 +21,10 @@ const NEXT_STATUSES = {
   Rejected: [],
 };
 
-const STATUS_LIST = ['Pending', 'In Progress', 'Resolved', 'Rejected'];
+const MIN_REMARKS = 10;
 
 const ComplaintDetailScreen = ({ route, navigation }) => {
+  const insets = useSafeAreaInsets();
   const { id } = route.params || {};
 
   const [complaint, setComplaint] = useState(null);
@@ -71,8 +62,8 @@ const ComplaintDetailScreen = ({ route, navigation }) => {
   const handleUpdateStatus = async () => {
     setUpdateError('');
     setSuccess('');
-    if (remarks.trim().length < 10) {
-      setUpdateError('Remarks must be at least 10 characters.');
+    if (remarks.trim().length < MIN_REMARKS) {
+      setUpdateError(`Remarks must be at least ${MIN_REMARKS} characters.`);
       return;
     }
     setUpdating(true);
@@ -92,326 +83,247 @@ const ComplaintDetailScreen = ({ route, navigation }) => {
     }
   };
 
+  const header = (
+    <View style={s.header}>
+      <Tappable onPress={() => navigation.goBack()} scaleTo={0.9} style={s.backBtn}>
+        <Icon name="chevronLeft" size={18} color={colors.text} strokeWidth={2.4} />
+      </Tappable>
+      <Text style={s.headerTitle}>Complaint</Text>
+    </View>
+  );
+
   if (loading) {
     return (
-      <View style={s.flex}>
-        <Text style={{color: '#FFF', padding: 20}}>Loading...</Text>
+      <View style={s.bootWrap}>
+        {header}
+        <View style={s.bootBody}>
+          <SkeletonBlock height={28} width="80%" />
+          <SkeletonBlock height={72} />
+          <SkeletonBlock height={120} />
+        </View>
       </View>
     );
   }
 
-  if (error) {
+  if (error || !complaint) {
     return (
-      <View style={s.flex}>
-        <View style={s.errorAlert}>
-          <Text style={s.errorAlertText}>{error}</Text>
+      <Screen contentStyle={{ paddingTop: insets.top }}>
+        {header}
+        <View style={s.body}>
+          <ErrorNote>{error || 'Complaint details not found.'}</ErrorNote>
         </View>
-      </View>
+      </Screen>
     );
   }
 
   const options = NEXT_STATUSES[complaint.status] || [];
   const isTerminal = options.length === 0;
+  const uploadsBase = getUploadsBaseUrl();
 
   return (
-    <KeyboardAvoidingView
-      style={s.flex}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
-    >
-      <ScrollView contentContainerStyle={s.content} keyboardShouldPersistTaps="handled">
-        <View style={s.headerRow}>
-          <Pressable style={s.topBackBtn} onPress={() => navigation.goBack()}>
-            <Text style={{color: '#FFF', fontSize: 18, fontFamily: font.sansBold}}>{'<'}</Text>
-          </Pressable>
-          <Text style={s.h1}>Complaint</Text>
+    <Screen contentStyle={{ paddingTop: insets.top }}>
+      {header}
+
+      <View style={s.body}>
+        <View>
+          <Text style={s.title}>{complaint.title}</Text>
+          <Text style={s.trackingId}>{complaint.trackingId}</Text>
         </View>
 
-        <View style={s.bodySection}>
-          <View style={s.titleWrap}>
-            <Text style={s.title}>{complaint.title}</Text>
-            <Text style={s.trackingId}>{complaint.trackingId}</Text>
-          </View>
+        <View style={s.tileRow}>
+          <InfoTile label="Category" value={complaint.category} flex />
+          <InfoTile
+            label="Filed"
+            value={new Date(complaint.createdAt).toLocaleDateString()}
+            width={112}
+          />
+        </View>
 
-          <View style={s.metaGridTop}>
-            <View style={[s.metaCard, {flex: 1}]}>
-              <Text style={s.metaLabel}>CATEGORY</Text>
-              <Text style={s.metaValue}>{complaint.category}</Text>
-            </View>
-            <View style={[s.metaCard, {width: 112, flex: 'none'}]}>
-              <Text style={s.metaLabel}>FILED</Text>
-              <Text style={s.metaValue}>{new Date(complaint.createdAt).toLocaleDateString()}</Text>
-            </View>
-          </View>
+        <InfoTile label="Location" value={complaint.location} />
 
-          <View style={s.metaCard}>
-            <Text style={s.metaLabel}>LOCATION</Text>
-            <Text style={s.metaValue}>{complaint.location}</Text>
-          </View>
-          
-          <View style={s.metaCard}>
-            <Text style={s.metaLabel}>CITIZEN</Text>
-            <Text style={s.metaValue}>{complaint.citizenId?.name || '—'} ({complaint.citizenId?.email || '—'})</Text>
-          </View>
+        <View>
+          <Text style={s.label}>DESCRIPTION</Text>
+          <FormattedDescription description={complaint.description} />
+        </View>
 
-          <View style={s.descWrap}>
-            <Text style={s.metaLabel}>DESCRIPTION</Text>
-            <Text style={s.descText}>{complaint.description}</Text>
+        {complaint.images?.length > 0 ? (
+          <View>
+            <Text style={s.label}>PHOTOGRAPHS</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.imageRow}>
+              {complaint.images.map((img, i) => (
+                <Image
+                  key={i}
+                  source={{ uri: `${uploadsBase}${img}` }}
+                  style={s.image}
+                  resizeMode="cover"
+                />
+              ))}
+            </ScrollView>
           </View>
-          
-          {complaint.images?.length > 0 && (
-            <View style={s.descWrap}>
-              <Text style={s.metaLabel}>ATTACHED PROOFS</Text>
-              <View style={s.thumbRow}>
-                {complaint.images.map((img, i) => (
-                  <Image
-                    key={i}
-                    source={{ uri: `${getUploadsBaseUrl()}${img}` }}
-                    style={s.thumb}
-                  />
-                ))}
-              </View>
-            </View>
-          )}
+        ) : null}
 
-          <View style={s.descWrap}>
-            <Text style={s.metaLabel}>STATUS LOG</Text>
-            <StatusTimeline statusHistory={complaint.statusHistory} />
-          </View>
+        <View>
+          <Text style={s.label}>STATUS LOG HISTORY</Text>
+          <StatusTimeline statusHistory={complaint.statusHistory} />
+        </View>
 
-          <View style={s.descWrap}>
-            <Text style={s.metaLabel}>SET STATUS</Text>
-            
-            {success ? (
-              <View style={[s.errorAlert, {backgroundColor: 'rgba(74, 222, 155, 0.1)', borderColor: '#4ADE9B', marginBottom: 12, marginHorizontal: 0}]}>
-                <Text style={[s.errorAlertText, {color: '#4ADE9B'}]}>{success}</Text>
-              </View>
-            ) : null}
-            {updateError ? (
-              <View style={[s.errorAlert, {marginBottom: 12, marginHorizontal: 0}]}>
-                <Text style={s.errorAlertText}>{updateError}</Text>
-              </View>
-            ) : null}
+        <View>
+          <Text style={s.label}>SET STATUS</Text>
 
-            {isTerminal ? (
-              <Text style={s.terminalNote}>
-                This complaint is {complaint.status.toLowerCase()} — a terminal state. No further transitions are allowed.
+          {isTerminal ? (
+            <Card style={s.terminalCard}>
+              <Text style={s.terminalText}>
+                This complaint is {complaint.status.toLowerCase()} — a terminal state. No further
+                transitions are allowed.
               </Text>
-            ) : (
-              <View style={s.statusGrid}>
-                {STATUS_LIST.map(st => {
-                  const isEnabled = options.includes(st);
-                  const isSelected = status === st;
-                  const stColor = STATUS_COLORS[st] || '#FFFFFF';
-                  
-                  return (
-                    <Pressable
-                      key={st}
-                      onPress={() => isEnabled && setStatus(st)}
+            </Card>
+          ) : (
+            <View style={s.statusGrid}>
+              {STATUS_LIST.map((st, i) => {
+                const allowed = options.includes(st);
+                const active = status === st;
+                return (
+                  <View
+                    key={st}
+                    style={s.statusCell}
+                  >
+                    <Tappable
+                      onPress={() => allowed && setStatus(st)}
+                      disabled={!allowed}
+                      scaleTo={0.96}
                       style={[
                         s.statusBtn,
-                        isSelected && { borderColor: stColor, backgroundColor: `${stColor}1A` },
-                        !isEnabled && { opacity: 0.4 }
+                        {
+                          borderColor: active ? statusColors[st] : colors.borderStrong,
+                          backgroundColor: active ? colors.surfaceInput : 'transparent',
+                          // Illegal transitions stay visible but obviously inert,
+                          // so the grid still reads as the full set of states.
+                          opacity: allowed ? 1 : 0.35,
+                        },
                       ]}
-                      disabled={!isEnabled}
                     >
-                      <View style={[s.statusDot, {backgroundColor: stColor}]} />
-                      <Text style={s.statusBtnLabel}>{st}</Text>
-                    </Pressable>
-                  );
-                })}
-              </View>
-            )}
-          </View>
-          
-          {!isTerminal && status ? (
-            <View style={s.descWrap}>
-              <Text style={s.metaLabel}>REMARKS (Required)</Text>
-              <TextInput
-                value={remarks}
-                onChangeText={setRemarks}
-                placeholder="Input review remarks (min 10 characters)"
-                placeholderTextColor="rgba(255,255,255,0.4)"
-                multiline
-                style={s.remarksInput}
-              />
-              <Pressable 
-                style={[s.primaryBtn, (updating || remarks.trim().length < 10) && {opacity: 0.5}]} 
-                onPress={handleUpdateStatus} 
-                disabled={updating || remarks.trim().length < 10}
-              >
-                <Text style={s.primaryBtnText}>{updating ? '...' : (status === 'Resolved' ? 'Resolve & Send Receipt' : 'Update Status')}</Text>
-              </Pressable>
+                      <View style={[s.dot, { backgroundColor: statusColors[st] }]} />
+                      <Text style={s.statusLabel}>{st}</Text>
+                    </Tappable>
+                  </View>
+                );
+              })}
             </View>
-          ) : null}
-
+          )}
         </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+
+        {!isTerminal && status ? (
+          <View>
+            <Text style={s.label}>REMARKS</Text>
+            <ErrorNote>{updateError}</ErrorNote>
+            <TextInput
+              value={remarks}
+              onChangeText={setRemarks}
+              placeholder={`Input review remarks (min ${MIN_REMARKS} characters)`}
+              placeholderTextColor={colors.placeholder}
+              multiline
+              style={s.remarksInput}
+            />
+            <PrimaryButton
+              label={
+                updating
+                  ? 'Updating…'
+                  : status === 'Resolved'
+                    ? 'Resolve & send receipt'
+                    : 'Update status'
+              }
+              onPress={handleUpdateStatus}
+              disabled={updating || remarks.trim().length < MIN_REMARKS} style={[s.submit, (updating || remarks.trim().length < MIN_REMARKS) && s.submitOff]}
+            />
+          </View>
+        ) : null}
+
+        {success ? <Text style={s.success}>{success}</Text> : null}
+      </View>
+    </Screen>
   );
 };
 
+function InfoTile({ label, value, flex, width }) {
+  return (
+    <View style={[s.tile, flex && s.flex1, width ? { width } : null]}>
+      <Text style={s.label}>{label.toUpperCase()}</Text>
+      <Text style={s.tileValue}>{value}</Text>
+    </View>
+  );
+}
+
 const s = StyleSheet.create({
-  flex: { flex: 1, backgroundColor: color.bg },
-  content: { paddingBottom: 104 },
-  
-  headerRow: { 
-    paddingHorizontal: 20, 
-    paddingTop: 22, 
-    paddingBottom: 12,
+  flex1: { flex: 1 },
+  bootWrap: { flex: 1, backgroundColor: colors.bg },
+  bootBody: { padding: 20, gap: 16 },
+  header: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 14,
+    paddingHorizontal: 20,
+    paddingTop: 22,
+    paddingBottom: 12,
   },
-  topBackBtn: {
+  backBtn: {
     width: 42,
     height: 42,
     borderRadius: 21,
     borderWidth: 1,
-    borderColor: '#2C222B',
+    borderColor: colors.borderStrong,
     alignItems: 'center',
     justifyContent: 'center',
-    flex: 'none',
   },
-  h1: {
-    fontFamily: font.sansBold,
-    fontSize: 24,
-    color: color.white,
-  },
-  
-  bodySection: {
-    paddingHorizontal: 20,
-    paddingBottom: 28,
-    gap: 18,
-  },
-  titleWrap: { },
-  title: {
-    fontFamily: font.sansBold,
-    fontSize: 24,
-    color: color.white,
-    lineHeight: 28,
-  },
-  trackingId: {
-    fontSize: 13,
-    color: '#8E8290',
-    marginTop: 6,
-    fontFamily: font.sans,
-  },
-  
-  metaGridTop: {
-    flexDirection: 'row',
-    gap: 10,
-  },
-  metaCard: {
+  headerTitle: { fontFamily: font.display, fontSize: 24, color: colors.text },
+  body: { paddingHorizontal: 20, paddingTop: 8, gap: 18 },
+  title: { fontFamily: font.display, fontSize: 28, lineHeight: 33, color: colors.text },
+  trackingId: { fontFamily: font.display, fontSize: 15, color: colors.dim, marginTop: 6 },
+  tileRow: { flexDirection: 'row', gap: 10 },
+  tile: {
     padding: 16,
-    backgroundColor: '#120E13',
+    backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: '#231B22',
+    borderColor: colors.border,
     borderRadius: 20,
   },
-  metaLabel: {
-    fontSize: 11,
-    letterSpacing: 0.8,
-    color: '#8E8290',
-    fontFamily: font.sansBold,
-    marginBottom: 6,
+  tileValue: { fontFamily: font.bodyBold, fontSize: 15, color: colors.text },
+  label: {
+    fontFamily: font.bodyBold,
+    fontSize: 12,
+    letterSpacing: 1.1,
+    color: colors.dim,
+    marginBottom: 7,
   },
-  metaValue: {
-    fontSize: 14,
-    color: color.white,
-    fontFamily: font.sansBold,
-  },
-  
-  descWrap: { },
-  descText: {
-    fontSize: 15,
-    color: '#D2C6CE',
-    lineHeight: 23,
-    fontFamily: font.sans,
-  },
-  
-  statusGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 10,
-  },
-  statusBtn: {
-    width: '48%',
-    padding: 16,
-    borderRadius: 20,
-    backgroundColor: '#120E13',
-    borderWidth: 1.5,
-    borderColor: '#231B22',
-    alignItems: 'flex-start',
-    gap: 10,
-  },
-  statusDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-  },
-  statusBtnLabel: {
-    fontSize: 14,
-    fontFamily: font.sansBold,
-    color: color.white,
-  },
-  
+  description: { fontFamily: font.body, fontSize: 16, lineHeight: 25, color: colors.body },
+  imageRow: { gap: 10, paddingRight: 20 },
+  image: { width: 132, height: 132, borderRadius: 20, backgroundColor: colors.surfaceInput },
+  statusGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 4 },
+  statusCell: { width: '48%', flexGrow: 1 },
+  statusBtn: { padding: 16, borderRadius: 20, borderWidth: 1.5, gap: 10 },
+  dot: { width: 10, height: 10, borderRadius: 5 },
+  statusLabel: { fontFamily: font.display, fontSize: 15, color: colors.text },
+  terminalCard: { padding: 18 },
+  terminalText: { fontFamily: font.body, fontSize: 15, lineHeight: 23, color: colors.muted },
   remarksInput: {
-    width: '100%',
-    minHeight: 100,
+    minHeight: 120,
     padding: 18,
-    paddingTop: 18,
-    backgroundColor: '#120E13',
+    backgroundColor: colors.surface,
     borderWidth: 1.5,
-    borderColor: '#2C222B',
+    borderColor: colors.borderStrong,
     borderRadius: 18,
-    color: color.white,
+    color: colors.text,
+    fontFamily: font.bodyBold,
     fontSize: 16,
-    fontFamily: font.sans,
     textAlignVertical: 'top',
   },
-  primaryBtn: {
-    width: '100%',
-    height: 58,
-    borderRadius: 100,
-    backgroundColor: color.accent,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 14,
-  },
-  primaryBtnText: {
-    fontFamily: font.sansBold,
-    fontSize: 16,
-    color: '#18062B',
-  },
-  
-  thumbRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 4 },
-  thumb: {
-    width: 96,
-    height: 96,
-    borderRadius: 12,
-    backgroundColor: '#120E13',
-  },
-
-  errorAlert: {
-    marginHorizontal: 20,
-    padding: 12,
-    backgroundColor: 'rgba(255, 90, 122, 0.1)',
-    borderWidth: 1,
-    borderColor: '#FF5A7A',
-    borderRadius: 12,
-  },
-  errorAlertText: {
-    color: '#FF5A7A',
-    fontFamily: font.sansBold,
-    fontSize: 13,
-  },
-  
-  terminalNote: {
-    fontFamily: font.sans,
-    fontSize: 14,
-    color: '#8E8290',
-    lineHeight: 20,
+  submit: { marginTop: 14 },
+  submitOff: { opacity: 0.5 },
+  success: {
+    fontFamily: font.bodyBold,
+    fontSize: 15,
+    lineHeight: 22,
+    color: '#4ADE9B',
+    textAlign: 'center',
   },
 });
 

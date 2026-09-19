@@ -1,14 +1,17 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { View, Text, Pressable, RefreshControl, StyleSheet, TextInput, ScrollView } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FlashList } from '@shopify/flash-list';
 import { SkeletonList } from '../../components/Skeleton.jsx';
+import { PageTitle, Field, FilterPill } from '../../components/uikit.jsx';
 import ComplaintCard from '../../components/ComplaintCard.jsx';
 import api from '../../services/api.js';
-import { color, space, radius, font, text, statusColor } from '../../theme.js';
+import { colors, uf as font, statusColors } from '../../theme.js';
 
 const STATUSES = ['All', 'Pending', 'In Progress', 'Resolved', 'Rejected'];
 
 const RegistryScreen = () => {
+  const insets = useSafeAreaInsets();
   const [complaints, setComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -49,63 +52,51 @@ const RegistryScreen = () => {
 
   const header = (
     <View style={s.headerContainer}>
-      <View style={s.header}>
-        <Text style={s.h1}>Registry</Text>
-        <Text style={s.lede}>Public tickets, live.</Text>
-      </View>
+      <PageTitle sub="Public tickets, live.">Registry</PageTitle>
 
       <View style={s.searchWrap}>
-        <TextInput
-          placeholder="Search title or area"
-          placeholderTextColor={color.textMuted}
+        <Field
           value={locationSearch}
           onChangeText={setLocationSearch}
-          style={s.searchInput}
-          autoCorrect={false}
+          placeholder="Search title or area"
+          autoCapitalize="none"
         />
       </View>
 
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.statusScroll}>
-        {STATUSES.map((status) => {
-          const isActive = statusFilter === status;
-          const sColor = status === 'All' ? color.white : statusColor[status];
-          return (
-            <Pressable
-              key={status}
-              onPress={() => setStatusFilter(status)}
-              style={[
-                s.statusBtn,
-                { borderColor: isActive ? sColor : color.border },
-              ]}
-            >
-              <Text style={[s.statusBtnText, { color: isActive ? sColor : color.textMuted }]}>
-                {status}
-              </Text>
-            </Pressable>
-          );
-        })}
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.filterRow}>
+        {STATUSES.map((status) => (
+          <FilterPill
+            key={status}
+            label={status}
+            active={statusFilter === status}
+            color={status === 'All' ? colors.text : statusColors[status]}
+            onPress={() => setStatusFilter(status)}
+          />
+        ))}
       </ScrollView>
 
-      <Text style={s.countText}>{sortedComplaints.length} records</Text>
+      <Text style={s.count}>{sortedComplaints.length} records</Text>
     </View>
   );
 
   const empty = loading ? (
     <SkeletonList count={5} />
   ) : (
-    <View style={s.emptyPanel}>
-      <Text style={s.emptyHint}>No matching complaints.</Text>
-    </View>
+    <Text style={s.empty}>No matching complaints.</Text>
   );
 
   return (
     <FlashList
       style={s.screen}
-      contentContainerStyle={s.content}
+      contentContainerStyle={[s.content, { paddingTop: insets.top }]}
       data={loading ? [] : sortedComplaints}
       keyExtractor={(item) => item._id}
-      renderItem={({ item }) => <ComplaintCard item={item} />}
-      ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
+      renderItem={({ item }) => (
+        <View style={s.cardWrap}>
+          <ComplaintCard item={item} />
+        </View>
+      )}
+      ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
       ListHeaderComponent={header}
       ListEmptyComponent={empty}
       keyboardShouldPersistTaps="handled"
@@ -116,7 +107,7 @@ const RegistryScreen = () => {
             setRefreshing(true);
             fetchComplaints();
           }}
-          tintColor={color.accent}
+          tintColor={colors.accent}
         />
       }
     />
@@ -124,81 +115,23 @@ const RegistryScreen = () => {
 };
 
 const s = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: color.bg },
-  content: { paddingBottom: 24 },
-  
-  headerContainer: {
-    paddingBottom: 10,
-  },
-  header: { 
-    paddingHorizontal: 20,
-    paddingTop: 24,
-    paddingBottom: 12,
-  },
-  h1: { 
-    fontFamily: font.sansBold, 
-    fontSize: 38, 
-    lineHeight: 40,
-    color: color.white 
-  },
-  lede: { 
-    fontFamily: font.sans, 
-    fontSize: 17, 
-    color: color.textSecondary, 
-    marginTop: 8 
-  },
+  screen: { flex: 1, backgroundColor: colors.bg },
+  content: { paddingBottom: 130 },
 
-  searchWrap: {
-    paddingHorizontal: 20,
-  },
-  searchInput: { 
-    width: '100%',
-    height: 44,
-    paddingHorizontal: 14,
-    backgroundColor: color.surface,
-    borderWidth: 1,
-    borderColor: color.border,
-    borderRadius: 14,
-    color: color.white,
-    fontSize: 14,
-    fontFamily: font.sans,
-  },
+  headerContainer: { paddingBottom: 12 },
+  // The header's children carry their own 20pt gutter (PageTitle/Field/pills),
+  // so the rows are padded here rather than on the list's content container.
+  cardWrap: { paddingHorizontal: 20 },
+  searchWrap: { paddingHorizontal: 20 },
+  filterRow: { gap: 10, paddingHorizontal: 20, paddingVertical: 14 },
+  count: { paddingHorizontal: 20, fontFamily: font.display, fontSize: 15, color: colors.dim },
 
-  statusScroll: {
-    paddingHorizontal: 20,
-    paddingVertical: 14,
-    gap: 10,
-  },
-  statusBtn: {
-    height: 52,
-    paddingHorizontal: 24,
-    borderRadius: 100,
-    borderWidth: 2,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'transparent',
-  },
-  statusBtnText: {
-    fontFamily: font.sansBold,
-    fontSize: 17,
-  },
-
-  countText: {
-    paddingHorizontal: 20,
-    paddingVertical: 4,
-    fontSize: 11,
-    color: color.textMuted,
-    fontFamily: font.sansBold,
-  },
-
-  emptyPanel: {
-    paddingVertical: 40,
-    alignItems: 'center',
-  },
-  emptyHint: {
-    fontFamily: font.sans,
-    fontSize: 13,
-    color: color.textMuted,
+  empty: {
+    textAlign: 'center',
+    paddingVertical: 44,
+    fontFamily: font.body,
+    fontSize: 15,
+    color: colors.dim,
   },
 });
 

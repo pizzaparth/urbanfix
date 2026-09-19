@@ -1,13 +1,23 @@
-import React, { useState, useCallback } from 'react';
-import { View, Text, ScrollView, RefreshControl, StyleSheet, Pressable } from 'react-native';
-import { Activity } from 'lucide-react-native';
-import { useAutoRefresh } from '../../hooks/useAutoRefresh.js';
-import { useAuth } from '../../hooks/useAuth.js';
-import api from '../../services/api.js';
-import { color, font } from '../../theme.js';
+import React, { useState, useCallback, useMemo } from 'react';
+import { View, Text, StyleSheet, RefreshControl } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 
-const AdminDashboardScreen = ({ navigation }) => {
+import { Screen, Card, PrimaryButton, DangerButton, GrowBar } from '../../components/uikit.jsx';
+import RingChart from '../../components/RingChart.jsx';
+import PeekWrapper from '../../components/PeekWrapper.jsx';
+import PeekGraph from '../../components/PeekGraph.jsx';
+import { useAuth } from '../../hooks/useAuth.js';
+import { useAutoRefresh } from '../../hooks/useAutoRefresh.js';
+import api from '../../services/api.js';
+import { colors, uf as font, statusColors, chartPalette, chartUrgency } from '../../theme.js';
+
+const STATUSES = ['Pending', 'In Progress', 'Resolved', 'Rejected'];
+
+export default function AdminDashboardScreen({ navigation }) {
+  const insets = useSafeAreaInsets();
   const { user, logoutUser } = useAuth();
+  
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -25,161 +35,138 @@ const AdminDashboardScreen = ({ navigation }) => {
   const { refreshing, refresh } = useAutoRefresh(fetchStats);
 
   const breakdown = stats?.statusBreakdown || {};
+  
+  const kpis = useMemo(
+    () => STATUSES.map((k) => ({ label: k, value: breakdown[k] || 0, color: statusColors[k] })),
+    [breakdown]
+  );
+
+  const resolvedCount = breakdown['Resolved'] || 0;
+  const totalComplaints = breakdown.total || 0;
+  const ringPct = totalComplaints > 0 ? Math.round((resolvedCount / totalComplaints) * 100) : 0;
+
+  const categoryBars = useMemo(() => {
+    const bars = (stats?.categoryDistribution || []).map(c => ({
+      label: c._id,
+      shortLabel: c._id.split(' ')[0],
+      count: c.count
+    })).sort((a,b) => b.count - a.count).slice(0, 4);
+    
+    const maxCatCount = Math.max(...bars.map(c => c.count), 1);
+    bars.forEach(c => c.ratio = c.count / maxCatCount);
+    return bars;
+  }, [stats?.categoryDistribution]);
+
+  const urgencyBars = useMemo(() => {
+    const dist = stats?.urgencyDistribution || [];
+    const totalUrgency = dist.reduce((acc, curr) => acc + curr.count, 0) || 1;
+    return dist.map(u => ({
+      label: u._id,
+      count: u.count,
+      pct: Math.round((u.count / totalUrgency) * 100),
+      color: chartUrgency[u._id] || chartUrgency['Standard']
+    })).sort((a,b) => b.count - a.count);
+  }, [stats?.urgencyDistribution]);
 
   return (
-    <ScrollView
-      style={s.screen}
-      contentContainerStyle={s.content}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={color.accent} />
-      }
+    <Screen 
+      contentStyle={{ paddingTop: insets.top }}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={colors.accent} />}
     >
-      <View style={s.headerGroup}>
-        <View style={s.flex1}>
-          <Text style={s.h1}>Admin{'\n'}Dashboard</Text>
-          <Text style={s.subText}>Viewing as {user?.name}</Text>
-        </View>
-        <Pressable style={s.signOutBtn} onPress={logoutUser}>
-          <Text style={s.signOutText}>Sign out</Text>
-        </Pressable>
+      <View style={s.header}>
+        <Text style={s.title}>Admin console</Text>
+        <DangerButton label="Sign out" onPress={logoutUser} />
       </View>
 
-      <View style={s.actionWrap}>
-        <Pressable style={s.manageBtn} onPress={() => navigation.navigate('AdminAction')}>
-          <Text style={s.manageBtnText}>Manage Complaints</Text>
-        </Pressable>
+      <Animated.View entering={FadeInDown.duration(420)}>
+        <Card style={s.ringCard}>
+          <RingChart percent={ringPct} />
+          <View style={{ flex: 1 }}>
+            <Text style={s.ringTitle}>Resolution rate</Text>
+            <Text style={s.ringSub}>{resolvedCount + ' of ' + totalComplaints + ' closed'}</Text>
+          </View>
+        </Card>
+      </Animated.View>
+
+      <View style={s.kpiGrid}>
+        {kpis.map((k, i) => (
+          <Animated.View key={k.label} entering={FadeInDown.duration(420).delay(60 + i * 50)} style={s.kpiCell}>
+            <View style={s.kpiCard}>
+              <View style={s.kpiHead}>
+                <View style={[s.kpiDot, { backgroundColor: k.color }]} />
+                <Text numberOfLines={1} style={s.kpiLabel}>{k.label}</Text>
+              </View>
+              <Text style={s.kpiValue}>{k.value}</Text>
+            </View>
+          </Animated.View>
+        ))}
       </View>
 
-      <View style={s.statsGrid}>
-        <View style={s.statsRow}>
-          <View style={s.statBox}>
-            <Text style={s.statLabel}>Pending</Text>
-            <Text style={[s.statValue, { color: '#FFB86B' }]}>{breakdown['Pending'] || 0}</Text>
-          </View>
-          <View style={s.statBox}>
-            <Text style={s.statLabel}>Resolved</Text>
-            <Text style={[s.statValue, { color: '#4ADE9B' }]}>{breakdown['Resolved'] || 0}</Text>
-          </View>
-        </View>
-        
-        <View style={[s.statBox, s.totalBox]}>
-          <View>
-            <Text style={s.statLabel}>Total</Text>
-            <Text style={[s.statValue, { color: color.white }]}>{breakdown.total || 0}</Text>
-          </View>
-          <View style={s.totalIcon}>
-            <Activity size={20} color="#FF5FA2" strokeWidth={2} />
-          </View>
-        </View>
+      <View style={{ paddingHorizontal: 20, paddingTop: 16 }}>
+        <PrimaryButton label="Manage complaints" onPress={() => navigation.navigate('AdminAction')} style={{ height: 66 }} />
       </View>
-    </ScrollView>
+
+      {categoryBars.length > 0 && (
+        <PeekWrapper renderPeek={() => <PeekGraph title="By category" bars={categoryBars} />}>
+          <Card style={s.chartCard} >
+            <Text style={s.cardTitle}>By category</Text>
+            <View style={s.chartRow}>
+              {categoryBars.map((bar, i) => (
+                <View key={bar.label} style={s.barCol}>
+                  <Text style={s.barCount}>{bar.count}</Text>
+                  <GrowBar height={24 + bar.ratio * 90} color={chartPalette[i % chartPalette.length]} />
+                  <Text numberOfLines={1} style={s.barLabel}>{bar.shortLabel}</Text>
+                </View>
+              ))}
+            </View>
+          </Card>
+        </PeekWrapper>
+      )}
+
+      {urgencyBars.length > 0 && (
+        <Card style={s.chartCard}>
+          <Text style={s.cardTitle}>By urgency</Text>
+          <View style={{ gap: 18 }}>
+            {urgencyBars.map((bar) => (
+              <View key={bar.label}>
+                <View style={s.urgHead}>
+                  <Text style={s.urgLabel}>{bar.label}</Text>
+                  <Text style={s.urgMeta}>{bar.count + '  ·  ' + bar.pct + '%'}</Text>
+                </View>
+                <View style={s.urgTrack}>
+                  <View style={[s.urgFill, { width: bar.pct + '%', backgroundColor: bar.color }]} />
+                </View>
+              </View>
+            ))}
+          </View>
+        </Card>
+      )}
+    </Screen>
   );
-};
+}
 
 const s = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: color.bg },
-  content: { paddingBottom: 104 },
-  
-  headerGroup: {
-    paddingHorizontal: 20,
-    paddingTop: 22,
-    paddingBottom: 8,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-  },
-  flex1: { flex: 1 },
-  h1: {
-    fontFamily: font.sansBold,
-    fontSize: 28,
-    lineHeight: 31,
-    letterSpacing: -0.5,
-    color: color.white,
-  },
-  subText: {
-    fontSize: 13,
-    color: '#8E8290',
-    marginTop: 6,
-    fontFamily: font.sans,
-  },
-  signOutBtn: {
-    backgroundColor: '#7E1038',
-    borderWidth: 1,
-    borderColor: '#B02159',
-    borderRadius: 100,
-    paddingVertical: 8,
-    paddingHorizontal: 14,
-  },
-  signOutText: {
-    color: color.white,
-    fontSize: 12,
-    fontFamily: font.sansBold,
-  },
-  
-  actionWrap: {
-    paddingHorizontal: 20,
-    paddingVertical: 14,
-  },
-  manageBtn: {
-    width: '100%',
-    height: 58,
-    borderRadius: 100,
-    backgroundColor: '#C08BFF',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 10,
-  },
-  manageBtnText: {
-    fontFamily: font.sansBold,
-    fontSize: 16,
-    color: '#18062B',
-  },
-  
-  statsGrid: {
-    paddingHorizontal: 20,
-    paddingTop: 4,
-    paddingBottom: 24,
-    gap: 12,
-  },
-  statsRow: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  statBox: {
-    flex: 1,
-    padding: 18,
-    backgroundColor: '#120E13',
-    borderWidth: 1,
-    borderColor: '#231B22',
-    borderRadius: 22,
-  },
-  totalBox: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  statLabel: {
-    fontSize: 11,
-    color: '#8E8290',
-    fontFamily: font.sansBold,
-    textTransform: 'uppercase',
-    letterSpacing: 0.4,
-  },
-  statValue: {
-    fontFamily: font.sansBold,
-    fontSize: 28,
-    marginTop: 4,
-  },
-  totalIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    borderWidth: 2,
-    borderColor: '#3B2E3A',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  header: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 20, paddingTop: 26, paddingBottom: 14 },
+  title: { flex: 1, fontFamily: font.display, fontSize: 34, lineHeight: 36, color: colors.accent, letterSpacing: -0.4 },
+  ringCard: { marginHorizontal: 20, flexDirection: 'row', alignItems: 'center', gap: 20 },
+  ringTitle: { fontFamily: font.display, fontSize: 24, lineHeight: 28, color: colors.text },
+  ringSub: { fontFamily: font.bodyBold, fontSize: 17, color: colors.muted, marginTop: 8 },
+  kpiGrid: { flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: 20, paddingTop: 14, gap: 10 },
+  kpiCell: { width: '48%', flexGrow: 1 },
+  kpiCard: { padding: 18, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, borderRadius: 22 },
+  kpiHead: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  kpiDot: { width: 10, height: 10, borderRadius: 5 },
+  kpiLabel: { flex: 1, fontFamily: font.bodyBold, fontSize: 16, color: colors.text },
+  kpiValue: { fontFamily: font.display, fontSize: 44, lineHeight: 46, color: colors.text, marginTop: 10 },
+  chartCard: { marginHorizontal: 20, marginTop: 14, padding: 20 },
+  cardTitle: { fontFamily: font.display, fontSize: 24, color: colors.text, marginBottom: 22 },
+  chartRow: { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', gap: 10, height: 210 },
+  barCol: { flex: 1, alignItems: 'center', justifyContent: 'flex-end', height: '100%', gap: 8 },
+  barCount: { fontFamily: font.display, fontSize: 26, color: colors.text },
+  barLabel: { fontFamily: font.bodyBold, fontSize: 15, color: colors.muted, lineHeight: 20, paddingBottom: 4 },
+  urgHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 9, gap: 10 },
+  urgLabel: { fontFamily: font.bodyBold, fontSize: 18, color: colors.text },
+  urgMeta: { fontFamily: font.display, fontSize: 17, color: colors.muted },
+  urgTrack: { height: 14, borderRadius: 7, backgroundColor: colors.surfaceInput, overflow: 'hidden' },
+  urgFill: { height: 14, borderRadius: 7 },
 });
-
-export default AdminDashboardScreen;

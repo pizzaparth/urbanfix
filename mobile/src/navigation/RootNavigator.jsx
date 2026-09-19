@@ -1,12 +1,11 @@
-import React from 'react';
-import { View, ActivityIndicator, Platform, StyleSheet } from 'react-native';
-import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
+import React, { useEffect, useRef } from 'react';
+import { View, ActivityIndicator, StyleSheet } from 'react-native';
+import { NavigationContainer, DefaultTheme, createNavigationContainerRef } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Home as HomeIcon, List, Search, PlusCircle, User, LayoutDashboard } from 'lucide-react-native';
-
+import GlassTabBar from '../components/GlassTabBar.jsx';
 import { useAuth } from '../hooks/useAuth.js';
-import { color, font } from '../theme.js';
+import { color } from '../theme.js';
 
 import HomeScreen from '../screens/public/HomeScreen.jsx';
 import RegistryScreen from '../screens/public/RegistryScreen.jsx';
@@ -20,6 +19,8 @@ import AdminDashboardScreen from '../screens/admin/AdminDashboardScreen.jsx';
 import AdminActionScreen from '../screens/admin/AdminActionScreen.jsx';
 import ComplaintDetailScreen from '../screens/admin/ComplaintDetailScreen.jsx';
 
+const navigationRef = createNavigationContainerRef();
+
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
@@ -30,69 +31,64 @@ const navTheme = {
     ...DefaultTheme.colors,
     primary: color.accent,
     background: color.bg,
-    card: color.bg, // removed surface header for seamless look
+    card: color.bg,
     text: color.textPrimary,
     border: 'transparent',
     notification: color.accent,
   },
 };
 
-const screenOptions = {
-  headerStyle: { backgroundColor: color.bg },
-  headerTitleStyle: { fontFamily: font.sansBold, fontSize: 18, color: color.white },
-  headerTintColor: color.white,
-  headerShadowVisible: false,
-  contentStyle: { backgroundColor: color.bg },
+// Tabs swap instantly — no cross-fade, no shift. The only motion when changing
+// tabs is the pill travelling in the bar itself.
+const tabScreenOptions = { 
+  lazy: false,
   headerShown: false,
+  animation: 'none',
+  sceneStyle: { backgroundColor: color.bg },
 };
 
-const tabOptions = ({ icon: Icon, title }) => ({
-  title,
-  tabBarIcon: ({ color: c, size }) => <Icon size={size} strokeWidth={2.4} color={c} />,
-});
-
-const tabBarStyle = {
-  position: 'absolute',
-  left: 14,
-  right: 14,
-  bottom: 14,
-  height: 72,
-  paddingBottom: 0,
-  paddingHorizontal: 7,
-  backgroundColor: 'rgba(30,22,28,0.85)', // simulated blur
-  borderWidth: 1,
-  borderColor: 'rgba(255,255,255,0.1)',
-  borderRadius: 38,
-  elevation: 5,
+// Pushing within a stack slides, as the reference's AdminStack did.
+const stackScreenOptions = {
+  lazy: false,
+  headerShown: false,
+  animation: 'slide_from_right',
+  contentStyle: { backgroundColor: color.bg },
 };
 
 const CitizenTabs = () => (
-  <Tab.Navigator
-    screenOptions={{
-      ...screenOptions,
-      tabBarStyle,
-      tabBarActiveTintColor: color.accent,
-      tabBarInactiveTintColor: '#8E8290',
-      tabBarItemStyle: {
-        borderRadius: 100,
-        marginVertical: 4,
-        paddingTop: 8,
-      },
-      tabBarLabelStyle: { fontFamily: font.sansBold, fontSize: 11, marginBottom: 4 },
-    }}
-  >
-    <Tab.Screen name="Home" component={HomeScreen} options={tabOptions({ icon: HomeIcon, title: 'Overview' })} />
-    <Tab.Screen name="Registry" component={RegistryScreen} options={tabOptions({ icon: List, title: 'Registry' })} />
-    <Tab.Screen name="File" component={FileComplaintScreen} options={tabOptions({ icon: PlusCircle, title: 'Report' })} />
-    <Tab.Screen name="Track" component={TrackScreen} options={tabOptions({ icon: Search, title: 'Track' })} />
-    <Tab.Screen name="Account" component={AccountStack} options={{ ...tabOptions({ icon: User, title: 'Account' }) }} />
+  <Tab.Navigator tabBar={(props) => <GlassTabBar {...props} />} screenOptions={tabScreenOptions}>
+    <Tab.Screen
+      name="Home"
+      component={HomeScreen}
+      options={{ title: 'Home', tabBarIconName: 'home' }}
+    />
+    <Tab.Screen
+      name="Registry"
+      component={RegistryScreen}
+      options={{ title: 'Registry', tabBarIconName: 'list' }}
+    />
+    <Tab.Screen
+      name="File"
+      component={FileComplaintScreen}
+      options={{ title: 'Report', tabBarIconName: 'plus' }}
+    />
+    <Tab.Screen
+      name="Track"
+      component={TrackScreen}
+      options={{ title: 'Track', tabBarIconName: 'search' }}
+    />
+    <Tab.Screen
+      name="Account"
+      component={AccountStack}
+      options={{ title: 'Account', tabBarIconName: 'user' }}
+    />
   </Tab.Navigator>
 );
 
 function AccountStack() {
   const { user } = useAuth();
   return (
-    <Stack.Navigator screenOptions={screenOptions}>
+    <Stack.Navigator screenOptions={stackScreenOptions}>
       {user ? (
         <Stack.Screen name="CitizenDashboard" component={CitizenDashboardScreen} />
       ) : (
@@ -106,31 +102,32 @@ function AccountStack() {
   );
 }
 
+// Three tabs, matching the reference: an admin has no profile to manage, and
+// the Account tab previously shown here rendered the citizen dashboard, whose
+// /complaints/my-complaints call 403s for an admin account.
 const AdminTabs = () => (
-  <Tab.Navigator
-    screenOptions={{
-      ...screenOptions,
-      tabBarStyle,
-      tabBarActiveTintColor: color.accent,
-      tabBarInactiveTintColor: '#8E8290',
-      tabBarItemStyle: {
-        borderRadius: 100,
-        marginVertical: 4,
-        paddingTop: 8,
-      },
-      tabBarLabelStyle: { fontFamily: font.sansBold, fontSize: 11, marginBottom: 4 },
-    }}
-  >
-    <Tab.Screen name="AdminHome" component={AdminStack} options={{ ...tabOptions({ icon: LayoutDashboard, title: 'Dashboard' }) }} />
-    <Tab.Screen name="Registry" component={RegistryScreen} options={tabOptions({ icon: List, title: 'Registry' })} />
-    <Tab.Screen name="Track" component={TrackScreen} options={tabOptions({ icon: Search, title: 'Track' })} />
-    <Tab.Screen name="Account" component={AccountStack} options={{ ...tabOptions({ icon: User, title: 'Account' }) }} />
+  <Tab.Navigator tabBar={(props) => <GlassTabBar {...props} />} screenOptions={tabScreenOptions}>
+    <Tab.Screen
+      name="Dashboard"
+      component={AdminStack}
+      options={{ title: 'Dashboard', tabBarIconName: 'grid' }}
+    />
+    <Tab.Screen
+      name="Registry"
+      component={RegistryScreen}
+      options={{ title: 'Registry', tabBarIconName: 'list' }}
+    />
+    <Tab.Screen
+      name="Track"
+      component={TrackScreen}
+      options={{ title: 'Track', tabBarIconName: 'search' }}
+    />
   </Tab.Navigator>
 );
 
 function AdminStack() {
   return (
-    <Stack.Navigator screenOptions={screenOptions}>
+    <Stack.Navigator screenOptions={stackScreenOptions}>
       <Stack.Screen name="AdminDashboard" component={AdminDashboardScreen} />
       <Stack.Screen name="AdminAction" component={AdminActionScreen} />
       <Stack.Screen name="ComplaintDetail" component={ComplaintDetailScreen} />
@@ -153,6 +150,30 @@ const linking = {
 
 const RootNavigator = () => {
   const { user, loading } = useAuth();
+  const wasSignedIn = useRef(false);
+
+  // Signing in as a citizen doesn't swap navigators — only the Account tab's
+  // stack changes Login -> CitizenDashboard — so the app stayed on the Account
+  // tab and looked like it had dropped you into your profile. Admin only seemed
+  // to behave because switching to AdminTabs mounts a fresh navigator at its
+  // first tab.
+  //
+  // Remounting via a key doesn't fix it: on web the linking config restores the
+  // tab from the URL, so it lands right back on Account. Navigating explicitly
+  // works on both targets.
+  useEffect(() => {
+    const signedIn = Boolean(user);
+    const justSignedIn = signedIn && !wasSignedIn.current;
+    wasSignedIn.current = signedIn;
+
+    if (!justSignedIn || !navigationRef.isReady()) return;
+
+    // Admins hit the same thing on web: the URL restores /CitizenDashboard, so
+    // they land on Account too. It only looks right on a device, where there is
+    // no URL and swapping to AdminTabs mounts fresh at its first tab. Sending
+    // both roles to their home tab explicitly makes the two targets agree.
+    navigationRef.navigate(user.role === 'admin' ? 'Dashboard' : 'Home');
+  }, [user]);
 
   if (loading) {
     return (
@@ -163,8 +184,9 @@ const RootNavigator = () => {
   }
 
   return (
-    <NavigationContainer theme={navTheme} linking={linking}>
+    <NavigationContainer ref={navigationRef} theme={navTheme} linking={linking}>
       {user?.role === 'admin' ? <AdminTabs /> : <CitizenTabs />}
+      <GlobalPeek />
     </NavigationContainer>
   );
 };
@@ -172,5 +194,7 @@ const RootNavigator = () => {
 const s = StyleSheet.create({
   boot: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: color.bg },
 });
+
+import { GlobalPeek } from "../components/GlobalPeek.jsx";
 
 export default RootNavigator;

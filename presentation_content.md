@@ -13,6 +13,11 @@ Condensed from `project_description.md` for a 10-slide PPT. One slide = one head
 * No account required — email OTP verification only
 * Public registry + admin console + proposed AI validation layer
 
+**Visuals:**
+![System Logo](./docs/presentation/svg/s1_logo.svg)
+![Web Portal App Interface](./docs/presentation/svg/s1_portal_mock.svg)
+![AI Validation](./docs/presentation/svg/s1_ai_icon.svg)
+
 ---
 
 ## Slide 2 — Problem Identification
@@ -21,19 +26,12 @@ Condensed from `project_description.md` for a 10-slide PPT. One slide = one head
 * No tracking ID, no public record, no category-specific urgency, no photo verification
 * Result: lost/duplicate complaints, inconsistent triage, no public accountability
 
-**Problem Statement:** Civic issue reporting is fragmented, untracked, and invisible to the public — no single transparent system captures what was reported, how urgent it is, and what happened next.
+**Problem Statement:** Civic issue reporting is fragmented, untracked, and invisible to the public.
 
-```mermaid
-flowchart LR
-    A[Manual Reporting: Phone / In-Person / Social Media] --> B[No Tracking ID]
-    A --> C[No Public Record]
-    A --> D[No Urgency Signal]
-    A --> E[No Photo Verification]
-    B --> F[Erosion of Public Trust]
-    C --> F
-    D --> F
-    E --> F
-```
+**Visuals:**
+![Manual Reporting](./docs/presentation/svg/s2_manual_report.svg)
+![Lost Data](./docs/presentation/svg/s2_loss_data.svg)
+![No Tracking](./docs/presentation/svg/s2_no_tracking.svg)
 
 ---
 
@@ -41,21 +39,15 @@ flowchart LR
 
 | Prior Approach | Strength | Limitation |
 |---|---|---|
-| Phone hotlines / 311-style *(representative)* | Centralized entry point | No photo evidence, no public tracking |
-| Crowdsourced issue maps *(e.g. FixMyStreet-style)* | Public visibility | No identity check, no urgency scoring |
+| Phone hotlines | Centralized entry point | No photo evidence, no public tracking |
+| Crowdsourced issue maps | Public visibility | No identity check, no urgency scoring |
 | Generic helpdesk ticketing | Mature status workflow | Not citizen-facing / not transparent |
-| CV-based defect detection *(suggested research area)* | Automated visual check | Needs category-specific training data |
+| CV-based defect detection | Automated visual check | Needs category-specific training data |
 
-```mermaid
-flowchart LR
-    A[Existing Approaches] --> B[No Unified Public Transparency]
-    A --> C[No Severity-Aware Triage]
-    A --> D[No Automated Visual Validation]
-    B --> E[Research Gap]
-    C --> E
-    D --> E
-    E --> F[Proposed Project]
-```
+**Visuals:**
+![Phone Hotline Limitation](./docs/presentation/svg/s3_phone_limit.svg)
+![Crowdsourced Limitation](./docs/presentation/svg/s3_crowd_limit.svg)
+![Research Gap](./docs/presentation/svg/s3_research_gap.svg)
 
 ---
 
@@ -67,17 +59,11 @@ flowchart LR
 * Structured categorization — fixed 10-category taxonomy
 * Intelligent prioritization — weighted questionnaire score
 * Automated visual validation *(proposed)* — per-category AI detection
-* Transparency & auditability — public registry + status history
-* Security — JWT-protected admin actions
 
-```mermaid
-flowchart TD
-    A[Primary Objective] --> B[Accessibility]
-    A --> C[Prioritization]
-    A --> D[Transparency]
-    A --> E[AI Validation - Proposed]
-    A --> F[Security]
-```
+**Visuals:**
+![Accountless Access](./docs/presentation/svg/s4_accountless.svg)
+![Priority Scoring](./docs/presentation/svg/s4_priority.svg)
+![Public Registry](./docs/presentation/svg/s4_registry.svg)
 
 ---
 
@@ -87,24 +73,24 @@ flowchart TD
 * **Out of Scope:** native apps, chat, payments, multi-language
 * **Future Scope:** production AI validation service, auto-routing, analytics
 
-```mermaid
-flowchart LR
-    A[Current MVP] --> B[Enhanced: AI Validation] --> C[Future: Auto-Routing + Analytics]
-```
+**Visuals:**
+![In Scope](./docs/presentation/svg/s5_in_scope.svg)
+![Out of Scope](./docs/presentation/svg/s5_out_scope.svg)
+![Future Scope](./docs/presentation/svg/s5_future.svg)
 
 ---
 
 ## Slide 6 — Methodology
 
-```mermaid
-flowchart TD
-    A[Problem Identification] --> B[Requirement Analysis]
-    B --> C[System Design]
-    C --> D[Architecture Design]
-    D --> E[Development]
-    E --> F[Integration & Testing]
-    F --> G[Deployment / Demo]
-```
+1. Problem Identification & Requirement Analysis
+2. System Design & Architecture
+3. Development, Integration & Testing
+4. Deployment & Demo
+
+**Visuals:**
+![Phase 1](./docs/presentation/svg/s6_meth_1.svg)
+![Phase 2](./docs/presentation/svg/s6_meth_2.svg)
+![Phase 3](./docs/presentation/svg/s6_meth_3.svg)
 
 ---
 
@@ -113,17 +99,11 @@ flowchart TD
 * **Frontend:** React (Vite) — citizen wizard, public registry, admin console
 * **Backend:** Express.js / Node.js — REST API, OTP, status workflow
 * **Database:** MongoDB — Users, Complaints, OTPs (TTL)
-* **Services:** Nodemailer (email), PDFKit (receipts)
 
-```mermaid
-flowchart LR
-    User --> Frontend[React Frontend]
-    Frontend -->|REST API| Backend[Express Backend]
-    Backend --> DB[(MongoDB)]
-    Backend --> Email[Nodemailer]
-    Backend --> PDF[PDFKit Receipts]
-    Backend -.->|Proposed| AI[AI Validation Service]
-```
+**Visuals:**
+![Frontend Arch](./docs/presentation/svg/s7_frontend.svg)
+![Backend Arch](./docs/presentation/svg/s7_backend.svg)
+![Full Arch](./docs/presentation/svg/s7_full_arch.svg)
 
 ---
 
@@ -131,29 +111,26 @@ flowchart LR
 
 * One YOLO-based object-detection model per category (e.g. `pothole_road_damage_model.pt`)
 * Detects the issue, draws a bounding box, returns confidence + annotated image
-* Low-confidence detections are routed to an admin review queue instead of auto-publishing
-* **Status:** proposed architecture, not yet implemented in the current codebase
+* Low-confidence detections are routed to an admin review queue
 
-```mermaid
-flowchart TD
-    A[Photo + Category] --> B[Category-Specific YOLO Model]
-    B --> C{Confident Detection?}
-    C -->|Yes| D[Annotate + Auto-Publish]
-    C -->|No| E[Admin Review Queue]
-```
+**Visuals:**
+![YOLO Box](./docs/presentation/svg/s8_yolo.svg)
+![Admin Queue](./docs/presentation/svg/s8_admin_queue.svg)
+![Confidence Branch](./docs/presentation/svg/s8_confidence.svg)
 
 ---
 
 ## Slide 9 — User Workflow
 
-```mermaid
-flowchart TD
-    A[Select Category + Questionnaire] --> B[Live Priority Score]
-    B --> C[Details + Photos + Contact Info]
-    C --> D[Email OTP Verification]
-    D --> E[Tracking ID Issued]
-    E --> F[Public Tracking + Registry]
-```
+* Select Category & Questionnaire (Swiping Yes/No)
+* Details + Photos + Contact Info
+* Email OTP Verification
+* Tracking ID Issued -> Public Tracking
+
+**Visuals:**
+![Swipe UI Mockup](./docs/presentation/svg/s9_swipe_ui.svg)
+![OTP Verification Mockup](./docs/presentation/svg/s9_otp_ui.svg)
+![Tracking ID Success](./docs/presentation/svg/s9_success_ui.svg)
 
 ---
 
@@ -161,13 +138,9 @@ flowchart TD
 
 * Replaces fragmented, untracked civic reporting with one transparent, OTP-verified, auditable platform
 * Weighted questionnaire delivers consistent, explainable priority triage
-* Proposed AI layer adds automated visual validation as the system's next extension
+* Proposed AI layer adds automated visual validation
 
-```mermaid
-flowchart LR
-    Citizen --> Frontend[React Frontend]
-    Frontend --> Backend[Express API]
-    Backend --> DB[(MongoDB)]
-    Backend -.-> AI[AI Validation - Proposed]
-    Backend --> Registry[Public Registry / Admin Console]
-```
+**Visuals:**
+![Transparent Platform](./docs/presentation/svg/s10_transparent.svg)
+![Triage Automations](./docs/presentation/svg/s10_triage.svg)
+![Overview](./docs/presentation/svg/s10_overview.svg)

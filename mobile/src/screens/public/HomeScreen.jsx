@@ -1,5 +1,8 @@
 import React, { useState, useCallback } from 'react';
 import { View, Text, ScrollView, Pressable, RefreshControl, StyleSheet, Dimensions } from 'react-native';
+import { Screen, Card, GrowBar } from '../../components/uikit.jsx';
+import PeekWrapper from '../../components/PeekWrapper.jsx';
+import PeekGraph from '../../components/PeekGraph.jsx';
 import { List, Plus, Search, ChevronRight } from 'lucide-react-native';
 import { useAutoRefresh } from '../../hooks/useAutoRefresh.js';
 import api from '../../services/api.js';
@@ -35,12 +38,21 @@ const HomeScreen = ({ navigation }) => {
   const topCategories = [...categories].sort((a, b) => b.count - a.count).slice(0, 4);
 
   // Status breakdown calculations
-  const breakdown = stats?.statusBreakdown || [];
-  const total = breakdown.reduce((acc, curr) => acc + curr.count, 0) || 0;
-  const resolved = breakdown.find(s => s.status === 'Resolved')?.count || 0;
-  const pending = breakdown.find(s => s.status === 'Pending')?.count || 0;
-  const inProgress = breakdown.find(s => s.status === 'In Progress')?.count || 0;
+  const breakdownObj = stats?.statusBreakdown || {};
+  const resolved = breakdownObj['Resolved'] || 0;
+  const pending = breakdownObj['Pending'] || 0;
+  const inProgress = breakdownObj['In Progress'] || 0;
+  const total = breakdownObj.total || 0;
   const openCount = pending + inProgress;
+
+  const categoryBars = (stats?.categoryDistribution || []).map(c => ({
+    label: c._id,
+    shortLabel: c._id.split(' ')[0],
+    count: c.count
+  })).sort((a,b) => b.count - a.count).slice(0, 4);
+  const maxCatCount = Math.max(...categoryBars.map(c => c.count), 1);
+  categoryBars.forEach(c => c.ratio = c.count / maxCatCount);
+
 
   return (
     <ScrollView
@@ -68,30 +80,24 @@ const HomeScreen = ({ navigation }) => {
         </View>
       </View>
 
-      <View style={s.chartCard}>
-        <Text style={s.chartTitle}>Top issues this month</Text>
-        <View style={s.chartContainer}>
-          {topCategories.map((c, i) => {
-            const hPct = Math.max((c.count / maxCategory) * 100, 5); // min 5% height
-            // Format label (e.g., "Pothole / Road Damage" -> "Pothole")
-            const shortLabel = c._id.split('/')[0].trim().split(' ')[0];
-            return (
-              <View key={c._id} style={s.barCol}>
-                <Text style={s.barCount}>{c.count}</Text>
-                <View style={s.barTrack}>
-                  <View 
-                    style={[
-                      s.barFill, 
-                      { height: `${hPct}%`, backgroundColor: CHART_PALETTE[i % CHART_PALETTE.length] }
-                    ]} 
-                  />
+      
+      {categoryBars.length > 0 && (
+        <PeekWrapper renderPeek={() => <PeekGraph title="Top issues this month" bars={categoryBars} />}>
+          <Card style={s.chartCard}>
+            <Text style={s.chartTitle}>Top issues this month</Text>
+            <View style={s.chartContainer}>
+              {categoryBars.map((bar, i) => (
+                <View key={bar.label} style={s.barCol}>
+                  <Text style={s.barCount}>{bar.count}</Text>
+                  <GrowBar height={24 + bar.ratio * 90} color={CHART_PALETTE[i % CHART_PALETTE.length]} />
+                  <Text numberOfLines={1} style={s.barLabel}>{bar.shortLabel}</Text>
                 </View>
-                <Text style={s.barLabel} numberOfLines={1}>{shortLabel}</Text>
-              </View>
-            );
-          })}
-        </View>
-      </View>
+              ))}
+            </View>
+          </Card>
+        </PeekWrapper>
+      )}
+
 
       <View style={s.actionsContainer}>
         {FEATURE_CARDS.map((card) => {
@@ -190,7 +196,7 @@ const s = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-end',
     justifyContent: 'space-between',
-    height: 180,
+    height: 210,
   },
   barCol: {
     flex: 1,
@@ -214,7 +220,7 @@ const s = StyleSheet.create({
     width: '100%',
     borderRadius: 14,
   },
-  barLabel: {
+  barLabel: { lineHeight: 18, paddingBottom: 4,
     fontFamily: font.sans,
     fontSize: 14,
     color: color.textSecondary,
