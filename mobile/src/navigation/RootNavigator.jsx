@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef } from 'react';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { NavigationContainer, DefaultTheme, createNavigationContainerRef } from '@react-navigation/native';
@@ -186,7 +187,6 @@ const RootNavigator = () => {
   return (
     <NavigationContainer ref={navigationRef} theme={navTheme} linking={linking}>
       {user?.role === 'admin' ? <AdminTabs /> : <CitizenTabs />}
-      <GlobalPeek />
     </NavigationContainer>
   );
 };
@@ -195,6 +195,5 @@ const s = StyleSheet.create({
   boot: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: color.bg },
 });
 
-import { GlobalPeek } from "../components/GlobalPeek.jsx";
 
 export default RootNavigator;

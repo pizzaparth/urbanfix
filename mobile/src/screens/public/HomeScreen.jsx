@@ -1,8 +1,7 @@
 import React, { useState, useCallback } from 'react';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { View, Text, ScrollView, Pressable, RefreshControl, StyleSheet, Dimensions } from 'react-native';
 import { Screen, Card, GrowBar } from '../../components/uikit.jsx';
-import PeekWrapper from '../../components/PeekWrapper.jsx';
-import PeekGraph from '../../components/PeekGraph.jsx';
 import { List, Plus, Search, ChevronRight } from 'lucide-react-native';
 import { useAutoRefresh } from '../../hooks/useAutoRefresh.js';
 import api from '../../services/api.js';
@@ -18,6 +17,7 @@ const FEATURE_CARDS = [
 const CHART_PALETTE = ['#C08BFF', '#7BE0D6', '#FFC77D', '#FF8FC7'];
 
 const HomeScreen = ({ navigation }) => {
+  const insets = useSafeAreaInsets();
   const [stats, setStats] = useState(null);
 
   const fetchStats = useCallback(async () => {
@@ -57,7 +57,7 @@ const HomeScreen = ({ navigation }) => {
   return (
     <ScrollView
       style={s.screen}
-      contentContainerStyle={s.content}
+      contentContainerStyle={[s.content, { paddingTop: insets.top }]}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={color.accent} />}
     >
       <View style={s.hero}>
@@ -82,20 +82,18 @@ const HomeScreen = ({ navigation }) => {
 
       
       {categoryBars.length > 0 && (
-        <PeekWrapper renderPeek={() => <PeekGraph title="Top issues this month" bars={categoryBars} />}>
-          <Card style={s.chartCard}>
-            <Text style={s.chartTitle}>Top issues this month</Text>
-            <View style={s.chartContainer}>
-              {categoryBars.map((bar, i) => (
-                <View key={bar.label} style={s.barCol}>
-                  <Text style={s.barCount}>{bar.count}</Text>
-                  <GrowBar height={24 + bar.ratio * 90} color={CHART_PALETTE[i % CHART_PALETTE.length]} />
-                  <Text numberOfLines={1} style={s.barLabel}>{bar.shortLabel}</Text>
-                </View>
-              ))}
-            </View>
-          </Card>
-        </PeekWrapper>
+        <Card style={s.chartCard}>
+          <Text style={s.chartTitle}>Top issues this month</Text>
+          <View style={s.chartContainer}>
+            {categoryBars.map((bar, i) => (
+              <View key={bar.label} style={s.barCol}>
+                <Text style={s.barCount}>{bar.count}</Text>
+                <GrowBar height={24 + bar.ratio * 90} color={CHART_PALETTE[i % CHART_PALETTE.length]} />
+                <Text numberOfLines={1} style={s.barLabel}>{bar.shortLabel}</Text>
+              </View>
+            ))}
+          </View>
+        </Card>
       )}
 
 

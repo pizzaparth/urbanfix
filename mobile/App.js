@@ -12,6 +12,7 @@ import RootNavigator from './src/navigation/RootNavigator.jsx';
 import { color } from './src/theme.js';
 
 export default function App() {
+  const [cacheBuster] = React.useState(Date.now());
   const [fontsLoaded, fontError] = useFonts({
     SpaceGrotesk_500Medium,
     SpaceGrotesk_600SemiBold,
@@ -46,3 +47,6 @@ const s = StyleSheet.create({
   boot: { flex: 1, backgroundColor: color.bg },
   fill: { flex: 1 },
 });
+// cache bust Sun Sep 20 00:27:14 IST 2026
+// cache bust Sun Sep 20 00:29:55 IST 2026
+// feature removed Sun Sep 20 00:33:16 IST 2026

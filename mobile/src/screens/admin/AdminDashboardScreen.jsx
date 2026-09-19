@@ -5,8 +5,6 @@ import Animated, { FadeInDown } from 'react-native-reanimated';
 
 import { Screen, Card, PrimaryButton, DangerButton, GrowBar } from '../../components/uikit.jsx';
 import RingChart from '../../components/RingChart.jsx';
-import PeekWrapper from '../../components/PeekWrapper.jsx';
-import PeekGraph from '../../components/PeekGraph.jsx';
 import { useAuth } from '../../hooks/useAuth.js';
 import { useAutoRefresh } from '../../hooks/useAutoRefresh.js';
 import api from '../../services/api.js';
@@ -107,20 +105,18 @@ export default function AdminDashboardScreen({ navigation }) {
       </View>
 
       {categoryBars.length > 0 && (
-        <PeekWrapper renderPeek={() => <PeekGraph title="By category" bars={categoryBars} />}>
-          <Card style={s.chartCard} >
-            <Text style={s.cardTitle}>By category</Text>
-            <View style={s.chartRow}>
-              {categoryBars.map((bar, i) => (
-                <View key={bar.label} style={s.barCol}>
-                  <Text style={s.barCount}>{bar.count}</Text>
-                  <GrowBar height={24 + bar.ratio * 90} color={chartPalette[i % chartPalette.length]} />
-                  <Text numberOfLines={1} style={s.barLabel}>{bar.shortLabel}</Text>
-                </View>
-              ))}
-            </View>
-          </Card>
-        </PeekWrapper>
+        <Card style={s.chartCard}>
+          <Text style={s.cardTitle}>By category</Text>
+          <View style={s.chartRow}>
+            {categoryBars.map((bar, i) => (
+              <View key={bar.label} style={s.barCol}>
+                <Text style={s.barCount}>{bar.count}</Text>
+                <GrowBar height={24 + bar.ratio * 90} color={chartPalette[i % chartPalette.length]} />
+                <Text numberOfLines={1} style={s.barLabel}>{bar.shortLabel}</Text>
+              </View>
+            ))}
+          </View>
+        </Card>
       )}
 
       {urgencyBars.length > 0 && (
