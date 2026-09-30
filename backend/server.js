@@ -11,6 +11,10 @@ import authRouter from './routes/authRoutes.js';
 import complaintRouter from './routes/complaintRoutes.js';
 import adminRouter from './routes/adminRoutes.js';
 import publicRouter from './routes/publicRoutes.js';
+import supervisorRouter from './routes/supervisorRoutes.js';
+import fieldRouter from './routes/fieldRoutes.js';
+import researchRouter from './routes/researchRoutes.js';
+import { startExpiryJob } from './services/expiryJob.js';
 
 // Load environment variables
 dotenv.config();
@@ -53,6 +57,9 @@ app.use('/api/auth', authRouter);
 app.use('/api/complaints', complaintRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api/public', publicRouter);
+app.use('/api/supervisor', supervisorRouter);
+app.use('/api/field', fieldRouter);
+app.use('/api/research', researchRouter);
 
 // Fallback for Undefined API Routes
 app.all('*', (req, res, next) => {
@@ -66,6 +73,8 @@ const PORT = process.env.PORT || 5000;
 const server = app.listen(PORT, () => {
   console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
 });
+
+startExpiryJob();
 
 // Handle unhandled promise rejections outside Express context
 process.on('unhandledRejection', (err) => {

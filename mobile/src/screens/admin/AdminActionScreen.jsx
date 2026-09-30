@@ -6,6 +6,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { Screen, FilterPill, Field, Tappable } from '../../components/uikit.jsx';
 import Icon from '../../components/Icon.jsx';
 import { SkeletonList } from '../../components/Skeleton.jsx';
+import { stageLabel } from '../../constants/stages.js';
 import api from '../../services/api.js';
 import { colors, uf as font, statusColors } from '../../theme.js';
 
@@ -83,10 +84,13 @@ const AdminActionScreen = ({ navigation }) => {
       }
     >
       <View style={s.header}>
-        <Tappable onPress={() => navigation.goBack()} scaleTo={0.9} style={s.backBtn}>
-          <Icon name="chevronLeft" size={18} color={colors.text} strokeWidth={2.4} />
-        </Tappable>
-        <Text style={s.title}>Queue</Text>
+        {/* This is now the root of the Complaints tab, so there is nothing to go back to. */}
+        {navigation.canGoBack() ? (
+          <Tappable onPress={() => navigation.goBack()} scaleTo={0.9} style={s.backBtn}>
+            <Icon name="chevronLeft" size={18} color={colors.text} strokeWidth={2.4} />
+          </Tappable>
+        ) : null}
+        <Text style={s.title}>Complaints</Text>
       </View>
 
       <View style={s.searchWrap}>
@@ -138,7 +142,7 @@ const AdminActionScreen = ({ navigation }) => {
                     </Text>
                     <View style={s.rowMeta}>
                       <View style={[s.dot, { backgroundColor: tone }]} />
-                      <Text style={[s.rowStatus, { color: tone }]}>{c.status}</Text>
+                      <Text style={[s.rowStatus, { color: tone }]}>{c.stage ? stageLabel(c.stage) : c.status}</Text>
                       <Text style={s.rowDate}>
                         {'·  ' + new Date(c.createdAt).toLocaleDateString()}
                       </Text>

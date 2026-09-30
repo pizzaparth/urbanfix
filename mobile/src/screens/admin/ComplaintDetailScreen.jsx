@@ -2,7 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, Image, ScrollView, TextInput, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Screen, Card, Tappable, PrimaryButton, ErrorNote } from '../../components/uikit.jsx';
+import { Screen, Card, Tappable, PrimaryButton, GhostButton, ErrorNote } from '../../components/uikit.jsx';
+import { stageLabel } from '../../constants/stages.js';
 import FormattedDescription from '../../components/FormattedDescription.jsx';
 import Icon from '../../components/Icon.jsx';
 import StatusTimeline from '../../components/StatusTimeline.jsx';
@@ -139,7 +140,24 @@ const ComplaintDetailScreen = ({ route, navigation }) => {
           />
         </View>
 
+        <View style={s.tileRow}>
+          <InfoTile label="Stage" value={stageLabel(complaint.stage)} flex />
+          <InfoTile label="Ward" value={complaint.ward || 'None'} width={112} />
+        </View>
+
         <InfoTile label="Location" value={complaint.location} />
+
+        {complaint.assignedTo ? (
+          <InfoTile
+            label="Assigned to"
+            value={`${complaint.assignedTo.name}${complaint.assignedTo.employee?.ward ? ` · ${complaint.assignedTo.employee.ward}` : ''}`}
+          />
+        ) : null}
+
+        <GhostButton
+          label="Open workflow actions"
+          onPress={() => navigation.navigate('TriageDetail', { id })}
+        />
 
         <View>
           <Text style={s.label}>DESCRIPTION</Text>
@@ -159,6 +177,23 @@ const ComplaintDetailScreen = ({ route, navigation }) => {
                 />
               ))}
             </ScrollView>
+          </View>
+        ) : null}
+
+        {complaint.completionImages?.length > 0 ? (
+          <View>
+            <Text style={s.label}>COMPLETION PROOF</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.imageRow}>
+              {complaint.completionImages.map((img, i) => (
+                <Image
+                  key={i}
+                  source={{ uri: `${uploadsBase}${img}` }}
+                  style={s.image}
+                  resizeMode="cover"
+                />
+              ))}
+            </ScrollView>
+            {complaint.completionNote ? <Text style={s.description}>{complaint.completionNote}</Text> : null}
           </View>
         ) : null}
 

@@ -177,3 +177,139 @@ export const sendResolutionEmailWithPdf = async (email, trackingId, remarks, pdf
     return false;
   }
 };
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Employee / research flows
+// ─────────────────────────────────────────────────────────────────────────────
+
+const esc = (v = '') =>
+  String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+const FROM = () => process.env.EMAIL_FROM || 'noreply@complaintsystem.gov';
+
+// Deep link the app registers (linking prefix `dsn://`). Override for a hosted
+// build, e.g. APP_LINK_BASE=exp://192.168.1.5:8081/--/ while testing in Expo Go.
+export const inviteLink = (token) =>
+  `${process.env.APP_LINK_BASE || 'dsn://'}set-password?token=${token}`;
+
+const shell = (heading, accent, body) => `
+  <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">
+    <h2 style="color: ${accent}; text-align: center;">${heading}</h2>
+    <hr style="border: 0; border-top: 1px solid #eeeeee;">
+    ${body}
+    <p style="color: #999999; font-size: 12px; margin-top: 24px;">UrbanFix Portal</p>
+  </div>`;
+
+const codeBox = (token) => `
+  <p><strong>Your invite code</strong> (open the app → Sign in → "Have an invite code?"):</p>
+  <div style="margin: 12px 0; padding: 12px; background: #f8f9fa; border: 1px dashed #999; border-radius: 4px; font-family: monospace; font-size: 13px; word-break: break-all;">${token}</div>`;
+
+const deliver = async (mailOptions, label) => {
+  try {
+    const transporter = await getTransporter();
+    const info = await transporter.sendMail(mailOptions);
+    const previewUrl = nodemailer.getTestMessageUrl(info);
+    if (previewUrl) console.log(`[${label}] Preview URL: ${previewUrl}`);
+    return true;
+  } catch (error) {
+    console.error(`Email delivery error (${label}): ${error.message}`);
+    return false;
+  }
+};
+
+export const sendEmployeeInviteEmail = (email, name, role, token) =>
+  deliver(
+    {
+      from: FROM(),
+      to: email,
+      subject: 'Your UrbanFix staff account',
+      html: shell(
+        'Welcome to UrbanFix',
+        '#2563EB',
+        `<p>Hello ${esc(name)},</p>
+         <p>An administrator has created a <strong>${esc(role)}</strong> account for you.
+         Choose your own password with the single-use link below. It expires in <strong>72 hours</strong>.</p>
+         <p><a href="${inviteLink(token)}">${inviteLink(token)}</a></p>
+         ${codeBox(token)}
+         <p style="color:#666;font-size:13px;">No password is ever sent by email.</p>`
+      ),
+    },
+    'Employee Invite'
+  );
+
+export const sendResearchReceivedEmail = (email, name, referenceId) =>
+  deliver(
+    {
+      from: FROM(),
+      to: email,
+      subject: 'We received your research access request',
+      html: shell(
+        'Application received',
+        '#2563EB',
+        `<p>Dear ${esc(name)},</p>
+         <p>Thank you for applying for research access. An administrator will review it and you will hear back by email.</p>
+         <p><strong>Reference:</strong> ${esc(referenceId)}</p>`
+      ),
+    },
+    'Research Received'
+  );
+
+export const sendResearchApprovedEmail = (email, name, token, days, scope) =>
+  deliver(
+    {
+      from: FROM(),
+      to: email,
+      subject: 'Your research access has been approved',
+      html: shell(
+        'Research access approved',
+        '#10B981',
+        `<p>Dear ${esc(name)},</p>
+         <p>Your application was approved. Access lasts <strong>${days} day${days === 1 ? '' : 's'}</strong> from today and then ends automatically.</p>
+         <p><strong>Dataset scope:</strong> ${
+           scope === 'anonymised_records'
+             ? 'Anonymised records (ward-level location, no personal information)'
+             : 'Aggregate statistics only'
+         }</p>
+         <p><strong>Terms:</strong> use the data only for the purpose you described, never attempt to re-identify individuals, and do not redistribute exports. All access is logged.</p>
+         <p>Set your password within <strong>72 hours</strong>:</p>
+         <p><a href="${inviteLink(token)}">${inviteLink(token)}</a></p>
+         ${codeBox(token)}`
+      ),
+    },
+    'Research Approved'
+  );
+
+export const sendResearchRejectedEmail = (email, name, note) =>
+  deliver(
+    {
+      from: FROM(),
+      to: email,
+      subject: 'Update on your research access request',
+      html: shell(
+        'Application not approved',
+        '#B91C1C',
+        `<p>Dear ${esc(name)},</p>
+         <p>We are unable to approve your research access request at this time.</p>
+         <blockquote style="margin:10px 0;padding:10px 15px;background:#f8f9fa;border-left:4px solid #B91C1C;">${esc(
+           note || 'No reason provided.'
+         )}</blockquote>`
+      ),
+    },
+    'Research Rejected'
+  );
+
+export const sendAccessExpiringEmail = (email, name, expiresAt) =>
+  deliver(
+    {
+      from: FROM(),
+      to: email,
+      subject: 'Your research access expires soon',
+      html: shell(
+        'Access expiring',
+        '#F59E0B',
+        `<p>Dear ${esc(name)},</p>
+         <p>Your research access ends on <strong>${new Date(expiresAt).toDateString()}</strong>. Export anything you still need before then, or submit a new application.</p>`
+      ),
+    },
+    'Access Expiring'
+  );

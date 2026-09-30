@@ -61,6 +61,9 @@ const s = StyleSheet.create({
 
 export const authStyles = StyleSheet.create({
   fields: { gap: 20 },
+  pillWrap: { marginBottom: 26 },
+  blurb: { fontFamily: font.body, fontSize: 17, lineHeight: 26, color: colors.muted },
+  footerLink: { marginTop: 24 },
   primary: { marginTop: 28 },
   ghost: { marginTop: 12 },
   switchText: {

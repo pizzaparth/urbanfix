@@ -42,6 +42,7 @@ const globalErrorHandler = (err, req, res, next) => {
   if (isDev) {
     res.status(error.statusCode).json({
       status: error.status,
+      code: err.code && typeof err.code === 'string' ? err.code : undefined,
       message: error.message,
       error: err,
       stack: error.stack
@@ -51,6 +52,7 @@ const globalErrorHandler = (err, req, res, next) => {
     if (err.isOperational || error.statusCode !== 500) {
       res.status(error.statusCode).json({
         status: error.status,
+        code: err.code && typeof err.code === 'string' ? err.code : undefined,
         message: error.message
       });
     } else {

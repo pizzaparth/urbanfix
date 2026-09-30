@@ -20,6 +20,7 @@ import ReportStep from './ReportStep.jsx';
 import { CATEGORY_QUESTIONNAIRES } from '../../constants/categories.js';
 import { calculateUrgency } from '../../utils/urgency.js';
 import { notify } from '../../utils/notify.js';
+import { appendImage } from '../../utils/imageFiles.js';
 import api from '../../services/api.js';
 import { colors, uf as font } from '../../theme.js';
 
@@ -31,6 +32,7 @@ const INITIAL_FORM_DATA = {
   description: '',
   category: 'Pothole / Road Damage',
   location: '',
+  ward: '',
 };
 
 const STEPS = ['category', 'questions', 'details', 'upload', 'contact', 'review'];
@@ -170,6 +172,7 @@ const FileComplaintScreen = ({ navigation }) => {
       if (formData.description.length < 15)
         return setFormError('Detailed description must be at least 15 characters long.');
       if (!formData.location) return setFormError('Please enter the specific location.');
+      if (!formData.ward) return setFormError('Please choose the ward this is in.');
     }
     if (type === 'contact') {
       if (!formData.name) return setFormError('Please enter your full name.');
@@ -241,10 +244,11 @@ const FileComplaintScreen = ({ navigation }) => {
     data.append('description', summary);
     data.append('category', formData.category);
     data.append('location', formData.location);
+    data.append('ward', formData.ward);
     data.append('urgencyLevel', urgency.label);
 
-    // RN's FormData takes {uri, name, type} objects where the web took File.
-    files.forEach((file) => data.append('images', file));
+    // RN's FormData takes {uri, name, type} objects; the browser's needs a real Blob.
+    for (const file of files) await appendImage(data, 'images', file);
 
     try {
       const response = await api.post('/complaints', data, {

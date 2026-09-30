@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Clock, Settings2, CheckCircle2, XCircle, Circle } from 'lucide-react-native';
 import { ICON_STROKE } from '../constants/icons.js';
+import { stageLabel } from '../constants/stages.js';
 import { color, space, radius, font, text } from '../theme.js';
 
 const STEP_META = {
@@ -35,7 +36,8 @@ const StatusTimeline = ({ statusHistory }) => {
 
             <View style={[s.card, isLast && { marginBottom: 0 }]}>
               <View style={s.cardHead}>
-                <Text style={s.status}>{step.status}</Text>
+                {/* Entries written since the multi-role workflow carry a stage; older ones only a status. */}
+                <Text style={s.status}>{step.stage ? stageLabel(step.stage) : step.status}</Text>
                 <Text style={s.stamp}>{new Date(step.changedAt).toLocaleString()}</Text>
               </View>
               {step.remarks ? <Text style={s.remarks}>{step.remarks}</Text> : null}

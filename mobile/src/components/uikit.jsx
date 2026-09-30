@@ -9,7 +9,8 @@
 import React from 'react';
 import { View, Text, Pressable, TextInput, ScrollView, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
-import { colors, uf as font, ufRadius as radius } from '../theme.js';
+import Icon from './Icon.jsx';
+import { colors, uf as font, ufRadius as radius, statusColors } from '../theme.js';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -141,6 +142,115 @@ export function GrowBar({ height, color, width = 44, delay = 0 }) {
   return <Animated.View style={[{ width: '100%', maxWidth: width, borderRadius: 12, backgroundColor: color }, animStyle]} />;
 }
 
+// The 17pt label Field puts above an input, for pickers that aren't inputs.
+export function FieldLabel({ children }) {
+  return <Text style={s.fieldLabel}>{children}</Text>;
+}
+
+// Caps micro-heading above a block of content ("DESCRIPTION", "PHOTOGRAPHS").
+export function Label({ children, style }) {
+  return <Text style={[s.label, style]}>{String(children).toUpperCase()}</Text>;
+}
+
+// Label + value in a small surface tile; sits in a row or stands alone.
+export function InfoTile({ label, value, flex, width, style }) {
+  return (
+    <View style={[s.tile, flex && { flex: 1 }, width ? { width } : null, style]}>
+      <Label>{label}</Label>
+      <Text style={s.tileValue}>{value}</Text>
+    </View>
+  );
+}
+
+// Big number over a label — the KPI cell from the admin dashboard.
+export function StatTile({ label, value, color, style }) {
+  return (
+    <View style={[s.statTile, style]}>
+      <View style={s.statHead}>
+        {color ? <StatusDot color={color} /> : null}
+        <Text numberOfLines={1} style={s.statLabel}>{label}</Text>
+      </View>
+      <Text style={s.statValue}>{value}</Text>
+    </View>
+  );
+}
+
+// The one empty state: a single centred line.
+export function EmptyLine({ children }) {
+  return <Text style={s.emptyLine}>{children}</Text>;
+}
+
+export function SuccessNote({ children }) {
+  if (!children) return null;
+  return <Text style={s.successNote}>{children}</Text>;
+}
+
+// Circular back button + title, for pushed screens.
+export function BackHeader({ title, onBack }) {
+  return (
+    <View style={s.backHeader}>
+      <Tappable onPress={onBack} scaleTo={0.9} style={s.backBtn}>
+        <Icon name="chevronLeft" size={18} color={colors.text} strokeWidth={2.4} />
+      </Tappable>
+      <Text style={s.backTitle}>{title}</Text>
+    </View>
+  );
+}
+
+// A wrapped set of FilterPills for picking one value. options: string | { value, label, disabled }.
+export function ChoiceGroup({ options, value, onChange, color = colors.accent }) {
+  return (
+    <View style={s.choiceRow}>
+      {options.map((opt) => {
+        const o = typeof opt === 'string' ? { value: opt, label: opt } : opt;
+        return (
+          <View key={o.value} style={o.disabled ? { opacity: 0.35 } : null} pointerEvents={o.disabled ? 'none' : 'auto'}>
+            <FilterPill label={o.label} active={value === o.value} color={color} onPress={() => onChange(o.value)} />
+          </View>
+        );
+      })}
+    </View>
+  );
+}
+
+// Sliding pill selector. Same mechanism as GlassTabBar — one shared value driving
+// translateX on the UI thread, same 200ms timing — so the app has one feel.
+const SEG_PAD = 5;
+const SEG_TIMING = { duration: 200 };
+export function SegmentedPill({ options, value, onChange }) {
+  const [width, setWidth] = React.useState(0);
+  const index = Math.max(0, options.findIndex((o) => o.value === value));
+  const seg = width > 0 ? (width - SEG_PAD * 2 - 2) / options.length : 0;
+
+  const x = useSharedValue(0);
+  const laidOut = React.useRef(false);
+  React.useEffect(() => {
+    if (seg === 0) return;
+    if (!laidOut.current) {
+      // First measurement: place the pill, don't animate in from the left edge.
+      laidOut.current = true;
+      x.value = index * seg;
+    } else {
+      x.value = withTiming(index * seg, SEG_TIMING);
+    }
+  }, [index, seg]);
+
+  const pillStyle = useAnimatedStyle(() => ({ width: seg, transform: [{ translateX: x.value }] }));
+
+  return (
+    <View style={s.segTrack} onLayout={(e) => setWidth(e.nativeEvent.layout.width)}>
+      {seg > 0 ? <Animated.View style={[s.segPill, pillStyle]} /> : null}
+      {options.map((o) => (
+        <Pressable key={o.value} onPress={() => onChange(o.value)} style={s.segItem}>
+          <Text numberOfLines={1} style={[s.segText, { color: o.value === value ? colors.accentInk : colors.faint }]}>
+            {o.label}
+          </Text>
+        </Pressable>
+      ))}
+    </View>
+  );
+}
+
 const s = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.bg },
   screenContent: { paddingBottom: 130 },
@@ -204,6 +314,51 @@ const s = StyleSheet.create({
     justifyContent: 'center',
   },
   filterPillText: { fontFamily: font.display, fontSize: 17 },
+  label: { fontFamily: font.bodyBold, fontSize: 12, letterSpacing: 1.1, color: colors.dim, marginBottom: 7 },
+  tile: {
+    padding: 16,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 20,
+  },
+  tileValue: { fontFamily: font.bodyBold, fontSize: 15, color: colors.text },
+  statTile: { padding: 18, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, borderRadius: radius.md },
+  statHead: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  statLabel: { flex: 1, fontFamily: font.bodyBold, fontSize: 16, color: colors.text },
+  statValue: { fontFamily: font.display, fontSize: 44, lineHeight: 46, color: colors.text, marginTop: 10 },
+  emptyLine: { textAlign: 'center', paddingVertical: 44, fontFamily: font.body, fontSize: 15, color: colors.dim },
+  successNote: { fontFamily: font.bodyBold, fontSize: 15, lineHeight: 22, color: statusColors.Resolved, textAlign: 'center' },
+  backHeader: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingHorizontal: 20, paddingTop: 22, paddingBottom: 12 },
+  backBtn: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    borderWidth: 1,
+    borderColor: colors.borderStrong,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  backTitle: { fontFamily: font.display, fontSize: 24, color: colors.text },
+  choiceRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  segTrack: {
+    flexDirection: 'row',
+    padding: SEG_PAD,
+    borderRadius: radius.pill,
+    borderWidth: 1,
+    borderColor: colors.borderStrong,
+    backgroundColor: colors.surface,
+  },
+  segPill: {
+    position: 'absolute',
+    left: SEG_PAD,
+    top: SEG_PAD,
+    bottom: SEG_PAD,
+    borderRadius: radius.pill,
+    backgroundColor: colors.accent,
+  },
+  segItem: { flex: 1, height: 46, alignItems: 'center', justifyContent: 'center' },
+  segText: { fontFamily: font.display, fontSize: 15 },
   errorNote: {
     backgroundColor: colors.errorBg,
     borderWidth: 1.5,

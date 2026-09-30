@@ -2,20 +2,20 @@ import React from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { downloadReceipt } from '../utils/downloadReceipt.js';
-import { color, space, radius, font } from '../theme.js';
+import { Tappable } from './uikit.jsx';
+import { color, space, radius, font, statusColors as STATUS_COLOR } from '../theme.js';
 
-const STATUS_COLOR = { 
-  Pending: '#FFB86B', 
-  'In Progress': '#C08BFF', 
-  Resolved: '#4ADE9B', 
-  Rejected: '#FF5A7A' 
-};
-
-const ComplaintCard = ({ item }) => {
+// Public cards link out to the tracker. Staff screens pass `onPress` to open
+// their own detail instead, and `badge` (e.g. the workflow stage) in place of the
+// Track/Receipt links.
+const ComplaintCard = ({ item, onPress, badge }) => {
   const navigation = useNavigation();
   const sColor = STATUS_COLOR[item.status] || color.accent;
+  const Wrap = onPress ? Tappable : React.Fragment;
+  const wrapProps = onPress ? { onPress, scaleTo: 0.98 } : {};
 
   return (
+    <Wrap {...wrapProps}>
     <View style={[s.card, { borderColor: sColor }]}>
       <View style={[s.colorStrip, { backgroundColor: sColor }]} />
       <View style={s.content}>
@@ -30,6 +30,9 @@ const ComplaintCard = ({ item }) => {
             {item.trackingId} · {new Date(item.createdAt).toLocaleDateString()}
           </Text>
           
+          {badge ? (
+            <Text style={[s.trackText, { color: sColor }]}>{badge}</Text>
+          ) : (
           <View style={s.actions}>
             {item.status === 'Resolved' && (
               <Pressable onPress={() => downloadReceipt(item.trackingId)}>
@@ -40,9 +43,11 @@ const ComplaintCard = ({ item }) => {
               <Text style={[s.trackText, { color: sColor }]}>Track →</Text>
             </Pressable>
           </View>
+          )}
         </View>
       </View>
     </View>
+    </Wrap>
   );
 };
 

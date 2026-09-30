@@ -16,3 +16,8 @@ export const verifyOtpSchema = z.object({
   email: z.string().email('Invalid email address'),
   otp: z.string().length(6, 'OTP must be exactly 6 digits').regex(/^\d+$/, 'OTP must contain only digits'),
 });
+
+export const setPasswordSchema = z.object({
+  inviteToken: z.string().min(10, 'Enter the invite code from your email'),
+  password: z.string().min(8, 'Password must be at least 8 characters long'),
+});

@@ -1,7 +1,8 @@
 import React, { useRef } from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 
-import { Card, Field, PrimaryButton, Tappable } from '../../components/uikit.jsx';
+import { Card, Field, PrimaryButton, Tappable, FieldLabel, ChoiceGroup } from '../../components/uikit.jsx';
+import { WARDS } from '../../constants/wards.js';
 import Icon from '../../components/Icon.jsx';
 import SwipeQuestionCard from '../../components/SwipeQuestionCard.jsx';
 import { CATEGORIES } from '../../constants/categories.js';
@@ -143,8 +144,14 @@ const ReportStep = ({
               label="Location"
               value={formData.location}
               onChangeText={(v) => onInputChange('location', v)}
-              placeholder="Ward, street or landmark"
+              placeholder="Street or landmark"
             />
+            {/* Required, and never inferred from the free-text location above:
+                assignment and the research dataset both depend on it. */}
+            <View>
+              <FieldLabel>Ward</FieldLabel>
+              <ChoiceGroup options={WARDS} value={formData.ward} onChange={(v) => onInputChange('ward', v)} />
+            </View>
           </View>
         </View>
       ) : null}
@@ -223,6 +230,7 @@ const ReportStep = ({
             <ReviewRow label="Category" value={category} />
             <ReviewRow label="Priority" value={urgencyLabel.replace(' Urgency', '')} />
             <ReviewRow label="Title" value={formData.title || '—'} />
+            <ReviewRow label="Ward" value={formData.ward || '—'} />
             <ReviewRow label="Location" value={formData.location || '—'} />
             <ReviewRow label="Photos" value={String(files.length)} />
             <ReviewRow label="Name" value={formData.name || '—'} />

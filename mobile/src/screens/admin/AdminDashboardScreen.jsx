@@ -101,7 +101,7 @@ export default function AdminDashboardScreen({ navigation }) {
       </View>
 
       <View style={{ paddingHorizontal: 20, paddingTop: 16 }}>
-        <PrimaryButton label="Manage complaints" onPress={() => navigation.navigate('AdminAction')} style={{ height: 66 }} />
+        <PrimaryButton label="Manage complaints" onPress={() => navigation.navigate('Complaints')} style={{ height: 66 }} />
       </View>
 
       {categoryBars.length > 0 && (

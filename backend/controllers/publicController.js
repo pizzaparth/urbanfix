@@ -27,7 +27,7 @@ export const getPublicStats = catchAsync(async (req, res, next) => {
 
 // 2. Fetch list of public complaints (redacted details)
 export const getPublicComplaints = catchAsync(async (req, res, next) => {
-  const { category, location, status, page = 1, limit = 50 } = req.query;
+  const { category, location, status, ward, page = 1, limit = 50 } = req.query;
 
   const query = { isPublic: true };
 
@@ -37,6 +37,9 @@ export const getPublicComplaints = catchAsync(async (req, res, next) => {
   if (status) {
     query.status = status;
   }
+  if (ward) {
+    query.ward = ward;
+  }
   if (location) {
     query.location = { $regex: location, $options: 'i' };
   }
@@ -45,7 +48,7 @@ export const getPublicComplaints = catchAsync(async (req, res, next) => {
 
   // Query complaint list redacting citizen references
   const complaints = await Complaint.find(query)
-    .select('-citizenId -statusHistory.changedBy') // Redact citizen details and specific user IDs
+    .select('-citizenId -assignedTo -assignedBy -statusHistory.changedBy') // Redact citizen details and specific user IDs
     .sort({ createdAt: -1 })
     .skip(skipIndex)
     .limit(parseInt(limit));

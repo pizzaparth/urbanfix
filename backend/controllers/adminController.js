@@ -3,8 +3,7 @@ import User from '../models/User.js';
 import AppError from '../utils/appError.js';
 import catchAsync from '../utils/catchAsync.js';
 import { updateStatusSchema } from '../validators/adminValidator.js';
-import { sendStatusUpdateEmail, sendResolutionEmailWithPdf } from '../services/emailService.js';
-import { generateResolutionPdf } from '../services/pdfService.js';
+import { applyAdminOverride } from '../services/complaintWorkflow.js';
 import { getStatusBreakdown, getActivityByDay } from '../utils/statsHelpers.js';
 
 // 1. Get Summary Metrics for Admin Dashboard
@@ -77,12 +76,16 @@ export const getActivityHeatmap = catchAsync(async (req, res, next) => {
 
 // 2. Paginated and Filtered Complaint Listing for Admin Console
 export const getAllComplaints = catchAsync(async (req, res, next) => {
-  const { status, category, page = 1, limit = 10, search } = req.query;
+  const { status, category, page = 1, limit = 10, search, stage, ward } = req.query;
 
   const query = {};
 
   if (status) query.status = status;
   if (category) query.category = category;
+  if (stage) query.stage = stage;
+  // ward=none surfaces complaints with no ward, so they can be fixed by hand.
+  if (ward === 'none') query.ward = null;
+  else if (ward) query.ward = ward;
   if (search) {
     query.$or = [
       { trackingId: { $regex: search, $options: 'i' } },
@@ -95,6 +98,7 @@ export const getAllComplaints = catchAsync(async (req, res, next) => {
   // Populate citizen contact fields
   const complaints = await Complaint.find(query)
     .populate('citizenId', 'name email phone')
+    .populate('assignedTo', 'name employee.ward')
     .sort({ createdAt: -1 })
     .skip(skipIndex)
     .limit(parseInt(limit));
@@ -143,32 +147,8 @@ export const updateComplaintStatus = catchAsync(async (req, res, next) => {
     return next(new AppError('A pending complaint must be transitioned to "In Progress" before resolution.', 400));
   }
 
-  // Apply updates
-  complaint.status = newStatus;
-  complaint.remarks = remarks;
-
-  // Record history
-  complaint.statusHistory.push({
-    status: newStatus,
-    changedBy: req.user._id,
-    remarks,
-  });
-
-  // Action: Resolved updates generate PDF receipt and dispatch attachment
-  if (newStatus === 'Resolved') {
-    const pdfBuffer = await generateResolutionPdf(complaint);
-    
-    // Dispatch resolution email
-    await sendResolutionEmailWithPdf(complaint.citizenId.email, complaint.trackingId, remarks, pdfBuffer);
-
-    // Save download reference URL path
-    complaint.pdfReceiptUrl = `/api/complaints/download-receipt/${complaint.trackingId}`;
-  } else {
-    // Normal transitions dispatch updates emails
-    await sendStatusUpdateEmail(complaint.citizenId.email, complaint.trackingId, newStatus, remarks);
-  }
-
-  await complaint.save();
+  // Override path: stage is kept in step with the public status.
+  await applyAdminOverride(complaint, newStatus, req.user, remarks);
 
   res.status(200).json({
     status: 'success',

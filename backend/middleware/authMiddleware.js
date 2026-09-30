@@ -23,6 +23,27 @@ export const protect = catchAsync(async (req, res, next) => {
     return next(new AppError('The user belonging to this token no longer exists.', 401));
   }
 
+  // Hardening (checked on every request, not just at login, so a deactivation
+  // or an expiry takes effect immediately rather than when the JWT lapses).
+  if (currentUser.isActive === false) {
+    return next(new AppError('This account has been deactivated.', 401, 'ACCOUNT_DEACTIVATED'));
+  }
+
+  // A client-side countdown is a display, not a control — expiry is enforced here.
+  if (currentUser.role === 'researcher') {
+    const expiresAt = currentUser.researcher?.accessExpiresAt;
+    if (!expiresAt || expiresAt < new Date()) {
+      return next(
+        new AppError('Your research access has expired. Please apply again.', 403, 'RESEARCH_ACCESS_EXPIRED')
+      );
+    }
+  }
+
+  // An invited account has no usable password until it follows the invite link.
+  if (currentUser.mustSetPassword === true) {
+    return next(new AppError('Set your password using your invite link first.', 403, 'MUST_SET_PASSWORD'));
+  }
+
   // Save user context inside the request object
   req.user = currentUser;
   next();

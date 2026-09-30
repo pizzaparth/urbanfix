@@ -8,6 +8,7 @@ import { generateOtp } from '../utils/otpGenerator.js';
 import { sendOtpEmail, sendStatusUpdateEmail } from '../services/emailService.js';
 import { createComplaintSchema } from '../validators/complaintValidator.js';
 import { generateResolutionPdf } from '../services/pdfService.js';
+import { redactCitizenActors } from '../utils/redactHistory.js';
 
 // 0. Request OTP for Complaint submission
 export const requestComplaintOtp = catchAsync(async (req, res, next) => {
@@ -46,7 +47,7 @@ export const submitComplaint = catchAsync(async (req, res, next) => {
     return next(new AppError(errorMsg, 400));
   }
 
-  const { name, email, phone, otp, title, description, category, location, urgencyLevel } = validationResult.data;
+  const { name, email, phone, otp, title, description, category, location, ward, urgencyLevel } = validationResult.data;
 
   // Retrieve valid OTP matching target email
   const otpRecord = await Otp.findOne({ email, otp });
@@ -111,13 +112,16 @@ export const submitComplaint = catchAsync(async (req, res, next) => {
     description,
     category,
     location,
+    ward,
     urgencyLevel: urgencyLevel || 'Standard Urgency',
     images: imageUrls,
     status: 'Pending',
+    stage: 'submitted',
     isPublic: true, // admin no longer has a manual toggle; all filed complaints are public
     statusHistory: [
       {
         status: 'Pending',
+        stage: 'submitted',
         changedBy: user._id,
         remarks: 'Complaint filed successfully after email verification.',
       },
@@ -160,7 +164,7 @@ export const getComplaintByTrackingId = catchAsync(async (req, res, next) => {
   const { trackingId } = req.params;
 
   const complaint = await Complaint.findOne({ trackingId })
-    .select('-citizenId') // Redact citizen details
+    .select('-citizenId -assignedTo -assignedBy') // Redact citizen details and staff ids
     .populate({
       path: 'statusHistory.changedBy',
       select: 'name role',
@@ -172,7 +176,7 @@ export const getComplaintByTrackingId = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: 'success',
-    complaint,
+    complaint: redactCitizenActors(complaint),
   });
 });
 
