@@ -1,10 +1,37 @@
 import axios from 'axios';
+import Constants from 'expo-constants';
+import { Platform } from 'react-native';
 import * as tokenStore from './tokenStore.js';
 
-// Must be the machine's LAN IP when running on a physical device — `localhost`
-// on a phone means the phone, not your dev machine. Set EXPO_PUBLIC_API_URL in
-// mobile/.env (see .env.example).
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:5001/api';
+const API_PORT = 5001; // must match PORT in backend/.env
+
+// The backend runs on the same machine as Metro, so we reuse whatever host the
+// app loaded its bundle from. That keeps working when the Mac's LAN IP changes
+// (new Wi-Fi, DHCP lease) without editing .env. EXPO_PUBLIC_API_URL still wins
+// when set, e.g. to point at a deployed backend.
+const resolveDevHost = () => {
+  if (Platform.OS === 'web') {
+    return typeof window !== 'undefined' ? window.location.hostname : 'localhost';
+  }
+
+  // hostUri looks like "172.25.233.111:8081" — the dev server the phone or
+  // emulator connected to. Tunnel mode gives an *.exp.direct host instead,
+  // which can't reach the backend; use EXPO_PUBLIC_API_URL for that case.
+  const hostUri =
+    Constants.expoConfig?.hostUri ||
+    Constants.expoGoConfig?.debuggerHost ||
+    Constants.manifest2?.extra?.expoGo?.debuggerHost;
+  const host = hostUri?.split(':')[0];
+
+  if (!host || host === 'localhost' || host === '127.0.0.1') {
+    // The Android emulator reaches the host machine through 10.0.2.2.
+    return Platform.OS === 'android' ? '10.0.2.2' : 'localhost';
+  }
+  return host;
+};
+
+const API_BASE_URL =
+  process.env.EXPO_PUBLIC_API_URL || `http://${resolveDevHost()}:${API_PORT}/api`;
 
 export const TOKEN_KEY = 'token';
 
