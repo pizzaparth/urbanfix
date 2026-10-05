@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, KeyboardAvoidingView, Platform, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Screen, ErrorNote } from './uikit.jsx';
@@ -12,16 +12,13 @@ import { colors, uf as font } from '../theme.js';
 //
 // SlideInRight is keyed by the screen so moving between them reads as the same
 // horizontal advance the reference had when it swapped modes.
+// Keyboard handling comes from Screen (iOS) and the root view in App.js (Android).
 const AuthShell = ({ title, subtitle, error, children, footer, animationKey }) => (
-  <KeyboardAvoidingView
-    style={s.flex}
-    behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
-  >
+  <View style={s.flex}>
     <AuthBody title={title} subtitle={subtitle} error={error} footer={footer} animationKey={animationKey}>
       {children}
     </AuthBody>
-  </KeyboardAvoidingView>
+  </View>
 );
 
 const AuthBody = ({ title, subtitle, error, children, footer, animationKey }) => {

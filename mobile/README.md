@@ -1,160 +1,106 @@
-# CivicTrack — React Native app
+# UrbanFix mobile app
 
-The Smart Digital Complaint Management app. This is the project's only client —
-it talks to `../backend` over REST.
+This is the project's only client. It talks to `../backend` over REST.
 
-Stack: Expo SDK 57 · React Native 0.86 · React 19.2 · React Navigation v7 ·
-Victory Native XL + Skia (charts) · Reanimated/Moti (motion) · FlashList (lists).
-Runs on iOS, Android and — for development only — the browser via react-native-web.
+**Stack:** Expo SDK 57, React Native 0.86, React 19.2, React Navigation 7, Reanimated 4 and Moti (motion), FlashList (lists), react-native-svg (charts and icons).
+
+It runs on Android and iOS through **Expo Go**, with no development build needed. It also runs in the browser through react-native-web, for development only.
 
 ## Running it
 
-1. **Start the backend** (from `../backend`): `npm run dev` — listens on port 5001.
-   Mongo must be running too.
-
-2. **Point the app at your machine's LAN IP.** This is the single most common
-   reason the app shows no data:
+1. **Start the backend** from `../backend` with `npm run dev`. It listens on port 5001, and MongoDB must be running.
+2. **Start Metro:**
 
    ```bash
-   ipconfig getifaddr en0        # e.g. 172.25.209.67
-   ```
-
-   Put that in `mobile/.env` (copy `.env.example`):
-
-   ```
-   EXPO_PUBLIC_API_URL=http://<your-lan-ip>:5001/api
-   ```
-
-   A LAN IP works for **both** targets, so one `.env` covers browser and phone.
-   `localhost` would work in the browser but **not** on a phone, where it
-   resolves to the phone itself. The IP changes when you switch networks, so
-   re-check it before a demo. Restart `expo start` after editing `.env`; the
-   value is inlined at bundle time.
-
-3. **Start the dev server** — one server drives both targets:
-
-   ```bash
-   npx expo start
+   npx expo start --go -c
    ```
 
    | Key | What it does |
    |---|---|
-   | `w` | opens the app in your **browser** — the fast way to iterate |
    | QR code | scan with **Expo Go** to run on your phone (same Wi-Fi) |
-   | `i` / `a` | iOS simulator / Android emulator |
-   | `s` | switches the QR between **Expo Go** and a development build |
-   | `r` | reload · `j` debugger · `?` all commands |
+   | `w` | open the app in your browser, the fast way to iterate |
+   | `a` / `i` | Android emulator / iOS simulator |
+   | `s` | switch the QR between Expo Go and a development build. Keep it on **Expo Go**: a development-build QR won't open in Expo Go. |
+   | `r` | reload; `j` debugger; `?` all commands |
 
-   Both targets hot-reload from the same server, so you can keep the browser
-   open for quick checks and scan the QR only when you need to verify something
-   touch- or camera-specific.
+### How the app finds the API
 
-   To go straight to the browser: `npx expo start --web`.
+You don't need to set an IP. `src/services/api.js` builds the API URL at runtime:
 
-Verify the API link before demoing: `curl http://<lan-ip>:5001/health`.
+| Running on | API host used |
+|---|---|
+| Browser | the page's own hostname, e.g. `localhost` |
+| Phone (Expo Go) | the IP the phone loaded Metro from, i.e. your computer's current LAN IP |
+| Android emulator | `10.0.2.2`, the emulator's alias for the host machine |
 
-## Browser vs. phone — what differs
+The port is always `5001`. Change `API_PORT` in `api.js` if the backend moves.
 
-The browser target exists for fast iteration, not as a shipping product. Four
-things resolve differently there, each behind a `Platform.OS` check:
+To use a different backend, set `EXPO_PUBLIC_API_URL` in `mobile/.env` (see `.env.example`). Examples are a deployed server or `expo start --tunnel`, whose `*.exp.direct` host can't reach a local backend. Restart with `-c` after editing `.env`, because the value is built into the bundle.
+
+If the phone can't load the app, open `http://<computer-ip>:8081` in the phone's browser. If that page doesn't load, the network blocks devices from talking to each other. This is common on campus Wi-Fi. Use a phone hotspot instead.
+
+## Browser vs. phone
+
+The browser target is for fast iteration, not a shipping product. A few things resolve differently, each behind a `Platform.OS` check:
 
 | | Phone (iOS/Android) | Browser |
 |---|---|---|
-| Auth token | `expo-secure-store` (keychain/keystore) | `localStorage` — see `services/tokenStore.js` |
-| `Alert.alert` | native dialog | `window.alert` — react-native-web ships `Alert` as a **no-op stub**, so alerts would otherwise vanish silently (`utils/notify.js`) |
-| Receipt download | `expo-file-system` + OS share sheet | `window.open` → browser download manager |
+| Auth token | `expo-secure-store` (keychain/keystore) | `localStorage`. See `services/tokenStore.js`. |
+| `Alert.alert` | native dialog | `window.alert`. react-native-web ships `Alert` as a no-op, so `utils/notify.js` wraps it. |
+| Receipt download | `expo-file-system` + OS share sheet | `window.open` to the browser's downloads |
 | Camera | real camera | `expo-image-picker` falls back to a file picker |
+| Photo upload | RN `{ uri, name, type }` file objects | real `Blob`s. Use `appendImage()` in `utils/imageFiles.js`. |
 
-The token fallback is for local testing only — `localStorage` is readable by any
-script on the origin, which is not where a real credential belongs. On a device
-the keychain path is the one that runs.
+Anything that touches the camera, the share sheet, the keyboard or real touch gestures needs a pass on a phone.
 
-Anything touching the camera, the share sheet or real touch gestures still needs
-a pass on the phone before you trust it.
+## Keyboard handling
 
-## Design decisions (history)
+Android is edge-to-edge, so the keyboard no longer resizes the window. To stop it covering inputs:
 
-This app began as a port of an earlier React/Vite web client, which has since been
-deleted. Kept here because it explains why several things are shaped the way they
-are. The backend and API contract were unchanged by the port.
+- **Android:** a root `KeyboardAvoidingView` in `App.js` pads the whole app by the keyboard height. Android's ScrollView then keeps the focused input visible.
+- **iOS:** `Screen` (`components/uikit.jsx`) sets `automaticallyAdjustKeyboardInsets` on its ScrollView. Any other ScrollView that holds inputs needs the same prop.
+- **Modals** are separate windows, so each modal that contains an input needs its own `KeyboardAvoidingView` (see the OTP sheet in `FileComplaintScreen`).
+- The floating tab bar hides while the keyboard is open (`hooks/useKeyboardVisible.js`).
 
-What had to be rebuilt, and why:
-
-| Web | Native |
-|---|---|
-| `localStorage` | `expo-secure-store` (token) + `AsyncStorage` (user) |
-| sync token read in the axios interceptor | module-level token cache hydrated at boot, so the interceptor stays synchronous |
-| `<input type="file">` | `expo-image-picker` — camera or library |
-| Blob + `<a download>` | `expo-file-system` + `expo-sharing` |
-| `components/Modal.jsx` (portal + focus trap) | RN's built-in `<Modal>` — deleted, not ported |
-| react-router-dom, `ProtectedRoute` | React Navigation; role gating is conditional navigator rendering |
-| 1,094 lines of global CSS | `src/theme.js` + per-component `StyleSheet` |
-| Chart.js doughnut + line | Victory Native XL on Skia (`components/charts/`) |
-| Chart.js radar | hand-rolled in `react-native-svg` (`components/RadarChart.jsx`) — no RN library ships a radar |
-| CSS-Grid activity heatmap | flex week-columns in a horizontal `ScrollView`, hover → tap |
-| `<table>` in the admin list | `FlashList` of cards |
-
-Deliberate divergences, all noted in-file:
-
-- **The line chart's crosshair is gone.** It was a hand-written Canvas 2D plugin
-  (`ctx.moveTo/lineTo`) with no RN analogue.
-- **Hover tooltips became always-visible values.** There's no hover on touch, so the
-  radar and donut legends print their counts rather than hiding them behind an interaction.
-- **Data screens poll while focused** (`hooks/useAutoRefresh.js`, 15s). Polling stops
-  on blur and when the app backgrounds, so a phone in a pocket isn't hitting the API;
-  it catches up in one fetch on return. Every such screen also carries a `RefreshBar`
-  showing how stale the numbers are, because pull-to-refresh does not exist in a
-  browser (react-native-web renders `RefreshControl` as an empty `View`).
-- **Search inputs are debounced (350ms).** The web app refetched on every keystroke.
-- **The citizen dashboard's inline "new complaint" form was dropped.** It POSTed to
-  `/complaints` without an OTP, which that endpoint requires — it could never have
-  succeeded. The button routes to the real OTP-backed wizard instead.
-- **Category donut → labelled bar list on the public home screen.** Ten slices don't
-  read on a phone; the rule that a category is never identified by color alone is kept.
+`react-native-keyboard-controller` would be simpler, but Expo Go doesn't include it.
 
 ## Layout
 
 ```
+App.js                    fonts, safe area, root keyboard handling, navigation
+index.js / index.web.js   native / browser entry points
 src/
-  theme.js              all 56 design tokens from the web tokens.css
-  services/api.js       axios instance + token cache + getUploadsBaseUrl()
-  services/tokenStore.js  keychain on device, localStorage in the browser
-  utils/notify.js       Alert on device, window.alert in the browser
-  utils/haptics.js      tap/success/error feedback; no-op on web
-  hooks/useAutoRefresh.js  focus-scoped polling + manual refresh
-  contexts/             AuthContext
-  navigation/           RootNavigator — tabs, stacks, role gating, deep links
-  components/           ui.jsx primitives, cards, heatmap, timeline, Skeleton
-  components/charts/    DonutChart, TrendChart (Victory Native XL)
-  components/RadarChart.jsx  hand-rolled SVG — Victory has no radar
-  screens/public/       Home, Registry, Track, FileComplaint (+ ReportStep)
-  screens/citizen/      Login, Register, VerifyOtp, Dashboard
-  screens/admin/        AdminDashboard, AdminAction, ComplaintDetail
+  theme.js                colour, type, spacing and radius tokens (light theme)
+  navigation/             RootNavigator: role-based tab bars, stacks, deep links
+  screens/
+    public/               Home, Registry, Track, FileComplaint (+ ReportStep wizard)
+    citizen/              Login, Register, VerifyOtp, SetPassword, Dashboard, ResearchApply
+    supervisor/           Queue, TriageDetail, Assign, FieldStaff, Profile
+    field/                MyTasks, TaskDetail, CompletedTasks, Profile
+    admin/                Dashboard, Action, ComplaintDetail, People, UserForm,
+                          LeaveApprovals, ResearchApplications, ResearchAudit
+    research/             Insights, Export, Profile, Expired
+  components/             uikit.jsx (current primitives), ui.jsx (older primitives),
+                          GlassTabBar, cards, charts (Radar, Ring, BarRows, ActivityHeatmap)
+  services/               api.js (axios, runtime API host, token cache), tokenStore.js
+  hooks/                  useAuth, useAutoRefresh (focus-scoped polling), useKeyboardVisible
+  contexts/               AuthContext
+  constants/              categories + questionnaires, stages, wards, icons
+  config/chartTheme.js    chart colours, category palette, heatmap ramp
+  utils/                  notify, haptics, imageFiles, downloadReceipt, saveTextFile, urgency
 ```
 
-## Charts and the web entry point
+## Design notes
 
-Charts are Victory Native XL, which draws through Skia. On iOS and Android Skia is
-a native module. In a browser it is a WebAssembly build (CanvasKit) that must be
-fetched and initialised *before* any chart mounts — so web has its own entry point,
-`index.web.js`, which awaits `LoadSkiaWeb()` and only then registers the app.
-
-Two things follow from that, both easy to trip over:
-
-- `public/canvaskit.wasm` is generated by `npx setup-skia-web`. It is not committed.
-  **Re-run that command after upgrading `@shopify/react-native-skia`**, or the wasm
-  and the JS drift apart.
-- Don't delete `index.web.js` or move Skia imports above it. Without it the browser
-  throws `CanvasKit is not defined` and renders nothing.
-
-The status radar stays hand-rolled in `react-native-svg` — Victory ships no radar
-chart, and SVG is lighter than Skia for a static four-axis polygon.
+- **Data screens poll while focused** (`hooks/useAutoRefresh.js`, 15 s). Polling stops on blur and when the app goes to the background, then catches up in one fetch on return. `RefreshBar` shows how stale the numbers are, because pull-to-refresh doesn't exist in a browser.
+- **Search inputs are debounced** (350 ms).
+- **No hover on touch:** charts print their values instead of hiding them behind tooltips. A category is never identified by colour alone; every chart has a labelled legend.
+- **Tabs are not lazy:** every tab screen mounts at once, and inactive ones are `aria-hidden` on web.
 
 ## Deep links
 
-`dsn://track?id=COMP-XXXXX-X` opens the tracker with the ID prefilled — the native
-equivalent of the web `/track?id=` links.
+`dsn://track?id=COMP-XXXXX-X` opens the tracker with the ID prefilled.
 
 ```bash
-npx uri-scheme open "dsn://track?id=COMP-XXXXX-X" --ios
+npx uri-scheme open "dsn://track?id=COMP-XXXXX-X" --android
 ```

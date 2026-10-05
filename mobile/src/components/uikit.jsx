@@ -1,4 +1,5 @@
-// UrbanFix primitives, ported from inspiration/src/components/ui.jsx.
+// UrbanFix primitives, ported from the UrbanFix reference app (formerly
+// inspiration/src/components/ui.jsx, removed; see git history).
 //
 // Kept separate from the older components/ui.jsx (Button/Input/Panel/…), which
 // the not-yet-restyled screens still import. Screens move over to these as they
@@ -7,7 +8,7 @@
 // Uses ufRadius, not this project's `radius` — the two scales disagree (lg is
 // 28 there, 22 here), and the design wants the reference numbers.
 import React from 'react';
-import { View, Text, Pressable, TextInput, ScrollView, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, Pressable, TextInput, ScrollView, StyleSheet } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 import Icon from './Icon.jsx';
 import { colors, uf as font, ufRadius as radius, statusColors } from '../theme.js';
@@ -33,14 +34,17 @@ export function Tappable({ onPress, style, children, scaleTo = 0.97, disabled })
 
 // `rest` is forwarded so callers can attach a refreshControl — the reference app
 // had no server to refresh from, this one does.
+// automaticallyAdjustKeyboardInsets (iOS only) insets the content by the
+// keyboard and scrolls the focused input into view; Android gets the same from
+// the root KeyboardAvoidingView in App.js.
 export function Screen({ children, contentStyle, ...rest }) {
   return (
-    
     <ScrollView
       style={s.screen}
       contentContainerStyle={[s.screenContent, contentStyle]}
       showsVerticalScrollIndicator={false}
       keyboardShouldPersistTaps="handled"
+      automaticallyAdjustKeyboardInsets
       {...rest}
     >
       {children}

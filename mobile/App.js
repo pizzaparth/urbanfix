@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -35,9 +35,16 @@ export default function App() {
     <GestureHandlerRootView style={s.fill}>
       <SafeAreaProvider onLayout={onLayout}>
         <StatusBar style="dark" backgroundColor={color.bg} />
-        <AuthProvider>
-          <RootNavigator />
-        </AuthProvider>
+        {/* Android is edge-to-edge, so the keyboard no longer resizes the window
+            and would sit on top of inputs. Padding the root by the keyboard's
+            height shrinks every screen instead; Android's ScrollView then keeps
+            the focused input in view. iOS is handled per ScrollView by
+            automaticallyAdjustKeyboardInsets (see Screen in uikit.jsx). */}
+        <KeyboardAvoidingView style={s.fill} behavior="padding" enabled={Platform.OS === 'android'}>
+          <AuthProvider>
+            <RootNavigator />
+          </AuthProvider>
+        </KeyboardAvoidingView>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );

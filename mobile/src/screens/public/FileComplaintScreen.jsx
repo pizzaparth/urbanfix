@@ -279,15 +279,12 @@ const FileComplaintScreen = ({ navigation }) => {
 
   return (
     <>
-      <KeyboardAvoidingView
-        style={s.flex}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
-      >
+      <View style={s.flex}>
         <ScrollView
           style={s.flex}
           contentContainerStyle={[s.content, { paddingTop: insets.top }]}
           keyboardShouldPersistTaps="handled"
+          automaticallyAdjustKeyboardInsets
           showsVerticalScrollIndicator={false}
         >
           <View style={s.header}>
@@ -333,7 +330,7 @@ const FileComplaintScreen = ({ navigation }) => {
             submittingForm={submittingForm}
           />
         </ScrollView>
-      </KeyboardAvoidingView>
+      </View>
 
       {/* OTP sheet */}
       <Modal
@@ -343,36 +340,39 @@ const FileComplaintScreen = ({ navigation }) => {
         onRequestClose={() => setShowOtpModal(false)}
       >
         <Animated.View entering={FadeIn.duration(220)} style={s.backdrop}>
-          <Animated.View entering={SlideInUp.duration(320)} style={s.sheet}>
-            <View style={s.sheetHead}>
-              <Text style={s.sheetTitle}>Verify email</Text>
-              <Tappable onPress={() => setShowOtpModal(false)} scaleTo={0.9}>
-                <Icon name="close" size={20} color={colors.muted} strokeWidth={2.4} />
+          {/* A Modal is a separate window, outside the root keyboard handling. */}
+          <KeyboardAvoidingView behavior={Platform.OS === 'web' ? undefined : 'padding'}>
+            <Animated.View entering={SlideInUp.duration(320)} style={s.sheet}>
+              <View style={s.sheetHead}>
+                <Text style={s.sheetTitle}>Verify email</Text>
+                <Tappable onPress={() => setShowOtpModal(false)} scaleTo={0.9}>
+                  <Icon name="close" size={20} color={colors.muted} strokeWidth={2.4} />
+                </Tappable>
+              </View>
+              <Text style={s.sheetSub}>{'Code sent to ' + (formData.email || 'your inbox')}</Text>
+              <ErrorNote>{otpError}</ErrorNote>
+              <TextInput
+                value={otpValue}
+                onChangeText={(v) => setOtpValue(v.replace(/\D/g, '').slice(0, 6))}
+                placeholder="000000"
+                placeholderTextColor={colors.placeholder}
+                keyboardType="number-pad"
+                maxLength={6}
+                textContentType="oneTimeCode"
+                style={s.otpInput}
+              />
+              <Tappable onPress={handleResendOtp} disabled={timer > 0} scaleTo={0.96}>
+                <Text style={s.resend}>
+                  {timer > 0 ? `Resend code in ${timer}s` : 'Resend code'}
+                </Text>
               </Tappable>
-            </View>
-            <Text style={s.sheetSub}>{'Code sent to ' + (formData.email || 'your inbox')}</Text>
-            <ErrorNote>{otpError}</ErrorNote>
-            <TextInput
-              value={otpValue}
-              onChangeText={(v) => setOtpValue(v.replace(/\D/g, '').slice(0, 6))}
-              placeholder="000000"
-              placeholderTextColor={colors.placeholder}
-              keyboardType="number-pad"
-              maxLength={6}
-              textContentType="oneTimeCode"
-              style={s.otpInput}
-            />
-            <Tappable onPress={handleResendOtp} disabled={timer > 0} scaleTo={0.96}>
-              <Text style={s.resend}>
-                {timer > 0 ? `Resend code in ${timer}s` : 'Resend code'}
-              </Text>
-            </Tappable>
-            <PrimaryButton
-              label={verifyingOtp ? 'Submitting…' : 'Submit complaint'}
-              onPress={handleOtpSubmit}
-              style={s.sheetCta}
-            />
-          </Animated.View>
+              <PrimaryButton
+                label={verifyingOtp ? 'Submitting…' : 'Submit complaint'}
+                onPress={handleOtpSubmit}
+                style={s.sheetCta}
+              />
+            </Animated.View>
+          </KeyboardAvoidingView>
         </Animated.View>
       </Modal>
 

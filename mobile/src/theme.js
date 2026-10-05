@@ -100,7 +100,8 @@ export const motion = {
 };
 
 // ---------------------------------------------------------------------------
-// UrbanFix tokens, carried over verbatim from inspiration/src/theme.js.
+// UrbanFix tokens, carried over from the UrbanFix reference app (formerly
+// inspiration/, removed; see git history).
 //
 // The `color`/`font` exports above keep their original names so the screens that
 // haven't been restyled yet still compile; these are the names the ported

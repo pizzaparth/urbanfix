@@ -3,6 +3,7 @@ import { View, Text, Pressable, StyleSheet, useWindowDimensions } from 'react-na
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import Icon from './Icon.jsx';
+import useKeyboardVisible from '../hooks/useKeyboardVisible.js';
 import { colors, uf as font, ufRadius as radius } from '../theme.js';
 
 const PAD = 7;
@@ -15,6 +16,8 @@ const TIMING = { duration: 200 };
 export default function GlassTabBar({ state, descriptors, navigation }) {
   const { width } = useWindowDimensions();
   const insets = useSafeAreaInsets();
+  // Hidden, not unmounted, so the pill keeps its position when it comes back.
+  const keyboardVisible = useKeyboardVisible();
   const routes = state.routes;
   const activeIndex = state.index;
 
@@ -37,7 +40,11 @@ export default function GlassTabBar({ state, descriptors, navigation }) {
 
   return (
     <View
-      style={[styles.wrap, { left: BAR_SIDE, right: BAR_SIDE, bottom: 14 + insets.bottom }]}
+      style={[
+        styles.wrap,
+        { left: BAR_SIDE, right: BAR_SIDE, bottom: 14 + insets.bottom },
+        keyboardVisible && styles.hidden,
+      ]}
       pointerEvents="box-none"
     >
       <View style={styles.glass}>
@@ -98,6 +105,7 @@ function TabButton({ label, iconName, focused, flex, onPress }) {
 }
 
 const styles = StyleSheet.create({
+  hidden: { display: 'none' },
   wrap: {
     position: 'absolute',
     borderRadius: radius.xl, // keeps the shadow rounded; a square one shows on white
