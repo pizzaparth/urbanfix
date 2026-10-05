@@ -3,15 +3,15 @@
 import { color } from '../theme.js';
 
 export const CHART_COLORS = {
-  grid: color.gray800,
-  border: color.gray750,
-  textMuted: color.gray500,
-  textSecondary: color.gray400,
-  textPrimary: color.gray100,
+  grid: color.borderStrong,
+  border: color.border,
+  textMuted: color.textMuted,
+  textSecondary: color.textSecondary,
+  textPrimary: color.textPrimary,
   surfaceRaised: color.surfaceRaised,
   accent: color.accent,
-  gray400: color.gray400,
-  gray500: color.gray500,
+  gray400: color.textSecondary,
+  gray500: color.textMuted,
   statusPending: color.statusPending,
   statusProgress: color.statusProgress,
   statusResolved: color.statusResolved,
@@ -53,10 +53,10 @@ export const getCategoryColor = (index) =>
 // Level 0 is neutral (no activity, not part of the hue ramp). Levels 1-4 blend
 // the accent toward --surface-raised at increasing intensity.
 export const HEATMAP_LEVEL_COLORS = [
-  color.gray800, // level 0 — no activity
-  '#213659', // level 1
-  '#2A5191', // level 2
-  '#336AC5', // level 3
+  color.gray900, // level 0 — no activity
+  '#FFD9E8', // level 1
+  '#FFB3D3', // level 2
+  '#FF89BB', // level 3
   color.accent, // level 4 — full accent, max activity
 ];
 

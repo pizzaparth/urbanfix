@@ -6,10 +6,10 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "scheme": "dsn",
-    "userInterfaceStyle": "dark",
-    "backgroundColor": "#0A0A0A",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#FFFFFF",
     "splash": {
-      "backgroundColor": "#0A0A0A",
+      "backgroundColor": "#FFFFFF",
       "resizeMode": "contain",
       "image": "./assets/splash-icon.png"
     },
@@ -30,7 +30,7 @@
       "usesCleartextTraffic": true,
       "permissions": ["CAMERA", "READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE"],
       "adaptiveIcon": {
-        "backgroundColor": "#0A0A0A",
+        "backgroundColor": "#FFFFFF",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"

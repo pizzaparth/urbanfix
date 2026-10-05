@@ -386,7 +386,7 @@ const FileComplaintScreen = ({ navigation }) => {
         <Animated.View entering={FadeIn.duration(220)} style={s.backdropCenter}>
           <Animated.View entering={FadeInDown.duration(340)} style={s.dialog}>
             <View style={s.successRing}>
-              <Icon name="check" size={22} color="#4ADE9B" strokeWidth={2.8} />
+              <Icon name="check" size={22} color={colors.success} strokeWidth={2.8} />
             </View>
             <Text style={s.sheetTitle}>Complaint filed</Text>
             <Text style={s.sheetSub}>Save this tracking ID to follow its progress.</Text>
@@ -460,10 +460,10 @@ const s = StyleSheet.create({
   },
   progressFill: { height: 4, borderRadius: 2, backgroundColor: colors.accent },
   errorWrap: { paddingHorizontal: 20 },
-  backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.72)', justifyContent: 'flex-end' },
+  backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'flex-end' },
   backdropCenter: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.78)',
+    backgroundColor: 'rgba(0,0,0,0.45)',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 24,
@@ -510,7 +510,7 @@ const s = StyleSheet.create({
     height: 52,
     borderRadius: 26,
     borderWidth: 2,
-    borderColor: '#4ADE9B',
+    borderColor: colors.success,
     alignItems: 'center',
     justifyContent: 'center',
   },

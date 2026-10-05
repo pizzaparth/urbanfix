@@ -100,9 +100,10 @@ function TabButton({ label, iconName, focused, flex, onPress }) {
 const styles = StyleSheet.create({
   wrap: {
     position: 'absolute',
+    borderRadius: radius.xl, // keeps the shadow rounded; a square one shows on white
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.55,
+    shadowOpacity: 0.12,
     shadowRadius: 22,
     elevation: 12,
   },
@@ -111,8 +112,8 @@ const styles = StyleSheet.create({
     borderRadius: radius.xl,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: '#333333',
-    backgroundColor: '#000000', // AMOLED black
+    borderColor: colors.borderStrong,
+    backgroundColor: colors.bg,
   },
   track: { flexDirection: 'row', height: TAB_H, alignItems: 'stretch' },
   pill: {

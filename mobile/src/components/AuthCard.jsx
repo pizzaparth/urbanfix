@@ -40,12 +40,12 @@ const s = StyleSheet.create({
     fontSize: 46, 
     lineHeight: 48,
     letterSpacing: -0.5,
-    color: color.white 
+    color: color.textPrimary 
   },
   subtitle: {
     fontFamily: font.sansBold,
     fontSize: 18,
-    color: color.white,
+    color: color.textPrimary,
     opacity: 0.62,
     marginTop: 10,
   },

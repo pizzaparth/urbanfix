@@ -6,7 +6,7 @@ import { List, Plus, Search, ChevronRight } from 'lucide-react-native';
 import { useAutoRefresh } from '../../hooks/useAutoRefresh.js';
 import api from '../../services/api.js';
 import { ICON_STROKE } from '../../constants/icons.js';
-import { color, space, radius, font, text } from '../../theme.js';
+import { color, space, radius, font, text, chartPalette } from '../../theme.js';
 
 const FEATURE_CARDS = [
   { icon: List, to: 'Registry', label: 'Browse registry' },
@@ -14,7 +14,7 @@ const FEATURE_CARDS = [
   { icon: Search, to: 'Track', label: 'Track progress' },
 ];
 
-const CHART_PALETTE = ['#C08BFF', '#7BE0D6', '#FFC77D', '#FF8FC7'];
+const CHART_PALETTE = chartPalette;
 
 const HomeScreen = ({ navigation }) => {
   const insets = useSafeAreaInsets();
@@ -107,11 +107,11 @@ const HomeScreen = ({ navigation }) => {
               style={({ pressed }) => [s.actionBtn, pressed && { transform: [{ scale: 0.97 }] }]}
             >
               <View style={s.actionIconWrap}>
-                <Icon size={24} strokeWidth={2.2} color={color.white} />
+                <Icon size={24} strokeWidth={2.2} color={color.textPrimary} />
               </View>
               <Text style={s.actionText}>{card.label}</Text>
               <View style={s.actionArrowWrap}>
-                <ChevronRight size={20} strokeWidth={2.8} color={color.bg} />
+                <ChevronRight size={20} strokeWidth={2.8} color={color.gray950} />
               </View>
             </Pressable>
           );
@@ -138,7 +138,7 @@ const s = StyleSheet.create({
     fontSize: 52,
     lineHeight: 54,
     letterSpacing: -0.5,
-    color: color.white,
+    color: color.textPrimary,
     marginTop: 8,
   },
 
@@ -164,7 +164,7 @@ const s = StyleSheet.create({
   statNumber: {
     fontFamily: font.sansBold,
     fontSize: 44,
-    color: color.white,
+    color: color.textPrimary,
     lineHeight: 44,
   },
   statLabel: {
@@ -187,7 +187,7 @@ const s = StyleSheet.create({
   chartTitle: {
     fontFamily: font.sansBold,
     fontSize: 20,
-    color: color.white,
+    color: color.textPrimary,
     marginBottom: 22,
   },
   chartContainer: {
@@ -206,7 +206,7 @@ const s = StyleSheet.create({
   barCount: {
     fontFamily: font.sansBold,
     fontSize: 26,
-    color: color.white,
+    color: color.textPrimary,
   },
   barTrack: {
     flex: 1,
@@ -246,7 +246,7 @@ const s = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: 'rgba(255,255,255,0.07)',
+    backgroundColor: 'rgba(0,0,0,0.06)',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -255,7 +255,7 @@ const s = StyleSheet.create({
     marginLeft: 14,
     fontFamily: font.sansBold,
     fontSize: 18,
-    color: color.white,
+    color: color.textPrimary,
   },
   actionArrowWrap: {
     width: 48,

@@ -2,12 +2,12 @@ import React, { useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 import Animated, { useAnimatedProps, useSharedValue, withTiming, Easing } from 'react-native-reanimated';
-import { colors, uf as font } from '../theme.js';
+import { colors, uf as font, chartPalette } from '../theme.js';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 // Solid-stroke progress ring (no gradients).
-export default function RingChart({ percent, size = 118, stroke = 12, color = '#7BE0D6' }) {
+export default function RingChart({ percent, size = 118, stroke = 12, color = chartPalette[1] }) {
   const r = (size - stroke) / 2;
   const circumference = 2 * Math.PI * r;
   const progress = useSharedValue(0);

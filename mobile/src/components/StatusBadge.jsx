@@ -11,28 +11,27 @@ const STATUS_META = {
   Rejected: { icon: XCircle, color: color.statusRejected },
 };
 
-// Dark solid fill per status for the `variant="solid"` pill (registry cards,
-// admin list) — green/yellow/orange/red, not the accent blue used for
-// "In Progress" elsewhere, so every status reads as its own distinct color.
+// Pale tinted fill per status for the `variant="solid"` pill (registry cards,
+// admin list); the label and icon use the status colour itself on top.
 const STATUS_SOLID_BG = {
-  Pending: '#713F12',
-  'In Progress': '#7C2D12',
-  Resolved: '#14532D',
-  Rejected: '#7F1D1D',
+  Pending: '#FDEFD9',
+  'In Progress': '#F0E6FC',
+  Resolved: '#DFF5EA',
+  Rejected: '#FDE3E9',
 };
 
 const StatusBadge = ({ status, variant = 'outline' }) => {
   const meta = STATUS_META[status] || { icon: Circle, color: color.textMuted };
   const Icon = meta.icon;
   const solid = variant === 'solid';
-  const fg = solid ? color.gray50 : meta.color;
+  const fg = meta.color;
 
   return (
     <View
       style={[
         s.pill,
         solid
-          ? { backgroundColor: STATUS_SOLID_BG[status] || color.gray600, borderColor: 'transparent' }
+          ? { backgroundColor: STATUS_SOLID_BG[status] || color.surface, borderColor: 'transparent' }
           : { borderColor: meta.color },
       ]}
     >

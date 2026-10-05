@@ -53,7 +53,7 @@ export default function FormattedDescription({ description }) {
 const s = StyleSheet.create({
   container: { gap: 16, marginBottom: 18 },
   qnaCard: {
-    backgroundColor: 'rgba(255,255,255,0.04)',
+    backgroundColor: 'rgba(0,0,0,0.03)',
     borderRadius: radius.md,
     padding: 16,
     borderWidth: 1,

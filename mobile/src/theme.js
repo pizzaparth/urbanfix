@@ -1,45 +1,48 @@
-// UrbanFix mobile theme based on UrbanFix.dc.html
+// UrbanFix mobile theme based on UrbanFix.dc.html — light mode.
+// The original palette was dark (pure black canvas, white text); this is its
+// inversion. Status, urgency and chart hues are darker steps of the same
+// colours so they stay legible as text and thin strokes on white.
 
 export const color = {
   // UrbanFix core colors
   accent: '#FF5FA2',
-  accentHover: '#FFA3C8',
+  accentHover: '#E84D8F',
 
   // Status colors
-  statusPending: '#FFB86B',
-  statusProgress: '#C08BFF',
-  statusResolved: '#4ADE9B',
-  statusRejected: '#FF5A7A',
+  statusPending: '#C2700F',
+  statusProgress: '#8B4FD8',
+  statusResolved: '#16935A',
+  statusRejected: '#E0234E',
   
   // Urgency colors
-  urgencyHigh: '#FF5A7A',
-  urgencyMedium: '#FFB86B',
-  urgencyStandard: '#4ADE9B',
+  urgencyHigh: '#E0234E',
+  urgencyMedium: '#C2700F',
+  urgencyStandard: '#16935A',
 
   // Surfaces
-  bg: '#000000',
-  surface: '#120E13',
-  surfaceRaised: '#1C0F15',
-  border: '#2C222B',
-  borderStrong: '#231B22',
+  bg: '#FFFFFF',
+  surface: '#F7F2F5',
+  surfaceRaised: '#FBEDF3',
+  border: '#DDD1D9',
+  borderStrong: '#E8DFE4',
 
   // Text
-  textPrimary: '#FFFFFF',
-  textSecondary: '#B5A8B2',
-  textMuted: '#8E8290',
+  textPrimary: '#000000',
+  textSecondary: '#5C505A',
+  textMuted: '#776B75',
   
   // Specific
-  danger: '#FF5A7A',
-  success: '#4ADE9B',
+  danger: '#E0234E',
+  success: '#16935A',
   white: '#FFFFFF',
   
   // Backwards compatibility for ui.jsx
   gray950: '#0A0A0A',
-  gray900: '#171717',
+  gray900: '#F1ECEF',
   gray50: '#FAFAFA',
   accentWash: 'rgba(255, 95, 162, 0.1)',
-  navCtaBg: '#FFFFFF',
-  navCtaBgHover: '#F5F5F5',
+  navCtaBg: '#000000',
+  navCtaBgHover: '#1F1A1E',
 };
 
 export const statusColor = {
@@ -105,59 +108,61 @@ export const motion = {
 // just complete, with the surface and chart values the original theme dropped.
 // ---------------------------------------------------------------------------
 export const colors = {
-  bg: '#000000',
-  surface: '#120E13',
-  surfaceSunken: '#0D0A0D',
-  surfaceInput: '#1A141A',
-  border: '#231B22',
-  borderStrong: '#2C222B',
-  borderDashed: '#3B2E3A',
+  bg: '#FFFFFF',
+  surface: '#F7F2F5',
+  surfaceSunken: '#F2ECEF',
+  surfaceInput: '#F4EEF2',
+  border: '#E8DFE4',
+  borderStrong: '#DDD1D9',
+  borderDashed: '#CBBDC6',
 
-  text: '#FFFFFF',
-  muted: '#B5A8B2',
-  dim: '#8E8290',
-  faint: '#978A95',
-  body: '#D2C6CE',
-  placeholder: '#6B5F68',
+  text: '#000000',
+  muted: '#5C505A',
+  dim: '#776B75',
+  faint: '#7A6E78',
+  body: '#3A2F38',
+  placeholder: '#9C909A',
 
   accent: '#FF5FA2',
   accentInk: '#1C0512',
   accentSoft: '#FFA3C8',
-  secondary: '#C08BFF',
+  secondary: '#8B4FD8',
 
-  dangerFill: '#7E1038',
-  dangerBorder: '#B02159',
-  errorBg: '#1C0F15',
+  dangerFill: '#FFE3EC',
+  dangerBorder: '#E0234E',
+  errorBg: '#FFF0F4',
+  success: '#16935A',
+  danger: '#E0234E',
 };
 
 export const statusColors = {
-  Pending: '#FFB86B',
-  'In Progress': '#C08BFF',
-  Resolved: '#4ADE9B',
-  Rejected: '#FF5A7A',
+  Pending: color.statusPending,
+  'In Progress': color.statusProgress,
+  Resolved: color.statusResolved,
+  Rejected: color.statusRejected,
 };
 
 // The API returns urgency as "High Urgency" / "Medium Urgency" / "Standard
 // Urgency"; the reference app used the bare word. Both keys are present so
 // either shape resolves to a colour.
 export const urgencyColors = {
-  Standard: '#4ADE9B',
-  Medium: '#FFB86B',
-  High: '#FF5A7A',
-  'Standard Urgency': '#4ADE9B',
-  'Medium Urgency': '#FFB86B',
-  'High Urgency': '#FF5A7A',
+  Standard: color.urgencyStandard,
+  Medium: color.urgencyMedium,
+  High: color.urgencyHigh,
+  'Standard Urgency': color.urgencyStandard,
+  'Medium Urgency': color.urgencyMedium,
+  'High Urgency': color.urgencyHigh,
 };
 
 // Deliberately distinct from the UI palette so data never reads as chrome.
-export const chartPalette = ['#C08BFF', '#7BE0D6', '#FFC77D', '#FF8FC7'];
+export const chartPalette = ['#8B4FD8', '#0F9E91', '#D98A10', '#E0478F'];
 export const chartUrgency = {
-  High: '#FF8FC7',
-  Medium: '#FFC77D',
-  Standard: '#7BE0D6',
-  'High Urgency': '#FF8FC7',
-  'Medium Urgency': '#FFC77D',
-  'Standard Urgency': '#7BE0D6',
+  High: '#E0478F',
+  Medium: '#D98A10',
+  Standard: '#0F9E91',
+  'High Urgency': '#E0478F',
+  'Medium Urgency': '#D98A10',
+  'Standard Urgency': '#0F9E91',
 };
 
 // The reference app's radius/space scales. They are NOT the same numbers as the

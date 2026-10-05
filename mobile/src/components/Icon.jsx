@@ -1,8 +1,9 @@
 import React from 'react';
 import Svg, { Path, Circle, Rect, Line, Polyline, Polygon } from 'react-native-svg';
+import { colors } from '../theme.js';
 
 // Stroke-only line icons. One component, switched by name.
-export default function Icon({ name, size = 22, color = '#FFFFFF', strokeWidth = 2 }) {
+export default function Icon({ name, size = 22, color = colors.text, strokeWidth = 2 }) {
   const p = { stroke: color, strokeWidth, strokeLinecap: 'round', strokeLinejoin: 'round', fill: 'none' };
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24">

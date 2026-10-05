@@ -362,13 +362,13 @@ const s = StyleSheet.create({
   errorNote: {
     backgroundColor: colors.errorBg,
     borderWidth: 1.5,
-    borderColor: '#FF5A7A',
+    borderColor: colors.danger,
     borderRadius: 18,
     paddingHorizontal: 18,
     paddingVertical: 16,
     marginBottom: 18,
   },
-  errorNoteText: { fontFamily: font.bodyBold, fontSize: 16, color: '#FF5A7A' },
+  errorNoteText: { fontFamily: font.bodyBold, fontSize: 16, color: colors.danger },
 });
 
 export { s as uiStyles };

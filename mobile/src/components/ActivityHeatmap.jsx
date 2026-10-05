@@ -98,7 +98,7 @@ const s = StyleSheet.create({
   week: { gap: GAP },
   cell: { width: CELL, height: CELL, borderRadius: 2 },
   cellEmpty: { backgroundColor: 'transparent' },
-  cellSelected: { borderWidth: 1, borderColor: color.gray50 },
+  cellSelected: { borderWidth: 1, borderColor: color.textPrimary },
 
   legend: { flexDirection: 'row', alignItems: 'center', gap: GAP },
   legendText: {

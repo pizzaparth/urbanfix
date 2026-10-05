@@ -77,7 +77,7 @@ const s = StyleSheet.create({
     fontFamily: font.sansBold,
     fontSize: 24,
     lineHeight: 28,
-    color: color.white,
+    color: color.textPrimary,
   },
   location: {
     fontSize: 16,

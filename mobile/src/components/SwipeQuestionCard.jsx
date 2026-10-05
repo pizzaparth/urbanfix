@@ -77,10 +77,10 @@ const SwipeQuestionCard = React.forwardRef(function SwipeQuestionCard({ question
         <Animated.View style={[s.cardWrap, cardStyle]}>
           <View style={s.card}>
             <Animated.View style={[s.stamp, s.stampYes, yesStamp]}>
-              <Text style={[s.stampText, { color: '#4ADE9B' }]}>YES</Text>
+              <Text style={[s.stampText, { color: colors.success }]}>YES</Text>
             </Animated.View>
             <Animated.View style={[s.stamp, s.stampNo, noStamp]}>
-              <Text style={[s.stampText, { color: '#FF5A7A' }]}>NO</Text>
+              <Text style={[s.stampText, { color: colors.danger }]}>NO</Text>
             </Animated.View>
 
             <Text style={s.kicker}>{category.toUpperCase()}</Text>
@@ -99,7 +99,7 @@ const s = StyleSheet.create({
   stage: { minHeight: 392, justifyContent: 'center' },
   ghost: {
     position: 'absolute', left: 0, right: 0, top: 14, bottom: 20,
-    borderRadius: 38, borderWidth: 1, borderColor: 'rgba(255,255,255,0.07)',
+    borderRadius: 38, borderWidth: 1, borderColor: 'rgba(0,0,0,0.07)',
   },
   cardWrap: { borderRadius: 38 },
   card: {
@@ -107,8 +107,8 @@ const s = StyleSheet.create({
     borderRadius: 38,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: '#333333',
-    backgroundColor: '#000000',
+    borderColor: colors.borderStrong,
+    backgroundColor: colors.bg,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 22,
@@ -116,10 +116,10 @@ const s = StyleSheet.create({
     paddingVertical: 44,
   },
   stamp: { position: 'absolute', top: 24, paddingHorizontal: 20, paddingVertical: 10, borderWidth: 3, borderRadius: 16 },
-  stampYes: { left: 24, borderColor: '#4ADE9B', transform: [{ rotate: '-14deg' }] },
-  stampNo: { right: 24, borderColor: '#FF5A7A', transform: [{ rotate: '14deg' }] },
+  stampYes: { left: 24, borderColor: colors.success, transform: [{ rotate: '-14deg' }] },
+  stampNo: { right: 24, borderColor: colors.danger, transform: [{ rotate: '14deg' }] },
   stampText: { fontFamily: font.display, fontSize: 26, letterSpacing: 1.6 },
-  kicker: { fontFamily: font.bodyBold, fontSize: 14, letterSpacing: 1.6, color: 'rgba(255,255,255,0.7)', textAlign: 'center' },
+  kicker: { fontFamily: font.bodyBold, fontSize: 14, letterSpacing: 1.6, color: 'rgba(0,0,0,0.6)', textAlign: 'center' },
   question: { fontFamily: font.display, fontSize: 38, lineHeight: 43, color: colors.text, textAlign: 'center', letterSpacing: -0.7 },
-  hint: { fontFamily: font.bodyBold, fontSize: 15, color: 'rgba(255,255,255,0.65)' },
+  hint: { fontFamily: font.bodyBold, fontSize: 15, color: 'rgba(0,0,0,0.55)' },
 });

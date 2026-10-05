@@ -34,7 +34,7 @@ export default function App() {
   return (
     <GestureHandlerRootView style={s.fill}>
       <SafeAreaProvider onLayout={onLayout}>
-        <StatusBar style="light" backgroundColor={color.bg} />
+        <StatusBar style="dark" backgroundColor={color.bg} />
         <AuthProvider>
           <RootNavigator />
         </AuthProvider>

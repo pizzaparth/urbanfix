@@ -102,14 +102,14 @@ const ReportStep = ({
               scaleTo={0.86}
               style={s.noBtn}
             >
-              <Icon name="close" size={26} color="#FF5A7A" strokeWidth={2.8} />
+              <Icon name="close" size={26} color={colors.danger} strokeWidth={2.8} />
             </Tappable>
             <Tappable
               onPress={() => swipeRef.current && swipeRef.current.swipe(1)}
               scaleTo={0.86}
               style={s.yesBtn}
             >
-              <Icon name="check" size={29} color="#06140D" strokeWidth={3.2} />
+              <Icon name="check" size={29} color="#FFFFFF" strokeWidth={3.2} />
             </Tappable>
           </View>
 
@@ -300,7 +300,7 @@ const s = StyleSheet.create({
     height: 70,
     borderRadius: 35,
     borderWidth: 2,
-    borderColor: '#FF5A7A',
+    borderColor: colors.danger,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -308,7 +308,7 @@ const s = StyleSheet.create({
     width: 70,
     height: 70,
     borderRadius: 35,
-    backgroundColor: '#4ADE9B',
+    backgroundColor: colors.success,
     alignItems: 'center',
     justifyContent: 'center',
   },

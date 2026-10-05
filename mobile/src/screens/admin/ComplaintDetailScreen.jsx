@@ -357,7 +357,7 @@ const s = StyleSheet.create({
     fontFamily: font.bodyBold,
     fontSize: 15,
     lineHeight: 22,
-    color: '#4ADE9B',
+    color: colors.success,
     textAlign: 'center',
   },
 });

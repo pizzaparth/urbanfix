@@ -26,7 +26,7 @@ export default function PhotoPicker({ files, onChange, onError, max = 3 }) {
             scaleTo={0.9}
             style={s.remove}
           >
-            <Icon name="close" size={16} color={colors.text} strokeWidth={2.6} />
+            <Icon name="close" size={16} color="#FFFFFF" strokeWidth={2.6} />
           </Tappable>
         </View>
       ))}
