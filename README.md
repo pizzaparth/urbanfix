@@ -393,4 +393,4 @@ Errors return `{ "status": "fail", "message": "..." }` for 4xx responses and `"s
 
 ## Authors
 
-Parth Pancholi, Aditya Dev, Prince Mahar, Arun Kumar and Aditi Sahu, School of Computing Science and Engineering, VIT Bhopal University. Project Exhibition I (DSN2098), supervised by Dr. Gaurav Soni.
+Parth Pancholi, School of Computing Science and Engineering, VIT Bhopal University. Project Exhibition I (DSN2098), supervised by Dr. Gaurav Soni.
