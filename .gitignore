@@ -35,3 +35,9 @@ yarn-error.*
 *.pem
 
 ui_implementation/
+# AI model working data (re-created by ai_model/notebooks/00 to 04)
+ai_model/data/
+ai_model/runs/
+ai_model/.venv/
+**/.ipynb_checkpoints/
+**/labels.cache

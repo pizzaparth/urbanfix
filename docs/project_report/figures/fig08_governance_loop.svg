@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="459.36pt" height="308.16pt" viewBox="0 0 459.36 308.16" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-10-06T17:28:36.933995</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.11.2, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 308.16 
+L 459.36 308.16 
+L 459.36 0 
+L 0 0 
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 165.96 79.38 
+L 293.4 79.38 
+Q 296.28 79.38 296.28 76.5 
+L 296.28 26.46 
+Q 296.28 23.58 293.4 23.58 
+L 165.96 23.58 
+Q 163.08 23.58 163.08 26.46 
+L 163.08 76.5 
+Q 163.08 79.38 165.96 79.38 
+z
+" clip-path="url(#p9edcb556ef)" style="fill: #ffffff; stroke: #2b3a4a; stroke-width: 0.8; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 300.020733 130.68 
+L 427.460733 130.68 
+Q 430.340733 130.68 430.340733 127.8 
+L 430.340733 77.76 
+Q 430.340733 74.88 427.460733 74.88 
+L 300.020733 74.88 
+Q 297.140733 74.88 297.140733 77.76 
+L 297.140733 127.8 
+Q 297.140733 130.68 300.020733 130.68 
+z
+" clip-path="url(#p9edcb556ef)" style="fill: #ffffff; stroke: #a8402f; stroke-width: 1.1; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 300.020733 233.28 
+L 427.460733 233.28 
+Q 430.340733 233.28 430.340733 230.4 
+L 430.340733 180.36 
+Q 430.340733 177.48 427.460733 177.48 
+L 300.020733 177.48 
+Q 297.140733 177.48 297.140733 180.36 
+L 297.140733 230.4 
+Q 297.140733 233.28 300.020733 233.28 
+z
+" clip-path="url(#p9edcb556ef)" style="fill: #ffffff; stroke: #a8402f; stroke-width: 1.1; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 165.96 284.58 
+L 293.4 284.58 
+Q 296.28 284.58 296.28 281.7 
+L 296.28 231.66 
+Q 296.28 228.78 293.4 228.78 
+L 165.96 228.78 
+Q 163.08 228.78 163.08 231.66 
+L 163.08 281.7 
+Q 163.08 284.58 165.96 284.58 
+z
+" clip-path="url(#p9edcb556ef)" style="fill: #ffffff; stroke: #2b3a4a; stroke-width: 0.8; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 31.899267 233.28 
+L 159.339267 233.28 
+Q 162.219267 233.28 162.219267 230.4 
+L 162.219267 180.36 
+Q 162.219267 177.48 159.339267 177.48 
+L 31.899267 177.48 
+Q 29.019267 177.48 29.019267 180.36 
+L 29.019267 230.4 
+Q 29.019267 233.28 31.899267 233.28 
+z
+" clip-path="url(#p9edcb556ef)" style="fill: #ffffff; stroke: #2b3a4a; stroke-width: 0.8; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 31.899267 130.68 
+L 159.339267 130.68 
+Q 162.219267 130.68 162.219267 127.8 
+L 162.219267 77.76 
+Q 162.219267 74.88 159.339267 74.88 
+L 31.899267 74.88 
+Q 29.019267 74.88 29.019267 77.76 
+L 29.019267 127.8 
+Q 29.019267 130.68 31.899267 130.68 
+z
+" clip-path="url(#p9edcb556ef)" style="fill: #ffffff; stroke: #2b3a4a; stroke-width: 0.8; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_8">
+    <path d="M 296.28 51.48 
+Q 338.200366 39.568744 362.95445 73.792912 
+" clip-path="url(#p9edcb556ef)" style="fill: none; stroke: #1f3b5c; stroke-width: 1.2; stroke-linecap: round"/>
+    <path d="M 362.230744 69.379722 
+L 362.95445 73.792912 
+L 358.989674 71.723963 
+z
+" clip-path="url(#p9edcb556ef)" style="fill: #1f3b5c; stroke: #1f3b5c; stroke-width: 1.2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_9">
+    <path d="M 363.740733 130.68 
+Q 375.440733 154.08 364.340733 176.28 
+" clip-path="url(#p9edcb556ef)" style="fill: none; stroke: #1f3b5c; stroke-width: 1.2; stroke-linecap: round"/>
+    <path d="M 367.918441 173.596718 
+L 364.340733 176.28 
+L 364.340733 171.807864 
+z
+" clip-path="url(#p9edcb556ef)" style="fill: #1f3b5c; stroke: #1f3b5c; stroke-width: 1.2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_10">
+    <path d="M 363.740733 233.28 
+Q 338.200366 268.591256 297.570555 257.046698 
+" clip-path="url(#p9edcb556ef)" style="fill: none; stroke: #1f3b5c; stroke-width: 1.2; stroke-linecap: round"/>
+    <path d="M 300.871605 260.063828 
+L 297.570555 257.046698 
+L 301.964888 256.216136 
+z
+" clip-path="url(#p9edcb556ef)" style="fill: #1f3b5c; stroke: #1f3b5c; stroke-width: 1.2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_11">
+    <path d="M 163.08 256.68 
+Q 121.159634 268.591256 96.40555 234.367088 
+" clip-path="url(#p9edcb556ef)" style="fill: none; stroke: #1f3b5c; stroke-width: 1.2; stroke-linecap: round"/>
+    <path d="M 97.129256 238.780278 
+L 96.40555 234.367088 
+L 100.370326 236.436037 
+z
+" clip-path="url(#p9edcb556ef)" style="fill: #1f3b5c; stroke: #1f3b5c; stroke-width: 1.2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_12">
+    <path d="M 95.619267 177.48 
+Q 83.919267 154.08 95.019267 131.88 
+" clip-path="url(#p9edcb556ef)" style="fill: none; stroke: #1f3b5c; stroke-width: 1.2; stroke-linecap: round"/>
+    <path d="M 91.441559 134.563282 
+L 95.019267 131.88 
+L 95.019267 136.352136 
+z
+" clip-path="url(#p9edcb556ef)" style="fill: #1f3b5c; stroke: #1f3b5c; stroke-width: 1.2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_13">
+    <path d="M 95.619267 74.88 
+Q 121.159634 39.568744 161.789445 51.113302 
+" clip-path="url(#p9edcb556ef)" style="fill: none; stroke: #1f3b5c; stroke-width: 1.2; stroke-linecap: round"/>
+    <path d="M 158.488395 48.096172 
+L 161.789445 51.113302 
+L 157.395112 51.943864 
+z
+" clip-path="url(#p9edcb556ef)" style="fill: #1f3b5c; stroke: #1f3b5c; stroke-width: 1.2; stroke-linecap: round"/>
+   </g>
+   <g id="text_1">
+    <text style="font-weight: 700; font-size: 13px; font-family: 'Arial'; text-anchor: middle; fill: #1f3b5c" x="229.68" y="142.324258" transform="rotate(-0 229.68 142.324258)">UrbanFix</text>
+   </g>
+   <g id="text_2">
+    <text style="font-size: 7.6px; font-family: 'Arial'; text-anchor: middle; fill: #1b1b1b" x="229.68" y="157.846723" transform="rotate(-0 229.68 157.846723)">AI-powered end-to-end governance</text>
+   </g>
+   <g id="text_3">
+    <text style="font-size: 6.6px; font-family: 'Arial'; fill: #7f7f7f" transform="translate(191.348953 169.721467)">every step is written to the</text>
+    <text style="font-size: 6.6px; font-family: 'Arial'; fill: #7f7f7f" transform="translate(198.971437 177.812268)">complaint's audit trail</text>
+   </g>
+   <g id="patch_14">
+    <path d="M 173.88 41.22 
+C 175.693989 41.22 177.433926 40.499294 178.71661 39.21661 
+C 179.999294 37.933926 180.72 36.193989 180.72 34.38 
+C 180.72 32.566011 179.999294 30.826074 178.71661 29.54339 
+C 177.433926 28.260706 175.693989 27.54 173.88 27.54 
+C 172.066011 27.54 170.326074 28.260706 169.04339 29.54339 
+C 167.760706 30.826074 167.04 32.566011 167.04 34.38 
+C 167.04 36.193989 167.760706 37.933926 169.04339 39.21661 
+C 170.326074 40.499294 172.066011 41.22 173.88 41.22 
+z
+" clip-path="url(#p9edcb556ef)" style="fill: #1f3b5c"/>
+   </g>
+   <g id="patch_15">
+    <path d="M 307.940733 92.52 
+C 309.754722 92.52 311.494659 91.799294 312.777343 90.51661 
+C 314.060027 89.233926 314.780733 87.493989 314.780733 85.68 
+C 314.780733 83.866011 314.060027 82.126074 312.777343 80.84339 
+C 311.494659 79.560706 309.754722 78.84 307.940733 78.84 
+C 306.126743 78.84 304.386806 79.560706 303.104122 80.84339 
+C 301.821438 82.126074 301.100733 83.866011 301.100733 85.68 
+C 301.100733 87.493989 301.821438 89.233926 303.104122 90.51661 
+C 304.386806 91.799294 306.126743 92.52 307.940733 92.52 
+z
+" clip-path="url(#p9edcb556ef)" style="fill: #a8402f"/>
+   </g>
+   <g id="patch_16">
+    <path d="M 307.940733 195.12 
+C 309.754722 195.12 311.494659 194.399294 312.777343 193.11661 
+C 314.060027 191.833926 314.780733 190.093989 314.780733 188.28 
+C 314.780733 186.466011 314.060027 184.726074 312.777343 183.44339 
+C 311.494659 182.160706 309.754722 181.44 307.940733 181.44 
+C 306.126743 181.44 304.386806 182.160706 303.104122 183.44339 
+C 301.821438 184.726074 301.100733 186.466011 301.100733 188.28 
+C 301.100733 190.093989 301.821438 191.833926 303.104122 193.11661 
+C 304.386806 194.399294 306.126743 195.12 307.940733 195.12 
+z
+" clip-path="url(#p9edcb556ef)" style="fill: #a8402f"/>
+   </g>
+   <g id="patch_17">
+    <path d="M 173.88 246.42 
+C 175.693989 246.42 177.433926 245.699294 178.71661 244.41661 
+C 179.999294 243.133926 180.72 241.393989 180.72 239.58 
+C 180.72 237.766011 179.999294 236.026074 178.71661 234.74339 
+C 177.433926 233.460706 175.693989 232.74 173.88 232.74 
+C 172.066011 232.74 170.326074 233.460706 169.04339 234.74339 
+C 167.760706 236.026074 167.04 237.766011 167.04 239.58 
+C 167.04 241.393989 167.760706 243.133926 169.04339 244.41661 
+C 170.326074 245.699294 172.066011 246.42 173.88 246.42 
+z
+" clip-path="url(#p9edcb556ef)" style="fill: #1f3b5c"/>
+   </g>
+   <g id="patch_18">
+    <path d="M 39.819267 195.12 
+C 41.633257 195.12 43.373194 194.399294 44.655878 193.11661 
+C 45.938562 191.833926 46.659267 190.093989 46.659267 188.28 
+C 46.659267 186.466011 45.938562 184.726074 44.655878 183.44339 
+C 43.373194 182.160706 41.633257 181.44 39.819267 181.44 
+C 38.005278 181.44 36.265341 182.160706 34.982657 183.44339 
+C 33.699973 184.726074 32.979267 186.466011 32.979267 188.28 
+C 32.979267 190.093989 33.699973 191.833926 34.982657 193.11661 
+C 36.265341 194.399294 38.005278 195.12 39.819267 195.12 
+z
+" clip-path="url(#p9edcb556ef)" style="fill: #1f3b5c"/>
+   </g>
+   <g id="patch_19">
+    <path d="M 39.819267 92.52 
+C 41.633257 92.52 43.373194 91.799294 44.655878 90.51661 
+C 45.938562 89.233926 46.659267 87.493989 46.659267 85.68 
+C 46.659267 83.866011 45.938562 82.126074 44.655878 80.84339 
+C 43.373194 79.560706 41.633257 78.84 39.819267 78.84 
+C 38.005278 78.84 36.265341 79.560706 34.982657 80.84339 
+C 33.699973 82.126074 32.979267 83.866011 32.979267 85.68 
+C 32.979267 87.493989 33.699973 89.233926 34.982657 90.51661 
+C 36.265341 91.799294 38.005278 92.52 39.819267 92.52 
+z
+" clip-path="url(#p9edcb556ef)" style="fill: #1f3b5c"/>
+   </g>
+   <g id="text_4">
+    <text style="font-weight: 700; font-size: 7.5px; font-family: 'Arial'; text-anchor: middle; fill: #ffffff" x="173.88" y="36.320918" transform="rotate(-0 173.88 36.320918)">1</text>
+   </g>
+   <g id="text_5">
+    <text style="font-weight: 700; font-size: 8.6px; font-family: 'Arial'; text-anchor: start; fill: #1b1b1b" x="184.68" y="36.605586" transform="rotate(-0 184.68 36.605586)">Report</text>
+   </g>
+   <g id="text_6">
+    <text style="font-size: 6.5px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(168.12 51.394897)">Citizen files photos, location and ward;</text>
+    <text style="font-size: 6.5px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(168.12 59.512915)">verifies with an email OTP, no account.</text>
+   </g>
+   <g id="text_7">
+    <text style="font-style: italic; font-size: 6.3px; font-family: 'Arial'; text-anchor: start; fill: #7f7f7f" x="168.12" y="73.8196" transform="rotate(-0 168.12 73.8196)">Expo app, /api/complaints</text>
+   </g>
+   <g id="text_8">
+    <text style="font-weight: 700; font-size: 7.5px; font-family: 'Arial'; text-anchor: middle; fill: #ffffff" x="307.940733" y="87.620918" transform="rotate(-0 307.940733 87.620918)">2</text>
+   </g>
+   <g id="text_9">
+    <text style="font-weight: 700; font-size: 8.6px; font-family: 'Arial'; text-anchor: start; fill: #1b1b1b" x="318.740733" y="87.905586" transform="rotate(-0 318.740733 87.905586)">Validate</text>
+   </g>
+   <g id="text_10">
+    <text style="font-size: 6.5px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(302.180733 102.658843)">Category YOLOv8 model boxes or masks</text>
+    <text style="font-size: 6.5px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(302.180733 110.586938)">the defect; unsure cases go to review.</text>
+   </g>
+   <g id="text_11">
+    <text style="font-style: italic; font-size: 6.3px; font-family: 'Arial'; text-anchor: start; fill: #7f7f7f" x="302.180733" y="125.1196" transform="rotate(-0 302.180733 125.1196)">FastAPI AI service</text>
+   </g>
+   <g id="text_12">
+    <text style="font-weight: 700; font-size: 7.5px; font-family: 'Arial'; text-anchor: middle; fill: #ffffff" x="307.940733" y="190.220918" transform="rotate(-0 307.940733 190.220918)">3</text>
+   </g>
+   <g id="text_13">
+    <text style="font-weight: 700; font-size: 8.6px; font-family: 'Arial'; text-anchor: start; fill: #1b1b1b" x="318.740733" y="190.505586" transform="rotate(-0 318.740733 190.505586)">Prioritise</text>
+   </g>
+   <g id="text_14">
+    <text style="font-size: 6.5px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(302.180733 205.217202)">Weighted questionnaire and AI damage</text>
+    <text style="font-size: 6.5px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(302.180733 213.147329)">estimate set the urgency level.</text>
+   </g>
+   <g id="text_15">
+    <text style="font-style: italic; font-size: 6.3px; font-family: 'Arial'; text-anchor: start; fill: #7f7f7f" x="302.180733" y="227.71031" transform="rotate(-0 302.180733 227.71031)">urgency.js, aiAnalysis</text>
+   </g>
+   <g id="text_16">
+    <text style="font-weight: 700; font-size: 7.5px; font-family: 'Arial'; text-anchor: middle; fill: #ffffff" x="173.88" y="241.520918" transform="rotate(-0 173.88 241.520918)">4</text>
+   </g>
+   <g id="text_17">
+    <text style="font-weight: 700; font-size: 8.6px; font-family: 'Arial'; text-anchor: start; fill: #1b1b1b" x="184.68" y="241.805586" transform="rotate(-0 184.68 241.805586)">Act</text>
+   </g>
+   <g id="text_18">
+    <text style="font-size: 6.5px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(168.12 256.556812)">Supervisor triages and assigns in ward;</text>
+    <text style="font-size: 6.5px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(168.12 264.525024)">field worker repairs and uploads proof.</text>
+   </g>
+   <g id="text_19">
+    <text style="font-style: italic; font-size: 6.3px; font-family: 'Arial'; text-anchor: start; fill: #7f7f7f" x="168.12" y="279.0196" transform="rotate(-0 168.12 279.0196)">workflow engine</text>
+   </g>
+   <g id="text_20">
+    <text style="font-weight: 700; font-size: 7.5px; font-family: 'Arial'; text-anchor: middle; fill: #ffffff" x="39.819267" y="190.220918" transform="rotate(-0 39.819267 190.220918)">5</text>
+   </g>
+   <g id="text_21">
+    <text style="font-weight: 700; font-size: 8.6px; font-family: 'Arial'; text-anchor: start; fill: #1b1b1b" x="50.619267" y="190.505586" transform="rotate(-0 50.619267 190.505586)">Prove</text>
+   </g>
+   <g id="text_22">
+    <text style="font-size: 6.5px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(34.059267 205.294897)">Closure emails a PDF receipt; the full</text>
+    <text style="font-size: 6.5px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(34.059267 213.147329)">history stays public in the registry.</text>
+   </g>
+   <g id="text_23">
+    <text style="font-style: italic; font-size: 6.3px; font-family: 'Arial'; text-anchor: start; fill: #7f7f7f" x="34.059267" y="227.7196" transform="rotate(-0 34.059267 227.7196)">PDFKit, /api/public</text>
+   </g>
+   <g id="text_24">
+    <text style="font-weight: 700; font-size: 7.5px; font-family: 'Arial'; text-anchor: middle; fill: #ffffff" x="39.819267" y="87.620918" transform="rotate(-0 39.819267 87.620918)">6</text>
+   </g>
+   <g id="text_25">
+    <text style="font-weight: 700; font-size: 8.6px; font-family: 'Arial'; text-anchor: start; fill: #1b1b1b" x="50.619267" y="87.905586" transform="rotate(-0 50.619267 87.905586)">Learn</text>
+   </g>
+   <g id="text_26">
+    <text style="font-size: 6.5px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(34.059267 102.617202)">Approved researchers query anonymised</text>
+    <text style="font-size: 6.5px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(34.059267 110.625024)">data; admins track performance.</text>
+   </g>
+   <g id="text_27">
+    <text style="font-style: italic; font-size: 6.3px; font-family: 'Arial'; text-anchor: start; fill: #7f7f7f" x="34.059267" y="125.11031" transform="rotate(-0 34.059267 125.11031)">/api/research, analytics</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p9edcb556ef">
+   <rect x="2.88" y="2.88" width="453.6" height="302.4"/>
+  </clipPath>
+ </defs>
+</svg>

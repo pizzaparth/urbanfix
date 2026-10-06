@@ -172,7 +172,7 @@ The app shows a different bottom tab set for each role. The server's role, not t
 #### 4.3 AI Service
 * **Runtime:** Python with FastAPI.
 * **Models:** Ultralytics YOLOv8, one fine-tuned model per category (segmentation where the dataset has masks, detection where it has boxes).
-* **Training:** one Jupyter notebook per category in `ai_model/` (for example `ai_model/road_damage.ipynb`).
+* **Training:** one Jupyter notebook per category in `ai_model/notebooks/` (`01_pothole_road_damage.ipynb` to `04_graffiti.ipynb`), with download and evaluation notebooks alongside.
 * **Output:** detections, confidence, annotated images, and, for segmentation models, the damaged share of the surface.
 
 ---
@@ -380,7 +380,7 @@ Category Dataset (e.g. Pothole Segmentation YOLOv8)
 pothole_road_damage_model.pt
 ```
 
-The trained weights are produced by each notebook's training cell, for example `runs/segment/train/weights/best.pt`, and copied into the AI service's model storage. Weight files are not committed to git because of their size.
+The trained weights are produced by each notebook's training cell and copied into `ai_model/weights/` (`pothole_road_damage_model.pt`, `garbage_litter_model.pt`, `open_manhole_model.pt`, `graffiti_model.pt`), the model storage the AI service loads.
 
 **Reference result:** the Pothole / Road Damage segmentation model reaches a mask mAP50 of **0.72** (precision 0.71, recall 0.66) on its 60-image validation split.
 

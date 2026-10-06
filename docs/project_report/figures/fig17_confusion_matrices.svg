@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="436.51875pt" height="135.321985pt" viewBox="0 0 436.51875 135.321985" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-10-06T20:48:04.389940</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.11.2, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 135.321985 
+L 436.51875 135.321985 
+L 436.51875 0 
+L 0 0 
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 59.58 84.059384 
+L 120.190345 84.059384 
+L 120.190345 23.449039 
+L 59.58 23.449039 
+z
+" style="fill: #ffffff"/>
+   </g>
+   <g clip-path="url(#p0f10b5d0fe)">
+    <image xlink:href="data:image/png;base64,
+iVBORw0KGgoAAAANSUhEUgAAAP0AAAD8CAYAAAC8aaJZAAADFUlEQVR4nO3VQQ3CAAxA0Q0Js0DQwBVTzBrJTsjABBo2GT389wy0afLT9fv7nwtJz/s2vQIDbhNDgTmihxjRQ4zoIUb0ECN6iBE9xIgeYkQPMaKHGNFDjOghRvQQI3qIET3EiB5iRA8xoocY0UOM6CFG9BAjeogRPcSIHmJEDzGihxjRQ4zoIUb0ECN6iBE9xIgeYkQPMaKHGNFDjOghRvQQI3qIET3EiB5iRA8xoocY0UOM6CFG9BAjeogRPcSIHmJEDzGihxjRQ4zoIUb0ECN6iBE9xIgeYkQPMaKHGNFDjOghRvQQI3qIET3EiB5iRA8xoocY0UOM6CFG9BAjeogRPcSIHmJEDzGihxjRQ4zoIUb0ECN6iBE9xIgeYkQPMaKHGNFDjOghRvQQI3qIET3EiB5iRA8xoocY0UOM6CFG9BAjeogRPcSIHmJEDzGihxjRQ4zoIUb0ECN6iBE9xIgeYkQPMaKHGNFDjOghRvQQI3qIET3EiB5iRA8xoocY0UOM6CFG9BAjeogRPcSIHmJEDzGihxjRQ4zoIUb0ELM+3p9zeglmHPvL6YN8eogRPcSIHmJEDzGihxjRQ4zoIUb0ECN6iBE9xIgeYkQPMaKHGNFDjOghRvQQI3qIET3EiB5iRA8xoocY0UOM6CFG9BAjeogRPcSIHmJEDzGihxjRQ4zoIUb0ECN6iBE9xIgeYkQPMaKHGNFDjOghRvQQI3qIET3EiB5iRA8xoocY0UOM6CFG9BAjeogRPcSIHmJEDzGihxjRQ4zoIUb0ECN6iBE9xIgeYkQPMaKHGNFDjOghRvQQI3qIET3EiB5iRA8xoocY0UOM6CFG9BAjeogRPcSIHmJEDzGihxjRQ4zoIUb0ECN6iBE9xIgeYkQPMaKHGNFDjOghRvQQI3qIET3EiB5iRA8xoocY0UOM6CFG9BAjeogRPcSIHmJEDzGihxjRQ4zoIUb0ECN6iBE9xIgeYkQPMaKHGNFDjOghRvQQI3qIET3EiB5iRA8xoocY0UOM6CFG9BAjeogRPcSIHmJEDzGih6XlAmKxCafdols5AAAAAElFTkSuQmCC" id="image1b752e6657" transform="scale(1 -1) translate(0 -60.48)" x="59.52" y="-23.481985" width="60.72" height="60.48"/>
+   </g>
+   <g id="matplotlib.axis_1">
+    <g id="xtick_1">
+     <g id="line2d_1"/>
+     <g id="text_1">
+      <text style="font-size: 6.8px; font-family: 'Arial'; text-anchor: middle" x="74.732586" y="92.50997" transform="rotate(-0 74.732586 92.50997)">defect</text>
+     </g>
+    </g>
+    <g id="xtick_2">
+     <g id="line2d_2"/>
+     <g id="text_2">
+      <text style="font-size: 6.8px; font-family: 'Arial'; text-anchor: middle" x="105.037759" y="92.50997" transform="rotate(-0 105.037759 92.50997)">background</text>
+     </g>
+    </g>
+    <g id="text_3">
+     <text style="font-size: 7.4px; font-family: 'Arial'; text-anchor: middle" x="89.885172" y="103.32856" transform="rotate(-0 89.885172 103.32856)">True</text>
+    </g>
+   </g>
+   <g id="matplotlib.axis_2">
+    <g id="ytick_1">
+     <g id="line2d_3"/>
+     <g id="text_4">
+      <text style="font-size: 6.8px; font-family: 'Arial'" transform="translate(54.648945 47.862907) rotate(-90)">defect</text>
+     </g>
+    </g>
+    <g id="ytick_2">
+     <g id="line2d_4"/>
+     <g id="text_5">
+      <text style="font-size: 6.8px; font-family: 'Arial'" transform="translate(54.648812 86.673923) rotate(-90)">background</text>
+     </g>
+    </g>
+    <g id="text_6">
+     <text style="font-size: 7.4px; font-family: 'Arial'; text-anchor: middle" x="44.140902" y="53.754211" transform="rotate(-90 44.140902 53.754211)">Predicted</text>
+    </g>
+   </g>
+   <g id="text_7">
+    <text style="font-size: 6.8px; font-family: 'Arial'; fill: #ffffff" transform="translate(63.83293 37.375932)">TP 147</text>
+    <text style="font-size: 6.8px; font-family: 'Arial'; fill: #ffffff" transform="translate(68.115867 44.671787)">0.73</text>
+   </g>
+   <g id="text_8">
+    <text style="font-size: 6.8px; font-family: 'Arial'; text-anchor: middle; fill: #1b1b1b" x="105.037759" y="41.003938" transform="rotate(-0 105.037759 41.003938)">FP 69</text>
+   </g>
+   <g id="text_9">
+    <text style="font-size: 6.8px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(65.474492 67.629573)">FN 54</text>
+    <text style="font-size: 6.8px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(68.115867 74.978554)">0.27</text>
+   </g>
+   <g id="text_10">
+    <text style="font-size: 6.8px; font-family: 'Arial'; text-anchor: middle; fill: #1b1b1b" x="105.037759" y="71.340454" transform="rotate(-0 105.037759 71.340454)">n/a</text>
+   </g>
+   <g id="text_11">
+    <text style="font-weight: 700; font-size: 7.4px; font-family: 'Arial'" transform="translate(59.58 8.961586)">Pothole / Road Damage</text>
+    <text style="font-weight: 700; font-size: 7.4px; font-family: 'Arial'" transform="translate(59.58 17.449039)">P 0.68, R 0.73</text>
+   </g>
+  </g>
+  <g id="axes_2">
+   <g id="patch_3">
+    <path d="M 156.556552 84.059384 
+L 217.166897 84.059384 
+L 217.166897 23.449039 
+L 156.556552 23.449039 
+z
+" style="fill: #ffffff"/>
+   </g>
+   <g clip-path="url(#p79ed64584e)">
+    <image xlink:href="data:image/png;base64,
+iVBORw0KGgoAAAANSUhEUgAAAP0AAAD8CAYAAAC8aaJZAAADFUlEQVR4nO3VQQ3CAAxA0Q1ISLAyNZjADzamBxEcOXLbZPTw3zPQpslP19f+ORaS3s9tegUGXCaGAnNEDzGihxjRQ4zoIUb0ECN6iBE9xIgeYkQPMaKHGNFDjOghRvQQI3qIET3EiB5iRA8xoocY0UOM6CFG9BAjeogRPcSIHmJEDzGihxjRQ4zoIUb0ECN6iBE9xIgeYkQPMaKHGNFDjOghRvQQI3qIET3EiB5iRA8xoocY0UOM6CFG9BAjeogRPcSIHmJEDzGihxjRQ4zoIUb0ECN6iBE9xIgeYkQPMaKHGNFDjOghRvQQI3qIET3EiB5iRA8xoocY0UOM6CFG9BAjeogRPcSIHmJEDzGihxjRQ4zoIUb0ECN6iBE9xIgeYkQPMaKHGNFDjOghRvQQI3qIET3EiB5iRA8xoocY0UOM6CFG9BAjeogRPcSIHmJEDzGihxjRQ4zoIUb0ECN6iBE9xIgeYkQPMaKHGNFDjOghRvQQI3qIET3EiB5iRA8xoocY0UOM6CFG9BAjeogRPcSIHmJEDzGihxjRQ4zoIeb2uF+nd2DI9/d3+yCfHmJEDzGihxjRQ4zoIUb0ECN6iBE9xIgeYkQPMaKHGNFDjOghRvQQI3qIET3EiB5iRA8xoocY0UOM6CFG9BAjeogRPcSIHmJEDzGihxjRQ4zoIUb0ECN6iBE9xIgeYkQPMaKHGNFDjOghRvQQI3qIET3EiB5iRA8xoocY0UOM6CFG9BAjeogRPcSIHmJEDzGihxjRQ4zoIUb0ECN6iBE9xIgeYkQPMaKHGNFDjOghRvQQI3qIET3EiB5iRA8xoocY0UOM6CFG9BAjeogRPcSIHmJEDzGihxjRQ4zoIUb0ECN6iBE9xIgeYkQPMaKHGNFDjOghRvQQI3qIET3EiB5iRA8xoocY0UOM6CFG9BAjeogRPcSIHmJEDzGihxjRQ4zoIUb0ECN6iBE9xIgeYkQPMaKHGNFDjOghRvQQI3qIET3EiB5iRA8xoocY0UOM6CFG9BAjeogRPcSIHmJEDzGihxjRQ4zoYWk5AbJPCM6zbrSvAAAAAElFTkSuQmCC" id="imagedfea7d89d6" transform="scale(1 -1) translate(0 -60.48)" x="156.48" y="-23.481985" width="60.72" height="60.48"/>
+   </g>
+   <g id="matplotlib.axis_3">
+    <g id="xtick_3">
+     <g id="line2d_5"/>
+     <g id="text_12">
+      <text style="font-size: 6.8px; font-family: 'Arial'; text-anchor: middle" x="171.709138" y="92.50997" transform="rotate(-0 171.709138 92.50997)">defect</text>
+     </g>
+    </g>
+    <g id="xtick_4">
+     <g id="line2d_6"/>
+     <g id="text_13">
+      <text style="font-size: 6.8px; font-family: 'Arial'; text-anchor: middle" x="202.01431" y="92.50997" transform="rotate(-0 202.01431 92.50997)">background</text>
+     </g>
+    </g>
+    <g id="text_14">
+     <text style="font-size: 7.4px; font-family: 'Arial'; text-anchor: middle" x="186.861724" y="103.32856" transform="rotate(-0 186.861724 103.32856)">True</text>
+    </g>
+   </g>
+   <g id="matplotlib.axis_4">
+    <g id="ytick_3">
+     <g id="line2d_7"/>
+     <g id="text_15">
+      <text style="font-size: 6.8px; font-family: 'Arial'" transform="translate(151.625497 47.862907) rotate(-90)">defect</text>
+     </g>
+    </g>
+    <g id="ytick_4">
+     <g id="line2d_8"/>
+     <g id="text_16">
+      <text style="font-size: 6.8px; font-family: 'Arial'" transform="translate(151.625364 86.673923) rotate(-90)">background</text>
+     </g>
+    </g>
+    <g id="text_17">
+     <text style="font-size: 7.4px; font-family: 'Arial'; text-anchor: middle" x="141.117454" y="53.754211" transform="rotate(-90 141.117454 53.754211)">Predicted</text>
+    </g>
+   </g>
+   <g id="text_18">
+    <text style="font-size: 6.8px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(160.809482 37.332901)">TP 337</text>
+    <text style="font-size: 6.8px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(165.092419 44.673381)">0.49</text>
+   </g>
+   <g id="text_19">
+    <text style="font-size: 6.8px; font-family: 'Arial'; text-anchor: middle; fill: #1b1b1b" x="202.01431" y="41.002344" transform="rotate(-0 202.01431 41.002344)">FP 183</text>
+   </g>
+   <g id="text_20">
+    <text style="font-size: 6.8px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(160.560325 67.638073)">FN 357</text>
+    <text style="font-size: 6.8px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(165.092419 74.978554)">0.51</text>
+   </g>
+   <g id="text_21">
+    <text style="font-size: 6.8px; font-family: 'Arial'; text-anchor: middle; fill: #1b1b1b" x="202.01431" y="71.340454" transform="rotate(-0 202.01431 71.340454)">n/a</text>
+   </g>
+   <g id="text_22">
+    <text style="font-weight: 700; font-size: 7.4px; font-family: 'Arial'" transform="translate(156.556552 8.961586)">Garbage / Litter</text>
+    <text style="font-weight: 700; font-size: 7.4px; font-family: 'Arial'" transform="translate(156.556552 17.449039)">P 0.65, R 0.49</text>
+   </g>
+  </g>
+  <g id="axes_3">
+   <g id="patch_4">
+    <path d="M 253.533103 84.059384 
+L 314.143448 84.059384 
+L 314.143448 23.449039 
+L 253.533103 23.449039 
+z
+" style="fill: #ffffff"/>
+   </g>
+   <g clip-path="url(#p5e2f95c4bc)">
+    <image xlink:href="data:image/png;base64,
+iVBORw0KGgoAAAANSUhEUgAAAP0AAAD8CAYAAAC8aaJZAAADFUlEQVR4nO3VsQ3CAAwAwYQmNFQsxShskyEYKgtQU9MlY7j4uwVsWXp5/f7+50LS87FNr8CA28RQYI7oIUb0ECN6iBE9xIgeYkQPMaKHGNFDjOghRvQQI3qIET3EiB5iRA8xoocY0UOM6CFG9BAjeogRPcSIHmJEDzGihxjRQ4zoIUb0ECN6iBE9xIgeYkQPMaKHGNFDjOghRvQQI3qIET3EiB5iRA8xoocY0UOM6CFG9BAjeogRPcSIHmJEDzGihxjRQ4zoIUb0ECN6iBE9xIgeYkQPMaKHGNFDjOghRvQQI3qIET3EiB5iRA8xoocY0UOM6CFG9BAjeogRPcSIHmJEDzGihxjRQ4zoIUb0ECN6iBE9xIgeYkQPMaKHGNFDjOghRvQQI3qIET3EiB5iRA8xoocY0UOM6CFG9BAjeogRPcSIHmJEDzGihxjRQ4zoIUb0ECN6iBE9xIgeYkQPMaKHGNFDjOghRvQQI3qIET3EiB5iRA8xoocY0UOM6CFG9BAjeogRPcSIHmJEDzGihxjRQ4zoIUb0ECN6iBE9xKz3135OL8GM4/N2+iCfHmJEDzGihxjRQ4zoIUb0ECN6iBE9xIgeYkQPMaKHGNFDjOghRvQQI3qIET3EiB5iRA8xoocY0UOM6CFG9BAjeogRPcSIHmJEDzGihxjRQ4zoIUb0ECN6iBE9xIgeYkQPMaKHGNFDjOghRvQQI3qIET3EiB5iRA8xoocY0UOM6CFG9BAjeogRPcSIHmJEDzGihxjRQ4zoIUb0ECN6iBE9xIgeYkQPMaKHGNFDjOghRvQQI3qIET3EiB5iRA8xoocY0UOM6CFG9BAjeogRPcSIHmJEDzGihxjRQ4zoIUb0ECN6iBE9xIgeYkQPMaKHGNFDjOghRvQQI3qIET3EiB5iRA8xoocY0UOM6CFG9BAjeogRPcSIHmJEDzGihxjRQ4zoIUb0ECN6iBE9xIgeYkQPMaKHGNFDjOghRvQQI3qIET3EiB5iRA8xoocY0UOM6CFG9BAjeogRPcSIHmJEDzGihxjRQ4zoYWm5AAllCaf3UOHwAAAAAElFTkSuQmCC" id="imageff62ba9fb6" transform="scale(1 -1) translate(0 -60.48)" x="253.44" y="-23.481985" width="60.72" height="60.48"/>
+   </g>
+   <g id="matplotlib.axis_5">
+    <g id="xtick_5">
+     <g id="line2d_9"/>
+     <g id="text_23">
+      <text style="font-size: 6.8px; font-family: 'Arial'; text-anchor: middle" x="268.68569" y="92.50997" transform="rotate(-0 268.68569 92.50997)">defect</text>
+     </g>
+    </g>
+    <g id="xtick_6">
+     <g id="line2d_10"/>
+     <g id="text_24">
+      <text style="font-size: 6.8px; font-family: 'Arial'; text-anchor: middle" x="298.990862" y="92.50997" transform="rotate(-0 298.990862 92.50997)">background</text>
+     </g>
+    </g>
+    <g id="text_25">
+     <text style="font-size: 7.4px; font-family: 'Arial'; text-anchor: middle" x="283.838276" y="103.32856" transform="rotate(-0 283.838276 103.32856)">True</text>
+    </g>
+   </g>
+   <g id="matplotlib.axis_6">
+    <g id="ytick_5">
+     <g id="line2d_11"/>
+     <g id="text_26">
+      <text style="font-size: 6.8px; font-family: 'Arial'" transform="translate(248.602049 47.862907) rotate(-90)">defect</text>
+     </g>
+    </g>
+    <g id="ytick_6">
+     <g id="line2d_12"/>
+     <g id="text_27">
+      <text style="font-size: 6.8px; font-family: 'Arial'" transform="translate(248.601916 86.673923) rotate(-90)">background</text>
+     </g>
+    </g>
+    <g id="text_28">
+     <text style="font-size: 7.4px; font-family: 'Arial'; text-anchor: middle" x="238.094006" y="53.754211" transform="rotate(-90 238.094006 53.754211)">Predicted</text>
+    </g>
+   </g>
+   <g id="text_29">
+    <text style="font-size: 6.8px; font-family: 'Arial'; fill: #ffffff" transform="translate(257.786033 37.332901)">TP 134</text>
+    <text style="font-size: 6.8px; font-family: 'Arial'; fill: #ffffff" transform="translate(262.068971 44.673381)">0.91</text>
+   </g>
+   <g id="text_30">
+    <text style="font-size: 6.8px; font-family: 'Arial'; text-anchor: middle; fill: #1b1b1b" x="298.990862" y="41.003938" transform="rotate(-0 298.990862 41.003938)">FP 29</text>
+   </g>
+   <g id="text_31">
+    <text style="font-size: 6.8px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(259.427596 67.681104)">FN 14</text>
+    <text style="font-size: 6.8px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(262.068971 74.978554)">0.09</text>
+   </g>
+   <g id="text_32">
+    <text style="font-size: 6.8px; font-family: 'Arial'; text-anchor: middle; fill: #1b1b1b" x="298.990862" y="71.340454" transform="rotate(-0 298.990862 71.340454)">n/a</text>
+   </g>
+   <g id="text_33">
+    <text style="font-weight: 700; font-size: 7.4px; font-family: 'Arial'" transform="translate(253.533103 9.010148)">Open Manhole</text>
+    <text style="font-weight: 700; font-size: 7.4px; font-family: 'Arial'" transform="translate(253.533103 17.449039)">P 0.82, R 0.91</text>
+   </g>
+  </g>
+  <g id="axes_4">
+   <g id="patch_5">
+    <path d="M 350.509655 84.059384 
+L 411.12 84.059384 
+L 411.12 23.449039 
+L 350.509655 23.449039 
+z
+" style="fill: #ffffff"/>
+   </g>
+   <g clip-path="url(#pc03e17c8fc)">
+    <image xlink:href="data:image/png;base64,
+iVBORw0KGgoAAAANSUhEUgAAAP0AAAD8CAYAAAC8aaJZAAADFklEQVR4nO3VMRHCAAxA0RYP1cCCBAYcYaCuGDpgAxWYaGVk+O8ZSC53/7Iev/+5kPS6b9MrMOA2MRSYI3qIET3EiB5iRA8xoocY0UOM6CFG9BAjeogRPcSIHmJEDzGihxjRQ4zoIUb0ECN6iBE9xIgeYkQPMaKHGNFDjOghRvQQI3qIET3EiB5iRA8xoocY0UOM6CFG9BAjeogRPcSIHmJEDzGihxjRQ4zoIUb0ECN6iBE9xIgeYkQPMaKHGNFDjOghRvQQI3qIET3EiB5iRA8xoocY0UOM6CFG9BAjeogRPcSIHmJEDzGihxjRQ4zoIUb0ECN6iBE9xIgeYkQPMaKHGNFDjOghRvQQI3qIET3EiB5iRA8xoocY0UOM6CFG9BAjeogRPcSIHmJEDzGihxjRQ4zoIUb0ECN6iBE9xIgeYkQPMaKHGNFDjOghRvQQI3qIET3EiB5iRA8xoocY0UOM6CFG9BAjeogRPcSIHmJEDzGihxjRQ4zoIUb0ECN6iBE9xIgeYkQPMaKHGNFDjOghRvQQI3qIET3EiB5iRA8x62P/ntNLMOPzfjp9kE8PMaKHGNFDjOghRvQQI3qIET3EiB5iRA8xoocY0UOM6CFG9BAjeogRPcSIHmJEDzGihxjRQ4zoIUb0ECN6iBE9xIgeYkQPMaKHGNFDjOghRvQQI3qIET3EiB5iRA8xoocY0UOM6CFG9BAjeogRPcSIHmJEDzGihxjRQ4zoIUb0ECN6iBE9xIgeYkQPMaKHGNFDjOghRvQQI3qIET3EiB5iRA8xoocY0UOM6CFG9BAjeogRPcSIHmJEDzGihxjRQ4zoIUb0ECN6iBE9xIgeYkQPMaKHGNFDjOghRvQQI3qIET3EiB5iRA8xoocY0UOM6CFG9BAjeogRPcSIHmJEDzGihxjRQ4zoIUb0ECN6iBE9xIgeYkQPMaKHGNFDjOghRvQQI3qIET3EiB5iRA8xoocY0UOM6CFG9BAjeogRPcSIHmJEDzGihxjRQ4zoIUb0ECN6iBE9xIgeYkQPMaKHGNFDjOghRvSwtFxmqQmnwJZLQQAAAABJRU5ErkJggg==" id="image72e6865243" transform="scale(1 -1) translate(0 -60.48)" x="350.4" y="-23.481985" width="60.72" height="60.48"/>
+   </g>
+   <g id="matplotlib.axis_7">
+    <g id="xtick_7">
+     <g id="line2d_13"/>
+     <g id="text_34">
+      <text style="font-size: 6.8px; font-family: 'Arial'; text-anchor: middle" x="365.662241" y="92.50997" transform="rotate(-0 365.662241 92.50997)">defect</text>
+     </g>
+    </g>
+    <g id="xtick_8">
+     <g id="line2d_14"/>
+     <g id="text_35">
+      <text style="font-size: 6.8px; font-family: 'Arial'; text-anchor: middle" x="395.967414" y="92.50997" transform="rotate(-0 395.967414 92.50997)">background</text>
+     </g>
+    </g>
+    <g id="text_36">
+     <text style="font-size: 7.4px; font-family: 'Arial'; text-anchor: middle" x="380.814828" y="103.32856" transform="rotate(-0 380.814828 103.32856)">True</text>
+    </g>
+   </g>
+   <g id="matplotlib.axis_8">
+    <g id="ytick_7">
+     <g id="line2d_15"/>
+     <g id="text_37">
+      <text style="font-size: 6.8px; font-family: 'Arial'" transform="translate(345.5786 47.862907) rotate(-90)">defect</text>
+     </g>
+    </g>
+    <g id="ytick_8">
+     <g id="line2d_16"/>
+     <g id="text_38">
+      <text style="font-size: 6.8px; font-family: 'Arial'" transform="translate(345.578468 86.673923) rotate(-90)">background</text>
+     </g>
+    </g>
+    <g id="text_39">
+     <text style="font-size: 7.4px; font-family: 'Arial'; text-anchor: middle" x="335.070558" y="53.754211" transform="rotate(-90 335.070558 53.754211)">Predicted</text>
+    </g>
+   </g>
+   <g id="text_40">
+    <text style="font-size: 6.8px; font-family: 'Arial'; fill: #ffffff" transform="translate(354.762585 37.332901)">TP 317</text>
+    <text style="font-size: 6.8px; font-family: 'Arial'; fill: #ffffff" transform="translate(359.045523 44.673381)">0.70</text>
+   </g>
+   <g id="text_41">
+    <text style="font-size: 6.8px; font-family: 'Arial'; text-anchor: middle; fill: #1b1b1b" x="395.967414" y="41.003938" transform="rotate(-0 395.967414 41.003938)">FP 145</text>
+   </g>
+   <g id="text_42">
+    <text style="font-size: 6.8px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(354.513429 67.638073)">FN 133</text>
+    <text style="font-size: 6.8px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(359.045523 74.97696)">0.30</text>
+   </g>
+   <g id="text_43">
+    <text style="font-size: 6.8px; font-family: 'Arial'; text-anchor: middle; fill: #1b1b1b" x="395.967414" y="71.340454" transform="rotate(-0 395.967414 71.340454)">n/a</text>
+   </g>
+   <g id="text_44">
+    <text style="font-weight: 700; font-size: 7.4px; font-family: 'Arial'" transform="translate(350.509655 9.695227)">Graffiti</text>
+    <text style="font-weight: 700; font-size: 7.4px; font-family: 'Arial'" transform="translate(350.509655 17.449039)">P 0.69, R 0.70</text>
+   </g>
+  </g>
+  <g id="text_45">
+   <text style="font-size: 6.8px; font-family: 'Arial'; text-anchor: start; fill: #7f7f7f" x="2.88" y="131.010797" transform="rotate(-0 2.88 131.010797)">Instance counts at confidence 0.25, IoU 0.45. The defect column is normalised by true defects. Detectors have no background-background cell.</text>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p0f10b5d0fe">
+   <rect x="59.58" y="23.449039" width="60.610345" height="60.610345"/>
+  </clipPath>
+  <clipPath id="p79ed64584e">
+   <rect x="156.556552" y="23.449039" width="60.610345" height="60.610345"/>
+  </clipPath>
+  <clipPath id="p5e2f95c4bc">
+   <rect x="253.533103" y="23.449039" width="60.610345" height="60.610345"/>
+  </clipPath>
+  <clipPath id="pc03e17c8fc">
+   <rect x="350.509655" y="23.449039" width="60.610345" height="60.610345"/>
+  </clipPath>
+ </defs>
+</svg>

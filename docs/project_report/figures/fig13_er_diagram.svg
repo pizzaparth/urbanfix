@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="459.36pt" height="317.16pt" viewBox="0 0 459.36 317.16" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-10-06T17:28:37.570724</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.11.2, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 317.16 
+L 459.36 317.16 
+L 459.36 0 
+L 0 0 
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="line2d_1">
+    <path d="M 170.28 103.536 
+L 136.08 103.536 
+" clip-path="url(#p849bd2ab3e)" style="fill: none; stroke: #2b3a4a; stroke-width: 0.8; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_2">
+    <path d="M 170.28 142.848 
+L 136.08 142.848 
+" clip-path="url(#p849bd2ab3e)" style="fill: none; stroke: #2b3a4a; stroke-width: 0.8; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_3">
+    <path d="M 170.28 182.16 
+L 136.08 182.16 
+" clip-path="url(#p849bd2ab3e)" style="fill: none; stroke: #2b3a4a; stroke-width: 0.8; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_4">
+    <path d="M 231.48 76.536 
+L 231.48 49.536 
+" clip-path="url(#p849bd2ab3e)" style="fill: none; stroke-dasharray: 2.4,1.6; stroke-dashoffset: 0; stroke: #2b3a4a; stroke-width: 0.8"/>
+   </g>
+   <g id="line2d_5">
+    <path d="M 231.48 194.76 
+L 231.48 217.08 
+" clip-path="url(#p849bd2ab3e)" style="fill: none; stroke: #2b3a4a; stroke-width: 0.8; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_6">
+    <path d="M 292.68 92.736 
+L 325.08 92.736 
+" clip-path="url(#p849bd2ab3e)" style="fill: none; stroke: #2b3a4a; stroke-width: 0.8; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_7">
+    <path d="M 292.68 154.08 
+L 325.08 154.08 
+" clip-path="url(#p849bd2ab3e)" style="fill: none; stroke: #2b3a4a; stroke-width: 0.8; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_8">
+    <path d="M 292.68 182.16 
+L 325.08 226.512 
+" clip-path="url(#p849bd2ab3e)" style="fill: none; stroke: #2b3a4a; stroke-width: 0.8; stroke-linecap: square"/>
+   </g>
+   <g id="patch_2">
+    <path d="M 8.28 224.928 
+L 136.08 224.928 
+L 136.08 6.48 
+L 8.28 6.48 
+z
+" clip-path="url(#p849bd2ab3e)" style="fill: #ffffff; stroke: #2b3a4a; stroke-width: 0.8; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 8.28 18.72 
+L 136.08 18.72 
+L 136.08 6.48 
+L 8.28 6.48 
+z
+" clip-path="url(#p849bd2ab3e)" style="fill: #dfe8f1; stroke: #2b3a4a; stroke-width: 0.8; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 170.28 49.536 
+L 292.68 49.536 
+L 292.68 6.48 
+L 170.28 6.48 
+z
+" clip-path="url(#p849bd2ab3e)" style="fill: #ffffff; stroke: #2b3a4a; stroke-width: 0.8; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 170.28 18.72 
+L 292.68 18.72 
+L 292.68 6.48 
+L 170.28 6.48 
+z
+" clip-path="url(#p849bd2ab3e)" style="fill: #dfe8f1; stroke: #2b3a4a; stroke-width: 0.8; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 170.28 194.76 
+L 292.68 194.76 
+L 292.68 76.536 
+L 170.28 76.536 
+z
+" clip-path="url(#p849bd2ab3e)" style="fill: #ffffff; stroke: #2b3a4a; stroke-width: 0.8; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 170.28 88.776 
+L 292.68 88.776 
+L 292.68 76.536 
+L 170.28 76.536 
+z
+" clip-path="url(#p849bd2ab3e)" style="fill: #dfe8f1; stroke: #2b3a4a; stroke-width: 0.8; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_8">
+    <path d="M 170.28 285.192 
+L 292.68 285.192 
+L 292.68 217.08 
+L 170.28 217.08 
+z
+" clip-path="url(#p849bd2ab3e)" style="fill: #ffffff; stroke: #2b3a4a; stroke-width: 0.8; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_9">
+    <path d="M 170.28 229.32 
+L 292.68 229.32 
+L 292.68 217.08 
+L 170.28 217.08 
+z
+" clip-path="url(#p849bd2ab3e)" style="fill: #dfe8f1; stroke: #2b3a4a; stroke-width: 0.8; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_10">
+    <path d="M 325.08 99.648 
+L 451.08 99.648 
+L 451.08 6.48 
+L 325.08 6.48 
+z
+" clip-path="url(#p849bd2ab3e)" style="fill: #ffffff; stroke: #2b3a4a; stroke-width: 0.8; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_11">
+    <path d="M 325.08 18.72 
+L 451.08 18.72 
+L 451.08 6.48 
+L 325.08 6.48 
+z
+" clip-path="url(#p849bd2ab3e)" style="fill: #dfe8f1; stroke: #2b3a4a; stroke-width: 0.8; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_12">
+    <path d="M 325.08 192.312 
+L 451.08 192.312 
+L 451.08 115.848 
+L 325.08 115.848 
+z
+" clip-path="url(#p849bd2ab3e)" style="fill: #ffffff; stroke: #2b3a4a; stroke-width: 0.8; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_13">
+    <path d="M 325.08 128.088 
+L 451.08 128.088 
+L 451.08 115.848 
+L 325.08 115.848 
+z
+" clip-path="url(#p849bd2ab3e)" style="fill: #dfe8f1; stroke: #2b3a4a; stroke-width: 0.8; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_14">
+    <path d="M 325.08 284.976 
+L 451.08 284.976 
+L 451.08 208.512 
+L 325.08 208.512 
+z
+" clip-path="url(#p849bd2ab3e)" style="fill: #ffffff; stroke: #2b3a4a; stroke-width: 0.8; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_15">
+    <path d="M 325.08 220.752 
+L 451.08 220.752 
+L 451.08 208.512 
+L 325.08 208.512 
+z
+" clip-path="url(#p849bd2ab3e)" style="fill: #dfe8f1; stroke: #2b3a4a; stroke-width: 0.8; stroke-linejoin: miter"/>
+   </g>
+   <g id="text_1">
+    <text style="font-weight: 700; font-size: 7.6px; font-family: 'Arial'; text-anchor: middle; fill: #1b1b1b" x="72.18" y="14.566797" transform="rotate(-0 72.18 14.566797)">Complaint</text>
+   </g>
+   <g id="text_2">
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(10.8 26.323043)">PK  _id</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(10.8 34.004988)">      trackingId (unique)</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(10.8 42.262371)">FK  citizenId → User</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(10.8 49.36452)">      title, description</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(10.8 57.008684)">      category, location, ward</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(10.8 64.698379)">      images [max 3]</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(10.8 72.319777)">      status, stage</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(10.8 80.05016)">      urgencyLevel</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(10.8 87.730652)">FK  assignedTo → User</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(10.8 95.411145)">FK  assignedBy → User</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(10.8 103.10084)">      completionImages [max 3]</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(10.8 110.808457)">      completionNote</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(10.8 118.52673)">      pdfReceiptUrl, closedAt</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(10.8 126.346723)">      isPublic, remarks</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(10.8 133.851387)">      statusHistory [ ]  (embedded)</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(10.8 141.494098)">          status, stage, remarks</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(10.8 149.17459)">FK        changedBy → User</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(10.8 156.855082)">          changedAt</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(10.8 164.573355)">      aiAnalysis { }  (embedded)</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(10.8 172.467457)">          model, detected, confidence</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(10.8 179.896559)">          detections, annotatedImages</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(10.8 187.577051)">          damagePercent, suggestedUrgency</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(10.8 195.257543)">          needsReview, analysedAt</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(10.8 202.974363)">      createdAt, updatedAt</text>
+   </g>
+   <g id="text_3">
+    <text style="font-weight: 700; font-size: 7.6px; font-family: 'Arial'; text-anchor: middle; fill: #1b1b1b" x="231.48" y="14.566797" transform="rotate(-0 231.48 14.566797)">Otp</text>
+   </g>
+   <g id="text_4">
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(172.8 26.90284)">      email</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(172.8 34.004988)">      otp (6 digits)</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(172.8 41.68548)">      expiresAt (TTL index)</text>
+   </g>
+   <g id="text_5">
+    <text style="font-weight: 700; font-size: 7.6px; font-family: 'Arial'; text-anchor: middle; fill: #1b1b1b" x="231.48" y="84.622797" transform="rotate(-0 231.48 84.622797)">User</text>
+   </g>
+   <g id="text_6">
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(172.8 96.379043)">PK  _id</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(172.8 104.060988)">      name, email (unique)</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(172.8 111.74148)">      password (bcrypt), phone</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(172.8 119.421973)">      role: citizen | researcher |</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(172.8 127.102465)">         field | supervisor | admin</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(172.8 134.996566)">      isVerified, isActive</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(172.8 142.463449)">      researcher { datasetScope,</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(172.8 150.143941)">         accessExpiresAt, ... }</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(172.8 157.824434)">      employee { code, ward,</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(172.8 165.504926)">FK       supervisorId → User }</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(172.8 173.185418)">      inviteToken (SHA-256)</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(172.8 181.480582)">      mustSetPassword</text>
+   </g>
+   <g id="text_7">
+    <text style="font-weight: 700; font-size: 7.6px; font-family: 'Arial'; text-anchor: middle; fill: #1b1b1b" x="231.48" y="225.166797" transform="rotate(-0 231.48 225.166797)">AttendanceRecord</text>
+   </g>
+   <g id="text_8">
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(172.8 236.923043)">PK  _id</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(172.8 244.567207)">FK  employeeId → User</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(172.8 252.28548)">      date (YYYY-MM-DD)</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(172.8 260.18152)">      checkInAt, checkOutAt</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(172.8 268.174918)">      status</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(172.8 275.326957)">      unique (employeeId, date)</text>
+   </g>
+   <g id="text_9">
+    <text style="font-weight: 700; font-size: 7.6px; font-family: 'Arial'; text-anchor: middle; fill: #1b1b1b" x="388.08" y="14.566797" transform="rotate(-0 388.08 14.566797)">ResearchApplication</text>
+   </g>
+   <g id="text_10">
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(327.6 26.323043)">PK  _id</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(327.6 34.218598)">      fullName, email</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(327.6 41.861309)">      institute, title</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(327.6 49.365973)">      purpose (100+ chars)</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(327.6 57.082793)">      datasetScope</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(327.6 64.726957)">      requestedDays (1 to 180)</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(327.6 72.583277)">      status, reviewNote</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(327.6 80.05016)">FK  reviewedBy → User</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(327.6 88.345324)">FK  createdUserId → User</text>
+   </g>
+   <g id="text_11">
+    <text style="font-weight: 700; font-size: 7.6px; font-family: 'Arial'; text-anchor: middle; fill: #1b1b1b" x="388.08" y="123.934723" transform="rotate(-0 388.08 123.934723)">ResearchAccessLog</text>
+   </g>
+   <g id="text_12">
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(327.6 135.691043)">PK  _id</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(327.6 143.949879)">FK  researcherId → User</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(327.6 151.05348)">      action: view_dashboard |</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(327.6 158.733973)">         query | export</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(327.6 166.628074)">      recordCount, filters</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(327.6 174.093504)">      exportFormat, ipAddress</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(327.6 182.353793)">      createdAt</text>
+   </g>
+   <g id="text_13">
+    <text style="font-weight: 700; font-size: 7.6px; font-family: 'Arial'; text-anchor: middle; fill: #1b1b1b" x="388.08" y="216.598797" transform="rotate(-0 388.08 216.598797)">LeaveRequest</text>
+   </g>
+   <g id="text_14">
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(327.6 228.355043)">PK  _id</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(327.6 235.999207)">FK  employeeId → User</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(327.6 243.93109)">      fromDate, toDate, reason</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(327.6 251.397973)">      status: pending |</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(327.6 259.078465)">         approved | rejected</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(327.6 266.721176)">FK  decidedBy → User</text>
+    <text style="font-size: 6.2px; font-family: 'Arial'; fill: #1b1b1b" transform="translate(327.6 274.615277)">      decidedAt, decisionNote</text>
+   </g>
+   <g id="text_15">
+    <text style="font-weight: 700; font-size: 6.6px; font-family: 'Arial'; text-anchor: end; fill: #1f3b5c" x="165.96" y="110.644008" transform="rotate(-0 165.96 110.644008)">1</text>
+   </g>
+   <g id="text_16">
+    <text style="font-weight: 700; font-size: 6.6px; font-family: 'Arial'; text-anchor: start; fill: #1f3b5c" x="140.4" y="110.644008" transform="rotate(-0 140.4 110.644008)">N</text>
+   </g>
+   <g id="text_17">
+    <text style="font-style: italic; font-size: 5.9px; font-family: 'Arial'; text-anchor: middle; fill: #444444" x="153.18" y="99.671498" transform="rotate(-0 153.18 99.671498)">files</text>
+   </g>
+   <g id="text_18">
+    <text style="font-weight: 700; font-size: 6.6px; font-family: 'Arial'; text-anchor: end; fill: #1f3b5c" x="165.96" y="149.956008" transform="rotate(-0 165.96 149.956008)">1</text>
+   </g>
+   <g id="text_19">
+    <text style="font-weight: 700; font-size: 6.6px; font-family: 'Arial'; text-anchor: start; fill: #1f3b5c" x="140.4" y="149.956008" transform="rotate(-0 140.4 149.956008)">N</text>
+   </g>
+   <g id="text_20">
+    <text style="font-style: italic; font-size: 5.9px; font-family: 'Arial'; text-anchor: middle; fill: #444444" x="153.18" y="138.983498" transform="rotate(-0 153.18 138.983498)">is assigned</text>
+   </g>
+   <g id="text_21">
+    <text style="font-weight: 700; font-size: 6.6px; font-family: 'Arial'; text-anchor: end; fill: #1f3b5c" x="165.96" y="189.268008" transform="rotate(-0 165.96 189.268008)">1</text>
+   </g>
+   <g id="text_22">
+    <text style="font-weight: 700; font-size: 6.6px; font-family: 'Arial'; text-anchor: start; fill: #1f3b5c" x="140.4" y="189.268008" transform="rotate(-0 140.4 189.268008)">N</text>
+   </g>
+   <g id="text_23">
+    <text style="font-style: italic; font-size: 5.9px; font-family: 'Arial'; text-anchor: middle; fill: #444444" x="153.18" y="178.295498" transform="rotate(-0 153.18 178.295498)">acts on</text>
+   </g>
+   <g id="text_24">
+    <text style="font-style: italic; font-size: 5.9px; font-family: 'Arial'; text-anchor: start; fill: #444444" x="235.08" y="64.562798" transform="rotate(-0 235.08 64.562798)">matched by email (no FK)</text>
+   </g>
+   <g id="text_25">
+    <text style="font-weight: 700; font-size: 6.6px; font-family: 'Arial'; text-anchor: end; fill: #1f3b5c" x="227.16" y="201.508008" transform="rotate(-0 227.16 201.508008)">1</text>
+   </g>
+   <g id="text_26">
+    <text style="font-weight: 700; font-size: 6.6px; font-family: 'Arial'; text-anchor: end; fill: #1f3b5c" x="227.16" y="213.748008" transform="rotate(-0 227.16 213.748008)">N</text>
+   </g>
+   <g id="text_27">
+    <text style="font-style: italic; font-size: 5.9px; font-family: 'Arial'; text-anchor: start; fill: #444444" x="235.08" y="207.455498" transform="rotate(-0 235.08 207.455498)">records</text>
+   </g>
+   <g id="text_28">
+    <text style="font-weight: 700; font-size: 6.6px; font-family: 'Arial'; text-anchor: start; fill: #1f3b5c" x="297" y="99.844008" transform="rotate(-0 297 99.844008)">1</text>
+   </g>
+   <g id="text_29">
+    <text style="font-weight: 700; font-size: 6.6px; font-family: 'Arial'; text-anchor: end; fill: #1f3b5c" x="320.76" y="99.844008" transform="rotate(-0 320.76 99.844008)">1</text>
+   </g>
+   <g id="text_30">
+    <text style="font-style: italic; font-size: 5.9px; font-family: 'Arial'; text-anchor: middle; fill: #444444" x="308.88" y="88.871498" transform="rotate(-0 308.88 88.871498)">becomes</text>
+   </g>
+   <g id="text_31">
+    <text style="font-weight: 700; font-size: 6.6px; font-family: 'Arial'; text-anchor: start; fill: #1f3b5c" x="297" y="161.188008" transform="rotate(-0 297 161.188008)">1</text>
+   </g>
+   <g id="text_32">
+    <text style="font-weight: 700; font-size: 6.6px; font-family: 'Arial'; text-anchor: end; fill: #1f3b5c" x="320.76" y="161.188008" transform="rotate(-0 320.76 161.188008)">N</text>
+   </g>
+   <g id="text_33">
+    <text style="font-style: italic; font-size: 5.9px; font-family: 'Arial'; text-anchor: middle; fill: #444444" x="308.88" y="150.215498" transform="rotate(-0 308.88 150.215498)">generates</text>
+   </g>
+   <g id="text_34">
+    <text style="font-weight: 700; font-size: 6.6px; font-family: 'Arial'; text-anchor: start; fill: #1f3b5c" x="297" y="189.988008" transform="rotate(-0 297 189.988008)">1</text>
+   </g>
+   <g id="text_35">
+    <text style="font-weight: 700; font-size: 6.6px; font-family: 'Arial'; text-anchor: end; fill: #1f3b5c" x="320.76" y="221.740008" transform="rotate(-0 320.76 221.740008)">N</text>
+   </g>
+   <g id="text_36">
+    <text style="font-style: italic; font-size: 5.9px; font-family: 'Arial'; fill: #444444" transform="translate(315.36 199.19958)">requests,</text>
+    <text style="font-style: italic; font-size: 5.9px; font-family: 'Arial'; fill: #444444" transform="translate(315.36 205.848834)">decides</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p849bd2ab3e">
+   <rect x="2.88" y="2.88" width="453.6" height="311.4"/>
+  </clipPath>
+ </defs>
+</svg>

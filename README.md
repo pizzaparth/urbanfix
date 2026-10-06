@@ -428,18 +428,18 @@ Every complaint photo is checked by a **YOLOv8 model trained for that category**
 | **Open Manhole** | `open_manhole_model.pt` | detection | [Road Hazards Dataset](https://hyper.ai/en/datasets/38237) (2.7k images, potholes, cracks, open manholes) |
 | **Graffiti** | `graffiti_model.pt` | detection | [STORM graffiti dataset](https://zenodo.org/records/3238357) (1,022 images, CC BY 4.0) |
 
-**Pothole / Road Damage model**, trained in [`ai_model/road_damage.ipynb`](./ai_model/road_damage.ipynb):
+Validation results of the four models, trained in [`ai_model/notebooks/`](./ai_model/notebooks):
 
 <table>
   <tr>
-    <td align="center" width="25%"><h2>0.72</h2><sub><b>MASK mAP50</b></sub></td>
-    <td align="center" width="25%"><h2>0.71</h2><sub><b>PRECISION</b></sub></td>
-    <td align="center" width="25%"><h2>0.66</h2><sub><b>RECALL</b></sub></td>
-    <td align="center" width="25%"><h2>720 / 60</h2><sub><b>TRAIN / VAL IMAGES</b></sub></td>
+    <td align="center" width="25%"><h2>0.72</h2><sub><b>POTHOLE</b><br>mask mAP50</sub></td>
+    <td align="center" width="25%"><h2>0.50</h2><sub><b>LITTER</b><br>mask mAP50</sub></td>
+    <td align="center" width="25%"><h2>0.91</h2><sub><b>OPEN MANHOLE</b><br>box mAP50</sub></td>
+    <td align="center" width="25%"><h2>0.73</h2><sub><b>GRAFFITI</b><br>box mAP50</sub></td>
   </tr>
 </table>
 
-Each notebook's training cell writes its weights (for example `runs/segment/train/weights/best.pt`), which go into the AI service's model storage. Weight files are kept out of git because of their size. Section 8 of [`docs/project_description.md`](./docs/project_description.md#8-ai-powered-image-detection-and-complaint-validation-system) has the full pipeline, datasets and request flow.
+Each training notebook copies its best checkpoint into [`ai_model/weights/`](./ai_model/weights), the model storage the AI service loads. Full metrics, training settings and dataset licences are in [`ai_model/README.md`](./ai_model/README.md). Section 8 of [`docs/project_description.md`](./docs/project_description.md#8-ai-powered-image-detection-and-complaint-validation-system) has the full pipeline, datasets and request flow.
 
 <br>
 
@@ -466,8 +466,11 @@ Each notebook's training cell writes its weights (for example `runs/segment/trai
 │   ├── scripts/                seed and backfill scripts
 │   └── uploads/                complaint photos (git-ignored)
 ├── ai_model/
-│   ├── road_damage.ipynb       Pothole / Road Damage training notebook (one per category)
-│   └── Pothole_Segmentation_YOLOv8.v1i.yolov8/   dataset (720 train / 60 val images)
+│   ├── notebooks/              download, prepare, train, evaluate (00 to 06)
+│   ├── weights/                the four trained category models
+│   ├── results/                metrics used in the project report
+│   ├── road_damage.ipynb       original pothole exploration notebook
+│   └── Pothole_Segmentation_YOLOv8.v1i.yolov8/   pothole dataset (720 train / 60 val images)
 └── docs/
     ├── project_description.md  full system description: modules, schemas, API, AI plan
     ├── assets/                 README graphics
