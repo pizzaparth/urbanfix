@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { WARDS } from '../constants/wards.js';
+import { CATEGORIES } from '../constants/categories.js';
 
 export const createComplaintSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters long'),
@@ -8,7 +9,7 @@ export const createComplaintSchema = z.object({
   otp: z.string().length(6, 'OTP must be exactly 6 digits'),
   title: z.string().min(5, 'Title must be at least 5 characters long').max(100, 'Title cannot exceed 100 characters'),
   description: z.string().min(15, 'Description must be at least 15 characters long'),
-  category: z.string().min(1, 'Category is required'),
+  category: z.enum(CATEGORIES, { errorMap: () => ({ message: 'Please choose a valid category' }) }),
   location: z.string().min(2, 'Location must be at least 2 characters long'),
   // Required for new complaints; never inferred from the free-text location.
   ward: z.enum(WARDS, { errorMap: () => ({ message: 'Please choose the ward this is in' }) }),

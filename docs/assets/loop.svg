@@ -1,0 +1,120 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 500" width="1280" height="500" role="img" aria-label="The UrbanFix governance loop: report, validate, prioritise, act, prove, learn">
+  <defs>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M32 0H0V32" fill="none" stroke="#1A181A" stroke-width="1"/>
+    </pattern>
+    <radialGradient id="core" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#FF5FA2" stop-opacity="0.30"/>
+      <stop offset="0.6" stop-color="#8B4FD8" stop-opacity="0.10"/>
+      <stop offset="1" stop-color="#8B4FD8" stop-opacity="0"/>
+    </radialGradient>
+    <clipPath id="frame"><rect width="1280" height="500" rx="24"/></clipPath>
+  </defs>
+
+  <g clip-path="url(#frame)">
+    <rect width="1280" height="500" fill="#0A090A"/>
+    <rect width="1280" height="500" fill="url(#grid)" opacity="0.8"/>
+    <circle cx="640" cy="250" r="260" fill="url(#core)"/>
+
+    <!-- ring -->
+    <circle cx="640" cy="250" r="150" fill="none" stroke="#2A2328" stroke-width="3"/>
+    <circle cx="640" cy="250" r="150" fill="none" stroke="#FF5FA2" stroke-width="3" stroke-linecap="round" stroke-dasharray="140 803">
+      <animateTransform attributeName="transform" type="rotate" from="-90 640 250" to="270 640 250" dur="7s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="640" cy="250" r="168" fill="none" stroke="#2A2328" stroke-width="1" stroke-dasharray="2 8">
+      <animateTransform attributeName="transform" type="rotate" from="0 640 250" to="-360 640 250" dur="60s" repeatCount="indefinite"/>
+    </circle>
+
+    <!-- centre -->
+    <g text-anchor="middle">
+      <text x="640" y="214" font-family="SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="12" letter-spacing="3" fill="#FF5FA2">URBANFIX</text>
+      <text x="640" y="250" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="30" font-weight="800" letter-spacing="-1" fill="#FFFFFF">End-to-end</text>
+      <text x="640" y="282" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="30" font-weight="800" letter-spacing="-1" fill="#FFFFFF">governance</text>
+      <text x="640" y="306" font-family="SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="11" letter-spacing="2" fill="#7D7179">ONE SYSTEM, SIX LINKS</text>
+    </g>
+
+    <!-- nodes: clockwise from top -->
+    <g font-family="SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="13" font-weight="700" text-anchor="middle">
+      <g>
+        <circle cx="640" cy="100" r="24" fill="#0A090A" stroke="#E8A23A" stroke-width="3"/>
+        <circle cx="640" cy="100" r="24" fill="none" stroke="#E8A23A" stroke-width="2">
+          <animate attributeName="r" values="24;40;40" keyTimes="0;0.15;1" dur="7s" begin="0s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.9;0;0" keyTimes="0;0.15;1" dur="7s" begin="0s" repeatCount="indefinite"/>
+        </circle>
+        <text x="640" y="105" fill="#E8A23A">01</text>
+      </g>
+      <g>
+        <circle cx="770" cy="175" r="24" fill="#0A090A" stroke="#FF5FA2" stroke-width="3"/>
+        <circle cx="770" cy="175" r="24" fill="none" stroke="#FF5FA2" stroke-width="2">
+          <animate attributeName="r" values="24;40;40" keyTimes="0;0.15;1" dur="7s" begin="1.17s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.9;0;0" keyTimes="0;0.15;1" dur="7s" begin="1.17s" repeatCount="indefinite"/>
+        </circle>
+        <text x="770" y="180" fill="#FF5FA2">02</text>
+      </g>
+      <g>
+        <circle cx="770" cy="325" r="24" fill="#0A090A" stroke="#FF5FA2" stroke-width="3"/>
+        <circle cx="770" cy="325" r="24" fill="none" stroke="#FF5FA2" stroke-width="2">
+          <animate attributeName="r" values="24;40;40" keyTimes="0;0.15;1" dur="7s" begin="2.33s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.9;0;0" keyTimes="0;0.15;1" dur="7s" begin="2.33s" repeatCount="indefinite"/>
+        </circle>
+        <text x="770" y="330" fill="#FF5FA2">03</text>
+      </g>
+      <g>
+        <circle cx="640" cy="400" r="24" fill="#0A090A" stroke="#A77BF0" stroke-width="3"/>
+        <circle cx="640" cy="400" r="24" fill="none" stroke="#A77BF0" stroke-width="2">
+          <animate attributeName="r" values="24;40;40" keyTimes="0;0.15;1" dur="7s" begin="3.5s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.9;0;0" keyTimes="0;0.15;1" dur="7s" begin="3.5s" repeatCount="indefinite"/>
+        </circle>
+        <text x="640" y="405" fill="#A77BF0">04</text>
+      </g>
+      <g>
+        <circle cx="510" cy="325" r="24" fill="#0A090A" stroke="#2FBF7A" stroke-width="3"/>
+        <circle cx="510" cy="325" r="24" fill="none" stroke="#2FBF7A" stroke-width="2">
+          <animate attributeName="r" values="24;40;40" keyTimes="0;0.15;1" dur="7s" begin="4.67s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.9;0;0" keyTimes="0;0.15;1" dur="7s" begin="4.67s" repeatCount="indefinite"/>
+        </circle>
+        <text x="510" y="330" fill="#2FBF7A">05</text>
+      </g>
+      <g>
+        <circle cx="510" cy="175" r="24" fill="#0A090A" stroke="#E9E3E7" stroke-width="3"/>
+        <circle cx="510" cy="175" r="24" fill="none" stroke="#E9E3E7" stroke-width="2">
+          <animate attributeName="r" values="24;40;40" keyTimes="0;0.15;1" dur="7s" begin="5.83s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.9;0;0" keyTimes="0;0.15;1" dur="7s" begin="5.83s" repeatCount="indefinite"/>
+        </circle>
+        <text x="510" y="180" fill="#E9E3E7">06</text>
+      </g>
+    </g>
+
+    <!-- labels -->
+    <g font-family="'Helvetica Neue', Helvetica, Arial, sans-serif">
+      <text x="640" y="44" font-size="22" font-weight="800" fill="#FFFFFF" text-anchor="middle">Report</text>
+      <text x="640" y="64" font-size="13" fill="#9A8F97" text-anchor="middle">photo + email OTP, no account</text>
+
+      <text x="810" y="172" font-size="22" font-weight="800" fill="#FFFFFF">Validate</text>
+      <text x="810" y="192" font-size="13" fill="#9A8F97">YOLOv8 model per category</text>
+
+      <text x="810" y="322" font-size="22" font-weight="800" fill="#FFFFFF">Prioritise</text>
+      <text x="810" y="342" font-size="13" fill="#9A8F97">questionnaire + AI damage score</text>
+
+      <text x="640" y="456" font-size="22" font-weight="800" fill="#FFFFFF" text-anchor="middle">Act</text>
+      <text x="640" y="476" font-size="13" fill="#9A8F97" text-anchor="middle">ward routing, field proof photos</text>
+
+      <text x="470" y="322" font-size="22" font-weight="800" fill="#FFFFFF" text-anchor="end">Prove</text>
+      <text x="470" y="342" font-size="13" fill="#9A8F97" text-anchor="end">PDF receipt, public registry</text>
+
+      <text x="470" y="172" font-size="22" font-weight="800" fill="#FFFFFF" text-anchor="end">Learn</text>
+      <text x="470" y="192" font-size="13" fill="#9A8F97" text-anchor="end">anonymised open data, analytics</text>
+    </g>
+
+    <!-- corner captions -->
+    <g font-family="SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" letter-spacing="2">
+      <rect x="48" y="44" width="10" height="10" fill="#FF5FA2">
+        <animate attributeName="opacity" values="1;0.15;1" dur="1.2s" repeatCount="indefinite"/>
+      </rect>
+      <text x="68" y="54" font-size="12" fill="#FF5FA2">THE GOVERNANCE LOOP</text>
+      <text x="1232" y="466" font-size="11" fill="#5E545B" text-anchor="end">what is learned feeds the next report</text>
+    </g>
+
+    <rect x="0.5" y="0.5" width="1279" height="499" rx="23.5" fill="none" stroke="#2A2328"/>
+  </g>
+</svg>

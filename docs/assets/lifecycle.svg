@@ -82,9 +82,10 @@
       <text x="1010" y="98">close</text>
     </g>
     <text x="1110" y="194" font-size="11" fill="#2FBF7A" text-anchor="middle" letter-spacing="1">PDF receipt emailed</text>
+    <text x="110" y="194" font-size="11" fill="#FF5FA2" text-anchor="middle" letter-spacing="1">AI validated</text>
 
     <!-- triage rejection -->
-    <line x1="110" y1="190" x2="110" y2="246" stroke="#E0234E" stroke-width="2" stroke-dasharray="5 6">
+    <line x1="110" y1="204" x2="110" y2="246" stroke="#E0234E" stroke-width="2" stroke-dasharray="5 6">
       <animate attributeName="stroke-dashoffset" from="0" to="-22" dur="1.2s" repeatCount="indefinite"/>
     </line>
     <circle cx="110" cy="264" r="14" fill="#0A090A" stroke="#E0234E" stroke-width="3"/>

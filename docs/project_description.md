@@ -1,4 +1,4 @@
-# UrbanFix: Smart Digital Complaint Management and Public Transparency System
+# UrbanFix: AI-Powered End-to-End Governance System
 ## Comprehensive Project Documentation & System Description
 
 ---
@@ -6,11 +6,18 @@
 ### 1. Project Overview
 
 #### 1.1 System Explanation
-**UrbanFix** (the Smart Digital Complaint Management and Public Transparency System) is a mobile civic-engagement platform. It connects citizens with the municipal staff who fix public infrastructure.
+**UrbanFix** is an AI-powered, end-to-end governance system for urban infrastructure. It is more than a complaint box: it covers the full cycle from a citizen's photo to a verified, publicly audited repair, and then feeds the resulting data back to researchers and administrators.
 
-Citizens report issues from their phone without creating an account. Issues fall into a fixed 10-category taxonomy: potholes/road damage, garbage/litter, water leakage, faulty streetlights, illegal parking, open manholes, fallen trees, damaged road signs, graffiti, and damaged electrical poles/wires. Citizens verify each report with an email OTP and track its progress by Tracking ID.
+The cycle has six links, all handled inside one system:
 
-Staff work the complaint through a ward-based workflow. A supervisor triages and assigns it, a field worker fixes it and uploads proof, and the supervisor closes it. Every complaint and its full status history is published in a public registry. Approved researchers can also query and export anonymised data.
+1. **Report:** citizens report issues from their phone without creating an account, and verify each report with an email OTP.
+2. **Validate:** a category-specific computer vision model checks every photo, draws a bounding box or mask around the problem, and returns a confidence score.
+3. **Prioritise:** a weighted severity questionnaire and the AI's own damage estimate combine into an urgency level.
+4. **Act:** a ward-based staff workflow routes the complaint. A supervisor triages and assigns it, a field worker fixes it and uploads photo proof, and the supervisor closes it.
+5. **Prove:** closing generates a PDF resolution receipt. Every complaint, with its full status history, is published in a public registry.
+6. **Learn:** approved researchers query and export anonymised data, and administrators track performance by category, ward, and urgency.
+
+Complaints fall into four categories. Each one is backed by a public, annotated image dataset that its detection model is trained on: **Pothole / Road Damage**, **Garbage / Litter**, **Open Manhole**, and **Graffiti**. Categories without a proper public dataset are not offered, so every report the app accepts can be checked by AI.
 
 The system has three parts:
 
@@ -18,10 +25,12 @@ The system has three parts:
 |---|---|
 | `mobile/` | Expo (React Native) app. The only client. Runs on Android and iOS through Expo Go, and in the browser for development. |
 | `backend/` | Express + MongoDB REST API. Handles auth, complaints, the staff workflow, attendance and leave, email, PDF receipts, and research access. |
-| `ai_model/` | YOLOv8 pothole segmentation notebook and dataset (see Sections 8 and 9). |
+| `ai_model/` | Per-category YOLOv8 training notebooks and datasets, and the FastAPI inference service (see Section 8). |
 
 #### 1.2 Core Objectives
 * **Public Accessibility:** Account-less complaint filing, verified by a one-time email code.
+* **AI Validation:** Every complaint photo is checked by a model trained for that category, and the detected problem is highlighted for staff.
+* **Evidence-Based Prioritisation:** Urgency combines the citizen's weighted answers with the AI's confidence and damage estimate.
 * **Accountable Workflow:** A role-based staff pipeline (triage, assignment, field work, proof review) with server-enforced transitions.
 * **Absolute Transparency:** Every filed complaint and its status counters are public, with citizen details redacted.
 * **Audit Trails:** Every transition records the stage, the acting user, a timestamp, and remarks.
@@ -34,7 +43,7 @@ The system has three parts:
 | Role | How they get access | What they do |
 |---|---|---|
 | **Citizen** | No account needed. A `User` record is created automatically on their first verified complaint. Optional registration with password gives a "My complaints" dashboard. | File complaints, track them, download receipts, browse the registry. |
-| **Supervisor** | Invited by an admin. | Triage new complaints, assign field workers in their ward, review proof, close or send back for rework, approve field staff leave. Records own attendance and requests leave. |
+| **Supervisor** | Invited by an admin. | Triage new complaints using the AI validation result and annotated photos, assign field workers in their ward, review proof, close or send back for rework, approve field staff leave. Records own attendance and requests leave. |
 | **Field worker** | Invited by an admin. Belongs to one ward. | See assigned tasks, start work, upload proof photos and a completion note. Check in/out and request leave. |
 | **Admin** | Invited by an admin, or seeded. | Dashboard and analytics, status overrides on any complaint, staff account management, supervisor leave approvals, research application approvals, research audit log. |
 | **Researcher** | Applies publicly; an admin approves and sets duration (max 180 days) and dataset scope. | View insights, run grouped queries, export CSV/JSON. Access stops automatically at expiry. |
@@ -47,8 +56,8 @@ Staff and researchers are onboarded through an **invite flow**. The admin create
 
 #### 3.1 Citizen Complaint Filing & Email Verification
 Filing is a 6-step wizard on the **Report** tab:
-1. **Category:** pick one of the 10 categories.
-2. **Questions:** answer that category's 5 yes/no questions on swipeable cards (e.g. "Are live wires exposed or hanging at a low, reachable height?"). Each question has a severity weight (2 = safety-critical, 1 = standard context). The urgency is the share of weighted "Yes" answers: **High Urgency** at 60% or more, **Medium Urgency** at 30% or more, otherwise **Standard Urgency**. The citizen sees the result live.
+1. **Category:** pick one of the 4 categories.
+2. **Questions:** answer that category's 5 yes/no questions on swipeable cards (e.g. "Is the manhole completely uncovered, posing a fall hazard?"). Each question has a severity weight (2 = safety-critical, 1 = standard context). The urgency is the share of weighted "Yes" answers: **High Urgency** at 60% or more, **Medium Urgency** at 30% or more, otherwise **Standard Urgency**. The citizen sees the result live.
 3. **Details:** Subject, Description, Location, and **Ward** (Ward 1–10, required).
 4. **Upload:** up to 3 photos (camera or gallery).
 5. **Contact:** Name, Email, optional Phone.
@@ -59,6 +68,7 @@ After the citizen enters a valid OTP (valid for 5 minutes):
 * A Tracking ID is generated in the form `COMP-YYYYMMDD-XXXXX`.
 * The complaint is saved as `Pending` / stage `submitted` and is public immediately.
 * A confirmation email with the Tracking ID is sent.
+* The photos are sent to the category's AI model in the background (Section 8). The result is stored on the complaint as `aiAnalysis`. Submission never waits for the AI or fails because of it.
 
 #### 3.2 Public Transparency (Home, Registry, Track)
 * **Home:** headline counters (Filed, Resolved, Open) and a "Top issues this month" category chart.
@@ -85,6 +95,8 @@ Pending                                                 └─ rework ─┘
 | `proof` | `work_in_progress` | `proof_submitted` | assigned field worker only | completion note + up to 3 photos |
 | `close` | `proof_submitted` | `closed` | supervisor, admin | yes |
 | `rework` | `proof_submitted` | `assigned` | supervisor, admin | yes |
+
+**AI-assisted triage:** the supervisor's queue shows each complaint's AI result next to the citizen's photos: whether the issue was detected, the confidence, the annotated image with the problem boxed or masked, and the AI-suggested urgency. Complaints the model cannot confirm are flagged `needsReview` and kept in the queue for a human decision. The AI never rejects a complaint on its own.
 
 Rules enforced by the server (`backend/services/complaintWorkflow.js`):
 * Remarks must be at least 10 characters.
@@ -133,9 +145,10 @@ The app shows a different bottom tab set for each role. The server's role, not t
 ```
    [ Expo app (React Native) ] <--- REST APIs ---> [ Express Backend (Node.js) ] <---> [ MongoDB ]
                                                               │
+                                                              ├── Python FastAPI AI service (YOLOv8)
                                                               ├── Nodemailer (SMTP)
                                                               ├── PDFKit
-                                                              └── uploads/ (photos)
+                                                              └── uploads/ (original + annotated photos)
 ```
 
 #### 4.1 Backend
@@ -155,6 +168,12 @@ The app shows a different bottom tab set for each role. The server's role, not t
 * **Charts & Icons:** hand-built charts and icons with `react-native-svg`.
 * **Device Features:** `expo-image-picker` (photos), `expo-secure-store` (auth token), `expo-file-system` + `expo-sharing` (PDF receipts, exports), `expo-haptics`, `expo-clipboard`.
 * **HTTP Client:** Axios, which attaches the JWT automatically. The app reaches the backend on port 5001 of the machine that serves Metro, so no API URL is needed in development. `EXPO_PUBLIC_API_URL` overrides this.
+
+#### 4.3 AI Service
+* **Runtime:** Python with FastAPI.
+* **Models:** Ultralytics YOLOv8, one fine-tuned model per category (segmentation where the dataset has masks, detection where it has boxes).
+* **Training:** one Jupyter notebook per category in `ai_model/` (for example `ai_model/road_damage.ipynb`).
+* **Output:** detections, confidence, annotated images, and, for segmentation models, the damaged share of the surface.
 
 ---
 
@@ -184,7 +203,7 @@ The app shows a different bottom tab set for each role. The server's role, not t
 * `citizenId` (ObjectId → `User`, Required, Indexed)
 * `title` (String, Required, 5–100 characters)
 * `description` (String, Required, at least 15 characters)
-* `category` (String, Required, Indexed)
+* `category` (String, Required, Indexed). New complaints must use one of the 4 categories: `Pothole / Road Damage`, `Garbage / Litter`, `Open Manhole`, `Graffiti`.
 * `location` (String, Required, Indexed)
 * `ward` (Enum: `Ward 1` … `Ward 10`, Indexed). Required on new complaints; `null` only on legacy records.
 * `images` (Array of file paths, max 3)
@@ -203,6 +222,16 @@ The app shows a different bottom tab set for each role. The server's role, not t
   * `changedBy` (ObjectId → `User`, Required)
   * `remarks` (String, Required)
   * `changedAt` (Date, Default: `Date.now`)
+* `aiAnalysis` (sub-document, written by the AI service):
+  * `model` (String): model file that ran, e.g. `pothole_road_damage_model.pt`
+  * `detected` (Boolean): whether the selected issue was found in any photo
+  * `confidence` (Number, 0–1): highest detection confidence
+  * `detections` (Array): `image`, `label`, `confidence`, `box` (`[x1, y1, x2, y2]`)
+  * `annotatedImages` (Array of file paths): photos with the problem boxed or masked
+  * `damagePercent` (Number): damaged share of the surface, from segmentation masks
+  * `suggestedUrgency` (Enum, same values as `urgencyLevel`)
+  * `needsReview` (Boolean): `true` when the issue was not detected with enough confidence
+  * `analysedAt` (Date)
 * Timestamps
 
 #### 5.4 Other Collections
@@ -261,6 +290,12 @@ All routes are under `/api`. Photos are served from `/uploads`. `GET /health` is
 * `GET /me`: researcher profile, usage stats, and exports remaining today.
 * `GET /dashboard`, `GET /query`, `GET /export?format=csv|json` (researcher or admin).
 
+#### 6.8 AI Inference Service (FastAPI, internal)
+Called by the backend only; it is not exposed to the app.
+* `POST /predict/{category}`: multipart photos. Returns `detected`, `confidence`, `detections`, `damagePercent` (segmentation models), and the annotated images.
+* `GET /models`: the loaded model for each category.
+* `GET /health`: service health check.
+
 ---
 
 ### 7. Design System & Development Accounts
@@ -294,77 +329,83 @@ Created by `npm run seed:roles` in `backend/`. The script is idempotent and refu
 ### 8. AI-Powered Image Detection and Complaint Validation System
 
 #### 8.1 Overview
-The Smart Digital Complaint Management and Public Transparency System incorporates an AI-powered computer vision layer to automatically analyze complaint images before they are published to the public registry.
+UrbanFix has a computer vision layer that analyses complaint images automatically. The results reach supervisors at triage, before any staff time is spent on the complaint.
 
-Each complaint category has its own independently trained object detection model. When a citizen submits a complaint and selects a category, the system sends the uploaded image to the corresponding AI model.
+Each complaint category has its own independently trained object detection or segmentation model. When a citizen submits a complaint, the backend sends the uploaded images to the model for the selected category.
 
-The AI model attempts to:
+The AI model:
 
-1. Detect the reported issue in the image.
-2. Identify the location of the issue using bounding boxes.
-3. Draw a rectangle around the detected problem area.
-4. Generate an annotated/highlighted version of the original image.
-5. Return the detection confidence and bounding box metadata to the backend.
+1. Detects the reported issue in the image.
+2. Locates the issue with bounding boxes, or with pixel masks for segmentation models.
+3. Draws a rectangle or mask around the detected problem area.
+4. Generates an annotated version of the original image.
+5. Returns the detection confidence, the bounding box metadata and, for segmentation models, the damaged share of the surface to the backend.
 
-The AI system acts as an automated validation and localization layer. It does not automatically reject complaints. Complaints for which the AI cannot confidently detect the selected issue are routed to an administrative review queue.
+The AI system is an automated validation and localisation layer. It does not reject complaints on its own. When the AI cannot confidently detect the selected issue, the complaint is flagged `needsReview` and stays in the supervisor's triage queue for a human decision.
 
-#### 8.2 AI Models and Category Mapping
-The system uses separate AI object detection models for each complaint category.
+**Category policy:** a category is offered in the app only when a public, documented, annotated image dataset exists for it. Without real training data, a model cannot validate the photos, so the category list is limited to the four below. The list lives in `backend/constants/categories.js` (enforced by the API) and `mobile/src/constants/categories.js` (shown in the app).
 
-| Complaint Category | AI Model |
-|---|---|
-| Pothole / Road Damage | `pothole_road_damage_model.pt` |
-| Garbage / Litter | `garbage_litter_model.pt` |
-| Water Leakage | `water_leakage_model.pt` |
-| Faulty Streetlight | `faulty_streetlight_model.pt` |
-| Illegal Parking | `illegal_parking_model.pt` |
-| Open Manhole | `open_manhole_model.pt` |
-| Fallen Tree | `fallen_tree_model.pt` |
-| Damaged Road Signs | `damaged_road_sign_model.pt` |
-| Graffiti | `graffiti_model.pt` |
-| Damaged Electrical Poles / Wires | `electrical_damage_model.pt` |
+#### 8.2 AI Models, Datasets and Category Mapping
 
-The `.pt` files are trained PyTorch model files containing the learned parameters and weights of the corresponding AI model.
+| Complaint Category | AI Model | Task | Training Dataset |
+|---|---|---|---|
+| Pothole / Road Damage | `pothole_road_damage_model.pt` | Segmentation | Roboflow **Pothole Segmentation (YOLOv8)**, 780 images (720 train, 60 validation) with polygon masks, CC BY 4.0, included in `ai_model/`. A second public source, **RDD2022**, adds 47,420 road images from six countries, including India, with more than 55,000 boxed damage instances (cracks and potholes). |
+| Garbage / Litter | `garbage_litter_model.pt` | Segmentation | **TACO** (Trash Annotations in Context): 1,500 images and 4,784 litter annotations, with COCO-format masks, taken on roads, in woods and on beaches. |
+| Open Manhole | `open_manhole_model.pt` | Detection | **Road Hazards Dataset**: 2.7k road images with YOLO-format boxes for potholes, cracks and open manholes. |
+| Graffiti | `graffiti_model.pt` | Detection | **STORM graffiti/tagging detection dataset** (University of West Attica, CC BY 4.0): 1,022 smartphone images with bounding boxes, collected through a crowdsensing app. |
 
-The initial implementation uses YOLO-based object detection models fine-tuned independently for each complaint category.
+The `.pt` files are trained PyTorch model files that hold each model's learned weights. All four models are YOLOv8 models fine-tuned independently for their category. Segmentation is used where the dataset has masks, and detection where it has boxes.
+
+**Dataset sources:**
+* RDD2022: [figshare](https://figshare.com/articles/dataset/RDD2022_-_The_multi-national_Road_Damage_Dataset_released_through_CRDDC_2022/21431547), [paper](https://arxiv.org/abs/2209.08538)
+* TACO: [tacodataset.org](http://tacodataset.org), [paper](https://arxiv.org/abs/2003.06975)
+* Road Hazards Dataset: [dataset page](https://hyper.ai/en/datasets/38237)
+* STORM graffiti dataset: [Zenodo](https://zenodo.org/records/3238357)
+
+**Categories not offered:** water leakage, faulty streetlights, illegal parking, fallen trees, damaged road signs, and damaged electrical poles/wires. For these, only small hobby datasets, image-level labels, synthetic images, or undocumented collections were found. None of them can train a reliable street-level detector.
 
 #### 8.3 AI Model Training Strategy
-Each complaint category is trained independently using a category-specific dataset:
+Each complaint category is trained independently on its own dataset, in its own notebook in `ai_model/`:
 
 ```text
-Pothole / Road Damage Dataset
+Category Dataset (e.g. Pothole Segmentation YOLOv8)
             │
             ▼
-      YOLO Training
+   YOLOv8 fine-tuning (seg or detect)
+            │
+            ▼
+ Validation: mAP50, precision, recall
             │
             ▼
 pothole_road_damage_model.pt
 ```
 
-The resulting per-category models are served by a dedicated AI inference service, called by the backend as part of complaint submission:
+The trained weights are produced by each notebook's training cell, for example `runs/segment/train/weights/best.pt`, and copied into the AI service's model storage. Weight files are not committed to git because of their size.
+
+**Reference result:** the Pothole / Road Damage segmentation model reaches a mask mAP50 of **0.72** (precision 0.71, recall 0.66) on its 60-image validation split.
+
+#### 8.4 Inference Architecture
+The per-category models are served by a dedicated AI inference service. The backend calls it as part of complaint submission:
 
 ```text
                                        ┌────────────────────────┐
                                        │     AI Model Storage    │
                                        │                         │
-                                       │ pothole_model.pt        │
-                                       │ garbage_model.pt        │
-                                       │ water_model.pt          │
-                                       │ manhole_model.pt        │
-                                       │ tree_model.pt           │
-                                       │ graffiti_model.pt       │
-                                       │ etc.                    │
+                                       │ pothole_road_damage.pt  │
+                                       │ garbage_litter.pt       │
+                                       │ open_manhole.pt         │
+                                       │ graffiti.pt             │
                                        └────────────┬────────────┘
                                                      │
                                                      ▼
 ┌───────────────────┐        REST API        ┌────────────────────────┐
 │                    │  ─────────────────────►│                        │
-│   React Frontend   │                        │   Express / Node.js    │
-│                    │  ◄─────────────────────│                        │
+│     Expo App       │                        │   Express / Node.js    │
+│  (React Native)    │  ◄─────────────────────│                        │
 └───────────────────┘                        │                        │
                                                │ Complaint Management   │
                                                │ OTP Verification       │
-                                               │ Admin Authentication   │
+                                               │ Staff Workflow         │
                                                │ AI Integration         │
                                                └────────────┬────────────┘
                                                              │
@@ -375,25 +416,23 @@ The resulting per-category models are served by a dedicated AI inference service
                       │      MongoDB      │         │  Python FastAPI   │         │  Image Storage    │
                       │                    │         │    AI Service      │         │                    │
                       │ Users              │         │                    │         │ Original Images   │
-                      │ Complaints         │         │ YOLO Inference     │         │ Annotated Images  │
-                      │ Status History     │         │ Bounding Boxes     │         │                    │
+                      │ Complaints         │         │ YOLOv8 Inference   │         │ Annotated Images  │
+                      │ Status History     │         │ Boxes and Masks    │         │                    │
                       │ AI Metadata        │         │ Image Annotation   │         │                    │
                       └──────────────────┘         └──────────────────┘         └──────────────────┘
 ```
 
----
+**Request flow:**
+1. The citizen submits a verified complaint with photos. The backend saves it immediately and returns the Tracking ID.
+2. In the background, the backend sends the photos to `POST /predict/{category}` on the AI service.
+3. The service runs the category's model and returns detections, confidence, the damaged share (segmentation models) and the annotated images.
+4. The backend stores the annotated images next to the originals and writes the result to the complaint's `aiAnalysis`.
+5. If the issue was not detected with enough confidence, `needsReview` is set to `true`.
+6. The supervisor sees the AI result, the annotated photos and the suggested urgency in the triage queue.
 
-### 9. AI Implementation Status
-Section 8 is the target design. What exists today:
+#### 8.5 AI-Assisted Prioritisation
+Urgency draws on two independent signals:
+* **Citizen questionnaire:** five weighted yes/no questions per category give the urgency the citizen sees while filing (Section 3.1).
+* **AI evidence:** the model's confidence and, for segmentation models, the damaged share of the surface give an `aiAnalysis.suggestedUrgency`. A large damaged area raises the suggestion, and a low-confidence result marks the complaint for review instead.
 
-* **Built:** `ai_model/road_damage.ipynb` fine-tunes **YOLOv8n-seg** (Ultralytics) to segment potholes. It trains on the Roboflow dataset in `ai_model/Pothole_Segmentation_YOLOv8.v1i.yolov8/` (720 training and 60 validation images). A previous run reached a mask mAP50 of **0.72** (precision 0.71, recall 0.66) on the validation set. The notebook also estimates the damaged share of the road from mask area.
-* **Not in the repository:** the trained weights. Re-run the notebook's training cell (a GPU is recommended) to produce `runs/segment/train/weights/best.pt`.
-* **Not built yet:** the FastAPI inference service, the backend integration, AI metadata on complaints, annotated images, and models for the other nine categories.
-
-**Planned first integration:**
-1. Run a small Python inference service with the pothole model.
-2. The backend calls it in the background for Pothole / Road Damage complaints with photos.
-3. It stores the pothole count, confidence, and damage percentage on the complaint.
-4. Supervisors see this as a suggested urgency during triage.
-
-The model detects only potholes, so it never auto-rejects a complaint.
+The supervisor sees both side by side and makes the final call. The AI informs the decision; it never accepts or rejects a complaint by itself.

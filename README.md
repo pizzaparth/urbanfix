@@ -11,10 +11,12 @@
   <img src="https://img.shields.io/badge/Node.js-20+-FF5FA2?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="Node.js 20+">
   <img src="https://img.shields.io/badge/Express-4-000000?style=for-the-badge&logo=express&logoColor=white" alt="Express 4">
   <img src="https://img.shields.io/badge/MongoDB-Mongoose_8-FF5FA2?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB">
-  <img src="https://img.shields.io/badge/YOLOv8-seg-000000?style=for-the-badge&logo=pytorch&logoColor=EE4C2C" alt="YOLOv8">
+  <img src="https://img.shields.io/badge/YOLOv8-4_models-000000?style=for-the-badge&logo=pytorch&logoColor=EE4C2C" alt="YOLOv8, 4 models">
+  <img src="https://img.shields.io/badge/FastAPI-AI_service-FF5FA2?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI AI service">
 </p>
 
 <p>
+  <img src="https://img.shields.io/badge/AI-validated_reports-FF5FA2?style=flat-square" alt="AI-validated reports">
   <img src="https://img.shields.io/badge/runs_in-Expo_Go-8B4FD8?style=flat-square" alt="Runs in Expo Go">
   <img src="https://img.shields.io/badge/platforms-Android_|_iOS_|_Web-8B4FD8?style=flat-square" alt="Android, iOS, Web">
   <img src="https://img.shields.io/badge/auth-JWT_+_email_OTP-16935A?style=flat-square" alt="JWT and email OTP">
@@ -24,6 +26,8 @@
 
 <h3>
   <a href="#overview">Overview</a>
+  <span> &middot; </span>
+  <a href="#the-governance-loop">Loop</a>
   <span> &middot; </span>
   <a href="#roles">Roles</a>
   <span> &middot; </span>
@@ -35,7 +39,7 @@
   <span> &middot; </span>
   <a href="#api">API</a>
   <span> &middot; </span>
-  <a href="#ai-model">AI</a>
+  <a href="#ai-validation">AI</a>
 </h3>
 
 </div>
@@ -44,16 +48,16 @@
 
 ## Overview
 
-**UrbanFix** turns a photo of a pothole into a public, auditable work order.
+**UrbanFix is an AI-powered, end-to-end governance system.** It takes a citizen's photo all the way to a verified, publicly audited repair, and turns the result into open data.
 
-Citizens report civic problems from their phone **without creating an account**. They verify each report with a one-time email code. Municipal staff triage, assign and fix the complaint through a ward-based workflow. **Every complaint and every status change is public**, so anyone can see what was reported, who handled it, and how long it took.
+Citizens report problems from their phone **without creating an account** and verify each report with a one-time email code. A **computer vision model trained for that category** checks the photo and highlights the problem. Urgency comes from a weighted questionnaire and the AI's damage estimate. Ward supervisors triage with the AI evidence in front of them, field workers fix the issue and upload proof, and every closure produces a receipt. **Every complaint and every status change is public**, and approved researchers can analyse the anonymised data.
 
 <table>
   <tr>
     <td align="center" width="25%">
-      <h1>10</h1>
-      <sub><b>ISSUE CATEGORIES</b></sub><br>
-      <sub>potholes to live wires</sub>
+      <h1>4</h1>
+      <sub><b>AI-VALIDATED CATEGORIES</b></sub><br>
+      <sub>one model each</sub>
     </td>
     <td align="center" width="25%">
       <h1>5</h1>
@@ -82,9 +86,24 @@ Citizens report civic problems from their phone **without creating an account**.
   <tr>
     <td valign="top">Expo (React Native) app. The only client. Runs on Android and iOS through Expo Go, and in the browser for development.</td>
     <td valign="top">Express + MongoDB REST API. Auth, complaints, staff workflow, attendance and leave, email, PDF receipts, research exports.</td>
-    <td valign="top">YOLOv8 pothole segmentation notebook and dataset, for validating road-damage photos. Not wired into the app yet.</td>
+    <td valign="top">Per-category YOLOv8 training notebooks and datasets, served by a FastAPI inference service that validates every complaint photo.</td>
   </tr>
 </table>
+
+<br>
+
+## The governance loop
+
+<img src="./docs/assets/loop.svg" alt="The UrbanFix governance loop: report, validate, prioritise, act, prove, learn" width="100%">
+
+| | Link | What happens | Where |
+|:--:|:--|:--|:--|
+| **01** | **Report** | Citizen files with photos and verifies by email OTP. No account. | `mobile/` Report tab |
+| **02** | **Validate** | The category's YOLOv8 model finds the problem, boxes or masks it, and scores its confidence. | FastAPI AI service |
+| **03** | **Prioritise** | Weighted questionnaire plus AI damage estimate give the urgency. | app + `aiAnalysis` |
+| **04** | **Act** | Supervisor triages with AI evidence, assigns in ward. Field worker fixes and uploads proof. | staff workflow |
+| **05** | **Prove** | Closure emails a PDF receipt. Full timeline is public. | registry, tracker |
+| **06** | **Learn** | Researchers query and export anonymised data. Admins track performance. | research, analytics |
 
 <br>
 
@@ -94,22 +113,22 @@ Citizens report civic problems from their phone **without creating an account**.
 <tr>
 <td valign="top" width="50%">
 
-#### Guided 6-step report
-A 6-step wizard: category, swipe yes/no questions, details, photos, contact, review. The questions are weighted by severity, so the app scores urgency **live** as the citizen answers.
+#### AI photo validation
+Every photo goes through a YOLOv8 model trained for its category. Staff see the problem **boxed or masked** on an annotated image, with a confidence score. Low-confidence reports are flagged for review, never auto-rejected.
 
 </td>
 <td valign="top" width="50%">
 
-#### Verify without an account
-A 6-digit code goes to the citizen's email and is valid for 5 minutes. The tracking ID, `COMP-YYYYMMDD-XXXXX`, comes back immediately.
+#### Evidence-based urgency
+A 6-step wizard asks severity-weighted yes/no questions and scores urgency **live**. The AI adds its own estimate, such as the damaged share of a road surface, as a second opinion.
 
 </td>
 </tr>
 <tr>
 <td valign="top">
 
-#### Track anything, publicly
-Look up any complaint by tracking ID to see its full timeline with staff remarks. Resolved complaints have a downloadable **PDF receipt**.
+#### No account, full tracking
+A 6-digit email code verifies the report, and the tracking ID `COMP-YYYYMMDD-XXXXX` comes back at once. Anyone can follow the full timeline, and resolved complaints have a **PDF receipt**.
 
 </td>
 <td valign="top">
@@ -144,7 +163,7 @@ Each role gets its own tab set in the app. The **server's** role decides which o
 | Role | Access | Can do | Tabs |
 |:--|:--|:--|:--|
 | **Citizen** | none needed | File, track, download receipts, browse registry. Optional account for "My complaints". | Home, Registry, Report, Track, Account |
-| **Supervisor** | admin invite | Triage (accept or reject), assign in ward, review proof, close or send back for rework, approve field leave. | Queue, Field Staff, Track, Profile |
+| **Supervisor** | admin invite | Triage with AI results and annotated photos (accept or reject), assign in ward, review proof, close or send back for rework, approve field leave. | Queue, Field Staff, Track, Profile |
 | **Field worker** | admin invite | Start assigned tasks, upload proof and a completion note, check in and out, request leave. | My Tasks, Completed, Profile |
 | **Admin** | admin invite | Analytics, status overrides, staff accounts, supervisor leave, research approvals, research audit log. | Stats, Complaints, People |
 | **Researcher** | public application, admin approval | Insights, grouped queries, CSV and JSON export, until access expires. | Insights, Registry, Track, Profile |
@@ -192,6 +211,7 @@ sequenceDiagram
     participant B as Express API
     participant M as MongoDB
     participant E as Email
+    participant AI as AI service
 
     C->>A: Category, questions, details, photos
     A->>A: Score urgency from weighted answers
@@ -203,7 +223,10 @@ sequenceDiagram
     B->>M: Verify OTP, find or create citizen, save complaint
     B->>E: Confirmation with tracking ID
     B-->>A: COMP-YYYYMMDD-XXXXX
-    Note over B,M: Complaint is public in the registry immediately
+    B->>AI: POST /predict/{category} (photos)
+    AI-->>B: detections, confidence, annotated images
+    B->>M: Save aiAnalysis, flag needsReview if unsure
+    Note over B,M: Supervisor triages with the AI evidence
 ```
 
 <br>
@@ -237,7 +260,11 @@ flowchart LR
         JOB["expiry job<br/>every 6 h"]
     end
 
-    AI["YOLOv8 pothole model<br/>(planned service)"]
+    subgraph AIS["AI service  (FastAPI)"]
+        direction TB
+        AI["YOLOv8 inference<br/>4 category models"]
+        ANN["annotation<br/>boxes, masks, damage %"]
+    end
 
     P --> AU & CO
     S --> WF & AD
@@ -247,14 +274,16 @@ flowchart LR
     CO & WF --> ML
     WF --> PDF
     JOB --> ML
-    CO -.-> AI
+    CO --> AI
+    AI --> ANN
+    ANN --> UP
 
     classDef pink fill:#FF5FA2,stroke:#FF5FA2,color:#000
     classDef dark fill:#111,stroke:#444,color:#fff
-    classDef ghost fill:transparent,stroke:#8B4FD8,color:#8B4FD8,stroke-dasharray:5 5
+    classDef ai fill:#8B4FD8,stroke:#8B4FD8,color:#fff
     class P,S,R pink
     class AU,CO,WF,AD,RS,DB,UP,ML,PDF,JOB dark
-    class AI ghost
+    class AI,ANN ai
 ```
 
 <br>
@@ -272,7 +301,7 @@ flowchart LR
   </tr>
   <tr>
     <td><b>AI</b></td>
-    <td>Ultralytics YOLOv8n-seg, trained on a Roboflow pothole segmentation dataset</td>
+    <td>Python, FastAPI, Ultralytics YOLOv8 (segmentation and detection), one fine-tuned model per category, Jupyter training notebooks</td>
   </tr>
   <tr>
     <td><b>Design</b></td>
@@ -386,9 +415,20 @@ The full endpoint list is in [`docs/project_description.md`](./docs/project_desc
 
 <br>
 
-## AI model
+## AI validation
 
-[`ai_model/road_damage.ipynb`](./ai_model/road_damage.ipynb) fine-tunes **YOLOv8n-seg** to segment potholes. It also estimates the damaged share of the road from mask area.
+Every complaint photo is checked by a **YOLOv8 model trained for that category**. The FastAPI service returns detections, a confidence score, an annotated image with the problem boxed or masked, and, for segmentation models, the damaged share of the surface. The backend stores this as the complaint's `aiAnalysis`. Supervisors see it at triage, and anything the model cannot confirm is flagged `needsReview` for a human. **The AI never rejects a complaint on its own.**
+
+**One rule for categories:** a category exists only if a public, annotated dataset exists to train its model. That is why UrbanFix offers four.
+
+| Category | Model | Task | Dataset |
+|:--|:--|:--|:--|
+| **Pothole / Road Damage** | `pothole_road_damage_model.pt` | segmentation | [Pothole Segmentation YOLOv8](./ai_model/Pothole_Segmentation_YOLOv8.v1i.yolov8) (780 images, masks) and [RDD2022](https://figshare.com/articles/dataset/RDD2022_-_The_multi-national_Road_Damage_Dataset_released_through_CRDDC_2022/21431547) (47,420 images, 6 countries including India) |
+| **Garbage / Litter** | `garbage_litter_model.pt` | segmentation | [TACO](http://tacodataset.org) (1,500 images, 4,784 annotations) |
+| **Open Manhole** | `open_manhole_model.pt` | detection | [Road Hazards Dataset](https://hyper.ai/en/datasets/38237) (2.7k images, potholes, cracks, open manholes) |
+| **Graffiti** | `graffiti_model.pt` | detection | [STORM graffiti dataset](https://zenodo.org/records/3238357) (1,022 images, CC BY 4.0) |
+
+**Pothole / Road Damage model**, trained in [`ai_model/road_damage.ipynb`](./ai_model/road_damage.ipynb):
 
 <table>
   <tr>
@@ -399,18 +439,7 @@ The full endpoint list is in [`docs/project_description.md`](./docs/project_desc
   </tr>
 </table>
 
-The trained weights (`best.pt`) are **not in the repository**. Re-run the notebook's training cell (a GPU is recommended) to produce `runs/segment/train/weights/best.pt`.
-
-**Roadmap**
-
-- [x] Pothole segmentation model and evaluation notebook
-- [ ] Small Python inference service
-- [ ] Backend calls it in the background for Pothole / Road Damage complaints with photos
-- [ ] Store pothole count, confidence and damage percentage on the complaint
-- [ ] Show a suggested urgency to supervisors during triage
-- [ ] Models for the other nine categories
-
-The model only detects potholes, so it never auto-rejects a complaint. Section 8 of [`docs/project_description.md`](./docs/project_description.md) has the full AI plan.
+Each notebook's training cell writes its weights (for example `runs/segment/train/weights/best.pt`), which go into the AI service's model storage. Weight files are kept out of git because of their size. Section 8 of [`docs/project_description.md`](./docs/project_description.md#8-ai-powered-image-detection-and-complaint-validation-system) has the full pipeline, datasets and request flow.
 
 <br>
 
@@ -437,7 +466,7 @@ The model only detects potholes, so it never auto-rejects a complaint. Section 8
 │   ├── scripts/                seed and backfill scripts
 │   └── uploads/                complaint photos (git-ignored)
 ├── ai_model/
-│   ├── road_damage.ipynb       training and evaluation notebook
+│   ├── road_damage.ipynb       Pothole / Road Damage training notebook (one per category)
 │   └── Pothole_Segmentation_YOLOv8.v1i.yolov8/   dataset (720 train / 60 val images)
 └── docs/
     ├── project_description.md  full system description: modules, schemas, API, AI plan
