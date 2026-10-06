@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 330" width="1280" height="330" role="img" aria-label="Complaint lifecycle: submitted, accepted, assigned, work in progress, proof submitted, closed; with triage rejection and rework">
+  <defs>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M32 0H0V32" fill="none" stroke="#1A181A" stroke-width="1"/>
+    </pattern>
+    <linearGradient id="flow" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#E8A23A"/>
+      <stop offset="0.2" stop-color="#A77BF0"/>
+      <stop offset="0.8" stop-color="#A77BF0"/>
+      <stop offset="1" stop-color="#2FBF7A"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#FF5FA2"/>
+    </marker>
+    <clipPath id="frame"><rect width="1280" height="330" rx="24"/></clipPath>
+  </defs>
+
+  <g clip-path="url(#frame)" font-family="SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace">
+    <rect width="1280" height="330" fill="#0A090A"/>
+    <rect width="1280" height="330" fill="url(#grid)" opacity="0.8"/>
+
+    <!-- public status bands -->
+    <g font-size="12" font-weight="700" letter-spacing="2" text-anchor="middle">
+      <path d="M70 62 V54 H150 V62" fill="none" stroke="#E8A23A" stroke-width="2"/>
+      <text x="110" y="42" fill="#E8A23A">PENDING</text>
+      <path d="M270 62 V54 H950 V62" fill="none" stroke="#A77BF0" stroke-width="2"/>
+      <text x="610" y="42" fill="#A77BF0">IN PROGRESS</text>
+      <path d="M1070 62 V54 H1150 V62" fill="none" stroke="#2FBF7A" stroke-width="2"/>
+      <text x="1110" y="42" fill="#2FBF7A">RESOLVED</text>
+    </g>
+
+    <!-- main track -->
+    <line x1="110" y1="110" x2="1110" y2="110" stroke="#2A2328" stroke-width="4" stroke-linecap="round"/>
+    <line x1="110" y1="110" x2="1110" y2="110" stroke="url(#flow)" stroke-width="4" stroke-linecap="round" stroke-dasharray="1000" stroke-dashoffset="1000">
+      <animate attributeName="stroke-dashoffset" values="1000;0;0" keyTimes="0;0.7;1" dur="6s" repeatCount="indefinite"/>
+    </line>
+    <circle r="6" fill="#FFFFFF">
+      <animateMotion path="M110 110 H1110" keyPoints="0;1;1" keyTimes="0;0.7;1" calcMode="linear" dur="6s" repeatCount="indefinite"/>
+    </circle>
+
+    <!-- nodes -->
+    <g stroke-width="3" fill="#0A090A">
+      <circle cx="110" cy="110" r="14" stroke="#E8A23A"/>
+      <circle cx="310" cy="110" r="14" stroke="#A77BF0"/>
+      <circle cx="510" cy="110" r="14" stroke="#A77BF0"/>
+      <circle cx="710" cy="110" r="14" stroke="#A77BF0"/>
+      <circle cx="910" cy="110" r="14" stroke="#A77BF0"/>
+      <circle cx="1110" cy="110" r="14" stroke="#2FBF7A"/>
+    </g>
+    <g>
+      <circle cx="110" cy="110" r="5" fill="#E8A23A"/>
+      <circle cx="310" cy="110" r="5" fill="#A77BF0"/>
+      <circle cx="510" cy="110" r="5" fill="#A77BF0"/>
+      <circle cx="710" cy="110" r="5" fill="#A77BF0"/>
+      <circle cx="910" cy="110" r="5" fill="#A77BF0"/>
+      <path d="M1103 110 l5 5 l9 -10" fill="none" stroke="#2FBF7A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+
+    <!-- stage names -->
+    <g font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="middle">
+      <text x="110" y="152">submitted</text>
+      <text x="310" y="152">accepted</text>
+      <text x="510" y="152">assigned</text>
+      <text x="710" y="152">work_in_progress</text>
+      <text x="910" y="152">proof_submitted</text>
+      <text x="1110" y="152">closed</text>
+    </g>
+    <!-- who moves it there -->
+    <g font-size="12" fill="#7D7179" text-anchor="middle" letter-spacing="1">
+      <text x="110" y="174">citizen + OTP</text>
+      <text x="310" y="174">supervisor</text>
+      <text x="510" y="174">supervisor</text>
+      <text x="710" y="174">field worker</text>
+      <text x="910" y="174">field worker</text>
+      <text x="1110" y="174">supervisor</text>
+    </g>
+    <g font-size="11" fill="#FF5FA2" text-anchor="middle" letter-spacing="1" opacity="0.85">
+      <text x="210" y="98">accept</text>
+      <text x="410" y="98">assign</text>
+      <text x="610" y="98">start</text>
+      <text x="810" y="98">proof</text>
+      <text x="1010" y="98">close</text>
+    </g>
+    <text x="1110" y="194" font-size="11" fill="#2FBF7A" text-anchor="middle" letter-spacing="1">PDF receipt emailed</text>
+
+    <!-- triage rejection -->
+    <line x1="110" y1="190" x2="110" y2="246" stroke="#E0234E" stroke-width="2" stroke-dasharray="5 6">
+      <animate attributeName="stroke-dashoffset" from="0" to="-22" dur="1.2s" repeatCount="indefinite"/>
+    </line>
+    <circle cx="110" cy="264" r="14" fill="#0A090A" stroke="#E0234E" stroke-width="3"/>
+    <path d="M104 258 l12 12 M116 258 l-12 12" stroke="#E0234E" stroke-width="3" stroke-linecap="round"/>
+    <text x="136" y="262" font-size="15" font-weight="700" fill="#FFFFFF">triage_rejected</text>
+    <text x="136" y="282" font-size="12" fill="#E0234E" letter-spacing="2" font-weight="700">REJECTED</text>
+    <text x="40" y="222" font-size="11" fill="#E0234E" letter-spacing="1" text-anchor="middle" opacity="0.85">reject</text>
+
+    <!-- rework loop -->
+    <path d="M910 204 C 910 290, 510 290, 510 196" fill="none" stroke="#FF5FA2" stroke-width="2" stroke-dasharray="6 7" marker-end="url(#arrow)">
+      <animate attributeName="stroke-dashoffset" from="0" to="-26" dur="1.2s" repeatCount="indefinite"/>
+    </path>
+    <rect x="652" y="256" width="116" height="26" rx="13" fill="#0A090A" stroke="#FF5FA2" stroke-opacity="0.6"/>
+    <text x="710" y="273" font-size="12" font-weight="700" fill="#FF5FA2" text-anchor="middle" letter-spacing="2">REWORK</text>
+
+    <!-- legend -->
+    <text x="1240" y="300" font-size="11" fill="#5E545B" text-anchor="end" letter-spacing="1.5">every transition is written to statusHistory: who, when, remarks</text>
+
+    <rect x="0.5" y="0.5" width="1279" height="329" rx="23.5" fill="none" stroke="#2A2328"/>
+  </g>
+</svg>

@@ -1,0 +1,149 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 420" width="1280" height="420" role="img" aria-label="UrbanFix: report it, track it, watch it get fixed">
+  <defs>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M32 0H0V32" fill="none" stroke="#1C1A1C" stroke-width="1"/>
+    </pattern>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#FF5FA2" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#FF5FA2" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#8B4FD8" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#8B4FD8" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="fadeGrid" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#fff" stop-opacity="0.15"/>
+      <stop offset="0.55" stop-color="#fff" stop-opacity="0.7"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="1"/>
+    </linearGradient>
+    <mask id="gridMask">
+      <rect width="1280" height="420" fill="url(#fadeGrid)"/>
+    </mask>
+    <linearGradient id="building" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1A161A"/>
+      <stop offset="1" stop-color="#0E0C0E"/>
+    </linearGradient>
+    <linearGradient id="road" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#FF5FA2" stop-opacity="0"/>
+      <stop offset="0.5" stop-color="#FF5FA2" stop-opacity="0.9"/>
+      <stop offset="1" stop-color="#FF5FA2" stop-opacity="0"/>
+    </linearGradient>
+    <clipPath id="frame">
+      <rect width="1280" height="420" rx="28"/>
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#frame)">
+    <!-- canvas -->
+    <rect width="1280" height="420" fill="#0A090A"/>
+    <rect width="1280" height="420" fill="url(#grid)" mask="url(#gridMask)"/>
+    <circle cx="1010" cy="190" r="340" fill="url(#glow)"/>
+    <circle cx="760" cy="380" r="260" fill="url(#glow2)"/>
+
+    <!-- skyline -->
+    <g stroke="#2E262C" stroke-width="1.5" fill="url(#building)">
+      <rect x="712" y="250" width="70" height="120"/>
+      <rect x="790" y="190" width="58" height="180"/>
+      <rect x="856" y="140" width="84" height="230"/>
+      <rect x="948" y="215" width="54" height="155"/>
+      <rect x="1010" y="110" width="76" height="260"/>
+      <rect x="1094" y="175" width="62" height="195"/>
+      <rect x="1164" y="235" width="80" height="135"/>
+    </g>
+    <line x1="1048" y1="110" x2="1048" y2="78" stroke="#2E262C" stroke-width="2"/>
+    <circle cx="1048" cy="76" r="3" fill="#FF5FA2">
+      <animate attributeName="opacity" values="1;0.2;1" dur="1.6s" repeatCount="indefinite"/>
+    </circle>
+
+    <!-- windows -->
+    <g fill="#2A2228">
+      <rect x="870" y="160" width="10" height="14"/><rect x="890" y="160" width="10" height="14"/><rect x="910" y="160" width="10" height="14"/>
+      <rect x="870" y="186" width="10" height="14"/><rect x="890" y="186" width="10" height="14"/><rect x="910" y="186" width="10" height="14"/>
+      <rect x="870" y="212" width="10" height="14"/><rect x="910" y="212" width="10" height="14"/>
+      <rect x="1024" y="130" width="10" height="14"/><rect x="1044" y="130" width="10" height="14"/><rect x="1064" y="130" width="10" height="14"/>
+      <rect x="1024" y="156" width="10" height="14"/><rect x="1064" y="156" width="10" height="14"/>
+      <rect x="1024" y="182" width="10" height="14"/><rect x="1044" y="182" width="10" height="14"/>
+      <rect x="802" y="208" width="10" height="14"/><rect x="824" y="208" width="10" height="14"/>
+      <rect x="802" y="234" width="10" height="14"/>
+      <rect x="1106" y="194" width="10" height="14"/><rect x="1128" y="194" width="10" height="14"/>
+      <rect x="1106" y="220" width="10" height="14"/>
+    </g>
+    <g fill="#FF5FA2">
+      <rect x="890" y="212" width="10" height="14"><animate attributeName="opacity" values="0.9;0.25;0.9" dur="3.2s" repeatCount="indefinite"/></rect>
+      <rect x="1044" y="156" width="10" height="14"><animate attributeName="opacity" values="0.3;0.95;0.3" dur="2.6s" repeatCount="indefinite"/></rect>
+      <rect x="824" y="234" width="10" height="14"><animate attributeName="opacity" values="0.8;0.2;0.8" dur="4.1s" repeatCount="indefinite"/></rect>
+      <rect x="1128" y="220" width="10" height="14"><animate attributeName="opacity" values="0.2;0.85;0.2" dur="3.7s" repeatCount="indefinite"/></rect>
+    </g>
+
+    <!-- street -->
+    <rect x="640" y="369" width="640" height="2" fill="url(#road)"/>
+    <line x1="640" y1="392" x2="1280" y2="392" stroke="#2E262C" stroke-width="2" stroke-dasharray="18 14">
+      <animate attributeName="stroke-dashoffset" from="0" to="-64" dur="1.8s" repeatCount="indefinite"/>
+    </line>
+
+    <!-- complaint route: report, work, resolved -->
+    <path id="route" d="M748 238 C 800 120, 900 90, 966 196 S 1110 70, 1204 222" fill="none" stroke="#FF5FA2" stroke-opacity="0.75" stroke-width="2" stroke-dasharray="6 9">
+      <animate attributeName="stroke-dashoffset" from="0" to="-60" dur="1.5s" repeatCount="indefinite"/>
+    </path>
+    <circle r="5" fill="#FFFFFF">
+      <animateMotion dur="5s" repeatCount="indefinite" rotate="auto">
+        <mpath href="#route"/>
+      </animateMotion>
+    </circle>
+
+    <!-- pins -->
+    <g>
+      <circle cx="748" cy="238" r="8" fill="none" stroke="#E8A23A" stroke-width="2">
+        <animate attributeName="r" values="8;30" dur="2.4s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.9;0" dur="2.4s" repeatCount="indefinite"/>
+      </circle>
+      <path d="M748 238 c -11 -14 -16 -22 -16 -30 a 16 16 0 0 1 32 0 c 0 8 -5 16 -16 30z" fill="#E8A23A"/>
+      <circle cx="748" cy="208" r="6" fill="#0A090A"/>
+    </g>
+    <g>
+      <circle cx="966" cy="196" r="8" fill="none" stroke="#A77BF0" stroke-width="2">
+        <animate attributeName="r" values="8;30" dur="2.4s" begin="0.8s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.9;0" dur="2.4s" begin="0.8s" repeatCount="indefinite"/>
+      </circle>
+      <path d="M966 196 c -11 -14 -16 -22 -16 -30 a 16 16 0 0 1 32 0 c 0 8 -5 16 -16 30z" fill="#A77BF0"/>
+      <circle cx="966" cy="166" r="6" fill="#0A090A"/>
+    </g>
+    <g>
+      <circle cx="1204" cy="222" r="8" fill="none" stroke="#2FBF7A" stroke-width="2">
+        <animate attributeName="r" values="8;30" dur="2.4s" begin="1.6s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.9;0" dur="2.4s" begin="1.6s" repeatCount="indefinite"/>
+      </circle>
+      <path d="M1204 222 c -11 -14 -16 -22 -16 -30 a 16 16 0 0 1 32 0 c 0 8 -5 16 -16 30z" fill="#2FBF7A"/>
+      <path d="M1197 192 l 5 5 l 9 -9" fill="none" stroke="#0A090A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+
+    <!-- wordmark -->
+    <g font-family="SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="15" letter-spacing="3" fill="#FF5FA2">
+      <rect x="72" y="96" width="10" height="10" fill="#FF5FA2">
+        <animate attributeName="opacity" values="1;0.15;1" dur="1.2s" repeatCount="indefinite"/>
+      </rect>
+      <text x="94" y="106">CIVIC ISSUE REPORTING PLATFORM</text>
+    </g>
+    <text x="66" y="222" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="128" font-weight="800" letter-spacing="-5" fill="#FFFFFF">Urban<tspan fill="#FF5FA2">Fix</tspan></text>
+    <text x="72" y="270" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="26" font-weight="500" fill="#B3A8B0">Report it. Track it. Watch it get fixed.</text>
+
+    <!-- status chips -->
+    <g font-family="SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="13" font-weight="700" letter-spacing="1.5">
+      <rect x="72" y="306" width="112" height="34" rx="17" fill="#E8A23A" fill-opacity="0.12" stroke="#E8A23A" stroke-opacity="0.6"/>
+      <circle cx="92" cy="323" r="4" fill="#E8A23A"/>
+      <text x="104" y="328" fill="#E8A23A">PENDING</text>
+
+      <rect x="196" y="306" width="148" height="34" rx="17" fill="#A77BF0" fill-opacity="0.12" stroke="#A77BF0" stroke-opacity="0.6"/>
+      <circle cx="216" cy="323" r="4" fill="#A77BF0"/>
+      <text x="228" y="328" fill="#A77BF0">IN PROGRESS</text>
+
+      <rect x="356" y="306" width="120" height="34" rx="17" fill="#2FBF7A" fill-opacity="0.12" stroke="#2FBF7A" stroke-opacity="0.6"/>
+      <circle cx="376" cy="323" r="4" fill="#2FBF7A"/>
+      <text x="388" y="328" fill="#2FBF7A">RESOLVED</text>
+    </g>
+
+    <text x="72" y="384" font-family="SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="12" letter-spacing="2" fill="#5E545B">SMART DIGITAL COMPLAINT MANAGEMENT  /  PUBLIC TRANSPARENCY SYSTEM</text>
+
+    <rect x="0.5" y="0.5" width="1279" height="419" rx="27.5" fill="none" stroke="#2A2328"/>
+  </g>
+</svg>

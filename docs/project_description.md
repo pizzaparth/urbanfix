@@ -1,4 +1,4 @@
-# Smart Digital Complaint Management and Public Transparency System
+# UrbanFix: Smart Digital Complaint Management and Public Transparency System
 ## Comprehensive Project Documentation & System Description
 
 ---
@@ -6,180 +6,288 @@
 ### 1. Project Overview
 
 #### 1.1 System Explanation
-The **Smart Digital Complaint Management and Public Transparency System** is a web-based citizen-engagement and public administration portal. It serves as a digital bridge between community members and municipal administrators, allowing citizens to log public infrastructure issues (across a fixed 10-category taxonomy — potholes/road damage, garbage/litter, water leakage, faulty streetlights, illegal parking, open manholes, fallen trees, damaged road signs, graffiti, and damaged electrical poles/wires), verify their contact details on-the-fly, track complaint statuses in real-time, and audit official resolutions.
+**UrbanFix** (the Smart Digital Complaint Management and Public Transparency System) is a mobile civic-engagement platform. It connects citizens with the municipal staff who fix public infrastructure.
+
+Citizens report issues from their phone without creating an account. Issues fall into a fixed 10-category taxonomy: potholes/road damage, garbage/litter, water leakage, faulty streetlights, illegal parking, open manholes, fallen trees, damaged road signs, graffiti, and damaged electrical poles/wires. Citizens verify each report with an email OTP and track its progress by Tracking ID.
+
+Staff work the complaint through a ward-based workflow. A supervisor triages and assigns it, a field worker fixes it and uploads proof, and the supervisor closes it. Every complaint and its full status history is published in a public registry. Approved researchers can also query and export anonymised data.
+
+The system has three parts:
+
+| Part | Description |
+|---|---|
+| `mobile/` | Expo (React Native) app. The only client. Runs on Android and iOS through Expo Go, and in the browser for development. |
+| `backend/` | Express + MongoDB REST API. Handles auth, complaints, the staff workflow, attendance and leave, email, PDF receipts, and research access. |
+| `ai_model/` | YOLOv8 pothole segmentation notebook and dataset (see Sections 8 and 9). |
 
 #### 1.2 Core Objectives
-* **Public Accessibility:** Enable account-less, friction-free complaint logging with robust email verification.
-* **Administrative Optimization:** Streamline internal workflows with an admin panel that allows status updates and PDF receipt compilation.
-* **Absolute Transparency:** Expose all filed complaints and status counters on a public registry (with citizen details redacted) to promote accountability.
-* **Audit Trails:** Record every status transition, the acting user, timestamps, and comments in a tamper-evident timeline.
+* **Public Accessibility:** Account-less complaint filing, verified by a one-time email code.
+* **Accountable Workflow:** A role-based staff pipeline (triage, assignment, field work, proof review) with server-enforced transitions.
+* **Absolute Transparency:** Every filed complaint and its status counters are public, with citizen details redacted.
+* **Audit Trails:** Every transition records the stage, the acting user, a timestamp, and remarks.
+* **Privacy-Safe Research:** Time-limited researcher access to aggregate or anonymised data, with every access logged.
 
 ---
 
-### 2. Core Functional Modules
+### 2. User Roles
 
-#### 2.1 Citizen Submission & Email Verification
-To eliminate the barrier of account creation while preventing spam, the portal uses an **On-the-fly OTP Verification Flow**:
-1. The citizen picks an issue **Category**, then answers that category's dynamic **yes/no context questionnaire** (5 tailored questions per category, e.g. "Are live wires exposed or hanging at a low, reachable height?" for electrical hazards). Each question carries a severity weight (2 = safety-critical, 1 = standard context); a **live Priority Score** (Standard / Medium / High Urgency) is calculated as the proportion of weighted "Yes" answers and shown to the citizen as they answer.
-2. The citizen provides Subject, Location, Description, and up to 3 supporting photographs, then their Name, Email, and optional Phone number.
-3. The user submits, which requests a 6-digit OTP sent to their email.
-4. An OTP modal prompts the citizen for the code. Upon successful verification:
-   * The backend finds or creates a `User` record linked to the email.
-   * A unique, high-entropy Tracking ID is generated (e.g. `COMP-XXXXX-X`).
-   * The complaint is saved in MongoDB.
-   * An email confirmation with the Tracking ID is sent to the citizen.
+| Role | How they get access | What they do |
+|---|---|---|
+| **Citizen** | No account needed. A `User` record is created automatically on their first verified complaint. Optional registration with password gives a "My complaints" dashboard. | File complaints, track them, download receipts, browse the registry. |
+| **Supervisor** | Invited by an admin. | Triage new complaints, assign field workers in their ward, review proof, close or send back for rework, approve field staff leave. Records own attendance and requests leave. |
+| **Field worker** | Invited by an admin. Belongs to one ward. | See assigned tasks, start work, upload proof photos and a completion note. Check in/out and request leave. |
+| **Admin** | Invited by an admin, or seeded. | Dashboard and analytics, status overrides on any complaint, staff account management, supervisor leave approvals, research application approvals, research audit log. |
+| **Researcher** | Applies publicly; an admin approves and sets duration (max 180 days) and dataset scope. | View insights, run grouped queries, export CSV/JSON. Access stops automatically at expiry. |
 
-#### 2.2 Public Transparency & Search Repository
-The homepage serves as the public dashboard:
-* **Metrics Counters (Top):** A status radar chart (4 axes — Pending, In Progress, Resolved,
-  Rejected) with the total issue count shown as a separate label alongside it.
-* **Searchable Registry (Center):** A full-width list of all filed complaints where visitor search criteria include:
-  * *Search by Location* (regex search on ward/area)
-  * *Filter by Category / Type* (Pothole/Road Damage, Garbage/Litter, Water Leakage, Faulty Streetlight, and 6 more)
-  * *Filter by Status* (Pending, In Progress, Resolved, Rejected)
-* **Progress Tracking:** Clicking on a complaint links to its tracking timeline, showing history logs with official comments.
-* **PDF Receipt Downloads:** Publicly downloadable resolution receipts are compiled dynamically for *Resolved* complaints.
-
-#### 2.3 Administrative Console
-* **Admin Login (`/admin/login`):** A secure login page dedicated strictly to system administrators.
-* **Admin Dashboard:** Displays KPI metrics, issue volumes, and complaint categories.
-* **Complaints Management Grid:** A detailed list of all complaints with full citizen contact info (`name`, `email`, `phone`).
-* **Status Action Page:** Administrators review complaints, assign teams, log remarks, and change statuses. There is no manual public-visibility toggle — every submitted complaint is public by default.
-  * **Status Transitions Allowed:** 
-    * `Pending` $\rightarrow$ `In Progress` $\rightarrow$ `Resolved` OR `Rejected`.
-    * Moving directly from `Pending` to `Resolved` is blocked.
-  * **Dynamic PDF Compilation:** Resolving a complaint compiles a PDF receipt showing descriptions, remarks, dates, and a digital signature placeholder, which is emailed directly to the citizen.
+Staff and researchers are onboarded through an **invite flow**. The admin creates the account, and the user receives an email link to set their own password. Only the SHA-256 hash of the invite token is stored, and it expires after 72 hours. Login is blocked until the password is set. Staff accounts are soft-deleted (`isActive: false`), never hard-deleted, because the audit trail references them.
 
 ---
 
-### 3. Architecture & Tech Stack
+### 3. Core Functional Modules
+
+#### 3.1 Citizen Complaint Filing & Email Verification
+Filing is a 6-step wizard on the **Report** tab:
+1. **Category:** pick one of the 10 categories.
+2. **Questions:** answer that category's 5 yes/no questions on swipeable cards (e.g. "Are live wires exposed or hanging at a low, reachable height?"). Each question has a severity weight (2 = safety-critical, 1 = standard context). The urgency is the share of weighted "Yes" answers: **High Urgency** at 60% or more, **Medium Urgency** at 30% or more, otherwise **Standard Urgency**. The citizen sees the result live.
+3. **Details:** Subject, Description, Location, and **Ward** (Ward 1–10, required).
+4. **Upload:** up to 3 photos (camera or gallery).
+5. **Contact:** Name, Email, optional Phone.
+6. **Review:** confirm and submit. This requests a 6-digit OTP to the email.
+
+After the citizen enters a valid OTP (valid for 5 minutes):
+* The backend finds or creates the citizen's `User` record by email.
+* A Tracking ID is generated in the form `COMP-YYYYMMDD-XXXXX`.
+* The complaint is saved as `Pending` / stage `submitted` and is public immediately.
+* A confirmation email with the Tracking ID is sent.
+
+#### 3.2 Public Transparency (Home, Registry, Track)
+* **Home:** headline counters (Filed, Resolved, Open) and a "Top issues this month" category chart.
+* **Registry:** every public complaint, newest first, with filters for category, status, ward, and a location text search. Citizen details and staff identities are removed.
+* **Track:** look up any complaint by Tracking ID to see its status timeline with staff remarks. The citizen who filed it is shown only as "Citizen". Resolved complaints offer a downloadable PDF receipt.
+* **Deep links:** the app handles `dsn://` links (`dsn://track`, `dsn://registry`, `dsn://file-complaint`, `dsn://set-password`, `dsn://research-apply`, and more).
+
+#### 3.3 Staff Workflow
+Staff work with a detailed internal `stage`. Citizens and the registry see a simpler `status` derived from it (`backend/utils/complaintStage.js`):
 
 ```
-   [ React Frontend (Vite) ] <--- REST APIs ---> [ Express Backend (NodeJS) ] <---> [ MongoDB ]
+submitted ──► accepted ──► assigned ──► work_in_progress ──► proof_submitted ──► closed
+   │            └──────────── In Progress ───────────────────────────┘           Resolved
+   └──► triage_rejected (Rejected)                      ▲          │
+Pending                                                 └─ rework ─┘
 ```
 
-#### 3.1 Backend
-* **Core Runtime:** Node.js & Express.
-* **Database Driver:** Mongoose (MongoDB ODM).
-* **Validation Engine:** Zod (Type-safe request validations).
-* **Media Parsing:** Multer (multipart form-data handling for supporting image uploads).
-* **Email Service:** Nodemailer (SMTP transport for OTP codes, transitions, and PDF attachments).
-* **Document Engine:** PDFKit (dynamic generation of resolution receipts).
+| Action | From | To | Who | Remarks required |
+|---|---|---|---|---|
+| `accept` | `submitted` | `accepted` | supervisor, admin | yes |
+| `reject` | `submitted` | `triage_rejected` | supervisor, admin | yes |
+| `assign` | `accepted`, `assigned` | `assigned` | supervisor, admin | no |
+| `start` | `assigned` | `work_in_progress` | assigned field worker only | no |
+| `proof` | `work_in_progress` | `proof_submitted` | assigned field worker only | completion note + up to 3 photos |
+| `close` | `proof_submitted` | `closed` | supervisor, admin | yes |
+| `rework` | `proof_submitted` | `assigned` | supervisor, admin | yes |
 
-#### 3.2 Frontend
-* **Core Framework:** React (Vite environment).
-* **Styling Framework:** Hand-rolled CSS design-token system (`src/styles/`) — no component framework. A dark monochrome Swiss-Tech/Vercel-Linear aesthetic: CSS custom properties for color/spacing/type, a real 12-column CSS Grid, and flat 1px-bordered components (no shadows, no glassmorphism, no gradients).
-* **Typography:** Geist Sans (UI text, headings) and Geist Mono (metadata — tracking IDs, timestamps, counts, status), self-hosted via the `geist` npm package's raw variable `.woff2` files (no external font CDN).
-* **Icons:** Lucide (`lucide-react`) exclusively, one consistent stroke weight across the app.
-* **HTTP Client:** Axios (API communication layer with JWT automatic attachment interceptors).
+Rules enforced by the server (`backend/services/complaintWorkflow.js`):
+* Remarks must be at least 10 characters.
+* A supervisor can assign only a field worker from the complaint's ward. An admin can override this.
+* A field worker who is deactivated or on approved leave today cannot be assigned.
+* `closed` and `triage_rejected` are terminal.
+* **Closing** generates a PDF receipt, emails it to the citizen, stores the receipt URL, and sets `closedAt`.
+* Status changes email the citizen.
+
+**Admin override:** an admin can also set the public status directly (`Pending`, `In Progress`, `Resolved`, `Rejected`). The stage follows the status. Terminal complaints cannot be changed, and `Pending` cannot jump directly to `Resolved`.
+
+#### 3.4 Attendance & Leave
+* Field workers and supervisors check in and out once per day (`AttendanceRecord`, unique per employee per date).
+* They request leave with a date range and reason.
+* Supervisors decide field worker leave. Admins decide supervisor leave and any leave without a supervisor.
+* Approved leave blocks assignment on those days.
+
+#### 3.5 Research Access
+* **Apply (public):** full name, email, institute, title, purpose (at least 100 characters), requested scope, and days (1–180).
+* **Approval (admin):** the admin sets the duration (capped at 180 days) and scope:
+  * `aggregate_only`: grouped counts only.
+  * `anonymised_records`: row-level records as well.
+* **Insights:** status, category, ward, urgency, and monthly breakdowns, with average resolution time.
+* **Query:** group by category, ward, status, urgency, or month, with filters for category, ward, status, and date range.
+* **Export:** CSV or JSON. Limited to 5 exports per day and 5,000 rows per export.
+* **Privacy rules:** every research response goes through one projection (`backend/utils/researchProjection.js`). It removes citizen identity, description, street-level location, tracking ID, images, and staff identities. Location is coarsened to ward, and dates to day precision. Each record gets an opaque HMAC-based `recordId`. CSV cells are protected against formula injection.
+* **Audit:** every dashboard view, query, and export writes a `ResearchAccessLog` row. Admins see this as the research audit log.
+* **Expiry:** access is a hard stop at `accessExpiresAt`, enforced on every request. A background job emails the researcher 3 days before expiry. Set `DISABLE_JOBS=true` to turn the job off.
+
+#### 3.6 App Navigation
+
+The app shows a different bottom tab set for each role. The server's role, not the login screen, decides which set appears.
+
+| Role | Tabs |
+|---|---|
+| Public / Citizen | Home · Registry · Report · Track · Account (login, register, my complaints, research application) |
+| Supervisor | Queue (triage, assign) · Field Staff · Track · Profile |
+| Field worker | My Tasks · Completed · Profile |
+| Admin | Stats · Complaints · People (staff, leave approvals, research applications, research audit) |
+| Researcher | Insights (and Export) · Registry · Track · Profile |
 
 ---
 
-### 4. Database Design (MongoDB Schemas)
+### 4. Architecture & Tech Stack
 
-#### 4.1 Users Collection (`User.js`)
-Stores administrator accounts and auto-generated citizen profiles.
+```
+   [ Expo app (React Native) ] <--- REST APIs ---> [ Express Backend (Node.js) ] <---> [ MongoDB ]
+                                                              │
+                                                              ├── Nodemailer (SMTP)
+                                                              ├── PDFKit
+                                                              └── uploads/ (photos)
+```
+
+#### 4.1 Backend
+* **Core Runtime:** Node.js & Express 4.
+* **Database Driver:** Mongoose 8 (MongoDB ODM).
+* **Auth:** JWT (default 7-day expiry), bcrypt password hashing, role checks per route.
+* **Validation Engine:** Zod.
+* **Media Parsing:** Multer (up to 3 images per complaint and per proof). Files are served from `/uploads`.
+* **Email Service:** Nodemailer. If SMTP is not configured, it falls back to an Ethereal test inbox.
+* **Document Engine:** PDFKit (resolution receipts).
+* **Background Job:** a researcher expiry notice runs every 6 hours.
+
+#### 4.2 Mobile App
+* **Framework:** Expo SDK 57, React Native 0.86, React 19. Runs in Expo Go, so it uses no dev-build-only native libraries.
+* **Navigation:** React Navigation 7 (bottom tabs + native stacks) with a custom glass tab bar (`expo-blur`).
+* **Animation & Lists:** Reanimated 4, Moti, FlashList, Gesture Handler (swipe question cards).
+* **Charts & Icons:** hand-built charts and icons with `react-native-svg`.
+* **Device Features:** `expo-image-picker` (photos), `expo-secure-store` (auth token), `expo-file-system` + `expo-sharing` (PDF receipts, exports), `expo-haptics`, `expo-clipboard`.
+* **HTTP Client:** Axios, which attaches the JWT automatically. The app reaches the backend on port 5001 of the machine that serves Metro, so no API URL is needed in development. `EXPO_PUBLIC_API_URL` overrides this.
+
+---
+
+### 5. Database Design (MongoDB Schemas)
+
+#### 5.1 Users Collection (`User.js`)
 * `name` (String, Required)
-* `email` (String, Required, Unique, Lowercase, Indexed)
-* `password` (String, Required, Hashed) - *Optional/Generated on-the-fly for citizens*
+* `email` (String, Required, Unique, Lowercase)
+* `password` (String, Required, min 8, bcrypt-hashed, not selected by default). Random for auto-created citizens and for invited users until they set one.
 * `phone` (String, Optional)
-* `role` (String, Enum: `['citizen', 'admin']`, Default: `citizen`)
+* `role` (Enum: `citizen`, `researcher`, `field`, `supervisor`, `admin`; Default: `citizen`)
 * `isVerified` (Boolean, Default: `false`)
-* Timestamps (`createdAt`, `updatedAt`)
+* `isActive` (Boolean, Default: `true`). Soft delete.
+* `createdBy` (ObjectId → `User`), `lastLoginAt` (Date)
+* `researcher` (researchers only): `institute`, `title`, `accessGrantedAt`, `accessExpiresAt`, `datasetScope` (`aggregate_only` | `anonymised_records`), `applicationId`, `expiryNoticeSentAt`
+* `employee` (field workers and supervisors only): `employeeCode` (unique, sparse), `ward`, `supervisorId`, `phone`
+* `inviteToken` (SHA-256 hash), `inviteTokenExpires`, `mustSetPassword`
+* Timestamps
 
-#### 4.2 OTPs Collection (`Otp.js`)
-Temporary storage for email verification.
+#### 5.2 OTPs Collection (`Otp.js`)
 * `email` (String, Required, Indexed)
 * `otp` (String, Required)
-* `expiresAt` (Date, MongoDB TTL Indexed, automatic deletion after 5 minutes)
+* `expiresAt` (Date, TTL index). Set 5 minutes ahead; MongoDB deletes it automatically.
 
-#### 4.3 Complaints Collection (`Complaint.js`)
-Main ticket repository.
-* `trackingId` (String, Required, Unique, Indexed)
-* `citizenId` (ObjectId referencing `User`, Required, Indexed)
-* `title` (String, Required, max 100 characters)
-* `description` (String, Required)
+#### 5.3 Complaints Collection (`Complaint.js`)
+* `trackingId` (String, Required, Unique), format `COMP-YYYYMMDD-XXXXX`
+* `citizenId` (ObjectId → `User`, Required, Indexed)
+* `title` (String, Required, 5–100 characters)
+* `description` (String, Required, at least 15 characters)
 * `category` (String, Required, Indexed)
 * `location` (String, Required, Indexed)
-* `images` (Array of Strings containing filepaths, max 3)
-* `status` (String, Enum: `['Pending', 'In Progress', 'Resolved', 'Rejected']`, Default: `Pending`, Indexed)
-* `isPublic` (Boolean, Default: `false`, Indexed)
-* `remarks` (String, Default: `""`)
-* `pdfReceiptUrl` (String, Default: `""`) — set to the download endpoint path when a complaint transitions to `Resolved`
-* `urgencyLevel` (String, Enum: `['High Urgency', 'Medium Urgency', 'Standard Urgency']`, Default: `Standard Urgency`) — calculated client-side from the category questionnaire's weighted "Yes" answers
+* `ward` (Enum: `Ward 1` … `Ward 10`, Indexed). Required on new complaints; `null` only on legacy records.
+* `images` (Array of file paths, max 3)
+* `status` (Enum: `Pending`, `In Progress`, `Resolved`, `Rejected`; Indexed). Derived from `stage`.
+* `stage` (Enum: `submitted`, `triage_rejected`, `accepted`, `assigned`, `work_in_progress`, `proof_submitted`, `closed`; Default: `submitted`; Indexed)
+* `assignedTo`, `assignedBy` (ObjectId → `User`), `assignedAt` (Date)
+* `completionImages` (Array, max 3), `completionNote` (String)
+* `closedAt` (Date)
+* `isPublic` (Boolean). Set to `true` on every new complaint; there is no manual toggle.
+* `remarks` (String)
+* `pdfReceiptUrl` (String). Set to the download endpoint path on close.
+* `urgencyLevel` (Enum: `High Urgency`, `Medium Urgency`, `Standard Urgency`; Default: `Standard Urgency`)
 * `statusHistory` (Array of sub-documents):
   * `status` (String, Required)
-  * `changedBy` (ObjectId referencing `User`, Required)
+  * `stage` (String, Optional; absent on pre-stage history)
+  * `changedBy` (ObjectId → `User`, Required)
   * `remarks` (String, Required)
   * `changedAt` (Date, Default: `Date.now`)
-* Timestamps (`createdAt`, `updatedAt`)
+* Timestamps
+
+#### 5.4 Other Collections
+* **`LeaveRequest`:** `employeeId`, `fromDate`, `toDate`, `reason`, `status` (`pending` | `approved` | `rejected`), `decidedBy`, `decidedAt`, `decisionNote`.
+* **`AttendanceRecord`:** `employeeId`, `date` (`YYYY-MM-DD`), `checkInAt`, `checkOutAt`, `status` (`present` | `absent` | `on_leave`). Unique per employee and date.
+* **`ResearchApplication`:** `fullName`, `email`, `institute`, `title`, `purpose`, `datasetScope`, `requestedDays`, `status`, `reviewedBy`, `reviewedAt`, `reviewNote`, `createdUserId`.
+* **`ResearchAccessLog`:** `researcherId`, `action` (`view_dashboard` | `query` | `export`), `recordCount`, `filters`, `exportFormat`, `ipAddress`, `createdAt`.
 
 ---
 
-### 5. Core REST API Design
+### 6. Core REST API Design
 
-#### 5.1 Public & Submission Endpoints
-* **`POST /api/complaints/request-otp`**
-  * *Payload:* `{ "email": "citizen@email.com" }`
-  * *Action:* Generates 6-digit OTP and dispatches email verification.
-* **`POST /api/complaints`**
-  * *Payload:* Multipart Form Data (`name`, `email`, `phone`, `otp`, `title`, `description`, `category`, `location`, `urgencyLevel`, `images`)
-  * *Action:* Verifies OTP, registers user/complaint, generates Tracking ID, and triggers nodemailer alerts.
-* **`GET /api/complaints/track/:trackingId`**
-  * *Action:* Returns tracking log details (PII Redacted).
-* **`GET /api/complaints/download-receipt/:trackingId`**
-  * *Action:* Generates and streams PDF resolution receipt to browser.
-* **`GET /api/public/complaints`**
-  * *Query Params:* `location`, `category`, `status`, `page`, `limit`
-  * *Action:* Returns redacted repository listings.
-* **`GET /api/public/stats`**
-  * *Action:* Returns status breakdown summaries for dashboard.
+All routes are under `/api`. Photos are served from `/uploads`. `GET /health` is a health check.
 
-#### 5.2 Admin Endpoints
-* **`POST /api/auth/login`**
-  * *Payload:* `{ "email": "admin@email.com", "password": "password" }`
-  * *Action:* Verifies credentials and returns access JWT.
-* **`GET /api/admin/complaints`**
-  * *Query Params:* `status`, `category`, `search`, `page`, `limit`
-  * *Action:* Returns complaints list populated with citizen contact details.
-* **`PATCH /api/admin/complaints/:id/status`**
-  * *Payload:* `{ "status": "In Progress", "remarks": "Assigned to Ward 4 team." }` — no manual public-visibility toggle; every submitted complaint is public by default
-  * *Action:* Triggers transition audit logs and nodemailer alerts.
+#### 6.1 Auth (`/api/auth`)
+* `POST /register`: citizen registration; sends an OTP.
+* `POST /verify-otp`, `POST /resend-otp`: verify a registered citizen.
+* `POST /login`: returns a JWT and the user. Returns `403 MUST_SET_PASSWORD` for unredeemed invites.
+* `POST /set-password`: redeem an invite token.
+* `GET /me`: current user (authenticated).
 
----
+#### 6.2 Complaints (`/api/complaints`)
+* `POST /request-otp`: `{ "email" }`. Sends a 6-digit OTP.
+* `POST /`: multipart (`name`, `email`, `phone`, `otp`, `title`, `description`, `category`, `location`, `ward`, `urgencyLevel`, `images`). Verifies the OTP, creates the user and complaint, and returns the Tracking ID.
+* `GET /track/:trackingId`: complaint with timeline (citizen and staff IDs redacted).
+* `GET /download-receipt/:trackingId`: PDF receipt (resolved complaints only).
+* `GET /my-complaints`: the logged-in citizen's complaints.
 
-### 6. Dark Monochrome Design System & Color Palette
-The interface uses a restrained dark monochrome foundation with exactly one accent color — a
-Swiss-Tech/Vercel-Linear aesthetic ("civic operating system"). No gradients, no glassmorphism,
-no glow/blur effects. Status and priority meaning is communicated through color used sparingly
-(icon/border/text only, never a filled pastel chip). See `color_palatte.md` for the full token
-table and `Instructions/DESIGN_INSTRUCTION.md` for the governing design rules.
-* **Page Background:** `#0A0A0A` · **Surface:** `#111111` · **Raised Surface (modals):** `#161616`
-* **Borders:** `#1F1F1F` (default), `#272727` (strong)
-* **Text:** `#FAFAFA` (headings) → `#E4E4E4` (body) → `#8C8C8C` (secondary) → `#6E6E6E` (muted)
-* **The one accent color:** `#3B82F6` (hover `#60A5FA`) — used only for primary actions, active
-  nav, links, focus rings, and the "in progress" status.
-* **Status tokens** (icon/border/text color only, the default badge style): *Pending* `#C9A227` ·
-  *In Progress* (accent) `#3B82F6` · *Resolved* `#22C55E` · *Rejected* `#EF5A5A`
-* **Typography:** Geist Sans (headings/UI) and Geist Mono (tracking IDs, timestamps, counts,
-  status text).
+#### 6.3 Public (`/api/public`)
+* `GET /complaints`: query params `category`, `status`, `ward`, `location`, `page`, `limit`. Redacted registry.
+* `GET /stats`: status breakdown and category distribution.
 
-**Documented exceptions** (each scoped and deliberate, not a drift from the system above):
-the navbar is a floating glass pill (`backdrop-filter: blur`) — the one place blur is used;
-the Public Registry and Admin Action Panel use a second, solid-fill status badge variant
-(fully rounded, dark green/yellow/orange/red background, white text) so status reads at a
-glance across a list; the admin dashboard's category donut uses a validated multi-hue
-categorical palette (not monochrome) since 10 simultaneous categories were not
-distinguishable on a single-hue ramp.
+#### 6.4 Supervisor (`/api/supervisor`, supervisor or admin)
+* `GET /queue`, `GET /complaints/:id`, `GET /stats`, `GET /field-staff`
+* `PATCH /complaints/:id/accept | reject | assign | close | rework`
+* `GET /leave`, `PATCH /leave/:id`: field worker leave decisions.
+* Supervisor only: `GET|POST /my-leave`, `GET /attendance`, `POST /attendance/check-in`, `POST /attendance/check-out`.
+
+#### 6.5 Field Worker (`/api/field`)
+* `GET /tasks`, `GET /tasks/:id`, `GET /stats`
+* `PATCH /tasks/:id/start`
+* `POST /tasks/:id/proof`: multipart (`completionNote`, up to 3 `images`).
+* `GET|POST /leave`, `GET /attendance`, `POST /attendance/check-in`, `POST /attendance/check-out`
+
+#### 6.6 Admin (`/api/admin`)
+* `GET /stats`, `GET /activity-heatmap`
+* `GET /complaints`: query params `status`, `stage`, `category`, `ward` (`none` for unassigned), `search`, `page`, `limit`.
+* `PATCH /complaints/:id/status`: `{ "status", "remarks" }`. Status override.
+* `GET|POST /users`, `PATCH /users/:id`, `PATCH /users/:id/deactivate`, `PATCH /users/:id/reactivate`
+* `GET /research-applications`, `PATCH /research-applications/:id`: approve or reject, with `days` and `grantRecordAccess`.
+* `GET /audit/research`: research access log.
+* `GET /leave`, `PATCH /leave/:id`: leave with no supervisor to decide it (mainly supervisors' own).
+
+#### 6.7 Research (`/api/research`)
+* `POST /apply`: public application.
+* `GET /me`: researcher profile, usage stats, and exports remaining today.
+* `GET /dashboard`, `GET /query`, `GET /export?format=csv|json` (researcher or admin).
 
 ---
 
-### 7. Seeded Credentials for Testing
-To test the administration dashboard, utilize the seeded administrator account below:
+### 7. Design System & Development Accounts
 
-* **Admin Portal Login Route:** `/admin/login` or `/login`
-* **Admin Email:** `admin@complaintsystem.gov`
-* **Admin Password:** `admin_password_123`
+#### 7.1 Design System
+The app uses a **light theme** defined in `mobile/src/theme.js`:
+* **Background:** `#FFFFFF` · **Surface:** `#F7F2F5` · **Raised surface:** `#FBEDF3` · **Borders:** `#E8DFE4` / `#DDD1D9`
+* **Text:** `#000000` (primary), `#3A2F38` (body), `#5C505A` (secondary), `#776B75` (muted)
+* **Accent:** pink `#FF5FA2` (hover `#E84D8F`)
+* **Status colors:** *Pending* `#C2700F` · *In Progress* `#8B4FD8` · *Resolved* `#16935A` · *Rejected* `#E0234E`
+* **Urgency colors:** *High* `#E0234E` · *Medium* `#C2700F` · *Standard* `#16935A`
+* **Typography:** Space Grotesk (display headings) and Plus Jakarta Sans (body and UI), loaded through `@expo-google-fonts`.
+* **Shape:** large rounded corners (8–28 px radius, pill buttons) and a floating glass bottom tab bar.
+
+#### 7.2 Development Accounts
+Created by `npm run seed:roles` in `backend/`. The script is idempotent and refuses to run when `NODE_ENV=production`.
+
+| Role | Email | Password |
+|---|---|---|
+| Admin | `admin@example.com` | `Passw0rd!123` |
+| Supervisor | `supervisor@example.com` | `Passw0rd!123` |
+| Field worker (Ward 1) | `field1@example.com` | `Passw0rd!123` |
+| Field worker (Ward 2) | `field2@example.com` | `Passw0rd!123` |
+| Researcher (aggregate only) | `researcher@example.com` | `Passw0rd!123` |
+| Researcher (anonymised records) | `researcher-records@example.com` | `Passw0rd!123` |
+
+`npm run seed:admin` also creates the original admin, `admin@complaintsystem.gov` / `admin_password_123`. Citizens have no seeded account.
 
 ---
 
@@ -272,3 +380,20 @@ The resulting per-category models are served by a dedicated AI inference service
                       │ AI Metadata        │         │ Image Annotation   │         │                    │
                       └──────────────────┘         └──────────────────┘         └──────────────────┘
 ```
+
+---
+
+### 9. AI Implementation Status
+Section 8 is the target design. What exists today:
+
+* **Built:** `ai_model/road_damage.ipynb` fine-tunes **YOLOv8n-seg** (Ultralytics) to segment potholes. It trains on the Roboflow dataset in `ai_model/Pothole_Segmentation_YOLOv8.v1i.yolov8/` (720 training and 60 validation images). A previous run reached a mask mAP50 of **0.72** (precision 0.71, recall 0.66) on the validation set. The notebook also estimates the damaged share of the road from mask area.
+* **Not in the repository:** the trained weights. Re-run the notebook's training cell (a GPU is recommended) to produce `runs/segment/train/weights/best.pt`.
+* **Not built yet:** the FastAPI inference service, the backend integration, AI metadata on complaints, annotated images, and models for the other nine categories.
+
+**Planned first integration:**
+1. Run a small Python inference service with the pothole model.
+2. The backend calls it in the background for Pothole / Road Damage complaints with photos.
+3. It stores the pothole count, confidence, and damage percentage on the complaint.
+4. Supervisors see this as a suggested urgency during triage.
+
+The model detects only potholes, so it never auto-rejects a complaint.
