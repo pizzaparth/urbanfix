@@ -352,34 +352,49 @@ Errors return `{ "status": "fail", "message": "..." }` for 4xx responses and `"s
 
 ```
 .
-├── mobile/                      Expo app
+├── README.md
+├── project-report.pdf               final project report
+├── mobile/                          Expo app
+│   ├── App.js, index.js, index.web.js
+│   ├── app.json                     Expo config
+│   ├── assets/                      app icons and splash
+│   ├── README.md                    device and browser notes
 │   └── src/
-│       ├── navigation/          role-based tab sets, deep links (dsn://)
-│       ├── screens/             public/ citizen/ supervisor/ field/ admin/ research/
-│       ├── components/          shared UI, charts, tab bar
-│       ├── services/            api.js (Axios + JWT), tokenStore.js
-│       └── constants/ utils/ hooks/ contexts/ theme.js
-├── backend/                     Express API
-│   ├── server.js                entry point, mounts /api routes
-│   ├── routes/ controllers/     auth, complaints, public, supervisor, field, admin, research
-│   ├── models/                  User, Complaint, Otp, LeaveRequest, AttendanceRecord, Research*
-│   ├── services/                workflow engine, email, PDF receipts, expiry job
+│       ├── navigation/              role-based tab sets, deep links (dsn://)
+│       ├── screens/                 public/ citizen/ supervisor/ field/ admin/ research/
+│       ├── components/              shared UI, charts, tab bar
+│       ├── services/                api.js (Axios + JWT), tokenStore.js
+│       ├── config/                  chart theme
+│       ├── constants/               categories, stages, wards, icons
+│       ├── contexts/ hooks/ utils/
+│       └── theme.js
+├── backend/                         Express API
+│   ├── server.js                    entry point, mounts /api routes
+│   ├── .env.example                 environment template
+│   ├── config/                      database connection
+│   ├── routes/ controllers/         auth, complaints, public, supervisor, field, admin, research
+│   ├── models/                      User, Complaint, Otp, LeaveRequest, AttendanceRecord, Research*
+│   ├── services/                    workflow engine, email, PDF receipts, expiry job
 │   ├── constants/ validators/ middleware/ utils/
-│   └── scripts/                 seed and backfill scripts
+│   └── scripts/                     seed and backfill scripts
 ├── ai_model/
-│   ├── notebooks/               00 to 06: download, prepare, train, evaluate, figures
-│   ├── weights/                 trained category models (.pt)
-│   ├── results/                 eval.json and split metadata
+│   ├── notebooks/                   00 to 06: download, prepare, train, evaluate, figures
+│   ├── weights/                     trained category models (.pt)
+│   ├── results/                     eval.json and split metadata
+│   ├── road_damage.ipynb            standalone road damage training notebook
 │   ├── requirements.txt
-│   └── Pothole_Segmentation_YOLOv8.v1i.yolov8/
+│   └── README.md
 └── docs/
-    ├── project_description.md   full system description
-    ├── project_report/          report.docx, report.pdf, figures/
-    ├── assets/                  README graphics
-    └── sample-images/           test photos
+    ├── project_description.md       full system description
+    ├── project_report/
+    │   ├── report.docx, report.pdf  Project Exhibition I report
+    │   ├── UrbanFix_Literature_Survey.pdf
+    │   └── figures/                 report figures (PNG and SVG), INDEX.md
+    ├── assets/                      README graphics
+    └── sample-images/               test photos
 ```
 
-`ai_model/data/` and `ai_model/runs/` are created by the notebooks and are git-ignored.
+`ai_model/data/` and `ai_model/runs/` are created by the notebooks and are git-ignored. `node_modules/` and `backend/uploads/` are created by `npm install` and at runtime.
 
 ## Documentation
 
