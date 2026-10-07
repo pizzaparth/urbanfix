@@ -48,27 +48,34 @@
   #4
   \end{tabular}}
 
+\renewcommand{\topfraction}{0.95}
+\renewcommand{\bottomfraction}{0.6}
+\renewcommand{\textfraction}{0.05}
+\renewcommand{\floatpagefraction}{0.85}
+\renewcommand{\dbltopfraction}{0.95}
+\renewcommand{\dblfloatpagefraction}{0.85}
+\setcounter{topnumber}{4}\setcounter{bottomnumber}{2}\setcounter{totalnumber}{6}\setcounter{dbltopnumber}{2}
 \begin{document}
 
 \title{UrbanFix: A Closed-Loop, AI-Validated Urban Governance Platform with a Public Accountability Registry and Privacy-Preserving Research Data Access}
 
 \author{\IEEEauthorblockN{Parth Pancholi}
-\IEEEauthorblockA{\textit{School of Computing Science and Engineering}\\
-\textit{VIT Bhopal University}\\
-Bhopal, India\\
-email address or ORCID}
+\IEEEauthorblockA{\textit{B.\,Tech. CSE Core}\\
+\textit{School of Computing Science and Engineering}\\
+\textit{VIT Bhopal University}, Bhopal, India\\
+parth.25bce10443@vitbhopal.ac.in}
 \and
-\IEEEauthorblockN{Gaurav Soni}
+\IEEEauthorblockN{Dr. Gaurav Soni}
 \IEEEauthorblockA{\textit{School of Computing Science and Engineering}\\
 \textit{VIT Bhopal University}\\
 Bhopal, India\\
-email address or ORCID}
+gaurav.soni@vitbhopal.ac.in}
 }
 
 \maketitle
 
 \begin{abstract}
-Most digital grievance systems classify the text of a complaint and track it as a ticket. The photograph a citizen attaches is rarely checked, urgency comes from an opaque model if it is computed at all, and the records are seen only by the administration. We present UrbanFix, an urban governance platform that follows a complaint from the citizen's photograph to a verified, publicly recorded repair and makes the resulting data available for research. Citizens file without an account, confirming each report with a one-time email code. A YOLOv8 model trained for the selected category checks and localises the defect in each photo, and a weighted questionnaire produces an urgency score that can be recomputed from the answers. Staff work through a seven-stage workflow enforced on the server, which requires assignment within the ward, photo proof and a resolution receipt before a complaint is closed. All complaints and their histories appear in an open registry without personal data, and approved researchers get time-limited, logged access to an anonymised projection. We offer only categories for which a public annotated dataset exists, so every accepted report can be checked by a model. On the validation sets, mask mAP50 is 0.724 for potholes and 0.502 for litter, and box mAP50 is 0.908 for open manholes and 0.729 for graffiti, with 19 to 33 ms per image on a laptop CPU. When the model is unsure, it flags the report for a human reviewer.
+Most digital grievance systems classify complaint text and track tickets. They rarely check the photo a citizen attaches, their urgency estimates cannot be traced to inputs, and only the administration sees the records. We present UrbanFix, an urban governance platform that follows a complaint from the citizen's photo to a verified, publicly recorded repair and on to research data. Citizens file without an account using an email code. A YOLOv8 model trained for the chosen category localises the defect in each photo, and a weighted questionnaire gives an urgency score anyone can recompute. A seven-stage workflow enforced on the server requires ward-level assignment, photo proof and a receipt before closure. Every complaint is published without personal data, and approved researchers get logged, time-limited access to an anonymised projection. Validation mAP50 is 0.724 for potholes and 0.502 for litter (masks), and 0.908 for open manholes and 0.729 for graffiti (boxes), at 19 to 33 ms per image on a laptop CPU. When the model is unsure, it flags the report for a human reviewer.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -100,24 +107,35 @@ In India, pothole-related road accidents rose from 3,713 in 2020 to 5,432 in 202
 \label{fig:motiv}
 \end{figure}
 
-Recent systems automate parts of this process. Some route complaint text \cite{citiwatch,smartcity}, one predicts urgency \cite{cholke}, and others classify waste images \cite{regenx} or filter unsafe photos \cite{civicmate}. None of these complaint management tools checks whether a photo shows the reported defect. Their urgency estimates cannot be traced back to an input, and their records are visible only to officials or to the person who filed. Holding a municipality to account also needs a record of who handled each step, a public outcome, and data that others can study.
-
-UrbanFix handles a complaint as a governance record that passes through six steps in one system: report, validate, prioritise, act, prove and learn. This paper makes the following contributions:
+Recent systems route complaint text \cite{citiwatch,smartcity}, predict urgency \cite{cholke}, classify waste images \cite{regenx} or filter unsafe photos \cite{civicmate}. None checks whether a photo shows the reported defect, their urgency cannot be traced to an input, and their records stay with officials or the filer. UrbanFix runs each complaint through six steps in one system (Fig.~\ref{fig:loop}). Our contributions are:
 \begin{enumerate}
-\item A vision check for each category, offered only when a public, annotated street-level dataset exists for it; a YOLOv8 model \cite{yolov8} trained on that dataset localises the defect in each photo.
-\item A prioritisation scheme that keeps the citizen's weighted questionnaire score and the model's evidence as separate signals and leaves the decision to a supervisor; the model cannot reject a report.
-\item A workflow modelled as a guarded finite-state machine, with assignment limited to the ward, required photo proof, a rework path and an append-only history.
-\item A public registry that lists every complaint with its history; the server's queries remove the citizen's identity before anything is returned.
-\item A research data gateway that gives approved researchers an eight-field pseudonymised view of the data, with a granted scope, an expiry date, daily export limits and an access log.
+\item A YOLOv8 check \cite{yolov8} for each category, offered only where a public dataset with localised labels exists.
+\item Prioritisation that puts the questionnaire score and the model's evidence in front of a supervisor, who decides; the model cannot reject a report.
+\item A workflow modelled as a guarded state machine with ward-level assignment, photo proof and an append-only history.
+\item A public registry with identity removed on the server, and a research gateway with scoped, expiring and logged access to pseudonymised records.
 \end{enumerate}
 
-Section~\ref{sec:rw} covers related work and Section~\ref{sec:arch} the architecture. Section~\ref{sec:method} describes the methods, Section~\ref{sec:impl} the implementation and Section~\ref{sec:res} the results; Section~\ref{sec:conc} concludes.
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[font=\scriptsize,
+  st/.style={draw=#1, fill=#1!12, circle, minimum size=10.2mm, inner sep=0pt, line width=0.6pt, align=center, font=\tiny\bfseries, text=ink},
+  ds/.style={font=\tiny, align=center, text=ink!80, text width=16mm},
+  ar/.style={-{Latex[length=1.5mm]}, line width=0.6pt, draw=line}]
+\def\R{1.25}
+\foreach \i/\n/\c/\d in {0/Report/navy/{account-free,\\email OTP},1/Validate/teal/{YOLOv8 per\\category},2/Prioritise/amber/{$u_Q$ and $u_{AI}$,\\human decides},3/Act/plum/{ward FSM,\\Eq.~(\ref{eq:fsm})},4/Prove/okgreen/{photo proof,\\PDF receipt},5/Learn/rose/{registry and\\research data}}{
+  \node[st=\c] (n\i) at ({90-\i*60}:\R) {\n};
+  \node[ds] at ({90-\i*60}:{\R+1.3}) {\d};}
+\foreach \i in {0,...,5}{
+  \draw[ar] ({90-\i*60-22}:\R) arc ({90-\i*60-22}:{90-\i*60-38}:\R);}
+\node[font=\tiny\bfseries, text=ink, align=center] at (0,0) {one\\complaint\\record};
+\end{tikzpicture}
+\caption{The six steps every complaint passes through in UrbanFix.}
+\label{fig:loop}
+\end{figure}
 
 % =====================================================================
 \section{Related Work}\label{sec:rw}
-Infra-Alert \cite{infraalert} collects geotagged photos and produces PDF reports but leaves verification and prioritisation to future work. CitiWatch \cite{citiwatch} routes complaint text with TF--IDF and a supervised classifier at 96.8\% accuracy. The framework of Cholke \textit{et al.} \cite{cholke} combines Sentence-BERT features, a multi-task urgency network and DBSCAN duplicate grouping, reporting 81\% faster response. ReGenX \cite{regenx} classifies waste photos on device (85\%), CivicMate \cite{civicmate} screens photos for unsafe content and lets citizens upvote local issues, CivicX \cite{civicx} pairs grievance analytics with plan approval and benchmarks its classifier against officers (91.4\% vs.\ 94.1\%), and Smart City Concern \cite{smartcity} uses zero-shot BART with sentiment as a proxy for urgency.
-
-Reported accuracy for text routing lies between 90 and 97\%. As Table~\ref{tab:rw} shows, none of the seven checks the photo against the reported defect, gives an urgency that can be traced to its inputs, publishes all complaints with their histories, or shares data with researchers. Datasets with box or mask labels now exist for road damage \cite{rdd2022,roboflow}, litter \cite{taco}, open manholes \cite{roadhazards} and graffiti \cite{storm}, which makes defect-level checks feasible for these categories.
+Infra-Alert \cite{infraalert} geotags photos and generates PDF reports. CitiWatch \cite{citiwatch} routes text at 96.8\% accuracy, and Cholke \textit{et al.} \cite{cholke} add multi-task urgency prediction and duplicate grouping. ReGenX \cite{regenx} classifies waste photos, CivicMate \cite{civicmate} screens unsafe images, CivicX \cite{civicx} compares its classifier with officers (91.4\% vs.\ 94.1\%), and Smart City Concern \cite{smartcity} uses sentiment as a proxy for urgency. Table~\ref{tab:rw} lists the gaps; the largest is that none checks the photo against the reported defect. Localised datasets now exist for road damage \cite{rdd2022,roboflow}, litter \cite{taco}, open manholes \cite{roadhazards} and graffiti \cite{storm}.
 
 \begin{table}[t]
 \caption{Capabilities of reviewed systems and UrbanFix (UF)}
@@ -147,7 +165,7 @@ Open research data       & \no & \no & \no & \no & \no & \no & \no & \yes\\
 
 % =====================================================================
 \section{System Architecture}\label{sec:arch}
-Fig.~\ref{fig:arch} shows the layers. One Expo (React Native) client serves all six roles, and the server decides which set of screens a user sees. Each request passes through an Express pipeline before reaching one of seven domain services: transport checks, upload handling, JWT authentication, a per-route role guard and schema validation. The authentication step also re-checks on every call whether the account is active, whether an invitation is still pending and whether a researcher's access has expired. The intake service sends photos to a separate FastAPI inference service only after the tracking ID has been returned, so a slow or failed model call does not affect the filing. MongoDB holds seven collections. Each complaint document embeds its status history and its AI analysis.
+One Expo client serves all six roles, and the server decides which screens a user sees (Fig.~\ref{fig:arch}). Each request passes an Express pipeline that re-checks the account, any pending invitation and research expiry on every call. Intake sends photos to a separate FastAPI service only after returning the tracking ID, so a slow or failed model call cannot affect the filing. Each MongoDB complaint document embeds its status history and AI analysis.
 
 %% ---- arch_fig ----
 \begin{figure*}[t]
@@ -213,7 +231,41 @@ Let $\mathcal{K}$ be the candidate complaint categories. A category $k$ is offer
 \mathcal{C}=\{\,k\in\mathcal{K} : \mathcal{D}_k \text{ is public} \wedge \text{localised} \wedge \text{street-level}\,\}.
 \label{eq:gate}
 \end{equation}
-Four of the ten categories we started with meet this condition: pothole/road damage, garbage/litter, open manhole and graffiti. For water leakage, streetlights, illegal parking, fallen trees, road signs and electric poles we found only small collections, image-level labels or data without a licence, so these were left out. The API rejects any category outside $\mathcal{C}$.
+Four of ten candidate categories qualify (Fig.~\ref{fig:gate}), and the API rejects the rest.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[x=1mm, y=1mm, font=\tiny]
+\foreach \lab/\n/\L/\keep/\a/\b/\c/\d [count=\i from 0] in {
+ {Pothole / road damage}/{47,420}/37.46/1/2/2/2/2,
+ Electrical poles/{25,426}/33.67/0/1/0/2/2,
+ Water leakage/{2,935}/20.55/0/2/0/0/2,
+ Open manhole/{2,700}/20.04/1/2/2/2/2,
+ {Garbage / litter}/{1,500}/16.47/1/2/2/2/2,
+ Illegal parking/{1,081}/14.47/0/1/0/2/2,
+ Graffiti/{1,022}/14.13/1/2/2/2/2,
+ Faulty streetlight/{800}/12.64/0/0/2/2/0,
+ Damaged road sign/{503}/9.82/0/2/0/2/0,
+ Fallen tree/{379}/8.10/0/2/0/2/0}{
+  \pgfmathsetmacro{\y}{-\i*3.6}
+  \ifnum\keep=1 \def\fc{navy}\def\tw{\bfseries}\else \def\fc{line!45}\def\tw{}\fi
+  \node[anchor=east, font=\tiny\tw] at (21,\y) {\lab};
+  \fill[\fc] (22,\y-1.15) rectangle ++(\L,2.3);
+  \node[anchor=west, font=\tiny] at (22+\L,\y) {\n};
+  \foreach \v [count=\k from 0] in {\a,\b,\c,\d}{
+    \ifcase\v \draw[line, line width=0.4pt] (69+\k*4.2,\y) circle (1.15);
+    \or \draw[navy, line width=0.4pt] (69+\k*4.2,\y) circle (1.15); \fill[navy] (69+\k*4.2,\y-1.15) arc (-90:90:1.15) -- cycle;
+    \or \fill[navy] (69+\k*4.2,\y) circle (1.15); \fi}
+}
+\draw[ink!70, line width=0.3pt] (22,-34.5) -- (64,-34.5);
+\foreach \e/\t in {0/{$10^2$},1/{$10^3$},2/{$10^4$},3/{$10^5$}}{\draw[ink!70] (22+\e*14,-34.5) -- ++(0,-0.8) node[below, font=\tiny] {\t};}
+\node[font=\tiny] at (43,-39.5) {images in largest public dataset (log)};
+\foreach \t [count=\k from 0] in {localised labels,documented source,street-level,{$\ge$1,000 images}}{
+  \node[rotate=55, anchor=south west, font=\tiny, inner sep=0.5pt] at (68.2+\k*4.2,1.8) {\t};}
+\end{tikzpicture}
+\caption{Screening of ten candidate categories against Eq.~(\ref{eq:gate}). Dark bars mark the four categories kept; circles show each criterion met, partly met or not met.}
+\label{fig:gate}
+\end{figure}
 
 \subsection{Traceable questionnaire urgency}
 Each category has five yes/no questions $q_i$ with weights $w_i\in\{1,2\}$ (2 for safety-critical). With answers $y_i\in\{0,1\}$, the urgency score and band are
@@ -222,7 +274,7 @@ U=\frac{\sum_{i=1}^{5} w_i y_i}{\sum_{i=1}^{5} w_i},\qquad
 u_Q=\begin{cases}\text{High}, & U\ge 0.6\\ \text{Medium}, & 0.3\le U<0.6\\ \text{Standard}, & U<0.3.\end{cases}
 \label{eq:urg}
 \end{equation}
-Dividing by $\sum w_i$ makes scores comparable across categories whose questions carry different weights ($\sum w_i=7$ for pothole and manhole, 6 for litter and graffiti). For a pothole, one safety-critical ``yes'' gives $U=0.29$, which is Standard, and two give $0.57$, which is Medium. The citizen sees $u_Q$ while filing, and the stored answers are enough to recompute it (Fig.~\ref{fig:urg}).
+Dividing by $\sum w_i$ keeps categories with different weights comparable. The citizen sees $u_Q$ while filing, and anyone can recompute it from the stored answers (Fig.~\ref{fig:urg}).
 
 \begin{figure}[t]
 \centering
@@ -253,7 +305,7 @@ s^{*}&=\max_{m}\max_{j} s_j, \label{eq:smax}\\
 \delta&=\max_{m}\frac{\bigl|\bigcup_j M_j^{(m)}\bigr|}{H_m W_m}, \label{eq:delta}\\
 r&=\mathbf{1}\left[s^{*}<\tau\right], \label{eq:review}
 \end{align}
-where $\delta$ is the share of the image covered by the predicted masks and $r$ is the \texttt{needsReview} flag. The suggested urgency $u_{AI}$ equals $u_Q$, raised by one band when $\delta$ is above a configurable threshold $\theta_\delta$. The model does not change the stage of a complaint. The supervisor sees $u_Q$, $u_{AI}$, $r$ and the annotated photos together and makes the decision (Fig.~\ref{fig:aipipe}). If the model misses a defect, the result is extra review work for staff; the report itself is kept.
+where $\delta$ is the masked share of the image and $r$ is the \texttt{needsReview} flag. The suggested urgency $u_{AI}$ is $u_Q$ raised one band when $\delta>\theta_\delta$. The model never changes a complaint's stage; the supervisor decides with all of this in view (Fig.~\ref{fig:aipipe}).
 
 %% ---- ai_fig ----
 \begin{figure}[t]
@@ -388,7 +440,7 @@ start $s_0=\textsf{sub}$ and terminal set $F=\{\textsf{cls},\textsf{rej}\}$. A t
 \Delta(s,a)\ \text{is defined} \iff s\in\mathcal{S}_a \wedge \rho(\text{actor})\in\mathcal{R}_a \wedge g_a(c),
 \label{eq:fsm}
 \end{equation}
-where $\mathcal{S}_a$ and $\mathcal{R}_a$ are the source stages and roles allowed for action $a$, and $g_a$ requires remarks of at least 10 characters for decisions, a field worker in the complaint's ward who is active and not on approved leave for \textit{assign}, the assignee only for \textit{start} and \textit{proof}, and up to three proof photos for \textit{proof}. Each transition that is applied adds $(\text{stage},\text{status},\text{actor},\text{remarks},t)$ to the history, which is never edited, and \textit{close} emails a PDF receipt to the citizen. The public sees a coarser status given by $\varphi:S\to\{\text{Pending},\text{In Progress},\text{Resolved},\text{Rejected}\}$ with $\varphi(\textsf{sub})=\text{Pending}$, $\varphi(\textsf{cls})=\text{Resolved}$, $\varphi(\textsf{rej})=\text{Rejected}$ and In Progress otherwise.
+where $\mathcal{S}_a$ and $\mathcal{R}_a$ are the allowed source stages and roles, and the guard $g_a$ checks remarks ($\ge$10 characters), the ward and leave status of the assignee, and the proof photos. Each transition appends $(\text{stage},\text{actor},\text{remarks},t)$ to the history, and \textit{close} emails a PDF receipt. The public sees $\varphi(s)\in\{$Pending, In Progress, Resolved, Rejected$\}$.
 
 \begin{figure}[t]
 \centering
@@ -418,7 +470,7 @@ where $\mathcal{S}_a$ and $\mathcal{R}_a$ are the source stages and roles allowe
 \end{figure}
 
 \subsection{Tiered disclosure and research projection}\label{sec:priv}
-Different audiences receive different server-side projections of the same record (Table~\ref{tab:disc}). The registry query leaves out the citizen and staff references, and the tracker shows the filer in the history only as ``Citizen''. Researchers receive the eight-field projection
+Each audience gets a fixed server-side projection of the same record (Table~\ref{tab:disc}). Researchers get eight fields
 \begin{equation}
 \pi(c)=\bigl(h_\kappa(c.\mathit{id}),\,k,\,u_Q,\,\varphi,\,\mathit{ward},\,\lfloor t_f\rfloor_{d},\,\lfloor t_c\rfloor_{d},\,\Delta t\bigr),
 \label{eq:proj}
@@ -427,7 +479,7 @@ Different audiences receive different server-side projections of the same record
 h_\kappa(x)=\mathrm{trunc}_{48}\bigl(\mathrm{HMAC\text{-}SHA256}(\kappa,x)\bigr),\quad \Delta t=\tfrac{t_c-t_f}{86400\,\mathrm{s}},
 \label{eq:hmac}
 \end{equation}
-where $\lfloor\cdot\rfloor_d$ truncates a timestamp to the day and $\kappa$ is a server secret. The record ID stays the same across exports, so researchers can join them, but it cannot be mapped back to the database or tracking ID without $\kappa$. Identity, free text, street address, tracking ID and photos are not included. Access is granted per application with scope $\sigma\in\{\text{aggregate},\text{records}\}$ and expiry $t_e\le t_g+180$ days, and each request $q$ is served only if
+where $\lfloor\cdot\rfloor_d$ truncates to the day and $\kappa$ is a server secret, so IDs join across exports but cannot be reversed. A request $q$ under scope $\sigma$ and expiry $t_e\le t_g+180$ days is served only if
 \begin{equation}
 \begin{aligned}
 &t_q<t_e\ \wedge\ \bigl(\text{rows}(q)\Rightarrow\sigma=\text{records}\bigr)\\
@@ -435,7 +487,24 @@ where $\lfloor\cdot\rfloor_d$ truncates a timestamp to the day and $\kappa$ is a
 \end{aligned}
 \label{eq:quota}
 \end{equation}
-Every view, query and export is written to an access log, and CSV cells are escaped to prevent formula injection.
+Fig.~\ref{fig:access} shows the full chain.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[x=1mm, y=1mm, font=\tiny,
+  st/.style={draw=plum, fill=softplum, rounded corners=1.2pt, line width=0.5pt, minimum width=13.4mm, minimum height=9.5mm, align=center, inner sep=0.8pt},
+  ar/.style={-{Latex[length=1.3mm]}, line width=0.5pt, draw=plum}]
+\foreach \i/\t in {0/{Apply\\with purpose},1/{Admin review\\scope $\sigma$, $t_e$},2/{Invite\\SHA-256, 72\,h},3/{Request $q$\\Eq.~(\ref{eq:quota})},4/{Projection\\$\pi(c)$, Eq.~(\ref{eq:proj})},5/{Access log\\every call}}{
+  \node[st] (s\i) at (\i*14.6,0) {\t};}
+\foreach \i [count=\j] in {0,...,4}{\draw[ar] (s\i) -- (s\j);}
+\node[draw=rose, text=rose, rounded corners=1pt, font=\tiny, inner sep=1pt] (x) at (3*14.6,-10.5) {403 / 429 if a check fails};
+\draw[ar, draw=rose] (s3) -- (x);
+\draw[ar, dashed] (s5.south) |- ($(x.east)+(0,0)$);
+\end{tikzpicture}
+\caption{Research access chain. Expiry, scope and quotas are checked on every request, and every request is logged.}
+\label{fig:access}
+\end{figure}
+
 
 \begin{table}[t]
 \caption{Disclosure of one complaint record by audience}
@@ -461,7 +530,7 @@ History with remarks      & \yes & \yes & \part & \yes & \no & \no\\
 \end{table}
 
 \subsection{Data model}
-All five roles live in one \textsf{User} collection, with \textsf{researcher} and \textsf{employee} sub-documents for the role-specific fields. \textsf{Complaint} embeds \textsf{statusHistory[]} and \textsf{aiAnalysis} (Fig.~\ref{fig:er}). Staff accounts are deactivated rather than deleted so that history entries keep pointing to a valid user. OTPs expire through a TTL index, and invite tokens are stored only as SHA-256 hashes.
+One \textsf{User} collection holds all five roles, and \textsf{Complaint} embeds its history and AI analysis (Fig.~\ref{fig:er}). Staff accounts are only ever deactivated, so history entries keep a valid actor.
 
 
 
@@ -483,14 +552,14 @@ All five roles live in one \textsf{User} collection, with \textsf{researcher} an
 \end{figure*}
 
 \section{Implementation and Experimental Setup}\label{sec:impl}
-The client uses Expo SDK~57 with React Native~0.86; the API uses Node.js~20, Express~4, Mongoose~8, Zod, bcrypt (cost 12), JWT (7-day) and PDFKit; the inference service uses FastAPI, PyTorch~2.14 and Ultralytics~8.4 \cite{yolov8}. Each category model is fine-tuned from COCO-pretrained YOLOv8n weights (segmentation where the dataset has masks, detection where it has boxes) at $640\times640$, batch 16, at most 60 epochs with early stopping (patience 15), default augmentation and seed 0, on an Apple M5 laptop with the MPS backend. Table~\ref{tab:data} lists the data. Training took 29 to 52 minutes per model.
+The stack is Expo~57, Node.js~20 with Express and Mongoose, and FastAPI with Ultralytics~8.4 \cite{yolov8}. Each model is fine-tuned from COCO YOLOv8n weights at $640\times640$, batch 16, up to 60 epochs with patience 15, on an Apple M5 laptop (Table~\ref{tab:data}, Fig.~\ref{fig:train}); training took 29 to 52 minutes.
 
-Detection quality is reported with precision $P=\frac{TP}{TP+FP}$, recall $R=\frac{TP}{TP+FN}$ and average precision
+We report precision $P=\frac{TP}{TP+FP}$, recall $R=\frac{TP}{TP+FN}$ and
 \begin{equation}
 \mathrm{AP}=\int_{0}^{1} p(r)\,dr,
 \label{eq:ap}
 \end{equation}
-where $p(r)$ is the interpolated precision at recall $r$; mAP50 uses an IoU threshold of 0.5 and mAP50--95 averages over thresholds 0.50 to 0.95.
+with mAP50 at IoU 0.5 and mAP50--95 averaged over 0.50 to 0.95.
 
 \begin{table}[t]
 \caption{Datasets and models per category}
@@ -515,7 +584,45 @@ Graffiti & STORM \cite{storm} & boxes & 813/209 & v8n\\
 \section{Results and Discussion}\label{sec:res}
 
 \subsection{Validation models}
-Table~\ref{tab:res} and Fig.~\ref{fig:bars} report the validation results for the best checkpoint of each model; Fig.~\ref{fig:pr} shows the precision--recall curves. The open manhole model scores highest (box mAP50 0.908), probably helped by the regular shape of manholes, although the dataset contains augmented copies of some images that may raise this figure. The pothole model reaches a mask mAP50 of 0.724 with similar precision and recall. The graffiti model has high precision (0.836) but misses faint tags (recall 0.604). Litter is the hardest category (mask mAP50 0.502): TACO's 60 object classes were merged into one and many objects are small. Given these recall values, rejecting reports on the model's say would lose real complaints, which is why Eq.~(\ref{eq:review}) only flags them. Inference takes 19 to 33~ms per photo on the laptop CPU and 6 to 20~ms on its GPU (Fig.~\ref{fig:lat}), so a GPU server is not required. Fig.~\ref{fig:samples} shows stored outputs and the matching app screens.
+Table~\ref{tab:res} and Figs.~\ref{fig:train}--\ref{fig:pr} give the results. Open manholes score highest (box mAP50 0.908), though augmented copies in that dataset may inflate it. Graffiti is precise but misses faint tags (recall 0.604), and litter is hardest (0.502) because TACO's 60 classes were merged into one. These misses are why Eq.~(\ref{eq:review}) only flags reports. Inference takes 19 to 33~ms per photo on CPU (Table~\ref{tab:res}), so no GPU server is needed. Fig.~\ref{fig:samples} shows stored outputs and app screens.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=\columnwidth, height=3.9cm, xmin=1, xmax=60, ymin=0, ymax=1,
+  xlabel={Epoch}, ylabel={Validation mAP50}, label style={font=\scriptsize}, tick label style={font=\scriptsize},
+  grid=both, grid style={line width=0.2pt, draw=gray!20}, axis line style={draw=ink!70}, major tick length=2pt,
+  legend style={font=\tiny, at={(0.98,0.03)}, anchor=south east, draw=none, fill=white, fill opacity=0.85, text opacity=1, legend columns=2},
+  every axis plot/.append style={line width=0.8pt, mark=none}]
+\addplot[rose] coordinates {(1,0.308) (2,0.208) (3,0.123) (4,0.369) (5,0.448) (6,0.526) (7,0.558) (8,0.584) (9,0.610) (10,0.564) (11,0.557) (12,0.683) (13,0.596) (14,0.573) (15,0.672) (16,0.618) (17,0.602) (18,0.614) (19,0.629) (20,0.623) (21,0.664) (22,0.676) (23,0.691) (24,0.649) (25,0.739) (26,0.679) (27,0.638) (28,0.717) (29,0.707) (30,0.702) (31,0.705) (32,0.655) (33,0.710) (34,0.709) (35,0.699) (36,0.715) (37,0.687) (38,0.680) (39,0.689) (40,0.730) (41,0.742) (42,0.721) (43,0.712) (44,0.707) (45,0.717) (46,0.692) (47,0.712) (48,0.699) (49,0.718) (50,0.724) (51,0.682) (52,0.732) (53,0.720) (54,0.727) (55,0.731) (56,0.725) (57,0.733) (58,0.732) (59,0.722) (60,0.720)};
+\addplot[litter] coordinates {(1,0.168) (2,0.241) (3,0.320) (4,0.277) (5,0.318) (6,0.332) (7,0.379) (8,0.365) (9,0.340) (10,0.352) (11,0.395) (12,0.405) (13,0.423) (14,0.424) (15,0.417) (16,0.437) (17,0.427) (18,0.434) (19,0.422) (20,0.455) (21,0.449) (22,0.462) (23,0.445) (24,0.457) (25,0.469) (26,0.457) (27,0.472) (28,0.474) (29,0.485) (30,0.493) (31,0.498) (32,0.488) (33,0.489) (34,0.493) (35,0.485) (36,0.488) (37,0.482) (38,0.494) (39,0.485) (40,0.488) (41,0.500) (42,0.504) (43,0.503) (44,0.497) (45,0.500)};
+\addplot[teal] coordinates {(1,0.560) (2,0.435) (3,0.640) (4,0.018) (5,0.636) (6,0.651) (7,0.666) (8,0.750) (9,0.826) (10,0.825) (11,0.841) (12,0.851) (13,0.871) (14,0.898) (15,0.869) (16,0.871) (17,0.879) (18,0.873) (19,0.889) (20,0.875) (21,0.899) (22,0.908) (23,0.911) (24,0.866) (25,0.878) (26,0.884) (27,0.908) (28,0.917) (29,0.876) (30,0.895) (31,0.904) (32,0.877) (33,0.928) (34,0.899) (35,0.915) (36,0.898) (37,0.907) (38,0.909) (39,0.942) (40,0.944) (41,0.928) (42,0.911)};
+\addplot[grf] coordinates {(1,0.307) (2,0.311) (3,0.389) (4,0.307) (5,0.392) (6,0.509) (7,0.512) (8,0.541) (9,0.368) (10,0.587) (11,0.552) (12,0.607) (13,0.576) (14,0.626) (15,0.564) (16,0.619) (17,0.608) (18,0.621) (19,0.653) (20,0.638) (21,0.658) (22,0.650) (23,0.643) (24,0.683) (25,0.693) (26,0.685) (27,0.676) (28,0.670) (29,0.658) (30,0.680) (31,0.684) (32,0.674) (33,0.687) (34,0.699) (35,0.696) (36,0.696) (37,0.693) (38,0.724) (39,0.707) (40,0.711) (41,0.696) (42,0.701) (43,0.713) (44,0.707) (45,0.713) (46,0.719) (47,0.722) (48,0.729) (49,0.722) (50,0.722)};
+\legend{Pothole (mask), Litter (mask), Manhole (box), Graffiti (box)}
+\end{axis}
+\end{tikzpicture}
+\caption{Validation mAP50 per epoch. The manhole run stopped early at epoch 42.}
+\label{fig:train}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=\columnwidth, height=3.1cm, xbar stacked, bar width=7pt, xmin=0, xmax=900,
+  symbolic y coords={Graffiti,Manhole,Litter,Pothole}, ytick=data, y dir=normal,
+  tick label style={font=\scriptsize}, xlabel={Instances at confidence 0.25}, xlabel style={font=\scriptsize},
+  xmajorgrids, grid style={line width=0.2pt, draw=gray!25}, axis line style={draw=ink!70}, major tick length=2pt,
+  nodes near coords, point meta=explicit symbolic, every node near coord/.append style={font=\tiny, text=white}, enlarge y limits=0.18,
+  legend style={font=\tiny, at={(0.5,1.03)}, anchor=south, legend columns=3, draw=none, fill=none, /tikz/every even column/.append style={column sep=5pt}}]
+\addplot[fill=okgreen, draw=none] coordinates {(147,Pothole)[147] (337,Litter)[337] (134,Manhole)[134] (317,Graffiti)[317]};
+\addplot[fill=amber, draw=none] coordinates {(69,Pothole)[69] (183,Litter)[183] (29,Manhole)[] (145,Graffiti)[145]};
+\addplot[fill=rose, draw=none] coordinates {(54,Pothole)[54] (357,Litter)[357] (14,Manhole)[] (133,Graffiti)[133]};
+\legend{True positive, False positive, Missed}
+\end{axis}
+\end{tikzpicture}
+\caption{Detection outcomes on the validation sets (manhole: 134, 29, 14). Missed instances (red) are what Eq.~(\ref{eq:review}) routes to a person.}
+\label{fig:out}
+\end{figure}
 
 \begin{table}[t]
 \caption{Validation results (best checkpoint)}
@@ -587,59 +694,61 @@ Graffiti (box)   & 0.836 & 0.604 & 0.729 & \textbf{0.526} & 20\\
 \label{fig:pr}
 \end{figure}
 
+
+
+
+
+
+\subsection{System validation and demonstration data}
+All sixteen API tests passed (Fig.~\ref{fig:tests}). To exercise the dashboards we seeded 80 complaints over twelve months (Fig.~\ref{fig:funnel}): 41 were accepted, 9 rejected and 19 closed, after 8.2 to 9.2 days on average.
+
 \begin{figure}[t]
 \centering
-\begin{tikzpicture}
-\begin{axis}[width=\columnwidth, height=3.3cm, ybar, bar width=7pt, ymin=0, ymax=40,
-  symbolic x coords={Pothole,Litter,Manhole,Graffiti}, xtick=data, enlarge x limits=0.18,
-  ylabel={ms / image}, label style={font=\scriptsize}, tick label style={font=\scriptsize},
-  ymajorgrids, grid style={line width=0.2pt, draw=gray!25}, axis line style={draw=ink!70}, major tick length=2pt,
-  nodes near coords, every node near coord/.append style={font=\tiny, inner sep=1pt},
-  legend style={font=\tiny, at={(0.98,0.97)}, anchor=north east, legend columns=2, draw=none, fill=none}]
-\addplot[fill=navy, draw=none] coordinates {(Pothole,32.9) (Litter,24.2) (Manhole,18.6) (Graffiti,19.7)};
-\addplot[fill=teal!70, draw=none] coordinates {(Pothole,10.7) (Litter,19.6) (Manhole,7.7) (Graffiti,6.1)};
-\legend{CPU, Apple MPS GPU}
-\end{axis}
+\begin{tikzpicture}[x=1mm, y=1mm, font=\tiny,
+  t/.style={draw=#1, fill=#1!10, rounded corners=1pt, line width=0.45pt, minimum width=9.6mm, minimum height=8.6mm, align=center, inner sep=0.4pt}]
+\foreach \n/\l/\c/\code [count=\i from 0] in {
+ T1/health/navy/200, T2/no email/navy/400, T3/bad cat./navy/400, T4/wrong OTP/navy/400,
+ T5/expired/navy/400, T6/file/navy/201, T7/tracker/rose/Citizen, T8/registry/rose/no ID,
+ T9/role/plum/403, T10/remarks/plum/400, T11/accept/plum/200, T12/illegal/plum/400,
+ T13/ward/plum/400, T14/receipt/plum/400, T15/scope/rose/403, T16/login/teal/401}{
+  \pgfmathsetmacro{\xx}{mod(\i,8)*10.6}
+  \pgfmathsetmacro{\yy}{-floor(\i/8)*9.6}
+  \node[t=\c] at (\xx,\yy) {\textbf{\n}\\\l\\\texttt{\code}};
+  \fill[okgreen] (\xx+3.5,\yy+3) circle (0.9); \draw[white, line width=0.5pt] (\xx+3.0,\yy+3) -- (\xx+3.4,\yy+2.6) -- (\xx+4.0,\yy+3.4);}
+\foreach \c/\t/\xx in {navy/intake and OTP/-4.5, plum/{workflow guards, Eq.~(\ref{eq:fsm})}/16, rose/{privacy, Eq.~(\ref{eq:quota})}/45, teal/auth/66}{
+  \fill[\c] (\xx,-16.6) rectangle ++(1.6,1.6); \node[anchor=west, font=\tiny] at (\xx+1.9,-15.8) {\t};}
 \end{tikzpicture}
-\caption{Mean inference time per 640\,px image including pre- and post-processing (40 images, batch 1, after warm-up).}
-\label{fig:lat}
+\caption{Sixteen API tests against a live server, grouped by the rule they exercise; expected and observed responses matched in all cases.}
+\label{fig:tests}
 \end{figure}
 
-
-
-
 \begin{figure}[t]
 \centering
 \begin{tikzpicture}
-\begin{axis}[
-  width=\columnwidth, height=3.6cm, xbar, bar width=5pt, xmin=0, xmax=96,
-  y dir=reverse, symbolic y coords={Submitted,Accepted,Assigned,In progress,Proof,Closed,Rejected},
-  ytick={Submitted,Accepted,Assigned,In progress,Proof,Closed,Rejected}, tick label style={font=\scriptsize}, xlabel={Complaints reaching stage}, xlabel style={font=\scriptsize},
-  xmajorgrids, grid style={line width=0.2pt, draw=gray!25}, axis line style={draw=ink!70}, major tick length=2pt,
-  nodes near coords, every node near coord/.append style={font=\tiny}, enlarge y limits=0.1]
+\begin{groupplot}[group style={group size=2 by 1, horizontal sep=17mm},
+  height=3.5cm, tick label style={font=\tiny}, label style={font=\scriptsize}, title style={font=\scriptsize, yshift=-1.5mm},
+  xmajorgrids, grid style={line width=0.2pt, draw=gray!25}, axis line style={draw=ink!70}, major tick length=1.5pt,
+  nodes near coords, every node near coord/.append style={font=\tiny, inner sep=1pt}]
+\nextgroupplot[title={(a) Complaints reaching stage}, width=0.56\columnwidth, xbar, /pgf/bar width=4pt, xmin=0, xmax=100, point meta=x,
+  y dir=reverse, symbolic y coords={Submitted,Accepted,Assigned,In progress,Proof,Closed,Rejected}, ytick=data, enlarge y limits=0.08]
 \addplot[fill=navy, draw=none, bar shift=0pt] coordinates {(80,Submitted) (41,Accepted) (33,Assigned) (28,In progress) (25,Proof)};
 \addplot[fill=okgreen, draw=none, bar shift=0pt] coordinates {(19,Closed)};
 \addplot[fill=rose, draw=none, bar shift=0pt] coordinates {(9,Rejected)};
-\end{axis}
+\nextgroupplot[title={(b) Mean days to closure}, width=0.42\columnwidth, xbar, /pgf/bar width=5pt, xmin=0, xmax=16, point meta=x, nodes near coords style={/pgf/number format/fixed, /pgf/number format/precision=1, /pgf/number format/fixed zerofill}, xtick={0,4,8,12},
+  y dir=reverse, symbolic y coords={Pothole,Litter,Manhole,Graffiti}, ytick=data, yticklabels={Pothole (5),Litter (9),Manhole (2),Graffiti (3)}, enlarge y limits=0.18]
+\addplot[fill=teal, draw=none] coordinates {(8.5,Pothole) (8.2,Litter) (8.2,Manhole) (9.2,Graffiti)};
+\end{groupplot}
 \end{tikzpicture}
-\caption{Complaints reaching each stage on the seeded demonstration dataset ($n=80$).}
+\caption{Workflow on the seeded demonstration dataset ($n=80$); closed complaints per category in brackets. They exercise the dashboards only; no real ward was measured.}
 \label{fig:funnel}
 \end{figure}
 
-\subsection{System validation}
-We ran sixteen API tests against a live server with a separate database, and all of them passed. They cover OTP validation and expiry, rejection of categories outside $\mathcal{C}$, the absence of citizen identity in registry and tracker responses, role checks (a field worker trying to accept gets $403$), the 10-character remarks rule, a \textit{reject} after \textit{accept}, assignment across wards, a receipt request before closure, and an aggregate-only researcher asking for records ($403$). Each test targets one condition in Eqs.~(\ref{eq:fsm}) or (\ref{eq:quota}).
-
-\subsection{Workflow on a demonstration dataset}
-To test the dashboards, we seeded 80 complaints spread over twelve months and moved them through the stages (Fig.~\ref{fig:funnel}). Of these, 41 were accepted and 9 rejected at triage, and 19 were closed with a receipt, taking 8.2 to 9.2 days on average depending on the category. Because the data are synthetic, these numbers only demonstrate the pipeline and dashboards.
-
-
-
 \subsection{Limitations}
-Only four categories have suitable public data, so common complaints such as water leakage and faulty streetlights are not supported yet. The training images come from other countries, and we have not measured accuracy on Indian street photos. We chose the questionnaire weights and $\theta_\delta$ ourselves instead of fitting them to outcomes. Location is stored as a ward and free text, with no GPS and no duplicate detection. Finally, the workflow figures come from seeded data, not a field pilot.
+Common complaints such as water leakage are unsupported for lack of data, and the models have not been tested on Indian street photos. We set the questionnaire weights and $\theta_\delta$ by hand. There is no GPS or duplicate detection, and the workflow numbers come from seeded data.
 
 % =====================================================================
 \section{Conclusion and Future Work}\label{sec:conc}
-UrbanFix handles a civic complaint from the citizen's photo to a recorded repair using open-source software and public datasets. Each photo is checked by a model trained for its category, a supervisor sets the priority with both the citizen's score and the model's evidence in view, and the server enforces each workflow step, including photo proof before closure. Records are published without personal data, and researchers get logged, pseudonymised access. Next, we plan to fine-tune the models on locally collected images, fit the questionnaire weights to closed complaints, add GPS and duplicate detection, and support regional languages and SMS reporting. We also plan a ward-level pilot with a municipal corporation to compare the model's checks with manual review.
+UrbanFix takes a civic complaint from the citizen's photo to a recorded repair using open-source software and public data. A per-category model checks the photo, a supervisor sets the priority, and the server enforces each step before the record is published without personal data. Next we will fine-tune on local images, fit the weights to closed complaints, add GPS and duplicate detection, and run a ward-level pilot with a municipal corporation.
 
 \begin{thebibliography}{00}\footnotesize
 \bibitem{morth_annual} Ministry of Road Transport and Highways, Government of India, ``Road Accidents in India,'' annual reports 2018--2022, New Delhi.
