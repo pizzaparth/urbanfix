@@ -5,9 +5,22 @@ dotenv.config();
 
 let transporterInstance = null;
 
+// Under NODE_ENV=test no mail leaves the process; tests read the codes from here.
+export const testOutbox = [];
+
 // Dynamic transporter fetching with test SMTP fallback
 const getTransporter = async () => {
   if (transporterInstance) return transporterInstance;
+
+  if (process.env.NODE_ENV === 'test') {
+    transporterInstance = {
+      sendMail: async (options) => {
+        testOutbox.push(options);
+        return { messageId: `test-${testOutbox.length}` };
+      },
+    };
+    return transporterInstance;
+  }
 
   const isPlaceholder = !process.env.EMAIL_USER || process.env.EMAIL_USER === 'your_smtp_username';
 

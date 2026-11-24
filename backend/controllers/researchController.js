@@ -2,11 +2,13 @@ import Complaint from '../models/Complaint.js';
 import User from '../models/User.js';
 import ResearchApplication from '../models/ResearchApplication.js';
 import ResearchAccessLog from '../models/ResearchAccessLog.js';
+import ExportQuota from '../models/ExportQuota.js';
 import AppError from '../utils/appError.js';
 import catchAsync from '../utils/catchAsync.js';
 import { validate } from '../utils/validate.js';
 import { applySchema, querySchema } from '../validators/researchValidator.js';
-import { toResearchRecord, RESEARCH_FIELDS, RECORD_COLUMNS, toCsv } from '../utils/researchProjection.js';
+import { toResearchRecord, grantKey, RESEARCH_FIELDS, RECORD_COLUMNS, toCsv } from '../utils/researchProjection.js';
+import { appendAuditLog } from '../utils/auditLog.js';
 import { getStatusBreakdown } from '../utils/statsHelpers.js';
 import { sendResearchReceivedEmail } from '../services/emailService.js';
 
@@ -14,15 +16,38 @@ const EXPORT_DAILY_LIMIT = 5;
 const EXPORT_ROW_CAP = 5000;
 const RECORD_PAGE_SIZE = 50;
 
+// Every research call appends one row to the hash-chained audit log. `filters` is
+// the validated query, never the raw query string.
 const logAccess = (req, action, { recordCount = 0, filters, exportFormat } = {}) =>
-  ResearchAccessLog.create({
+  appendAuditLog({
     researcherId: req.user._id,
     action,
     recordCount,
-    filters,
+    filters: filters ?? null,
     exportFormat,
     ipAddress: req.ip,
   });
+
+const utcDay = (d = new Date()) => d.toISOString().slice(0, 10);
+
+// Atomically takes one export from today's quota. Returns false when the quota is
+// used up. The filter `used < limit` and the increment are one database operation,
+// so parallel requests cannot all pass a separate count check (the old race).
+const consumeExportQuota = async (researcherId) => {
+  const filter = { researcherId, day: utcDay(), used: { $lt: EXPORT_DAILY_LIMIT } };
+  const update = { $inc: { used: 1 } };
+  try {
+    return Boolean(await ExportQuota.findOneAndUpdate(filter, update, { upsert: true, new: true }));
+  } catch (err) {
+    // Duplicate key: either the counter is at the limit (the filter missed, so the
+    // upsert tried to insert a second counter) or a parallel request created it first.
+    if (err.code !== 11000) throw err;
+    return Boolean(await ExportQuota.findOneAndUpdate(filter, update, { new: true }));
+  }
+};
+
+const exportsUsedToday = async (researcherId) =>
+  (await ExportQuota.findOne({ researcherId, day: utcDay() }).lean())?.used || 0;
 
 // Admins may see everything; a researcher only what their approval granted.
 const canSeeRecords = (user) =>
@@ -130,8 +155,9 @@ export const runQuery = catchAsync(async (req, res, next) => {
         .lean(),
       Complaint.countDocuments(match),
     ]);
-    const records = docs.map(toResearchRecord);
-    await logAccess(req, 'query', { recordCount: records.length, filters: req.query });
+    const key = grantKey(req.user._id);
+    const records = docs.map((d) => toResearchRecord(d, key));
+    await logAccess(req, 'query', { recordCount: records.length, filters: q });
     return res.status(200).json({
       status: 'success',
       pagination: { total, pages: Math.ceil(total / RECORD_PAGE_SIZE), currentPage: q.page, limit: RECORD_PAGE_SIZE },
@@ -142,7 +168,7 @@ export const runQuery = catchAsync(async (req, res, next) => {
   const rows = await groupRows(q.groupBy, match);
   await logAccess(req, 'query', {
     recordCount: rows.reduce((n, r) => n + r.count, 0),
-    filters: req.query,
+    filters: q,
   });
   res.status(200).json({ status: 'success', groupBy: q.groupBy, rows });
 });
@@ -153,37 +179,30 @@ export const exportData = catchAsync(async (req, res, next) => {
   const format = req.query.format === 'json' ? 'json' : 'csv';
   const match = buildMatch(q);
 
-  if (req.user.role !== 'admin') {
-    const since = new Date(Date.now() - 24 * 60 * 60 * 1000);
-    const used = await ResearchAccessLog.countDocuments({
-      researcherId: req.user._id,
-      action: 'export',
-      createdAt: { $gte: since },
-    });
-    if (used >= EXPORT_DAILY_LIMIT) {
-      return next(
-        new AppError(`Export limit reached (${EXPORT_DAILY_LIMIT} per day). Try again tomorrow.`, 429, 'EXPORT_RATE_LIMITED')
-      );
-    }
-  }
-
   const wantRecords = q.records === 'true';
   if (wantRecords && !canSeeRecords(req.user)) {
     return next(new AppError('Your access is limited to aggregate statistics.', 403, 'SCOPE_AGGREGATE_ONLY'));
+  }
+
+  if (req.user.role !== 'admin' && !(await consumeExportQuota(req.user._id))) {
+    return next(
+      new AppError(`Export limit reached (${EXPORT_DAILY_LIMIT} per day, UTC). Try again tomorrow.`, 429, 'EXPORT_RATE_LIMITED')
+    );
   }
 
   let rows;
   let columns;
   if (wantRecords) {
     const docs = await Complaint.find(match).select(RESEARCH_FIELDS).sort({ createdAt: -1 }).limit(EXPORT_ROW_CAP).lean();
-    rows = docs.map(toResearchRecord);
+    const key = grantKey(req.user._id);
+    rows = docs.map((d) => toResearchRecord(d, key));
     columns = RECORD_COLUMNS;
   } else {
     rows = await groupRows(q.groupBy, match);
     columns = ['key', 'count', 'resolved', 'avgResolutionDays'];
   }
 
-  await logAccess(req, 'export', { recordCount: rows.length, filters: req.query, exportFormat: format });
+  await logAccess(req, 'export', { recordCount: rows.length, filters: q, exportFormat: format });
 
   const stamp = new Date().toISOString().slice(0, 10);
   const name = `urbanfix-${wantRecords ? 'records' : q.groupBy}-${stamp}.${format}`;
@@ -209,12 +228,7 @@ export const getMe = catchAsync(async (req, res) => {
   ]);
   const by = Object.fromEntries(usage.map((u) => [u._id, u]));
 
-  const since = new Date(Date.now() - 24 * 60 * 60 * 1000);
-  const exportsToday = await ResearchAccessLog.countDocuments({
-    researcherId: user._id,
-    action: 'export',
-    createdAt: { $gte: since },
-  });
+  const exportsToday = await exportsUsedToday(user._id);
 
   res.status(200).json({
     status: 'success',

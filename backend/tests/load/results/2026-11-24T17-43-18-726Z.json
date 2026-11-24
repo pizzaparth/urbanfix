@@ -1,0 +1,139 @@
+{
+  "date": "2026-11-24T17:43:18.726Z",
+  "hardware": {
+    "cpu": "Apple M5",
+    "cores": 10,
+    "memoryGB": 16,
+    "platform": "darwin 27.2.0",
+    "arch": "arm64"
+  },
+  "software": {
+    "node": "v26.8.1",
+    "database": "mongodb-memory-server (in-memory MongoDB, one instance)"
+  },
+  "settings": {
+    "scenarios": [
+      "read"
+    ],
+    "complaints": 10000,
+    "durationS": 60,
+    "connections": [
+      50,
+      200
+    ],
+    "submitConnections": 20,
+    "imageKB": 263,
+    "aiService": null
+  },
+  "note": "autocannon reports p97.5 rather than p95. Single laptop; not a city-scale capacity claim.",
+  "results": [
+    {
+      "scenario": "registry_list",
+      "connections": 50,
+      "durationS": 60.01,
+      "requests": 107548,
+      "requestsPerSecond": 1792.47,
+      "latencyMs": {
+        "p50": 28,
+        "p90": 33,
+        "p97_5": 36,
+        "p99": 38,
+        "max": 226
+      },
+      "non2xx": 0,
+      "errors": 0,
+      "timeouts": 0,
+      "errorRate": 0
+    },
+    {
+      "scenario": "tracker_lookup",
+      "connections": 50,
+      "durationS": 60,
+      "requests": 410357,
+      "requestsPerSecond": 6839.94,
+      "latencyMs": {
+        "p50": 7,
+        "p90": 8,
+        "p97_5": 9,
+        "p99": 10,
+        "max": 110
+      },
+      "non2xx": 0,
+      "errors": 0,
+      "timeouts": 0,
+      "errorRate": 0
+    },
+    {
+      "scenario": "research_records",
+      "connections": 50,
+      "durationS": 60.01,
+      "requests": 74237,
+      "requestsPerSecond": 1237.29,
+      "latencyMs": {
+        "p50": 40,
+        "p90": 41,
+        "p97_5": 43,
+        "p99": 45,
+        "max": 124
+      },
+      "non2xx": 0,
+      "errors": 0,
+      "timeouts": 0,
+      "errorRate": 0
+    },
+    {
+      "scenario": "registry_list",
+      "connections": 200,
+      "durationS": 60.01,
+      "requests": 92223,
+      "requestsPerSecond": 1537.05,
+      "latencyMs": {
+        "p50": 128,
+        "p90": 137,
+        "p97_5": 26489,
+        "p99": 42691,
+        "max": 59877
+      },
+      "non2xx": 0,
+      "errors": 6875,
+      "timeouts": 0,
+      "errorRate": 0.07454756405668868
+    },
+    {
+      "scenario": "tracker_lookup",
+      "connections": 200,
+      "durationS": 60.01,
+      "requests": 363527,
+      "requestsPerSecond": 6059.4,
+      "latencyMs": {
+        "p50": 33,
+        "p90": 3384,
+        "p97_5": 8057,
+        "p99": 11002,
+        "max": 15927
+      },
+      "non2xx": 0,
+      "errors": 7149,
+      "timeouts": 0,
+      "errorRate": 0.01966566444858291
+    },
+    {
+      "scenario": "research_records",
+      "connections": 200,
+      "durationS": 60,
+      "requests": 70154,
+      "requestsPerSecond": 1169.24,
+      "latencyMs": {
+        "p50": 172,
+        "p90": 8407,
+        "p97_5": 17793,
+        "p99": 23957,
+        "max": 32543
+      },
+      "non2xx": 0,
+      "errors": 3059,
+      "timeouts": 0,
+      "errorRate": 0.043604071043703854
+    }
+  ]
+}

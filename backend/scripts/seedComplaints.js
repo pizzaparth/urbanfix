@@ -3,6 +3,8 @@ import connectDB from '../config/db.js';
 import Complaint from '../models/Complaint.js';
 import User from '../models/User.js';
 import mongoose from 'mongoose';
+import { CATEGORY_QUESTIONNAIRES } from '../constants/questionnaires.js';
+import { scoreAnswers } from '../utils/urgency.js';
 
 // Dev-only seed script: injects realistic dummy complaints (no images) spread across the
 // last N days so the status radar, category donut, urgency ring, activity heatmap, and
@@ -30,39 +32,8 @@ const COUNT = getNumericFlag('count', 60);
 const DAYS = getNumericFlag('days', 365);
 const FRESH = args.includes('--fresh');
 
-// ---- Static reference data mirrored from mobile/src/constants/categories.js ----
-// (scripts run standalone via `node`, outside the app's Metro bundle, so this can't
-// import that ESM module directly — kept in sync by hand.)
-const CATEGORY_QUESTIONNAIRES = {
-  'Pothole / Road Damage': [
-    { id: 'q_accident', question: 'Has this pothole/damage caused an accident or vehicle damage?', weight: 2 },
-    { id: 'q_size', question: 'Is the pothole/damage large or deep enough to be a serious hazard?', weight: 2 },
-    { id: 'q_traffic', question: 'Is it affecting vehicle movement or blocking traffic?', weight: 1 },
-    { id: 'q_duration', question: 'Has the problem existed for more than one week?', weight: 1 },
-    { id: 'q_public_facility', question: 'Is a school, hospital, or busy market nearby?', weight: 1 },
-  ],
-  'Garbage / Litter': [
-    { id: 'q_health_hazard', question: 'Is there a foul odor, pest infestation, or health hazard?', weight: 2 },
-    { id: 'q_overflowing', question: 'Is garbage overflowing onto the road or public path?', weight: 1 },
-    { id: 'q_uncollected', question: 'Has garbage been uncollected for more than 48 hours?', weight: 1 },
-    { id: 'q_public_facility', question: 'Is a school, hospital, or food market located nearby?', weight: 1 },
-    { id: 'q_inconvenience', question: 'Is the issue causing severe public inconvenience?', weight: 1 },
-  ],
-  'Open Manhole': [
-    { id: 'q_uncovered', question: 'Is the manhole completely uncovered, posing a fall hazard?', weight: 2 },
-    { id: 'q_busy_area', question: 'Is it located on a busy road, pathway, or residential area with children?', weight: 2 },
-    { id: 'q_duration', question: 'Has it been open for more than 2 days?', weight: 1 },
-    { id: 'q_lighting', question: 'Is the area poorly lit, making the manhole hard to notice at night?', weight: 1 },
-    { id: 'q_near_facility', question: 'Is a school or playground located nearby?', weight: 1 },
-  ],
-  Graffiti: [
-    { id: 'q_offensive', question: 'Does the graffiti contain offensive, hateful, or inappropriate content?', weight: 2 },
-    { id: 'q_public_building', question: 'Is it on a government building, monument, or public property?', weight: 1 },
-    { id: 'q_duration', question: 'Has it been there for more than two weeks?', weight: 1 },
-    { id: 'q_high_visibility', question: 'Is it in a high-visibility public area?', weight: 1 },
-    { id: 'q_repeat', question: 'Is this a recurring vandalism spot?', weight: 1 },
-  ],
-};
+// Questionnaires and scoring are the server's own (constants/questionnaires.js,
+// utils/urgency.js), so seeded urgency matches what the API would compute.
 
 // Weighted so the category donut isn't flat — potholes/garbage are the most common
 // municipal complaint types in practice, rarer hazards (open manholes, graffiti) less so.
@@ -309,13 +280,7 @@ const buildComplaintDoc = (context) => {
   questions.forEach((q) => {
     answers[q.id] = Math.random() < 0.35 ? 'Yes' : 'No';
   });
-  // Mirrors mobile/src/utils/urgency.js's weighted-ratio calculation: each question's
-  // severity `weight` (2 = safety-critical, 1 = standard) is summed for "Yes" answers and
-  // scored as a proportion of the category's total possible weight.
-  const totalWeight = questions.reduce((sum, q) => sum + (q.weight || 1), 0);
-  const scoredWeight = questions.reduce((sum, q) => sum + (answers[q.id] === 'Yes' ? q.weight || 1 : 0), 0);
-  const urgencyRatio = totalWeight > 0 ? scoredWeight / totalWeight : 0;
-  const urgencyLevel = urgencyRatio >= 0.6 ? 'High Urgency' : urgencyRatio >= 0.3 ? 'Medium Urgency' : 'Standard Urgency';
+  const { score: urgencyScore, level: urgencyLevel } = scoreAnswers(category, answers);
 
   const title = randomChoice(TITLE_TEMPLATES[category]).replace('{loc}', location.short);
   const freeText = randomChoice(DESCRIPTION_TEMPLATES[category]).replace('{loc}', location.short);
@@ -350,6 +315,8 @@ const buildComplaintDoc = (context) => {
     // Mirrors adminController.updateComplaintStatus's real resolution side-effect.
     pdfReceiptUrl: status === 'Resolved' ? `/api/complaints/download-receipt/${trackingId}` : '',
     urgencyLevel,
+    urgencyScore,
+    answers,
     statusHistory: history,
     createdAt,
     updatedAt,

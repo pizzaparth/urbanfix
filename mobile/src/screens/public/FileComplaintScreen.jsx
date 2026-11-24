@@ -245,7 +245,9 @@ const FileComplaintScreen = ({ navigation }) => {
     data.append('category', formData.category);
     data.append('location', formData.location);
     data.append('ward', formData.ward);
-    data.append('urgencyLevel', urgency.label);
+    // The server scores urgency from these answers (Eq. 2); the band shown while
+    // filing is only a preview of the same calculation.
+    data.append('answers', JSON.stringify(Object.fromEntries(questions.map((q) => [q.id, answers[q.id] || 'No']))));
 
     // RN's FormData takes {uri, name, type} objects; the browser's needs a real Blob.
     for (const file of files) await appendImage(data, 'images', file);

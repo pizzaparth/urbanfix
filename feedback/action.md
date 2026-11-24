@@ -1,0 +1,675 @@
+# UrbanFix: Action Plan for the IEEE Access Reviews
+
+This plan answers every point in `feedback/review.md`. Each point gets one or more actions: a code change, a paper change, a test, an experiment, or a written justification for the response letter.
+
+Two constraints apply to every action:
+
+1. **No money.** Only free tools and free compute: the M5 laptop, Kaggle Notebooks (free GPU quota each week), Google Colab free tier, GitHub, Zenodo, and open-source libraries.
+2. **Only free online data.** No new photo collection, no surveys, no municipal records, no user studies. Where a reviewer asks for something that needs real people or private data, the plan gives a justification and the closest free proxy.
+
+Priority levels:
+
+- **P0:** must be done before resubmission. A reviewer will reject again without it.
+- **P1:** strongly recommended. It removes a clear weakness for little cost.
+- **P2:** optional. Do it if time allows, or mention it as future work.
+
+---
+
+## 0. What the audit of the repository found
+
+I checked the paper (`paper/urbanfix_ieee_access/latex/main.tex`) against the code before planning. Some findings make the reviewers' points stronger, and two are problems the reviewers did not see. Fix these first, because a reviewer who opens the released code will find them.
+
+| # | Finding | Evidence | Effect on the review |
+|---|---|---|---|
+| F1 | **Train/validation leakage in the open manhole data.** 255 of the 480 validation images share a source photo with a training image (for example `10.jpg` in train and `10_aug_flip.jpg` in val). Only 172 distinct source photos are in validation, and 61 of them also appear in training. | Filename stems in `ai_model/data/open_manhole/images/{train,val}`, split logic in `notebooks/03_open_manhole.ipynb` (it uses the dataset's own train/valid folders, which already mix augmented copies). | Confirms Reviewer 1 (point 1) and Reviewer 2 (2.1). The 0.908 mAP50 is inflated. |
+| F2 | **Graffiti "validation" set is the official STORM test split**, and the best checkpoint was chosen on it. | `notebooks/04_graffiti.ipynb` maps `test_labels.csv` to `val`. | No untouched test set exists for any model. |
+| F3 | **Pothole validation set has only 60 images.** Training images are three Roboflow augmentations of 240 source photos (no stem overlap with validation). | `Pothole_Segmentation_YOLOv8.v1i.yolov8/README.dataset.txt`, stem check. | Confidence intervals will be wide. A larger external test set is needed. |
+| F4 | **The AI service is not in the repository, and the backend never calls a model.** There is no FastAPI service, no `aiAnalysis` field, no `needsReview` flag, and no AI display on the supervisor screen. The paper (Fig. 3, Fig. 6, Eqs. 3 to 5) and `docs/project_description.md` describe them as implemented. | `grep` over `backend/` and `mobile/src` finds no `aiAnalysis` or `needsReview`. `models/Complaint.js` has no AI fields. The git history never contained a `.py` service. | Serious. The paper must not describe an integration that does not exist. Either build it (plan below, all free) or rewrite the paper to say the models are evaluated offline only. |
+| F5 | **Urgency is supplied by the client and not recomputed on the server.** The app sends `urgencyLevel` as a string. The questionnaire answers are only appended as text to the description. | `mobile/src/screens/public/FileComplaintScreen.jsx:248`, `backend/validators/complaintValidator.js` (`urgencyLevel: z.string().optional()`). | The "traceable urgency anyone can recompute" claim is weak. A modified client can file any urgency. |
+| F6 | **The research HMAC key is `JWT_SECRET`, with a hard-coded fallback `'research'`.** | `backend/utils/researchProjection.js:18`. | Key reuse and an insecure default. Reviewer 2 asks about key management. |
+| F7 | **No limit on OTP attempts and no rate limit on OTP requests.** A 6-digit code with unlimited guesses in 5 minutes can be brute-forced. The request endpoint can also be used to flood any email address. | `backend/controllers/complaintController.js` (`requestComplaintOtp`, `submitComplaint`), no rate limiter in `server.js` or `package.json`. | Reviewer 2 asks for an OTP brute-force test. The test would currently fail. |
+| F8 | **Uploaded photos keep their EXIF metadata** (GPS position, device, time) and are served publicly from `/uploads`. | `backend/middleware/uploadMiddleware.js` writes the original file. `server.js` serves `uploads/` statically. | Personal data leak in the public registry. Reviewer 1 (point 3) and Reviewer 2 (iii). |
+| F9 | **The public registry uses a deny-list projection** (`select('-citizenId -assignedTo ...')`). Any new field added to `Complaint` becomes public automatically. Free-text title and description are published unfiltered. | `backend/controllers/publicController.js`. | Same privacy points. |
+| F10 | **The research export quota can be exceeded with parallel requests.** The count and the log write are separate operations. | `backend/controllers/researchController.js` (`exportData`). | A concurrency test would expose it. |
+| F11 | **The "16 API tests" are not in the repository.** There is no test folder and no `test` script. | `backend/package.json`. | Reviewer 2 asks for released tests. |
+| F12 | **The registry `location` filter passes user input straight into a regular expression.** | `publicController.js` (`$regex: location`). | Minor. Regex injection and slow-regex risk. |
+| F13 | Eq. (1) in the paper lists only *public, localised, street-level*, but the text also requires *documented provenance and a usable licence*. | `main.tex` lines 196 to 201. | Reviewer 2 (iv) uses this gap against the paper. |
+| F14 | Licences. The Roboflow pothole set is CC BY 4.0 (stated in the local `README.dataset.txt`), but the collector and image sources are not documented ("Provided by a Roboflow user"). The Kaggle Road Hazards page does not show a licence to automated readers, so it must be checked by hand. TACO's GitHub repository has an MIT licence for code only, and states no licence for images or annotations on GitHub. RDD2022 images are CC BY-SA 4.0 and include India. | Local files and the dataset pages. | Reviewer 2 (iv). |
+
+---
+
+## 1. Map from reviewer points to actions
+
+| Reviewer point | Actions |
+|---|---|
+| R1.1: separate test set of resident-like photos, keep edited copies together | A1, A2, A3, J2 |
+| R1.2a: how often the AI flags valid complaints or lets unrelated photos through | A5, A6 |
+| R1.2b: staff decisions with and without AI | J1, A7 (proxy) |
+| R1.3: personal details removed, re-identification check | B1 to B7, P7 |
+| R1 Q2: separate test set, complaint-level evaluation | A1 to A6 |
+| R1 Q4: references not sufficient | P10 |
+| R2 (i): held-out test or CV, CIs, baseline, ablation, justify YOLOv8n, state τ and θδ | A1 to A4, A8, A9, P5, P6 |
+| R2 (ii): Eq. (4) masks vs boxes, δ-to-urgency rule | A10, P5, J5 |
+| R2 (iii): privacy as real analysis (adversary, keys, linkage, k-anonymity [37], free-text and photo PII, law) | B1 to B7, P7, P10 |
+| R2 (iv): provenance and licence of [16] and [18] | D1 to D3, P4 |
+| R2 (v): load, concurrency, OTP brute force, audit integrity tests; release code, tests, splits | C1 to C9, E1 to E3, P8 |
+| R2 (vi): harmonise stage counts | P3, J4 |
+| R2 (vii): fairness discussion, standard mAP reference | A11, P9, P10 |
+| R2 (viii): temper "AI-validated" and "accountable" | P1, P2, P11 |
+| R2 Q1: contribution is only system integration | P11, J6 |
+| R2 Q2.5 / Q5: remove [37] unless k-anonymity is implemented | B4, B5, J10 |
+| R2 Q3: no requirements analysis, threat model, cost study, pilot, user study, legal discussion | P7, P12, P13, J1, J3 |
+| Repository findings F4 to F12 (not raised by reviewers) | G1 to G3, B2, B3, B6, C2, C6 |
+
+---
+
+## 2. Model evaluation (code, experiments, tests)
+
+### A1. Build grouped, leak-free splits (P0)
+
+**Why:** R1.1, R2 (i), findings F1 to F3.
+
+**Steps:**
+
+1. Add `ai_model/scripts/make_splits.py`. For each dataset:
+   - Group images by **source photo**. Use the filename stem first (strip `_aug_*`, `_augmented`, and Roboflow `.rf.<hash>`).
+   - Then merge groups whose perceptual hash (dHash, 64-bit, Hamming distance ≤ 6) matches. This catches renamed duplicates such as `01059.jpg`. Use `imagehash` or a 20-line PIL implementation, both free.
+   - Split **groups**, not images, into train / val / test at 70 / 15 / 15 with a fixed seed. Never put two members of one group in different splits.
+2. Write the split lists to `ai_model/splits/<category>.json` (file names and group IDs only, no images). Commit these files.
+3. Graffiti: keep the official STORM test split as the **test** set and never use it during training. Carve the validation set out of STORM train with the grouping above.
+4. Pothole: merge the 240 training source photos and 60 validation photos, then regroup and split. All three augmented copies of one photo must land in the same split. Keep only one copy in val and test (the un-augmented or first copy), because augmented copies in a test set count one photo three times.
+5. Open manhole: regroup the whole Kaggle set. Drop the augmented copies from val and test.
+6. Add a check cell that asserts zero group overlap between splits and prints, for each split, the number of images and of distinct source photos. Put the printed table in the paper's supplementary material.
+
+**Acceptance:** `make_splits.py` reports 0 shared groups and 0 near-duplicate pairs across splits for all four categories.
+
+### A2. Retrain on the new splits and evaluate once on the test set (P0)
+
+**Steps:**
+
+1. Retrain the four YOLOv8n models on the new train sets. Select the checkpoint on the new val sets only. Use the free GPU on Kaggle Notebooks or Colab if the laptop is too slow. The current settings stay the same (640 px, batch 16, 60 epochs, patience 15).
+2. Add `ai_model/notebooks/07_test_evaluation.ipynb`. It runs each final model **once** on its test set and writes `results/test_eval.json`.
+3. Train each model with **3 seeds** (0, 1, 2). Report the mean and the range across seeds.
+4. **Confidence intervals:** bootstrap over test images (1,000 resamples, resample images with replacement, recompute P, R, mAP50, mAP50-95). Report 95 % percentile intervals. Ultralytics returns per-image statistics, so this costs only CPU time.
+5. Optional (P2): 5-fold grouped cross-validation for the two smallest sets (pothole, graffiti) if Kaggle GPU time allows. Reviewer 2 accepts "held-out test set **or** cross-validation", so A2 alone satisfies the request.
+
+**Acceptance:** a new Table V with test-set P, R, mAP50, mAP50-95, each with a 95 % CI, plus the old validation numbers in a separate column marked "validation (used for model selection)".
+
+### A3. Cross-dataset test on photos like residents take (P0 for pothole, P1 for others)
+
+**Why:** R1.1 asks for "photos like those residents would submit". The current models have never seen Indian streets (paper limitation).
+
+**Free test sets:**
+
+| Category | External test set | Licence | Notes |
+|---|---|---|---|
+| Pothole | **RDD2022, India subset** (`RDD2022_India.zip`, Arya et al., Geoscience Data Journal, 2024) | CC BY-SA 4.0 | Smartphone photos of Indian roads, boxes in Pascal VOC. Use class D40 (pothole). Evaluate the box metrics of the pothole model only. Faces and plates are already blurred by the dataset authors. |
+| Pothole (extra) | RDD2022 Japan and Czech subsets | CC BY-SA 4.0 | Used for the fairness gap in A11. |
+| Litter | TACO **unofficial** annotations (`data/annotations_unofficial.json`), after removing any image that also appears in the official set | Check tacodataset.org | Different photographers, same task. |
+| Litter (extra) | PlastOPol (Córdova et al. [b32]) | Verify licence before use | Already cited in the paper. |
+| Open manhole | One manhole dataset from Roboflow Universe with a stated CC BY 4.0 licence and a different source | CC BY 4.0 | Record the dataset URL, version and licence in Table IV. |
+| Graffiti | Untouched STORM test split (A1). If a second free graffiti set with a stated licence exists on Roboflow Universe, add it. | CC BY 4.0 | |
+
+Convert each set to YOLO format with a script in `ai_model/scripts/`, deduplicate it against the training data with the dHash check from A1, and evaluate with the same code as A2.
+
+**Acceptance:** a "cross-dataset" column in the results table, and one sentence per category that states the drop from in-domain to cross-dataset performance.
+
+### A4. Choose and justify τ (P0)
+
+**Why:** R2 (i) says τ = 0.25 is not justified.
+
+**Steps:**
+
+1. On the **validation** set, sweep τ from 0.05 to 0.90 in steps of 0.05.
+2. At each τ, compute the complaint-level rates from A5: the false-flag rate (valid complaints sent to review) and the false-pass rate (unrelated photos that pass).
+3. Pick a per-category τ_k with a stated rule. Suggested rule: the largest τ_k that keeps the false-flag rate on valid complaints at or below 20 %, because a false flag only costs a supervisor a look, while a wrong pass hides nothing (the supervisor still sees every complaint). State the rule in the paper.
+4. Report the chosen τ_k and the resulting rates on the **test** set (A5).
+5. Plot both rates against τ (one small figure, four lines per rate).
+
+### A5. Complaint-level evaluation: flagged valid complaints and passed unrelated photos (P0)
+
+**Why:** R1.2a and R1 Q2 ("measure how well the AI checks whole complaints").
+
+**Definition:** a complaint has 1 to 3 photos. The service computes s* = max confidence over all photos (Eq. 3). The complaint is flagged for review when s* < τ_k (Eq. 5).
+
+**Test complaints, built only from free data:**
+
+- **Valid complaints:** group 1 to 3 test images of category k into synthetic complaints (sample the number of photos uniformly, fixed seed).
+- **Wrong-category complaints:** photos from the other three categories' test sets filed as category k. Example: a graffiti photo filed as a pothole.
+- **Unrelated complaints:** random photos from the COCO 2017 validation set (free, 5,000 images) with no object of the defect type. Optionally add Places365 validation street scenes.
+
+**Metrics per category, with Wilson 95 % confidence intervals:**
+
+- False-flag rate = valid complaints flagged / valid complaints.
+- False-pass rate = wrong-category or unrelated complaints that pass / such complaints. Report the two negative types separately.
+- Image-level precision and recall for "the photo contains the defect".
+
+**Files:** `ai_model/notebooks/08_complaint_level_eval.ipynb`, output `results/complaint_eval.json`.
+
+**Acceptance:** a new table "Complaint-level screening on the test sets" that answers R1.2a in one place.
+
+### A6. Error analysis of flagged and passed cases (P1)
+
+Show 8 example images per category: valid complaints the model flagged, and unrelated photos it passed. Explain the patterns in 3 to 4 sentences (for example faint tags for graffiti, small items for litter). Use the existing figure style.
+
+### A7. Proxy for "staff decisions with and without AI": triage workload simulation (P1)
+
+A real comparison of staff decisions needs municipal staff and real complaints (see J1). The free proxy is a workload simulation on the test complaints from A5:
+
+- **Without AI:** a supervisor must inspect every photo of every complaint.
+- **With AI:** the supervisor checks flagged complaints closely and spot-checks a fraction of passed ones.
+
+Report the share of complaints flagged, the expected number of wrong passes per 100 complaints at τ_k, and the expected number of photos a supervisor must inspect closely. State clearly in the paper that this is a simulation of workload, **not** a measure of staff decisions, and that the human study is future work.
+
+### A8. Baseline detectors and ablation to justify YOLOv8n (P0)
+
+**Why:** R2 (i).
+
+**Steps (all free, same splits, same image size):**
+
+| Model | Role | Where to train |
+|---|---|---|
+| YOLOv8n (current) | proposed | laptop or Kaggle |
+| YOLOv8s | larger model of the same family | Kaggle GPU |
+| YOLO11n | newer nano model | Kaggle GPU |
+| One non-YOLO detector: RT-DETR-l (Ultralytics) **or** Faster R-CNN MobileNetV3-Large FPN (torchvision) | different family, as Reviewer 2 asks for "at least one baseline detector" | Kaggle GPU |
+
+For each model, report test mAP50, mAP50-95 (with CIs), CPU latency per image, model size in MB, and the complaint-level false-flag rate at its own τ_k.
+
+**Justification to write:** choose YOLOv8n if the larger models gain only a few points of mAP50 at 2 to 4 times the CPU latency. The deployment target is a CPU-only municipal server (no GPU budget). If YOLO11n wins on both accuracy and latency, switch to it and say so; the paper does not depend on one detector.
+
+**Ablations (P1):** (a) COCO pretraining vs training from scratch for one category, and (b) for litter, one merged class vs TACO's 28 super-categories mapped to one class at inference. Keep the ablation table small.
+
+### A9. Fix the validation-set inflation statement (P0)
+
+Remove the sentence "augmented copies in that dataset may inflate it" and replace it with the measured fact from F1 and the new leak-free numbers. Reviewers prefer a measured correction to a hedge.
+
+### A10. Resolve Eq. (4) and the δ-to-urgency rule (P0)
+
+**Why:** R2 (ii). δ is defined from masks, but the manhole and graffiti models produce boxes. θδ has no value. No evidence links image coverage to real severity, and no free dataset can supply that evidence (J5).
+
+**Recommended action:** **remove the δ-to-urgency rule.**
+
+- Delete u_AI as "u_Q raised one band when δ > θδ". The AI no longer changes any urgency value.
+- Keep δ only as **descriptive evidence** shown to the supervisor, and only for the two segmentation models. Define it as written for masks. For box models, do not report δ (or report the union of box areas labelled "box coverage, approximate" and never use it in a decision).
+- Remove θδ from the paper and from the limitations section.
+- The supervisor's decision then rests on u_Q (traceable), the flag r, and the evidence images. This also makes the "traceable urgency" claim cleaner.
+
+Alternative, if the authors want to keep the rule: define δ_box = |∪ b_j| / (H·W), state θδ = a number, run a sensitivity table over θδ, and call the rule a heuristic with no severity validation. This is weaker and invites another round of comments.
+
+### A11. Fairness of the models across places (P1)
+
+Evaluate the pothole model on the RDD2022 India, Japan and Czech subsets (A3) and report recall and false-flag rate per country with CIs. A drop for India is a measured fairness issue: complaints from places unlike the training data get flagged more often, so their filers wait longer for a human decision. Use this number in P9.
+
+---
+
+## 3. Privacy (code, tests, analysis)
+
+### B1. Write down what personal data exists and where it goes (P0)
+
+Make a table for the paper and for `docs/` (replaces and extends Table III):
+
+| Data item | Collected | Stored | Public registry | Tracker | Staff | Research records | Research aggregates |
+|---|---|---|---|---|---|---|---|
+| Name, email, phone | yes | User | no | no | no | no | no |
+| Free-text title and description | yes | Complaint | yes, after redaction (B3) | yes, after redaction | yes | no | no |
+| Photos | yes | uploads/ | yes, after EXIF removal (B2) and optional blur | yes | yes | no | no |
+| EXIF GPS, device, time in photos | yes (inside file) | **removed at upload** (B2) | no | no | no | no | no |
+| Street location (free text) | yes | Complaint | yes | yes | yes | no (ward only) | no |
+| Ward | yes | Complaint | yes | yes | yes | yes | yes, with minimum cell size (B5) |
+| Filing and closing time | auto | Complaint | yes | yes | yes | generalised (B4) | month |
+| Staff names in history | auto | Complaint | no | role only | yes | no | no |
+| IP address of researcher | auto | access log | no | no | admin | no | no |
+
+### B2. Strip photo metadata at upload (P0, code)
+
+- Add `sharp` (free, MIT) to `backend/package.json`.
+- In `uploadMiddleware.js`, after Multer writes a file, re-encode it with `sharp(file).rotate().jpeg({ quality: 85 })`. `rotate()` applies the EXIF orientation, and sharp drops all metadata by default. Overwrite the original. Apply this to complaint photos and to field proof photos.
+- Test: upload a JPEG that contains EXIF GPS tags, then fetch it from `/uploads/...` and assert no EXIF block is present (`exifr` or `sharp().metadata()` in the test).
+
+### B3. Redact personal data in free text before publication (P0, code)
+
+- Add `backend/utils/redactText.js` with patterns for: email addresses, Indian mobile numbers (`(\+91[\-\s]?)?[6-9]\d{9}`), Aadhaar-like 12-digit numbers (with or without spaces), PAN (`[A-Z]{5}\d{4}[A-Z]`), and Indian vehicle registration numbers (`[A-Z]{2}\s?\d{1,2}\s?[A-Z]{1,3}\s?\d{4}`). Replace matches with `[removed]`.
+- Apply it when saving a complaint, and store the original only in an admin-only field if the admin needs it. Simpler and safer: store only the redacted text.
+- Names of people in free text cannot be found reliably with regular expressions. State this as a residual risk, and add a line in the filing screen: "Do not write names or phone numbers. Your description and photos will be public."
+- Test: submit descriptions with each pattern and assert the registry response contains none of them.
+
+### B4. Separate key for research IDs, key management, and linkage control (P0, code)
+
+- Add `RESEARCH_HMAC_KEY` to `.env.example`. Refuse to start the server when it is missing or shorter than 32 bytes. Remove the `'research'` fallback and stop reusing `JWT_SECRET`.
+- **Per-grant keys against cross-researcher linkage:** derive the key per research grant: `k_grant = HMAC(RESEARCH_HMAC_KEY, researcherId)`. Two researchers then get different IDs for the same complaint, so they cannot join their exports, while one researcher's exports still join with each other (the property the paper wants).
+- Rotation: document that rotating `RESEARCH_HMAC_KEY` breaks joins with earlier exports, and that the key lives only in the server environment, never in the database or the repository.
+- Generalise the quasi-identifiers in record exports: report the **ISO week** filed instead of the day, drop `closedOn`, and keep `resolutionDays` rounded to whole days. Measure the effect in B5 before fixing the final choice.
+
+### B5. Measure re-identification risk and enforce k-anonymity (P0, analysis plus code)
+
+This turns the [37] citation into something the system actually does (see J10).
+
+**Analysis with free real data.** Seeded data cannot show real risk, so use public 311 data that has the same fields:
+
+- **Chicago 311 Service Requests** (City of Chicago Data Portal, free). It has request type, created date, closed date, status, and a **ward** column (verify the column on download). This is the closest free match to UrbanFix's projection (category, ward, day filed, day closed, status, urgency).
+- Optionally NYC 311 (community district) or Boston 311 (ward) as a second city.
+
+**Steps (`analysis/privacy/linkage_analysis.ipynb`):**
+
+1. Map four request types to the four UrbanFix categories (for example pothole, graffiti removal, sanitation or debris, and an open-hole or sewer type).
+2. Take the quasi-identifier set of the current projection Eq. (7): (category, ward, day filed, day closed, status).
+3. Compute the equivalence-class size distribution: share of records with k = 1 (unique), k < 5, and k < 10. Do it for the full city and for a subsample the size of one Indian municipal zone (for example 10 wards and 1,000 complaints a year), because small systems are where uniqueness is high.
+4. Repeat for the generalised projection (week filed, no closing day; then month filed).
+5. Report a table: projection variant vs share of unique records. Expect the day-level projection to leave many unique records in small wards; this is the reviewer's point, and the table proves the fix.
+6. Model the adversary concretely (P7): a neighbour who knows that someone reported a pothole in ward 7 on a given day can find that record if k = 1, and then learn its status and resolution time. The registry already shows the street location and description, so the research projection matters most for linking a known person to the **registry entry** through the research ID. Discuss this.
+
+**Code (`backend/utils/researchProjection.js`):**
+
+- Before returning records or an export, group rows by the quasi-identifiers and **suppress rows in classes smaller than k = 5** (count them and report the number suppressed in the response).
+- For aggregates, suppress any cell with a count below 5 (standard minimum cell size used by statistics offices).
+- Tests: build fixtures with known class sizes and assert suppression.
+
+**Paper:** keep [37], now as the basis of an implemented and measured rule, and add l-diversity and re-identification literature (P10).
+
+### B6. Registry projection as an allow-list (P0, code)
+
+Replace `select('-citizenId ...')` in `publicController.js` and in the tracker with an explicit allow-list: `trackingId title description category location ward status stage urgencyLevel images completionImages createdAt closedAt statusHistory.status statusHistory.stage statusHistory.changedAt statusHistory.remarks`. New fields then stay private by default. Add a test that fails if any key outside the allow-list appears in the registry response.
+
+### B7. Consent notice and optional face and plate blurring (P1 consent, P2 blurring)
+
+- **Consent (P1):** add a required checkbox in `FileComplaintScreen.jsx`: "I understand my photos, description and street location will be published without my name or contact details." Store the consent time on the complaint. This supports notice and consent under the DPDP Act, 2023.
+- **Blurring (P2):** blur faces and number plates in public copies with a free detector (for example the OpenCV DNN face detector, or an open-weights YOLO face or plate model). Keep the unblurred photo for staff only. If this is not built, state photos as a residual risk and say that staff can hide a photo from the registry.
+
+---
+
+## 4. System validation and security tests (code, tests)
+
+### C1. Put the test suite in the repository (P0)
+
+- Add `backend/tests/` using `node:test` (built in), `supertest` and `mongodb-memory-server` (all free). Add `"test": "node --test tests/"` to `package.json`.
+- Port the 16 tests from Fig. 15 first, unchanged, so the paper's claim is reproducible.
+- Add a free GitHub Actions workflow (`.github/workflows/test.yml`) that runs the suite on every push. Free for public repositories.
+
+### C2. OTP hardening and brute-force test (P0)
+
+**Code:**
+
+- Store the OTP as a SHA-256 hash, not in plain text.
+- Add an `attempts` counter to `Otp`. After 5 wrong codes, delete the OTP and require a new request.
+- Look up by email only, then compare with `crypto.timingSafeEqual`.
+- Add `express-rate-limit` (free): at most 3 OTP requests per email per 15 minutes and 20 per IP per hour, and a limit on submissions per IP.
+
+**Tests:**
+
+- Brute force: 6 wrong codes in a row; assert the 6th returns 429 or 400 with "request a new code", and the correct code no longer works.
+- Request flood: 4 OTP requests for one email in a minute; assert the 4th returns 429.
+- Report in the paper: with 5 attempts per code and 3 codes per 15 minutes, the chance of guessing is 15 / 10^6 per 15 minutes per email.
+
+### C3. Concurrency tests (P0)
+
+- **Export quota race:** fire 10 export requests in parallel with `Promise.all`; assert at most 5 succeed. This fails today (F10). Fix with an atomic counter: one document per researcher per UTC day, updated with `findOneAndUpdate({ $inc: { n: 1 } }, { upsert: true })` and rejected when the new value exceeds 5. Or use a sliding window with the same atomic pattern.
+- **Double transition:** two supervisors accept, or assign, the same complaint at the same time. Assert exactly one succeeds and the history has one entry. If it fails, make transitions conditional updates (`findOneAndUpdate({ _id, stage: from }, ...)`) in `services/complaintWorkflow.js`.
+- **Proof and rework race:** a worker submits proof while the supervisor sends rework. Assert the final stage is one of the legal results and the history is consistent.
+
+### C4. Tamper-evident audit log and integrity test (P0)
+
+**Code:**
+
+- Add `prevHash` and `hash` to `ResearchAccessLog` (and optionally to each `statusHistory` entry). `hash = SHA-256(prevHash || canonical JSON of the row)`.
+- Write log rows through one function that reads the latest hash and inserts the new row inside a MongoDB transaction, or with a per-chain sequence number and a unique index so two writers cannot fork the chain.
+- Add Mongoose `pre('updateOne' | 'findOneAndUpdate' | 'deleteOne' | 'deleteMany')` hooks that throw on the log model, so the application cannot edit it.
+- Add `scripts/verifyAuditLog.js` and an admin endpoint that recomputes the chain and reports the first broken row.
+
+**Tests:**
+
+- Write 50 log rows, change one row directly in the database, run the verifier, and assert it reports that row.
+- Delete one row; assert the verifier reports the gap.
+- State the limit in the paper: a hash chain detects edits by anyone who cannot recompute the chain; it does not stop a database administrator who rewrites the whole chain. Periodically publishing the latest hash (for example in the public registry footer) closes most of this gap for free. Cite Schneier and Kelsey, and Crosby and Wallach (P10).
+
+### C5. Load test (P0)
+
+- Use `autocannon` (free, npm) or `k6` (free). Add `backend/tests/load/`.
+- Scenarios on the laptop, with a seeded database of 10,000 complaints (extend `seedComplaints.js` with a count argument):
+  1. Public registry list, 50 and 200 concurrent connections, 60 s.
+  2. Tracker lookup by tracking ID.
+  3. Research query (records, paged).
+  4. Complaint submission with a mocked OTP and a 300 KB image (lower concurrency, 20 connections).
+- Report requests per second, p50, p95 and p99 latency, and error rate. State the hardware. Do not claim city-scale capacity; claim measured capacity on one laptop.
+
+### C6. Privacy regression tests (P0)
+
+- Registry and tracker responses contain no email, phone, citizen name, citizen ID, or staff ID (extends the two existing privacy tests).
+- Uploaded photos served from `/uploads` contain no EXIF (B2).
+- Redaction patterns removed (B3).
+- Research record export contains no class smaller than k (B5).
+- Two researchers get different `recordId` values for the same complaint (B4).
+- Server refuses to start without `RESEARCH_HMAC_KEY` (B4).
+
+### C7. Fix regex injection in the registry filter (P1)
+
+Escape user input before building the regular expression in `publicController.js` (or use a text index). Add a test with `location=(a+)+$`.
+
+### C8. Server-side urgency (P0, code)
+
+- Move the questionnaires and weights to `backend/constants/questionnaires.js` (the mobile copy stays in sync, as with categories).
+- Accept `answers` (question ID to yes/no) from the client, validate them with Zod against the category's question list, compute U and u_Q on the server with Eq. (2), and store both `answers` and the score on the complaint. Ignore any client `urgencyLevel`.
+- Publish `answers` in the registry so anyone can recompute the score, which is what the paper claims.
+- Tests: tampered client urgency is ignored; each reachable score maps to the right band (all combinations of 5 answers for both weight profiles, 64 cases).
+
+### C9. Requirements traceability (P1)
+
+Add a table to `docs/` and to the paper's supplementary material that lists each functional and security requirement (for example "a complaint cannot close without proof photos") and the test that checks it. This answers the "no requirements analysis" remark in R2 Q3 at almost no cost.
+
+---
+
+## 5. Datasets: provenance and licences (R2 iv)
+
+### D1. Record provenance and licence for every dataset (P0)
+
+Add columns to Table IV: source and collector, licence, URL with version or access date, number of source photos versus augmented copies, and whether the licence allows redistribution.
+
+### D2. Pothole [16]: replace with RDD2022 or document (P0)
+
+- The Roboflow set is CC BY 4.0 (stated in the export's `README.dataset.txt`), so the **licence** criterion holds. The **provenance** criterion does not: the uploader is anonymous and the image sources are unknown.
+- **Recommended:** train the pothole model on **RDD2022** (CC BY-SA 4.0, journal-published, documented collection, includes India). RDD2022 has boxes only. That is fine once A10 removes the mask-based urgency rule. Keep the Roboflow segmentation model only as an optional evidence overlay, or drop it.
+- Cite RDD2022 by its journal version (Arya et al., Geoscience Data Journal, 2024) rather than the arXiv preprint.
+
+### D3. Open manhole [18]: verify by hand, then keep, replace or drop (P0)
+
+1. Open the Kaggle page in a browser and record the licence shown in its "License" field, and any source statement.
+2. If the licence is CC0, CC BY or another usable licence and the collector is named: keep it, document it, and use the leak-free split from A1.
+3. If the licence is "Unknown", "Other" without terms, or missing: by the paper's own Eq. (1) the category does not qualify. Either replace it with a Roboflow Universe manhole dataset that states CC BY 4.0 and a source, or drop open manholes from the supported categories and say so. Dropping a category is acceptable; the screening rule then works as designed, and it is an honest result.
+4. TACO [17]: check tacodataset.org for the image and annotation licence and record it. If no licence is stated there, say so in Table IV and add a sentence on it.
+
+### D4. Make Eq. (1) match the text (P0, paper)
+
+Write Eq. (1) with all five criteria: public ∧ localised ∧ street-level ∧ documented provenance ∧ usable licence. Update Fig. 4 so the circles show all five, and re-run the screening.
+
+---
+
+## 6. Build what the paper describes, or describe what was built (G)
+
+### G1. Build the AI service and connect it (P0, unless G3 is chosen)
+
+All parts are free.
+
+1. `ai_service/main.py` with FastAPI and Ultralytics. Endpoint `POST /predict/{category}` takes up to 3 images and returns per-photo detections (box, confidence, mask area for segmentation models), s*, `needsReview`, the model version, τ_k, and annotated images (base64 or saved file paths).
+2. `ai_service/requirements.txt` and a short README. Load all four models at start-up.
+3. Backend: add an `aiAnalysis` sub-document to `Complaint` (`modelVersion`, `tau`, `sStar`, `needsReview`, `detections`, `annotatedImages`, `analysedAt`, `error`). After the response with the tracking ID is sent, call the service with a timeout and two retries. On failure, store `error` and set `needsReview = true`. This matches the paper's claim that a failed model call never blocks filing.
+4. Supervisor triage endpoint returns `aiAnalysis`. Mobile `TriageDetailScreen.jsx` shows the flag, s*, and the annotated photo.
+5. Tests: service down gives `needsReview = true` and a saved complaint; a test photo with a known defect gives `needsReview = false`.
+6. Measure end-to-end latency (filing response time with and without the service running) and add it to the paper; this also supports the "never blocks filing" claim.
+
+### G2. Make the README and docs honest (P0)
+
+- `README.md`: "anonymised data" becomes "pseudonymised data with k-anonymity suppression".
+- `docs/project_description.md` Section 8 and the README architecture must match the code after G1.
+
+### G3. Alternative if G1 is not built (not recommended)
+
+Rewrite Sections III and IV-C to say the models are evaluated offline and the integration is designed but not implemented. Remove Fig. 6's live path, and the AI parts of Fig. 3 and Fig. 10(g). This is honest but weakens the paper a lot, and G1 costs only a few days.
+
+---
+
+## 7. Reproducibility release (R2 v)
+
+### E1. Public repository and archive (P0)
+
+- Make the repository public on GitHub (free) with an open licence for the code (MIT or Apache-2.0).
+- Before publishing: confirm that no `.env`, secrets, real email addresses, or personal photos are tracked. Remove author photos and bios from the code repository if they are not needed there.
+- Archive a tagged release on **Zenodo** (free) to get a DOI. Cite the DOI in the paper's Data Availability statement.
+
+### E2. What to release (P0)
+
+- Code: `backend/`, `mobile/`, `ai_service/`, `ai_model/` notebooks and scripts.
+- Tests: `backend/tests/`, load test scripts, and the privacy analysis notebook.
+- **Split lists** (`ai_model/splits/*.json`) and download scripts. Do **not** redistribute dataset images whose licence does not allow it; release the scripts that download them from their source instead.
+- Weights for the final models, if the dataset licences allow it (CC BY and CC BY-SA allow it with attribution; CC BY-SA weights should note the share-alike condition).
+- `results/*.json` with every number in the paper, and a script that regenerates each table and figure.
+
+### E3. Data availability statement in the paper (P0)
+
+One paragraph: the DOI, what is included, what must be downloaded from source, and that no real complaint data exists because there was no deployment.
+
+---
+
+## 8. Paper changes
+
+### P1. Title and claims (P0)
+
+- Replace "AI-Validated" with "AI-Assisted" everywhere. Replace "accountable" with "auditable" where it describes the software; keep "accountability" only for the goal.
+- Suggested title: **"UrbanFix: A Closed-Loop Civic Complaint Platform with AI-Assisted Photo Triage, an Auditable Public Registry and Pseudonymised Research Access."**
+- Replace "privacy-preserving" in the keywords with "pseudonymisation" and "k-anonymity" once B4 and B5 are done.
+
+### P2. Abstract (P0)
+
+- Report **test** results with CIs, and the complaint-level false-flag and false-pass rates.
+- Say the model flags and never rejects, and give the false-flag rate.
+- Say the workflow figures come from seeded data and the privacy risk was measured on public 311 data.
+- Use the stage terms from P3.
+
+### P3. One glossary for stage counts (P0)
+
+Use these terms everywhere and add them to a short table in Section III:
+
+| Term | Count | What it is |
+|---|---|---|
+| Governance loop | 6 steps | Report, AI check, triage, field work, receipt, registry and research (Fig. 2) |
+| Workflow states | 7 states | sub, acc, asg, wip, prf, cls, rej (Eq. 6, Fig. 8) |
+| Main path | 5 forward transitions | accept, assign, start, proof, close; plus reject and rework |
+| Request pipeline | 7 checks | the middleware chain every API call passes (Fig. 3) |
+
+Fix the Abstract ("seven-stage workflow" is correct for states; say "seven-state"), the Introduction ("six steps" of the loop), Section III ("seven request checks", not "gateway stages"), and Section IV-D. See J4.
+
+### P4. Datasets section (P0)
+
+Eq. (1) with five criteria (D4), Table IV with provenance and licence (D1), the RDD2022 change (D2), and the manhole decision (D3). Add the split procedure from A1 with the table of source-photo counts.
+
+### P5. Method changes (P0)
+
+- Section IV-C: per-category τ_k with the selection rule (A4). Remove the δ urgency rule and θδ (A10). Keep δ as descriptive evidence for segmentation models only, with a sentence that it is not a severity measure.
+- Eq. (2): say urgency is computed on the server from stored answers (C8).
+
+### P6. Results section (P0)
+
+- Table V: test-set metrics with 95 % CIs, mean over 3 seeds; validation numbers in a separate column.
+- New table: complaint-level screening (A5).
+- New table: baselines and ablation (A8), with latency and size.
+- Cross-dataset results, including RDD2022 India (A3).
+- τ sweep figure (A4).
+- Keep the training curves, labelled as validation and training only.
+- Error-analysis figure (A6) and workload simulation (A7), labelled as a simulation.
+- Add the standard mAP definition with citations to PASCAL VOC and COCO.
+
+### P7. Rewrite Section IV-E as a privacy analysis (P0)
+
+Structure:
+
+1. **Assets:** citizen identity and contact data, photos and their metadata, free text, location and time of filing.
+2. **Adversaries:** (a) any member of the public using the registry and tracker; (b) an approved researcher; (c) two or more researchers who combine exports; (d) an insider with admin rights; (e) an outside attacker who obtains a database copy.
+3. **Controls per adversary:** registry allow-list, EXIF removal, text redaction, consent notice (a); projection, generalisation, k-suppression, quotas, expiry, logging (b); per-grant HMAC keys (c); hash-chained audit log, deactivate-only accounts (d); secrets kept out of the database, hashed OTPs and passwords (e).
+4. **Pseudonymisation versus anonymisation:** HMAC IDs are pseudonyms; the exported data is pseudonymised personal data under GDPR Art. 4(5) and Recital 26 and must be handled as such. Remove every use of "anonymised" for the record export.
+5. **Key management:** B4.
+6. **Measured linkage risk:** the table from B5 on Chicago 311, before and after generalisation and suppression.
+7. **Residual risks:** names in free text, faces and plates in photos (unless B7 blurring is built), street location in the registry, very small wards, and an adversary who already knows the street location (who learns nothing new from the research data, but can learn the status from the registry anyway, since the registry is public by design).
+8. **Law:** India's Digital Personal Data Protection Act, 2023 (notice and consent, purpose limitation, security safeguards, the research and statistics exemption) and the DPDP Rules, 2025 (verify the notification details before citing); GDPR for comparison. One paragraph each, with no legal claims beyond what the text of the law says.
+
+### P8. System validation section (P0)
+
+Replace the "16 API tests" paragraph with a table of test groups (functional, workflow guards, privacy, OTP brute force, concurrency, audit integrity), the number of tests and the pass count, the load test table (C5), and the repository DOI. Keep Fig. 15 or replace it with the table.
+
+### P9. Fairness subsection (P0)
+
+Use the papers already cited [12] to [14] and the measurements from A11.
+
+- **Who reports:** 311 studies show lower reporting in poorer and minority areas; counts are a biased guide to need. UrbanFix does not rank wards by complaint counts, and the paper should say that counts must not be used to allocate resources without correction.
+- **Access:** filing needs a smartphone, an email address and literacy in the app's language. Account-free filing lowers one barrier but not these.
+- **Category selection:** Eq. (1) lets data availability decide which problems citizens can report. Water leakage and streetlights are excluded for lack of data, not lack of need.
+- **Model bias by place:** measured gap between RDD2022 India and other countries (A11). Flagged complaints wait for a person, so a model that flags Indian photos more often delays Indian complainants; the human-review design limits the harm but does not remove it.
+- **Monitoring:** the admin dashboard can report median resolution time and flag rate per ward, so disparities become visible. Add these two charts if they are not already present (P1 code task in the admin analytics controller).
+
+### P10. References to add (P0)
+
+Detection metrics and models:
+
+- M. Everingham et al., "The PASCAL Visual Object Classes (VOC) Challenge," *IJCV*, 2010.
+- T.-Y. Lin et al., "Microsoft COCO: Common Objects in Context," *ECCV*, 2014.
+- D. Arya et al., "RDD2022: A multi-national image dataset for automatic road damage detection," *Geoscience Data Journal*, 2024 (replaces the arXiv version).
+- Y. Zhao et al., "DETRs Beat YOLOs on Real-time Object Detection" (RT-DETR), *CVPR*, 2024, or the torchvision Faster R-CNN reference (S. Ren et al., *NeurIPS*, 2015), whichever baseline is used.
+- B. Efron and R. Tibshirani, *An Introduction to the Bootstrap*, 1993 (for the CIs).
+
+Privacy and re-identification:
+
+- A. Machanavajjhala et al., "l-diversity: Privacy beyond k-anonymity," *ACM TKDD*, 2007.
+- C. Dwork, "Differential privacy," *ICALP*, 2006, or C. Dwork and A. Roth, *The Algorithmic Foundations of Differential Privacy*, 2014.
+- A. Narayanan and V. Shmatikov, "Robust de-anonymization of large sparse datasets," *IEEE S&P*, 2008.
+- Y.-A. de Montjoye et al., "Unique in the crowd: The privacy bounds of human mobility," *Scientific Reports*, 2013 (location and time uniqueness, directly relevant to ward plus day).
+- L. Rocher, J. M. Hendrickx and Y.-A. de Montjoye, "Estimating the success of re-identifications in incomplete datasets using generative models," *Nature Communications*, 2019.
+- ENISA, "Pseudonymisation techniques and best practices," 2019.
+- Regulation (EU) 2016/679 (GDPR).
+- The Digital Personal Data Protection Act, 2023 (India), and the DPDP Rules, 2025.
+
+Access control, audit logs and workflows:
+
+- R. S. Sandhu et al., "Role-based access control models," *IEEE Computer*, 1996.
+- B. Schneier and J. Kelsey, "Secure audit logs to support computer forensics," *ACM TISSEC*, 1999.
+- S. A. Crosby and D. S. Wallach, "Efficient data structures for tamper-evident logging," *USENIX Security*, 2009.
+- W. M. P. van der Aalst, "The application of Petri nets to workflow management," *J. Circuits, Systems and Computers*, 1998, or D. Harel, "Statecharts," 1987.
+
+Fairness:
+
+- N. Mehrabi et al., "A survey on bias and fairness in machine learning," *ACM Computing Surveys*, 2021.
+
+Check every reference's exact volume, pages and DOI against the publisher page before adding it.
+
+### P11. Contribution and limitations (P0)
+
+- Introduction: state plainly that the contribution is a **system design and an open, tested implementation**, together with an evaluation protocol (leak-free splits, complaint-level screening rates, measured linkage risk). Do not claim a new model or method.
+- Limitations: no deployment, no real complaints, no staff or citizen study, models trained on non-Indian data except RDD2022, residual privacy risks from P7, and the fairness limits from P9.
+- Future work: the ward-level pilot, the staff study with and without AI (J1), and fitting weights to real closed complaints.
+
+### P12. Deployment cost paragraph (P1)
+
+A short, free, calculated estimate: CPU inference time per photo (measured), photos per complaint, and the complaints per day one CPU core can check. Compare with daily complaint volumes from the public CPGRAMS figures already cited. This answers "no cost or deployment study" with numbers, without claiming a field deployment.
+
+### P13. Response letter (P0)
+
+Write `feedback/response_to_reviewers.md`: quote each comment, give the answer, list the changes with section, table and figure numbers, and use the justifications in Section 9 where an item was not done. Thank the reviewers once at the top, not in every answer.
+
+---
+
+## 9. Justifications: points that are wrong, impractical, or only partly doable
+
+Use these in the response letter. Each one says what was done instead.
+
+### J1. Staff decisions with and without AI assistance (R1.2b): not possible under the constraints
+
+A fair comparison needs real municipal supervisors, real complaints, a controlled study design, and ethics approval. None of these is free online data, and the platform has no deployment. **Instead:** the complaint-level false-flag and false-pass rates (A5) and the workload simulation (A7) quantify what a supervisor would face. The paper names the staff study as the first step of the planned pilot and describes its design (a within-subject study where the same supervisors triage the same complaints with and without the AI panel, measuring decision accuracy and time). The app already logs who decided what and when, so a pilot can measure this without code changes.
+
+### J2. "Photos like those residents would submit" (R1.1): partly doable
+
+Real citizen-submitted civic photos from Indian cities are not available as free public data. **Instead:** the closest free proxy is RDD2022 India, whose images are smartphone photos of Indian roads, plus cross-dataset tests for the other categories (A3). The reviewer's second request, keeping edited copies of one photo together, is fully done (A1) and revealed real leakage in the manhole data (F1), which we report.
+
+### J3. Field pilot, governance outcomes, and a full deployment study (R2 Q1, Q3): not possible
+
+Measuring governance outcomes needs a municipality, real complaints over months, and money. **Instead:** the paper narrows its claims to what is measured (P1, P11), adds the calculated deployment estimate (P12), and adds load tests (C5).
+
+### J4. "Seven gateway stages" counted as a workflow inconsistency (R2 vi): partly a misreading
+
+"Seven gateway stages" in Section III describes the middleware checks every API call passes, not the complaint workflow. "Six steps" is the governance loop, "seven stages" the workflow states, and "five transitions" the main path. These are four different things, and the numbers are each correct. However, the paper used similar words for different things, so the confusion is the paper's fault. **Done:** one glossary (P3) and consistent terms across all sections.
+
+### J5. Evidence that defect size in a photo predicts severity (R2 2.3): no free data can show this
+
+Image coverage depends on camera distance and angle. Proving a link to physical severity needs field measurements (depth, area) that no free dataset provides. **Done instead:** the δ-to-urgency rule is removed (A10). δ remains only as visual evidence for the supervisor, labelled as such. This also removes the unassigned θδ.
+
+### J6. "No new model, method or theory" (R2 Q1): accepted, with framing
+
+The reviewer is right that each component is standard, and also confirms the paper contributes at the systems level. IEEE Access publishes systems papers. **Done:** the paper states the contribution as an integrated, open, tested system plus a reproducible evaluation protocol (P11), and removes wording that suggests methodological novelty. No new method is invented to satisfy the comment.
+
+### J7. Differential privacy (R2 Q4 mentions it among missing literature)
+
+The reviewer asks for the literature, not an implementation. **Done:** DP is cited and discussed as an alternative. It is not implemented, because record-level exports of categorical fields lose most of their usefulness under DP noise at the sizes of one municipality, while k-suppression and minimum cell sizes are standard in official statistics and are measured here (B5). Optional future work: Laplace noise on aggregate counts.
+
+### J8. Cross-validation for every model
+
+Reviewer 2 asks for a held-out test set **or** cross-validation. A held-out, leak-free test set with bootstrap CIs and three seeds (A2) satisfies the request at a fraction of the compute. Grouped 5-fold CV is offered for the two smallest sets if free GPU time allows.
+
+### J9. Low litter recall (R2 2.4)
+
+Free data will not raise litter recall to the level of the other categories; TACO is small and its objects are small. **Done:** the paper presents litter screening as a weak signal with a high flag rate, reports the measured complaint-level rates, and relies on the human review path. It no longer calls the check "validation". The class-merging ablation (A8) shows whether a different label scheme helps.
+
+### J10. Remove reference [37] (R2 Q5): disagree conditionally
+
+The reviewer is right that the submitted system did not implement k-anonymity. **Done:** the system now enforces k ≥ 5 suppression on record exports and minimum cell sizes on aggregates, and the paper measures equivalence-class sizes on public 311 data (B5). [37] is now the basis of an implemented and evaluated rule, so it stays. If B5 is not completed, remove [37] as the reviewer asks.
+
+### J11. References [16] and [18] (R2 iv, Q5): agreed
+
+The reviewer is right. The pothole set has a licence but no documented provenance; the manhole set's licence could not be confirmed. **Done:** pothole moves to RDD2022 (D2); manhole is documented, replaced, or dropped according to the manual check (D3); Eq. (1) now lists all five criteria (D4).
+
+### J12. Points where the reviewers are fully right and no defence is offered
+
+Validation-set reporting (F1, F2), the missing τ and θδ justification, the Eq. (4) gap, pseudonymisation called anonymisation, missing security tests, missing mAP citations, and overstated claims. The response letter should simply agree and point to the changes.
+
+---
+
+## 10. Order of work
+
+Work in this order. Each phase depends on the one before.
+
+1. **Code honesty and security (about 1 week):** G1, C8, B2, B3, B4, B6, C2, C3, C4, C7, then C1 and C6 tests, C5 load test. Fix F4 to F12 before anything is released.
+2. **Data and splits (2 to 3 days):** D1 to D4 decisions, A1 splits, external test sets for A3.
+3. **Training and evaluation (about 1 week, mostly waiting for free GPU):** A2 with 3 seeds, A8 baselines, A4 τ sweep, A5 complaint-level, A3 cross-dataset, A11 fairness, A6 error analysis, A7 simulation.
+4. **Privacy analysis (2 to 3 days):** B5 on Chicago 311, then fix k and the generalisation in code.
+5. **Release (1 day):** E1 to E3 (public repository, Zenodo DOI, split lists, results).
+6. **Paper (about 1 week):** P1 to P12, regenerate all tables and figures from `results/*.json`.
+7. **Response letter (1 day):** P13, using Section 9.
+
+## 10a. Progress log
+
+### Phase 1, code honesty and security: done on 2026-11-24
+
+| Action | Status | Where |
+|---|---|---|
+| G1 AI service | Done. FastAPI service, backend client with timeout and 2 retries, `aiAnalysis` on the complaint, supervisor panel with flag, s*, δ and annotated photos. δ is evidence only; the AI never changes stage or urgency (A10). τ = 0.25 for all four until A4. | `ai_service/`, `backend/services/aiClient.js`, `mobile/src/screens/supervisor/TriageDetailScreen.jsx` |
+| C8 Server-side urgency | Done. Answers validated and scored on the server; client urgency ignored; answers and score published. | `backend/constants/questionnaires.js`, `backend/utils/urgency.js` |
+| B2 EXIF removal | Done for complaint and proof photos. Files that do not decode as images are refused. | `backend/middleware/uploadMiddleware.js` |
+| B3 Text redaction | Done for title, description, location, staff remarks and proof notes. Filing screen asks for no names or phone numbers. | `backend/utils/redactText.js` |
+| B4 Research key | Done. `RESEARCH_HMAC_KEY` required (≥ 32 bytes, not equal to `JWT_SECRET`), per-researcher keys, ISO week instead of day, no closing date, whole-day resolution time. | `backend/config/env.js`, `backend/utils/researchProjection.js` |
+| B6 Allow-list | Done for registry and tracker. The tracker shows actors as role labels only (no staff names), as in the B1 table. | `backend/utils/publicView.js` |
+| C2 OTP | Done. Hashed codes, 5 attempts per code (atomic), single use, CSPRNG codes, 3 requests per email per 15 min, 20 per IP per hour, limits on login and filing. | `backend/utils/otp.js`, `backend/middleware/rateLimits.js` |
+| C3 Concurrency | Done. Atomic daily export counter (UTC day); optimistic concurrency on complaints (loser gets 409); citizen emails sent only after a successful save. Removing the fix makes the 3 race tests fail (checked). | `backend/models/ExportQuota.js`, `backend/models/Complaint.js`, `backend/services/complaintWorkflow.js` |
+| C4 Audit log | Done. Hash chain with unique sequence numbers, append-only hooks, `npm run audit:verify`, admin endpoint, head hash published in `GET /api/public/stats`. | `backend/utils/auditLog.js` |
+| C7 Regex injection | Done for registry, supervisor, admin and user searches; operator injection and page size also fixed. | `backend/utils/escapeRegex.js` |
+| C1 Test suite | Done. 61 backend tests (16 from Fig. 15 plus 45 new) and 9 service tests; GitHub Actions workflow with an end-to-end job. | `backend/tests/`, `ai_service/tests/`, `.github/workflows/test.yml` |
+| C6 Privacy tests | Done except the k-anonymity test, which waits for B5 (phase 4). | `backend/tests/privacy.test.js` |
+| C5 Load test | Done on the M5 laptop, 10,000 seeded complaints, 60 s per scenario. At 50 connections, with no errors: registry list 1,792 req/s (p50 28 ms, p99 38 ms), tracker 6,840 req/s (p50 7 ms, p99 10 ms), research records with audit logging 1,237 req/s (p50 40 ms, p99 45 ms). At 200 connections, 2 % to 7 % socket errors; macOS caps the listen backlog at 128 (`kern.ipc.somaxconn`), and the load generator runs on the same machine. Filing with a 263 KB photo at 20 connections: 4 req/s, p50 4.3 s, with or without the vision service (F15). | `backend/tests/load/run.js`, `backend/tests/load/results/` |
+
+**Still open from phase 1 scope:** k ≥ 5 suppression (B5, phase 4 by design); B7 consent checkbox (not in phase 1); G2 docs beyond the README setup sections.
+
+**New findings during phase 1:**
+
+- **F15. Filing is CPU-bound on password hashing.** Each first-time citizen gets an account whose random password is hashed with `bcryptjs` at cost 12 (pure JavaScript, blocks the event loop for about 250 ms). The load test shows this caps filing at a few complaints per second on one process. Options: skip creating a password for citizens who never log in, or move to the native `bcrypt` package. Report it in the paper as a measured limit if not fixed.
+- **F16. Quick look at the sample photos supports R1.2.** On `docs/sample-images/`, the litter model scores a street-light photo at 0.92 (an unrelated photo would pass) and an Indian garbage heap at 0.16 (a valid complaint would be flagged); the pothole model scores the garbage photo at 0.29, above τ = 0.25. Three photos prove nothing statistically, but they show why A5 (complaint-level false-flag and false-pass rates with negatives) is needed.
+- **F17. Audit-log contention under load (fixed).** The first load run gave 570 errors (HTTP 500) out of about 30,000 research requests at 200 connections, because parallel appends raced for the next chain sequence number. Appends are now queued within one process; the unique index still protects the chain when several processes write. Afterwards there were no HTTP errors, and throughput at 50 connections went from 772 to 1,237 req/s.
+- **The vision service does not slow filing:** p50 filing time is 4.27 s without the service and 4.30 s with it, because the model call runs after the response.
+- Load test percentiles: `autocannon` reports p97.5, not p95. Report p97.5 or switch to k6 if the paper must show p95.
+
+## 11. Done checklist
+
+- [ ] No source photo appears in two splits (script output saved).
+- [ ] Every number in the paper comes from a `results/*.json` file in the release.
+- [ ] Test-set metrics with 95 % CIs, 3 seeds.
+- [ ] Complaint-level false-flag and false-pass rates per category.
+- [ ] τ_k chosen by a written rule; θδ and the δ urgency rule removed.
+- [ ] At least one non-YOLO baseline and two YOLO variants compared.
+- [ ] RDD2022 India cross-dataset result.
+- [x] AI service exists in the repository and the backend stores `aiAnalysis` and `needsReview`.
+- [x] Urgency computed on the server from stored answers.
+- [ ] EXIF removed, text redacted, registry allow-list, consent checkbox.
+- [ ] Separate research HMAC key, per-grant keys, k ≥ 5 suppression.
+- [ ] Linkage analysis on Chicago 311 in the paper.
+- [x] OTP attempt limit and rate limits, with tests.
+- [ ] Concurrency, audit-integrity, privacy and load tests in `backend/tests/`, run by CI.
+- [ ] Dataset provenance and licence documented; Eq. (1) has five criteria.
+- [ ] One glossary for stage counts used everywhere.
+- [ ] Fairness subsection with the measured geographic gap.
+- [ ] All new references checked against publisher pages.
+- [ ] Public repository with a Zenodo DOI and a data availability statement.
+- [ ] Title and claims say "AI-assisted", "auditable", "pseudonymised".
+- [ ] Response letter answers every numbered comment.

@@ -126,6 +126,11 @@ const ReportStep = ({
       {type === 'details' ? (
         <View>
           <Text style={s.stepTitle}>Describe it</Text>
+          {/* The server also removes phone numbers, emails and similar identifiers,
+              but it cannot find names, so citizens are asked not to write them. */}
+          <Text style={s.stepSub}>
+            Do not write names or phone numbers. Your description, photos and street location will be public.
+          </Text>
           <View style={s.stack22}>
             <Field
               label="Title"

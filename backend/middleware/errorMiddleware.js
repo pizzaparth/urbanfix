@@ -27,7 +27,13 @@ const globalErrorHandler = (err, req, res, next) => {
     error.statusCode = 400;
   }
 
-  // 4. JWT Errors
+  // 4. Lost an optimistic-concurrency race (models/Complaint.js)
+  if (err.name === 'VersionError') {
+    error.message = 'This complaint was changed by someone else. Reload it and try again.';
+    error.statusCode = 409;
+  }
+
+  // 5. JWT Errors
   if (err.name === 'JsonWebTokenError') {
     error.message = 'Invalid token. Please log in again.';
     error.statusCode = 401;
@@ -39,7 +45,7 @@ const globalErrorHandler = (err, req, res, next) => {
 
   const isDev = process.env.NODE_ENV !== 'production';
 
-  if (isDev) {
+  if (isDev && process.env.NODE_ENV !== 'test') {
     res.status(error.statusCode).json({
       status: error.status,
       code: err.code && typeof err.code === 'string' ? err.code : undefined,
@@ -50,6 +56,7 @@ const globalErrorHandler = (err, req, res, next) => {
   } else {
     // Production Mode
     if (err.isOperational || error.statusCode !== 500) {
+      if (error.statusCode >= 400) error.status = error.statusCode < 500 ? 'fail' : 'error';
       res.status(error.statusCode).json({
         status: error.status,
         code: err.code && typeof err.code === 'string' ? err.code : undefined,

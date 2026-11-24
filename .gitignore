@@ -61,3 +61,8 @@ ai_model/Pothole_Segmentation_YOLOv8.v1i.yolov8/
 *.fdb_latexmk
 *.fls
 *.toc
+
+# Vision service virtualenv
+ai_service/.venv/
+__pycache__/
+.pytest_cache/

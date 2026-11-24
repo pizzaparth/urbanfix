@@ -27,6 +27,54 @@ const ACTIONS = [
   { key: 'rework', label: 'Rework', tone: 'Pending', from: ['proof_submitted'], remarks: true, cta: 'Send back for rework' },
 ];
 
+// What the vision service found in the citizen's photos (backend aiAnalysis).
+// Advisory only: it never changes the stage or the urgency. A flag means a person
+// should look closely, not that the complaint is invalid.
+const AiEvidence = ({ ai, uploads }) => {
+  if (!ai) return null;
+  const pct = (v) => `${Math.round(v * 100)}%`;
+  let headline;
+  let tone;
+  if (ai.state === 'pending') {
+    headline = 'Checking the photos…';
+    tone = colors.dim;
+  } else if (ai.state === 'skipped') {
+    headline = 'No photos to check. Review manually.';
+    tone = statusColors.Pending;
+  } else if (ai.state === 'failed') {
+    headline = 'Photo check unavailable. Review manually.';
+    tone = statusColors.Pending;
+  } else if (ai.needsReview) {
+    headline = `Needs review: no detection reached the threshold (best ${ai.sStar.toFixed(2)} < τ ${ai.tau}).`;
+    tone = statusColors.Pending;
+  } else {
+    headline = `Defect detected, confidence ${ai.sStar.toFixed(2)} (τ ${ai.tau}).`;
+    tone = statusColors.Resolved;
+  }
+  return (
+    <View>
+      <Label>Photo check</Label>
+      <Card style={s.aiCard}>
+        <View style={s.aiRow}>
+          <View style={[s.dot, { backgroundColor: tone }]} />
+          <Text style={s.aiHeadline}>{headline}</Text>
+        </View>
+        {ai.state === 'done' && ai.delta != null ? (
+          <Text style={s.aiMeta}>Marked area: {pct(ai.delta)} of the photo (evidence only)</Text>
+        ) : null}
+        {ai.modelVersion ? <Text style={s.aiMeta}>Model {ai.modelVersion}</Text> : null}
+      </Card>
+      {ai.annotatedImages?.length > 0 ? (
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={[s.imageRow, s.aiImages]}>
+          {ai.annotatedImages.map((img, i) => (
+            <Image key={i} source={{ uri: `${uploads}${img}` }} style={s.image} resizeMode="cover" />
+          ))}
+        </ScrollView>
+      ) : null}
+    </View>
+  );
+};
+
 const TriageDetailScreen = ({ route, navigation }) => {
   const insets = useSafeAreaInsets();
   const { id } = route.params || {};
@@ -165,6 +213,8 @@ const TriageDetailScreen = ({ route, navigation }) => {
           </View>
         ) : null}
 
+        <AiEvidence ai={complaint.aiAnalysis} uploads={uploads} />
+
         {complaint.completionImages?.length > 0 ? (
           <View>
             <Label>Completion proof</Label>
@@ -254,6 +304,11 @@ const s = StyleSheet.create({
   tileRow: { flexDirection: 'row', gap: 10 },
   imageRow: { gap: 10, paddingRight: 20 },
   image: { width: 132, height: 132, borderRadius: 20, backgroundColor: colors.surfaceInput },
+  aiCard: { padding: 18, gap: 8 },
+  aiRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  aiHeadline: { flex: 1, fontFamily: font.bodyBold, fontSize: 15, lineHeight: 22, color: colors.text },
+  aiMeta: { fontFamily: font.body, fontSize: 13, color: colors.muted },
+  aiImages: { marginTop: 10 },
   proofNote: { fontFamily: font.body, fontSize: 15, lineHeight: 23, color: colors.muted, marginTop: 12 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 4 },
   cell: { width: '48%', flexGrow: 1 },

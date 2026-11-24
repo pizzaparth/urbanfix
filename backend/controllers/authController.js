@@ -1,9 +1,8 @@
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
-import Otp from '../models/Otp.js';
 import AppError from '../utils/appError.js';
 import catchAsync from '../utils/catchAsync.js';
-import { generateOtp } from '../utils/otpGenerator.js';
+import { issueOtp, consumeOtp } from '../utils/otp.js';
 import { sendOtpEmail } from '../services/emailService.js';
 import { registerSchema, loginSchema, verifyOtpSchema, setPasswordSchema } from '../validators/authValidator.js';
 import { hashInviteToken } from '../utils/invite.js';
@@ -66,17 +65,7 @@ export const register = catchAsync(async (req, res, next) => {
     isVerified: false
   });
 
-  // Generate random 6-digit OTP code
-  const otpCode = generateOtp();
-  const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes validity
-
-  // Save transient verification code in database
-  await Otp.deleteMany({ email });
-  await Otp.create({
-    email,
-    otp: otpCode,
-    expiresAt
-  });
+  const otpCode = await issueOtp(email);
 
   // Send OTP code email
   await sendOtpEmail(email, otpCode);
@@ -97,16 +86,8 @@ export const verifyOtp = catchAsync(async (req, res, next) => {
 
   const { email, otp } = validationResult.data;
 
-  // Retrieve valid code matching target email
-  const otpRecord = await Otp.findOne({ email, otp });
-  if (!otpRecord) {
-    return next(new AppError('Invalid or expired OTP', 400));
-  }
-
-  if (otpRecord.expiresAt < new Date()) {
-    await Otp.deleteOne({ _id: otpRecord._id });
-    return next(new AppError('OTP has expired. Please request a new one.', 400));
-  }
+  // Limited attempts, single use (utils/otp.js).
+  await consumeOtp(email, otp);
 
   // Verify and unlock citizen account
   const user = await User.findOne({ email });
@@ -116,9 +97,6 @@ export const verifyOtp = catchAsync(async (req, res, next) => {
 
   user.isVerified = true;
   await user.save();
-
-  // Clean up transient database references
-  await Otp.deleteOne({ _id: otpRecord._id });
 
   // Issue stateless JWT access session
   const token = signToken(user._id);
@@ -151,16 +129,7 @@ export const resendOtp = catchAsync(async (req, res, next) => {
     return next(new AppError('This account is already verified. Please login.', 400));
   }
 
-  // Generate and save new code
-  const otpCode = generateOtp();
-  const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
-
-  await Otp.deleteMany({ email });
-  await Otp.create({
-    email,
-    otp: otpCode,
-    expiresAt
-  });
+  const otpCode = await issueOtp(email);
 
   // Re-send verification email
   await sendOtpEmail(email, otpCode);

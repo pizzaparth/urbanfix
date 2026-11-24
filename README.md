@@ -18,7 +18,7 @@
 
 # UrbanFix
 
-UrbanFix is an AI-powered governance system for civic infrastructure complaints. Citizens report potholes, litter, open manholes and graffiti from a mobile app without creating an account. A YOLOv8 model trained for the selected category checks each photo, a weighted questionnaire sets the urgency, and a ward-based staff workflow takes the complaint from triage to field repair, photo proof and a closing PDF receipt. Every complaint and its status history is published in a public registry, and approved researchers can export anonymised data.
+UrbanFix is an AI-powered governance system for civic infrastructure complaints. Citizens report potholes, litter, open manholes and graffiti from a mobile app without creating an account. A YOLOv8 model trained for the selected category checks each photo, a weighted questionnaire sets the urgency, and a ward-based staff workflow takes the complaint from triage to field repair, photo proof and a closing PDF receipt. Every complaint and its status history is published in a public registry, and approved researchers can export pseudonymised research records.
 
 ## Contents
 
@@ -40,6 +40,7 @@ UrbanFix is an AI-powered governance system for civic infrastructure complaints.
 | [`mobile/`](./mobile) | Expo SDK 57, React Native 0.86, React 19, React Navigation 7, Reanimated 4, FlashList, react-native-svg | The only client. Role-based tab sets for citizens, supervisors, field workers, admins and researchers. Runs in Expo Go on Android and iOS, and in the browser for development. |
 | [`backend/`](./backend) | Node.js 20, Express 4, Mongoose 8, JWT, bcrypt, Zod, Multer, Nodemailer, PDFKit | REST API: auth and invites, complaint intake with email OTP, workflow engine, attendance and leave, PDF receipts, public registry, research access with audit logging. |
 | [`ai_model/`](./ai_model) | Python 3, PyTorch 2.14, Ultralytics 8.4 | Dataset preparation, training and evaluation notebooks for the four category models, trained weights and evaluation results. |
+| [`ai_service/`](./ai_service) | Python 3, FastAPI, Ultralytics 8.4 | Vision service the backend calls after filing. Returns detections, s*, δ and the `needsReview` flag (Eqs. 3 to 5) and annotated photos. |
 | [`docs/`](./docs) | Markdown, Word | System description, project report, report figures and README graphics. |
 
 ### Roles
@@ -132,7 +133,7 @@ The AI call runs after the tracking ID is returned, so model latency or failure 
 
 ```bash
 cd backend
-cp .env.example .env          # set JWT_SECRET; SMTP settings are optional in development
+cp .env.example .env          # set JWT_SECRET and RESEARCH_HMAC_KEY (openssl rand -hex 32); SMTP is optional
 npm install
 npm run seed:roles            # one development account per role
 npm run seed:complaints       # optional: sample complaints over the last 12 months
@@ -150,6 +151,27 @@ npx expo start --go -c
 ```
 
 Scan the QR code with Expo Go, press `w` for the browser or `a` for an Android emulator. The app calls the backend on port 5001 of the host that serves Metro, so no API URL is needed locally. See [`mobile/README.md`](./mobile/README.md) for device and browser differences.
+
+### AI service
+
+```bash
+cd ai_service
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
+.venv/bin/uvicorn main:app --host 127.0.0.1 --port 8000
+```
+
+Set `AI_SERVICE_URL=http://127.0.0.1:8000` in `backend/.env`. Without it, complaints are still filed and are flagged for manual review. See [`ai_service/README.md`](./ai_service/README.md).
+
+### Tests
+
+```bash
+cd backend && npm test              # API, OTP, concurrency, audit-log, privacy, urgency and AI tests
+cd ai_service && .venv/bin/python -m pytest -q tests
+cd backend && npm run test:load     # load test on this machine; results in tests/load/results/
+```
+
+`npm test` starts an in-memory MongoDB (`mongodb-memory-server`); set `MONGOMS_SYSTEM_BINARY` to use an installed `mongod` instead of a download. GitHub Actions runs both suites and an end-to-end test on every push (`.github/workflows/test.yml`).
 
 ### AI models
 
@@ -189,6 +211,9 @@ Created by `npm run seed:roles` (idempotent; refuses to run when `NODE_ENV=produ
 | `npm run backfill:stage-ward` | Fill `stage` and `ward` on legacy complaints |
 | `npm run backfill:public` | Mark legacy complaints public |
 | `npm run backfill:urgency` | Normalise legacy urgency values |
+| `npm test` | Run the backend test suite |
+| `npm run test:load` | Run the load test (`--count`, `--duration`, `--connections`, `--ai`) |
+| `npm run audit:verify` | Recompute the research access log hash chain; exit 1 if it is broken |
 
 ## Configuration
 
@@ -198,7 +223,12 @@ Created by `npm run seed:roles` (idempotent; refuses to run when `NODE_ENV=produ
 |:--|:--|:--|
 | `PORT` | no | API port. The app expects `5001`. |
 | `MONGO_URI` | no | Defaults to `mongodb://localhost:27017/complaint_system` |
-| `JWT_SECRET` | yes | Signs session tokens and keys the HMAC for anonymised research record IDs |
+| `JWT_SECRET` | yes | Signs session tokens |
+| `RESEARCH_HMAC_KEY` | yes | Keys the per-researcher HMAC for research record IDs. At least 32 bytes and different from `JWT_SECRET`; the server refuses to start otherwise. Rotating it breaks joins with earlier exports. |
+| `AI_SERVICE_URL` | no | Vision service base URL. Unset: complaints are flagged for review. |
+| `AI_TIMEOUT_MS` | no | Timeout per vision call, default `20000`; two retries follow a failure |
+| `TRUST_PROXY` | no | Number of reverse proxies, so rate limits see client IPs |
+| `UPLOAD_DIR` | no | Photo directory, default `./uploads` |
 | `JWT_EXPIRES_IN` | no | Token lifetime, default `7d` |
 | `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_USER`, `EMAIL_PASS`, `EMAIL_FROM` | no | SMTP transport. Ethereal is used when unset. |
 | `APP_LINK_BASE` | no | Deep-link base for invite emails, default `dsn://` |

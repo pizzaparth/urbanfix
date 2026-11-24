@@ -9,6 +9,7 @@ import {
 } from '../utils/complaintStage.js';
 import { sendStatusUpdateEmail, sendResolutionEmailWithPdf } from './emailService.js';
 import { generateResolutionPdf } from './pdfService.js';
+import { redactText } from '../utils/redactText.js';
 
 const STAGE_LABEL = {
   submitted: 'Submitted',
@@ -70,14 +71,30 @@ const resolveAssignee = async (complaint, fieldEmployeeId, actor) => {
   return assignee;
 };
 
-// Receipt PDF + email + persisted download URL. Shared by the supervisor's
-// `close` and the admin's legacy status override so both behave identically.
-const finalizeClose = async (complaint, remarks) => {
-  await complaint.populate('citizenId');
-  const pdfBuffer = await generateResolutionPdf(complaint);
-  await sendResolutionEmailWithPdf(complaint.citizenId.email, complaint.trackingId, remarks, pdfBuffer);
+// Closing fields, set before the save. Shared by the supervisor's `close` and the
+// admin's legacy status override so both behave identically.
+const markClosed = (complaint) => {
   complaint.pdfReceiptUrl = `/api/complaints/download-receipt/${complaint.trackingId}`;
   complaint.closedAt = new Date();
+};
+
+// Citizen emails run only after the save succeeded, so a request that loses a race
+// (VersionError) sends nothing. A failed email never undoes a saved transition.
+const notifyCitizen = async (complaint, { closed, statusChanged, remarks }) => {
+  if (!closed && !statusChanged) return;
+  try {
+    await complaint.populate('citizenId');
+    const email = complaint.citizenId?.email;
+    if (!email) return;
+    if (closed) {
+      const pdfBuffer = await generateResolutionPdf(complaint);
+      await sendResolutionEmailWithPdf(email, complaint.trackingId, remarks, pdfBuffer);
+    } else {
+      await sendStatusUpdateEmail(email, complaint.trackingId, complaint.status, remarks);
+    }
+  } catch (err) {
+    console.error('Citizen notification failed:', err.message);
+  }
 };
 
 /**
@@ -102,7 +119,8 @@ export const applyTransition = async (complaint, action, actor, input = {}) => {
     throw new AppError('This task is not assigned to you.', 403);
   }
 
-  const remarks = (input.remarks || '').trim();
+  // Remarks and notes are published in the tracker, so identifiers are removed.
+  const remarks = redactText((input.remarks || '').trim());
   if (rule.remarks && remarks.length < MIN_REMARKS) {
     throw new AppError(`Remarks must be at least ${MIN_REMARKS} characters long.`, 400);
   }
@@ -115,7 +133,7 @@ export const applyTransition = async (complaint, action, actor, input = {}) => {
     complaint.assignedTo = assignee._id;
     complaint.assignedBy = actor._id;
     complaint.assignedAt = new Date();
-    historyRemarks = `Assigned to ${assignee.name}.${input.note ? ` ${input.note.trim()}` : ''}`;
+    historyRemarks = `Assigned to ${assignee.name}.${input.note ? ` ${redactText(input.note.trim())}` : ''}`;
   }
 
   if (action === 'start') {
@@ -124,7 +142,7 @@ export const applyTransition = async (complaint, action, actor, input = {}) => {
 
   if (action === 'proof') {
     complaint.completionImages = input.images || [];
-    complaint.completionNote = (input.note || '').trim();
+    complaint.completionNote = redactText((input.note || '').trim());
     historyRemarks = complaint.completionNote || 'Completion proof submitted for review.';
   }
 
@@ -139,21 +157,20 @@ export const applyTransition = async (complaint, action, actor, input = {}) => {
     remarks: historyRemarks,
   });
 
-  if (action === 'close') {
-    await finalizeClose(complaint, remarks);
-  } else if (complaint.status !== prevStatus) {
-    // Accept / reject moved the public status; assign/start/proof did not, so
-    // citizens are not emailed for every internal hand-off.
-    await complaint.populate('citizenId');
-    sendStatusUpdateEmail(
-      complaint.citizenId.email,
-      complaint.trackingId,
-      complaint.status,
-      remarks
-    ).catch((err) => console.error('Status email failed:', err.message));
-  }
+  if (action === 'close') markClosed(complaint);
 
+  // Optimistic concurrency (models/Complaint.js): if another request moved this
+  // complaint after it was loaded, save() throws a VersionError (answered with 409)
+  // and nothing is written.
   await complaint.save();
+
+  // Accept / reject moved the public status; assign/start/proof did not, so
+  // citizens are not emailed for every internal hand-off.
+  if (action === 'close') {
+    await notifyCitizen(complaint, { closed: true, remarks });
+  } else {
+    notifyCitizen(complaint, { statusChanged: complaint.status !== prevStatus, remarks });
+  }
   return complaint;
 };
 
@@ -162,7 +179,8 @@ export const applyTransition = async (complaint, action, actor, input = {}) => {
  * Kept so an admin can still force any legal public-status move on any complaint,
  * but it now keeps `stage` in step so the two fields never disagree.
  */
-export const applyAdminOverride = async (complaint, newStatus, actor, remarks) => {
+export const applyAdminOverride = async (complaint, newStatus, actor, rawRemarks) => {
+  const remarks = redactText(rawRemarks);
   complaint.status = newStatus;
   complaint.stage = stageForStatus(newStatus);
   complaint.remarks = remarks;
@@ -173,13 +191,10 @@ export const applyAdminOverride = async (complaint, newStatus, actor, remarks) =
     remarks,
   });
 
-  if (newStatus === 'Resolved') {
-    await finalizeClose(complaint, remarks);
-  } else {
-    await complaint.populate('citizenId');
-    await sendStatusUpdateEmail(complaint.citizenId.email, complaint.trackingId, newStatus, remarks);
-  }
+  const closed = newStatus === 'Resolved';
+  if (closed) markClosed(complaint);
 
   await complaint.save();
+  await notifyCitizen(complaint, { closed, statusChanged: true, remarks });
   return complaint;
 };

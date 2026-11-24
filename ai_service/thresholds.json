@@ -1,0 +1,9 @@
+{
+  "_note": "Per-category confidence threshold tau_k used by Eq. (5). 0.25 is the value in the submitted paper. Replace each value with the one chosen by the tau sweep (feedback/action.md, A4) and record the rule used.",
+  "tau": {
+    "pothole_road_damage": 0.25,
+    "garbage_litter": 0.25,
+    "open_manhole": 0.25,
+    "graffiti": 0.25
+  }
+}

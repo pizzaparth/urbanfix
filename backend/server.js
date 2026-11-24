@@ -1,73 +1,25 @@
-import express from 'express';
-import cors from 'cors';
-import morgan from 'morgan';
 import dotenv from 'dotenv';
-import fs from 'fs';
 
+import { assertRequiredEnv } from './config/env.js';
 import connectDB from './config/db.js';
-import globalErrorHandler from './middleware/errorMiddleware.js';
-import AppError from './utils/appError.js';
-import authRouter from './routes/authRoutes.js';
-import complaintRouter from './routes/complaintRoutes.js';
-import adminRouter from './routes/adminRoutes.js';
-import publicRouter from './routes/publicRoutes.js';
-import supervisorRouter from './routes/supervisorRoutes.js';
-import fieldRouter from './routes/fieldRoutes.js';
-import researchRouter from './routes/researchRoutes.js';
+import { createApp } from './app.js';
 import { startExpiryJob } from './services/expiryJob.js';
 
 // Load environment variables
 dotenv.config();
 
+// Refuse to start without the secrets (config/env.js), before touching the database.
+try {
+  assertRequiredEnv();
+} catch (err) {
+  console.error(err.message);
+  process.exit(1);
+}
+
 // Connect to Database
 connectDB();
 
-// Ensure uploads directory exists for file uploads
-if (!fs.existsSync('./uploads')) {
-  fs.mkdirSync('./uploads');
-}
-
-const app = express();
-
-// Enable CORS
-app.use(cors());
-
-// Serve uploads folder statically
-app.use('/uploads', express.static('uploads'));
-
-// Parse incoming requests
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-// Request Logger in Development
-if (process.env.NODE_ENV !== 'production') {
-  app.use(morgan('dev'));
-}
-
-// Basic Health Check Route
-app.get('/health', (req, res) => {
-  res.status(200).json({
-    status: 'success',
-    message: 'Server is healthy and running.'
-  });
-});
-
-// Mounting Routes
-app.use('/api/auth', authRouter);
-app.use('/api/complaints', complaintRouter);
-app.use('/api/admin', adminRouter);
-app.use('/api/public', publicRouter);
-app.use('/api/supervisor', supervisorRouter);
-app.use('/api/field', fieldRouter);
-app.use('/api/research', researchRouter);
-
-// Fallback for Undefined API Routes
-app.all('*', (req, res, next) => {
-  next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
-});
-
-// Global Error Handler Middleware
-app.use(globalErrorHandler);
+const app = createApp();
 
 const PORT = process.env.PORT || 5000;
 const server = app.listen(PORT, () => {

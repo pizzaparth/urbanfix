@@ -5,6 +5,7 @@ import catchAsync from '../utils/catchAsync.js';
 import { updateStatusSchema } from '../validators/adminValidator.js';
 import { applyAdminOverride } from '../services/complaintWorkflow.js';
 import { getStatusBreakdown, getActivityByDay } from '../utils/statsHelpers.js';
+import { containsInsensitive } from '../utils/escapeRegex.js';
 
 // 1. Get Summary Metrics for Admin Dashboard
 export const getAdminStats = catchAsync(async (req, res, next) => {
@@ -88,8 +89,8 @@ export const getAllComplaints = catchAsync(async (req, res, next) => {
   else if (ward) query.ward = ward;
   if (search) {
     query.$or = [
-      { trackingId: { $regex: search, $options: 'i' } },
-      { title: { $regex: search, $options: 'i' } },
+      { trackingId: containsInsensitive(search) },
+      { title: containsInsensitive(search) },
     ];
   }
 

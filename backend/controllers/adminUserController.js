@@ -8,6 +8,8 @@ import { validate } from '../utils/validate.js';
 import { createUserSchema, updateUserSchema } from '../validators/workflowValidator.js';
 import { decisionSchema } from '../validators/researchValidator.js';
 import { generateInvite, unusablePassword } from '../utils/invite.js';
+import { containsInsensitive } from '../utils/escapeRegex.js';
+import { verifyAuditChain } from '../utils/auditLog.js';
 import {
   sendEmployeeInviteEmail,
   sendResearchApprovedEmail,
@@ -44,8 +46,8 @@ export const listUsers = catchAsync(async (req, res) => {
   if (isActive === 'false') filter.isActive = false;
   if (search) {
     filter.$or = [
-      { name: { $regex: search, $options: 'i' } },
-      { email: { $regex: search, $options: 'i' } },
+      { name: containsInsensitive(search) },
+      { email: containsInsensitive(search) },
     ];
   }
 
@@ -286,4 +288,10 @@ export const getResearchAudit = catchAsync(async (req, res) => {
     pagination: { total, pages: Math.ceil(total / limitNum), currentPage: pageNum, limit: limitNum },
     logs,
   });
+});
+
+// 4. Recompute the research audit hash chain and report the first broken row.
+export const verifyResearchAudit = catchAsync(async (req, res) => {
+  const result = await verifyAuditChain();
+  res.status(200).json({ status: 'success', ...result });
 });

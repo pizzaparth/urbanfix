@@ -29,6 +29,43 @@ const statusHistorySchema = new mongoose.Schema({
   },
 });
 
+// What the AI service returned for the complaint's photos (Eqs. 3 to 5). Written by
+// services/aiClient.js after the citizen already has a tracking ID. Advisory only:
+// it never changes the stage or the urgency; the supervisor decides.
+const detectionSchema = new mongoose.Schema(
+  {
+    image: Number, // index into `images`
+    box: [Number], // x1, y1, x2, y2 in pixels
+    confidence: Number,
+    className: String,
+  },
+  { _id: false }
+);
+
+const aiAnalysisSchema = new mongoose.Schema(
+  {
+    // pending: queued; done: the service answered; failed: no answer after retries;
+    // skipped: nothing to analyse (no photos).
+    state: { type: String, enum: ['pending', 'done', 'failed', 'skipped'], default: 'pending' },
+    modelVersion: String,
+    tau: Number,
+    // s* = highest confidence of any detection with s >= tau, over all photos (Eq. 3).
+    sStar: Number,
+    // Largest masked share of a photo (Eq. 4). Segmentation models only; null for
+    // box models. Shown as evidence; never used to change urgency.
+    delta: { type: Number, default: null },
+    // r = 1[s* < tau] (Eq. 5). Also true whenever the service failed.
+    needsReview: { type: Boolean, default: true },
+    detections: [detectionSchema],
+    annotatedImages: [String],
+    inferenceMs: Number,
+    attempts: { type: Number, default: 0 },
+    error: String,
+    analysedAt: Date,
+  },
+  { _id: false }
+);
+
 const complaintSchema = new mongoose.Schema(
   {
     trackingId: {
@@ -113,15 +150,29 @@ const complaintSchema = new mongoose.Schema(
       type: String,
       default: '',
     },
+    // Always computed on the server from `answers` (utils/urgency.js, Eq. 2).
+    // Older complaints filed before answers were stored keep their original label.
     urgencyLevel: {
       type: String,
       enum: ['High Urgency', 'Medium Urgency', 'Standard Urgency'],
       default: 'Standard Urgency',
     },
+    // Questionnaire answers (question id -> 'Yes' | 'No'). Published, so anyone can
+    // recompute urgencyScore and urgencyLevel.
+    answers: {
+      type: Map,
+      of: { type: String, enum: ['Yes', 'No'] },
+      default: undefined,
+    },
+    urgencyScore: { type: Number, min: 0, max: 1 },
+    aiAnalysis: { type: aiAnalysisSchema, default: undefined },
     statusHistory: [statusHistorySchema],
   },
   {
     timestamps: true,
+    // save() fails with a VersionError when another request changed the complaint
+    // since it was loaded, so two simultaneous transitions cannot both succeed.
+    optimisticConcurrency: true,
   }
 );
 
@@ -135,6 +186,7 @@ complaintSchema.index({ stage: 1 });
 complaintSchema.index({ ward: 1 });
 complaintSchema.index({ assignedTo: 1 });
 complaintSchema.index({ createdAt: 1 });
+complaintSchema.index({ 'aiAnalysis.needsReview': 1 });
 
 const Complaint = mongoose.model('Complaint', complaintSchema);
 export default Complaint;

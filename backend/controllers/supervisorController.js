@@ -10,6 +10,7 @@ import { STAGES, ACTIVE_FIELD_STAGES } from '../utils/complaintStage.js';
 import { getStatusBreakdown } from '../utils/statsHelpers.js';
 import { dateKey } from './attendanceController.js';
 import { redactCitizenActors } from '../utils/redactHistory.js';
+import { containsInsensitive } from '../utils/escapeRegex.js';
 
 // What needs a supervisor's hands: triage, assignment, proof review.
 const ATTENTION_STAGES = ['submitted', 'accepted', 'proof_submitted'];
@@ -37,8 +38,8 @@ export const getQueue = catchAsync(async (req, res) => {
 
   if (search) {
     query.$or = [
-      { trackingId: { $regex: search, $options: 'i' } },
-      { title: { $regex: search, $options: 'i' } },
+      { trackingId: containsInsensitive(search) },
+      { title: containsInsensitive(search) },
     ];
   }
 

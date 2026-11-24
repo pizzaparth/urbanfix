@@ -1,5 +1,7 @@
 import mongoose from 'mongoose';
 
+// One active code per email. Only a SHA-256 hash of the code is stored, and each
+// code allows OTP_MAX_ATTEMPTS guesses before it is deleted (utils/otp.js).
 const otpSchema = new mongoose.Schema(
   {
     email: {
@@ -8,9 +10,13 @@ const otpSchema = new mongoose.Schema(
       lowercase: true,
       trim: true,
     },
-    otp: {
+    otpHash: {
       type: String,
-      required: [true, 'Please provide the OTP code'],
+      required: true,
+    },
+    attempts: {
+      type: Number,
+      default: 0,
     },
     expiresAt: {
       type: Date,
@@ -22,7 +28,7 @@ const otpSchema = new mongoose.Schema(
   }
 );
 
-// Configure indexing (including MongoDB TTL index for automatic expiration)
+// MongoDB TTL index removes expired codes automatically.
 otpSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 otpSchema.index({ email: 1 });
 

@@ -1,0 +1,49 @@
+{
+  "date": "2026-11-24T17:36:49.122Z",
+  "hardware": {
+    "cpu": "Apple M5",
+    "cores": 10,
+    "memoryGB": 16,
+    "platform": "darwin 27.2.0",
+    "arch": "arm64"
+  },
+  "software": {
+    "node": "v26.8.1",
+    "database": "mongodb-memory-server (in-memory MongoDB, one instance)"
+  },
+  "settings": {
+    "scenarios": [
+      "submit"
+    ],
+    "complaints": 10000,
+    "durationS": 60,
+    "connections": [
+      50,
+      200
+    ],
+    "submitConnections": 20,
+    "imageKB": 263,
+    "aiService": "http://127.0.0.1:8765"
+  },
+  "note": "autocannon reports p97.5 rather than p95. Single laptop; not a city-scale capacity claim.",
+  "results": [
+    {
+      "scenario": "submit_with_ai",
+      "connections": 20,
+      "durationS": 60.06,
+      "requests": 266,
+      "requestsPerSecond": 4.44,
+      "latencyMs": {
+        "p50": 4304,
+        "p90": 4645,
+        "p97_5": 5925,
+        "p99": 6430,
+        "max": 6748
+      },
+      "non2xx": 0,
+      "errors": 0,
+      "timeouts": 0,
+      "errorRate": 0
+    }
+  ]
+}

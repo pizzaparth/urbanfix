@@ -2,7 +2,7 @@ import express from 'express';
 import { getAdminStats, getAllComplaints, updateComplaintStatus, getActivityHeatmap } from '../controllers/adminController.js';
 import {
   listUsers, createUser, updateUser, deactivateUser, reactivateUser,
-  listApplications, decideApplication, getResearchAudit,
+  listApplications, decideApplication, getResearchAudit, verifyResearchAudit,
 } from '../controllers/adminUserController.js';
 import { listPendingLeave, decideLeave } from '../controllers/leaveController.js';
 import { protect, restrictTo } from '../middleware/authMiddleware.js';
@@ -27,6 +27,7 @@ router.patch('/users/:id/reactivate', reactivateUser);
 router.get('/research-applications', listApplications);
 router.patch('/research-applications/:id', decideApplication);
 router.get('/audit/research', getResearchAudit);
+router.get('/audit/research/verify', verifyResearchAudit);
 
 // Leave that has no supervisor to decide it — chiefly a supervisor's own.
 router.get('/leave', listPendingLeave);

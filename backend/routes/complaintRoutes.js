@@ -1,7 +1,8 @@
 import express from 'express';
 import { submitComplaint, requestComplaintOtp, getMyComplaints, getComplaintByTrackingId, downloadReceipt } from '../controllers/complaintController.js';
 import { protect, restrictTo } from '../middleware/authMiddleware.js';
-import { upload, handleUploadErrors } from '../middleware/uploadMiddleware.js';
+import { upload, handleUploadErrors, stripImageMetadata } from '../middleware/uploadMiddleware.js';
+import { otpPerIp, otpPerEmail, submitPerIp } from '../middleware/rateLimits.js';
 
 const router = express.Router();
 
@@ -12,10 +13,10 @@ router.get('/track/:trackingId', getComplaintByTrackingId);
 router.get('/download-receipt/:trackingId', downloadReceipt);
 
 // Request email OTP for complaint submission
-router.post('/request-otp', requestComplaintOtp);
+router.post('/request-otp', otpPerIp, otpPerEmail, requestComplaintOtp);
 
 // Submission accepts up to 3 image file uploads - public, verifies OTP inside
-router.post('/', upload.array('images', 3), handleUploadErrors, submitComplaint);
+router.post('/', submitPerIp, upload.array('images', 3), handleUploadErrors, stripImageMetadata, submitComplaint);
 
 // Protect subsequent routes to authenticated citizens only (for legacy dashboard or other)
 router.use(protect);
