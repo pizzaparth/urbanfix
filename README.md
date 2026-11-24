@@ -227,7 +227,7 @@ Each complaint category has its own YOLOv8 nano model, fine-tuned from COCO weig
 
 | Category | Dataset | Labels | Images used | Train / val | Licence |
 |:--|:--|:--|:--|:--|:--|
-| Pothole / Road Damage | [Roboflow Pothole Segmentation YOLOv8 v1](./ai_model/Pothole_Segmentation_YOLOv8.v1i.yolov8) | Polygon masks, 1 class | 780 | 720 / 60 | CC BY 4.0 |
+| Pothole / Road Damage | [Roboflow Pothole Segmentation YOLOv8 v1](https://universe.roboflow.com/farzad/pothole_segmentation_yolov8/dataset/1) | Polygon masks, 1 class | 780 | 720 / 60 | CC BY 4.0 |
 | Garbage / Litter | [TACO](http://tacodataset.org) (Proença and Simões, 2020) | COCO masks, 60 classes merged to `Litter` | 1,428 of 1,500 (rest no longer downloadable) | 1,214 / 214 (85:15, seed 0) | See TACO repository |
 | Open Manhole | [Road Hazards Dataset](https://www.kaggle.com/datasets/sabidrahman/pothole-cracks-and-openmanhole) | YOLO boxes, manhole class kept | 1,603 | 1,123 / 480 | See Kaggle page |
 | Graffiti | [STORM graffiti/tagging dataset](https://zenodo.org/records/3238357) (University of West Attica) | Bounding boxes, 1 class | 1,022 | 813 / 209 | CC BY 4.0 |
@@ -353,7 +353,6 @@ Errors return `{ "status": "fail", "message": "..." }` for 4xx responses and `"s
 ```
 .
 ├── README.md
-├── project-report.pdf               final project report
 ├── mobile/                          Expo app
 │   ├── App.js, index.js, index.web.js
 │   ├── app.json                     Expo config
@@ -382,19 +381,27 @@ Errors return `{ "status": "fail", "message": "..." }` for 4xx responses and `"s
 │   ├── weights/                     trained category models (.pt)
 │   ├── results/                     eval.json and split metadata
 │   ├── road_damage.ipynb            standalone road damage training notebook
+│   ├── Pothole_Segmentation_YOLOv8.v1i.yolov8/   pothole dataset (git-ignored, from Roboflow)
 │   ├── requirements.txt
 │   └── README.md
+├── paper/                           IEEE paper
+│   ├── urbanfix_ieee_access/        IEEE Access submission: latex/, PDF, DOCX, cover letter, graphical abstract
+│   ├── urbanfix_paper/              earlier IEEE conference draft (LaTeX)
+│   ├── figures/                     all paper figures F01 to F53 (PNG, SVG, PDF), README.md
+│   ├── related_work/                prior papers cited in the literature review
+│   └── templates/                   IEEE conference LaTeX template
 └── docs/
     ├── project_description.md       full system description
     ├── project_report/
-    │   ├── report.docx, report.pdf  Project Exhibition I report
+    │   ├── project-report.pdf       final project report
+    │   ├── report.docx, report.pdf  Project Exhibition I report (editable source)
     │   ├── UrbanFix_Literature_Survey.pdf
-    │   └── figures/                 report figures (PNG and SVG), INDEX.md
+    │   └── figures/                 report-only figures, INDEX.md (shared ones live in paper/figures/)
     ├── assets/                      README graphics
     └── sample-images/               test photos
 ```
 
-`ai_model/data/` and `ai_model/runs/` are created by the notebooks and are git-ignored. `node_modules/` and `backend/uploads/` are created by `npm install` and at runtime.
+`ai_model/data/` and `ai_model/runs/` are created by the notebooks and are git-ignored. The pothole dataset is also git-ignored; download it from Roboflow into `ai_model/Pothole_Segmentation_YOLOv8.v1i.yolov8/`. `node_modules/` and `backend/uploads/` are created by `npm install` and at runtime.
 
 ## Documentation
 
@@ -402,7 +409,9 @@ Errors return `{ "status": "fail", "message": "..." }` for 4xx responses and `"s
 |:--|:--|
 | [`docs/project_description.md`](./docs/project_description.md) | Modules, schemas, every endpoint, AI pipeline |
 | [`docs/project_report/report.pdf`](./docs/project_report/report.pdf) | Project Exhibition I report |
+| [`docs/project_report/project-report.pdf`](./docs/project_report/project-report.pdf) | Final project report |
 | [`docs/project_report/figures/INDEX.md`](./docs/project_report/figures/INDEX.md) | Report figures with data sources |
+| [`paper/figures/README.md`](./paper/figures/README.md) | Paper figures F01 to F53 with captions |
 | [`ai_model/README.md`](./ai_model/README.md) | Model training, results and dataset licences |
 | [`mobile/README.md`](./mobile/README.md) | Running the app on devices and in the browser |
 

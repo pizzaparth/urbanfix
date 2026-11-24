@@ -23,7 +23,7 @@ ai_model/
 │   ├── eval.json                      every number in the report's model results
 │   └── garbage_split.json             how many TACO images were usable, and the split
 ├── road_damage.ipynb                  original pothole exploration, including damaged-area estimate
-├── Pothole_Segmentation_YOLOv8.v1i.yolov8/   pothole dataset (Roboflow, CC BY 4.0)
+├── Pothole_Segmentation_YOLOv8.v1i.yolov8/   pothole dataset (Roboflow, CC BY 4.0; git-ignored, download it)
 ├── data/                              downloaded and converted datasets (git-ignored)
 └── runs/                              Ultralytics training logs and plots (git-ignored)
 ```

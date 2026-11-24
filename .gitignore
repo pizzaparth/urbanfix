@@ -41,3 +41,23 @@ ai_model/runs/
 ai_model/.venv/
 **/.ipynb_checkpoints/
 **/labels.cache
+
+# Datasets (download from Roboflow; see ai_model/README.md)
+ai_model/Pothole_Segmentation_YOLOv8.v1i.yolov8/
+
+# Heavy / generated artifacts
+*.zip
+*.tar.gz
+*.onnx
+*.engine
+*.mlpackage/
+
+# LaTeX build output
+*.aux
+*.bbl
+*.blg
+*.out
+*.synctex.gz
+*.fdb_latexmk
+*.fls
+*.toc

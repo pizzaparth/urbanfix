@@ -1,0 +1,3 @@
+Graphical abstract caption (IEEE Access):
+
+UrbanFix takes a civic complaint from the citizen's photo to a verified public record: (1) the citizen reports without an account, (2) a per-category YOLOv8 model checks the photo, (3) a supervisor triages it with a traceable urgency score, and (4) the closed record is published without personal data to a public registry and a logged research dataset. Validation mAP50 ranges from 0.502 (litter) to 0.908 (open manholes) at 19 to 33 ms per image on a laptop CPU.
