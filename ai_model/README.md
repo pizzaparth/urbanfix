@@ -22,13 +22,41 @@ ai_model/
 ├── results/
 │   ├── eval.json                      every number in the report's model results
 │   └── garbage_split.json             how many TACO images were usable, and the split
+├── scripts/
+│   ├── make_splits.py                 grouped, leak-free train/val/test splits (A1) -> splits/
+│   ├── build_yolo_sets.py             YOLO folders under data/v2/ from the split lists
+│   ├── fetch_rdd2022.py               RDD2022 country archives (pothole training and India test)
+│   ├── fetch_taco_unofficial.py       TACO unofficial annotations (external litter test)
+│   ├── fetch_synthetic_manhole.py     Synthetic Urban Manhole Cover Dataset (manhole training)
+│   └── remote_zip.py                  read members of a large remote zip with range requests
+├── splits/                            split lists: file names, group ids, label sources (no images)
+│   └── external/                      external test sets for cross-dataset evaluation (A3)
+├── DATASETS.md                        provenance, licences and the dataset decisions (D1 to D3)
 ├── road_damage.ipynb                  original pothole exploration, including damaged-area estimate
 ├── Pothole_Segmentation_YOLOv8.v1i.yolov8/   pothole dataset (Roboflow, CC BY 4.0; git-ignored, download it)
 ├── data/                              downloaded and converted datasets (git-ignored)
 └── runs/                              Ultralytics training logs and plots (git-ignored)
 ```
 
-## Results
+## New splits and datasets (2026 revision)
+
+The results table below comes from the **old** splits, which leak: 262 of the 480 open manhole
+validation images share a source photo with a training image, and the graffiti "validation" set is
+the official STORM test split. These numbers will be replaced by test-set numbers on the new splits.
+
+```bash
+python scripts/fetch_rdd2022.py            # about 2.5 GB
+python scripts/fetch_taco_unofficial.py    # about 2,400 small images
+python scripts/fetch_synthetic_manhole.py  # about 12 GB; slow from Zenodo, run it on the Kaggle/Colab training machine
+python scripts/make_splits.py --audit      # leakage in the old splits -> results/split_audit_old.json
+python scripts/make_splits.py              # new splits -> splits/, results/split_report.json
+python scripts/build_yolo_sets.py          # YOLO folders -> data/v2/
+```
+
+The pothole model moves to RDD2022 (boxes) and the open manhole model to the synthetic dataset;
+see `DATASETS.md` for why.
+
+## Results (old splits, superseded)
 
 All four models are YOLOv8 nano, fine-tuned from COCO weights at 640 px, batch 16, with early stopping after 15 epochs without improvement. They were trained on an Apple M5 laptop with the MPS backend.
 
@@ -61,7 +89,11 @@ Training times on the M5: 29 to 52 minutes per model.
 
 | Category | Dataset | Licence |
 |---|---|---|
-| Pothole / Road Damage | Roboflow Pothole Segmentation YOLOv8, v1 (`farzad/pothole_segmentation_yolov8`) | CC BY 4.0 |
-| Garbage / Litter | TACO, Proença and Simões, arXiv:2003.06975 | see tacodataset.org (images come from Flickr and other sources) |
-| Open Manhole | Road Hazards Dataset, Kaggle `sabidrahman/pothole-cracks-and-openmanhole` | see Kaggle page |
+| Pothole / Road Damage | RDD2022, Arya et al., doi:10.6084/m9.figshare.21431547 (training and India test) | CC BY 4.0 |
+| Pothole / Road Damage | Roboflow Pothole Segmentation YOLOv8, v1 (old model; now external test only) | CC BY 4.0 |
+| Garbage / Litter | TACO, Proença and Simões, doi:10.5281/zenodo.3587843 | CC BY 4.0 |
+| Open Manhole | Synthetic Urban Manhole Cover Dataset, doi:10.5281/zenodo.21291309 | CC BY 4.0 |
+| Open Manhole | Road Hazards, Kaggle `sabidrahman/pothole-cracks-and-openmanhole` (old model; now evaluation only) | CC BY-NC-SA 4.0, source undocumented |
 | Graffiti | STORM graffiti/tagging dataset, University of West Attica, doi:10.5281/zenodo.3238357 | CC BY 4.0 |
+
+Full provenance: `DATASETS.md`.

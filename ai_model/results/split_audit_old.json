@@ -1,0 +1,42 @@
+{
+ "pothole_roboflow": {
+  "train_images": 720,
+  "train_source_groups": 238,
+  "val_images": 60,
+  "val_source_groups": 60,
+  "val_images_sharing_group_with_train": 1,
+  "val_groups_shared_with_train": 1,
+  "val_images_sharing_stem_with_train": 0,
+  "val_images_augmented_copies": 60
+ },
+ "garbage_litter": {
+  "train_images": 1214,
+  "train_source_groups": 1212,
+  "val_images": 214,
+  "val_source_groups": 214,
+  "val_images_sharing_group_with_train": 1,
+  "val_groups_shared_with_train": 1,
+  "val_images_sharing_stem_with_train": 0,
+  "val_images_augmented_copies": 0
+ },
+ "open_manhole_kaggle": {
+  "train_images": 1123,
+  "train_source_groups": 460,
+  "val_images": 480,
+  "val_source_groups": 169,
+  "val_images_sharing_group_with_train": 262,
+  "val_groups_shared_with_train": 65,
+  "val_images_sharing_stem_with_train": 255,
+  "val_images_augmented_copies": 368
+ },
+ "graffiti_storm": {
+  "train_images": 813,
+  "train_source_groups": 812,
+  "val_images": 209,
+  "val_source_groups": 209,
+  "val_images_sharing_group_with_train": 0,
+  "val_groups_shared_with_train": 0,
+  "val_images_sharing_stem_with_train": 0,
+  "val_images_augmented_copies": 0
+ }
+}

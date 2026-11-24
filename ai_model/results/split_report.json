@@ -1,0 +1,219 @@
+{
+ "seed": 0,
+ "ratios": [
+  0.7,
+  0.15,
+  0.15
+ ],
+ "hamming_64": 10,
+ "hamming_256": 24,
+ "categories": {
+  "pothole": {
+   "source": "RDD2022 (Arya et al., 2024), doi:10.6084/m9.figshare.21431547, CC BY 4.0, class D40",
+   "pool_images": 2280,
+   "pool_groups": 2269,
+   "dropped_cross_fixed_split": 0,
+   "splits": {
+    "train": {
+     "images": 1600,
+     "source_groups": 1589,
+     "with_defect": 1281,
+     "by_stratum": {
+      "China_MotorBike": 144,
+      "Czech": 135,
+      "Japan": 1219,
+      "United_States": 102
+     }
+    },
+    "val": {
+     "images": 341,
+     "source_groups": 341,
+     "with_defect": 275,
+     "by_stratum": {
+      "China_MotorBike": 30,
+      "Czech": 29,
+      "Japan": 260,
+      "United_States": 22
+     }
+    },
+    "test": {
+     "images": 339,
+     "source_groups": 339,
+     "with_defect": 268,
+     "by_stratum": {
+      "China_MotorBike": 31,
+      "Czech": 28,
+      "Japan": 259,
+      "United_States": 21
+     }
+    }
+   },
+   "check": {
+    "shared_groups": 0,
+    "cross_split_near_duplicate_pairs": 0,
+    "cross_split_stems": 0,
+    "images_checked_on_disk": 2280,
+    "images_not_yet_downloaded": 0
+   }
+  },
+  "garbage_litter": {
+   "source": "TACO official annotations (Proenca and Simoes, 2020), doi:10.5281/zenodo.3587843, CC BY 4.0",
+   "pool_images": 1428,
+   "pool_groups": 1425,
+   "dropped_cross_fixed_split": 0,
+   "splits": {
+    "train": {
+     "images": 1000,
+     "source_groups": 997,
+     "with_defect": 1000,
+     "by_stratum": {
+      "all": 1000
+     }
+    },
+    "val": {
+     "images": 214,
+     "source_groups": 214,
+     "with_defect": 214,
+     "by_stratum": {
+      "all": 214
+     }
+    },
+    "test": {
+     "images": 214,
+     "source_groups": 214,
+     "with_defect": 214,
+     "by_stratum": {
+      "all": 214
+     }
+    }
+   },
+   "check": {
+    "shared_groups": 0,
+    "cross_split_near_duplicate_pairs": 0,
+    "cross_split_stems": 0,
+    "images_checked_on_disk": 1428,
+    "images_not_yet_downloaded": 0
+   }
+  },
+  "graffiti": {
+   "source": "STORM graffiti/tagging (University of West Attica, 2019), doi:10.5281/zenodo.3238357, CC BY 4.0",
+   "pool_images": 1022,
+   "pool_groups": 1021,
+   "dropped_cross_fixed_split": 0,
+   "splits": {
+    "train": {
+     "images": 670,
+     "source_groups": 669,
+     "with_defect": 670,
+     "by_stratum": {
+      "all": 670
+     }
+    },
+    "val": {
+     "images": 143,
+     "source_groups": 143,
+     "with_defect": 143,
+     "by_stratum": {
+      "all": 143
+     }
+    },
+    "test": {
+     "images": 209,
+     "source_groups": 209,
+     "with_defect": 209,
+     "by_stratum": {
+      "all": 209
+     }
+    }
+   },
+   "check": {
+    "shared_groups": 0,
+    "cross_split_near_duplicate_pairs": 0,
+    "cross_split_stems": 0,
+    "images_checked_on_disk": 1022,
+    "images_not_yet_downloaded": 0
+   }
+  },
+  "open_manhole": {
+   "source": "Synthetic Urban Manhole Cover Dataset (Strakos et al., 2026), doi:10.5281/zenodo.21291309, CC BY 4.0",
+   "pool_images": 1184,
+   "pool_groups": 1184,
+   "dropped_cross_fixed_split": 0,
+   "splits": {
+    "train": {
+     "images": 794,
+     "source_groups": 794,
+     "with_defect": 764,
+     "by_stratum": {
+      "all": 794
+     }
+    },
+    "val": {
+     "images": 191,
+     "source_groups": 191,
+     "with_defect": 161,
+     "by_stratum": {
+      "all": 191
+     }
+    },
+    "test": {
+     "images": 199,
+     "source_groups": 199,
+     "with_defect": 194,
+     "by_stratum": {
+      "all": 199
+     }
+    }
+   },
+   "check": {
+    "shared_groups": 0,
+    "cross_split_near_duplicate_pairs": 0,
+    "cross_split_stems": 0,
+    "images_checked_on_disk": 7,
+    "images_not_yet_downloaded": 1177
+   }
+  }
+ },
+ "external": {
+  "pothole_rdd2022_india": {
+   "category": "pothole",
+   "images": 1911,
+   "dropped_near_duplicates_of_training_pool": 0,
+   "source_groups": 1911,
+   "with_defect": 1530,
+   "by_stratum": {
+    "India": 1911
+   }
+  },
+  "pothole_roboflow": {
+   "category": "pothole",
+   "images": 297,
+   "dropped_near_duplicates_of_training_pool": 0,
+   "source_groups": 297,
+   "with_defect": 297,
+   "by_stratum": {
+    "all": 297
+   }
+  },
+  "garbage_litter_taco_unofficial": {
+   "category": "garbage_litter",
+   "images": 2308,
+   "dropped_near_duplicates_of_training_pool": 6,
+   "source_groups": 2308,
+   "with_defect": 2308,
+   "by_stratum": {
+    "all": 2308
+   }
+  },
+  "open_manhole_kaggle_real": {
+   "category": "open_manhole",
+   "images": 564,
+   "dropped_near_duplicates_of_training_pool": 0,
+   "source_groups": 564,
+   "with_defect": 138,
+   "by_stratum": {
+    "all": 564
+   }
+  }
+ }
+}

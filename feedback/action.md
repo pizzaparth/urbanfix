@@ -34,7 +34,7 @@ I checked the paper (`paper/urbanfix_ieee_access/latex/main.tex`) against the co
 | F11 | **The "16 API tests" are not in the repository.** There is no test folder and no `test` script. | `backend/package.json`. | Reviewer 2 asks for released tests. |
 | F12 | **The registry `location` filter passes user input straight into a regular expression.** | `publicController.js` (`$regex: location`). | Minor. Regex injection and slow-regex risk. |
 | F13 | Eq. (1) in the paper lists only *public, localised, street-level*, but the text also requires *documented provenance and a usable licence*. | `main.tex` lines 196 to 201. | Reviewer 2 (iv) uses this gap against the paper. |
-| F14 | Licences. The Roboflow pothole set is CC BY 4.0 (stated in the local `README.dataset.txt`), but the collector and image sources are not documented ("Provided by a Roboflow user"). The Kaggle Road Hazards page does not show a licence to automated readers, so it must be checked by hand. TACO's GitHub repository has an MIT licence for code only, and states no licence for images or annotations on GitHub. RDD2022 images are CC BY-SA 4.0 and include India. | Local files and the dataset pages. | Reviewer 2 (iv). |
+| F14 | Licences. The Roboflow pothole set is CC BY 4.0 (stated in the local `README.dataset.txt`), but the collector and image sources are not documented ("Provided by a Roboflow user"). The Kaggle Road Hazards page does not show a licence to automated readers, so it must be checked by hand. TACO's GitHub repository has an MIT licence for code only, and states no licence for images or annotations on GitHub. RDD2022 is CC BY 4.0 on its figshare record (corrected in phase 2, F19) and includes India. | Local files and the dataset pages. | Reviewer 2 (iv). |
 
 ---
 
@@ -103,8 +103,8 @@ I checked the paper (`paper/urbanfix_ieee_access/latex/main.tex`) against the co
 
 | Category | External test set | Licence | Notes |
 |---|---|---|---|
-| Pothole | **RDD2022, India subset** (`RDD2022_India.zip`, Arya et al., Geoscience Data Journal, 2024) | CC BY-SA 4.0 | Smartphone photos of Indian roads, boxes in Pascal VOC. Use class D40 (pothole). Evaluate the box metrics of the pothole model only. Faces and plates are already blurred by the dataset authors. |
-| Pothole (extra) | RDD2022 Japan and Czech subsets | CC BY-SA 4.0 | Used for the fairness gap in A11. |
+| Pothole | **RDD2022, India subset** (`RDD2022_India.zip`, Arya et al., Geoscience Data Journal, 2024) | CC BY 4.0 | Smartphone photos of Indian roads, boxes in Pascal VOC. Use class D40 (pothole). Evaluate the box metrics of the pothole model only. Faces and plates are already blurred by the dataset authors. |
+| Pothole (extra) | RDD2022 Japan and Czech subsets | CC BY 4.0 | Used for the fairness gap in A11. |
 | Litter | TACO **unofficial** annotations (`data/annotations_unofficial.json`), after removing any image that also appears in the official set | Check tacodataset.org | Different photographers, same task. |
 | Litter (extra) | PlastOPol (Córdova et al. [b32]) | Verify licence before use | Already cited in the paper. |
 | Open manhole | One manhole dataset from Roboflow Universe with a stated CC BY 4.0 licence and a different source | CC BY 4.0 | Record the dataset URL, version and licence in Table IV. |
@@ -367,7 +367,7 @@ Add columns to Table IV: source and collector, licence, URL with version or acce
 ### D2. Pothole [16]: replace with RDD2022 or document (P0)
 
 - The Roboflow set is CC BY 4.0 (stated in the export's `README.dataset.txt`), so the **licence** criterion holds. The **provenance** criterion does not: the uploader is anonymous and the image sources are unknown.
-- **Recommended:** train the pothole model on **RDD2022** (CC BY-SA 4.0, journal-published, documented collection, includes India). RDD2022 has boxes only. That is fine once A10 removes the mask-based urgency rule. Keep the Roboflow segmentation model only as an optional evidence overlay, or drop it.
+- **Recommended:** train the pothole model on **RDD2022** (CC BY 4.0, journal-published, documented collection, includes India). RDD2022 has boxes only. That is fine once A10 removes the mask-based urgency rule. Keep the Roboflow segmentation model only as an optional evidence overlay, or drop it.
 - Cite RDD2022 by its journal version (Arya et al., Geoscience Data Journal, 2024) rather than the arXiv preprint.
 
 ### D3. Open manhole [18]: verify by hand, then keep, replace or drop (P0)
@@ -650,9 +650,54 @@ Work in this order. Each phase depends on the one before.
 - **The vision service does not slow filing:** p50 filing time is 4.27 s without the service and 4.30 s with it, because the model call runs after the response.
 - Load test percentiles: `autocannon` reports p97.5, not p95. Report p97.5 or switch to k6 if the paper must show p95.
 
+### Phase 2, data and splits: done on 2026-11-25
+
+Details and sources: `ai_model/DATASETS.md`. Numbers: `ai_model/results/split_audit_old.json`, `split_report.json`, `yolo_sets.json`.
+
+| Action | Status | Where |
+|---|---|---|
+| D1 Provenance and licences | Done. Every dataset checked against its publisher page or API on 2026-11-24, with collector, licence, DOI or URL, version, source photos versus copies, redistribution and role. | `ai_model/DATASETS.md` |
+| D2 Pothole | Done. Moved to **RDD2022 class D40** (boxes, CC BY 4.0). India is held out completely as the external test set. Training pool: Japan, Czech Republic, United States, China motorbike, split 70/15/15 by source group inside each country. Norway (10.6 GB) and China drone (aerial) are left out. The Roboflow set becomes an external test set. | `scripts/fetch_rdd2022.py` |
+| D3 Open manhole | Done. Kaggle set **fails Eq. (1)** (F18). Replaced by the **Synthetic Urban Manhole Cover Dataset** (Zenodo, CC BY 4.0, named authors, camera-disjoint splits). Kaggle photos kept as an evaluation-only real-photo test set. | `scripts/fetch_synthetic_manhole.py` |
+| D4 Eq. (1) | Eq. (1) in `main.tex` now has five criteria. Fig. 4 still needs a licence column and a corrected open manhole row (phase 6, P4). | `paper/.../main.tex` |
+| A1 Splits | Done. Groups from file stems plus near-duplicate hashes (64-bit dHash ≤ 10 bits as candidates, confirmed by 256-bit dHash ≤ 24 bits, mirror images included). 0 shared groups, 0 cross-split near-duplicate pairs and 0 cross-split stems in all four categories. Val, test and external sets keep one image per group. | `ai_model/scripts/make_splits.py`, `ai_model/splits/` |
+| A3 External test sets | Done for pothole (India, Roboflow), litter (TACO unofficial) and open manhole (Kaggle real photos). Graffiti uses the untouched STORM test split; no second licensed graffiti set was found. | `ai_model/splits/external/` |
+
+**Old splits, measured (A9):**
+
+| Old set | Train images / source photos | Val images / source photos | Val images sharing a source photo with train |
+|---|---|---|---|
+| Open manhole (Kaggle) | 1,123 / 460 | 480 / 169 | **262** (65 source photos); 368 of the 480 are augmented copies |
+| Pothole (Roboflow) | 720 / 238 | 60 / 60 | 1 (all 60 val images are Roboflow augmentations) |
+| Litter (TACO) | 1,214 / 1,212 | 214 / 214 | 1 |
+| Graffiti (STORM; "val" was the official test split) | 813 / 812 | 209 / 209 | 0 |
+
+**New splits (images; source groups are equal to images in val and test):**
+
+| Category | Source | Train | Val | Test | External test sets |
+|---|---|---|---|---|---|
+| Pothole | RDD2022 D40 (Japan 1,219 / Czech 135 / US 102 / China 144 train images) | 1,600 (1,281 with a pothole) | 341 (275) | 339 (268) | RDD2022 India 1,911 (1,530 with a pothole); Roboflow 297 |
+| Litter | TACO official | 1,000 | 214 | 214 | TACO unofficial 2,308 (6 near-duplicates of TACO official dropped) |
+| Graffiti | STORM | 670 | 143 | 209 (official test) | none |
+| Open manhole | Synthetic (cameras 1–8 / 9–10 / 11–12) | 794 (764 with an open cover) | 191 (161) | 199 (194) | Kaggle real photos 564 (138 with an open manhole) |
+
+**Still open from phase 2 scope:**
+
+- The synthetic manhole images are not downloaded yet. Zenodo served only 80 to 160 KB/s to the home network (the 12 GB set would take about a day), so the download runs on the Kaggle or Colab machine in phase 3. The split cannot change, because each camera belongs to one split. The near-duplicate check, which has covered 7 of 1,184 frames so far, is rerun there with `make_splits.py --only open_manhole`.
+- Fig. 4 redraw (phase 6).
+- Negatives for A5 (COCO 2017 val) are fetched in phase 3.
+
+**New findings during phase 2:**
+
+- **F18. The Kaggle open manhole set fails Eq. (1).** Its licence is CC BY-NC-SA 4.0. The uploader is named, but nobody is named as having taken the images, and no source is given. The dataset's cover image has an Adobe Stock preview file name. The paper's own rule therefore excludes it. Under the old Fig. 4 it had the "documented source" circle filled, which was wrong.
+- **F19. The RDD2022 licence is CC BY 4.0** on the figshare record, not CC BY-SA 4.0 as this plan said. The P10 reference and Table IV should say CC BY 4.0.
+- **F20. TACO unofficial annotations mix licences.** 1,432 of 3,831 images are OpenLitterMap photos under the ODbL (a database licence). Only the 2,399 TACO-hosted "CC" images are used; 2,328 could still be downloaded, and 2,308 remain after removing rotated thumbnails and duplicates.
+- **F21. A 64-bit dHash alone gives false duplicates on plain walls.** On STORM it matched 5 unrelated graffiti pairs. The 256-bit confirmation step separates the two cases cleanly: true duplicates differ in at most 11 of 256 bits, false matches in at least 43. The old Roboflow pothole split contains one true near-duplicate pair (`pic-88` in val, `pic-142` in train), and so does the old TACO split (`taco_1081` and `taco_1110`).
+- **F22. RDD2022 is box-only**, so the pothole model becomes a box detector. This removes the last mask-based model that δ in Eq. (4) relied on, apart from litter. A10 (drop the δ-to-urgency rule) is now required, not just recommended.
+
 ## 11. Done checklist
 
-- [ ] No source photo appears in two splits (script output saved).
+- [ ] No source photo appears in two splits (script output saved). Done for pothole, litter and graffiti; open manhole waits for the near-duplicate check on the downloaded frames.
 - [ ] Every number in the paper comes from a `results/*.json` file in the release.
 - [ ] Test-set metrics with 95 % CIs, 3 seeds.
 - [ ] Complaint-level false-flag and false-pass rates per category.
@@ -666,7 +711,7 @@ Work in this order. Each phase depends on the one before.
 - [ ] Linkage analysis on Chicago 311 in the paper.
 - [x] OTP attempt limit and rate limits, with tests.
 - [ ] Concurrency, audit-integrity, privacy and load tests in `backend/tests/`, run by CI.
-- [ ] Dataset provenance and licence documented; Eq. (1) has five criteria.
+- [x] Dataset provenance and licence documented; Eq. (1) has five criteria. (Fig. 4 redraw left for phase 6.)
 - [ ] One glossary for stage counts used everywhere.
 - [ ] Fairness subsection with the measured geographic gap.
 - [ ] All new references checked against publisher pages.
