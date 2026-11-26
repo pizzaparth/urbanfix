@@ -1,0 +1,653 @@
+{
+ "tag": "graffiti__yolo11n__s0",
+ "category": "graffiti",
+ "rule": "largest tau on 0.05..0.9 (step 0.05) with validation false-flag rate <= 20%",
+ "tau": 0.75,
+ "sweep_on_validation": [
+  {
+   "tau": 0.05,
+   "false_flag": {
+    "rate": 0.0263,
+    "k": 2,
+    "n": 76,
+    "ci95": [
+     0.0072,
+     0.091
+    ]
+   },
+   "false_pass_wrong": {
+    "rate": 0.8172,
+    "k": 237,
+    "n": 290,
+    "ci95": [
+     0.7687,
+     0.8575
+    ]
+   },
+   "false_pass_unrelated": {
+    "rate": 0.8837,
+    "k": 228,
+    "n": 258,
+    "ci95": [
+     0.8389,
+     0.9173
+    ]
+   }
+  },
+  {
+   "tau": 0.1,
+   "false_flag": {
+    "rate": 0.0395,
+    "k": 3,
+    "n": 76,
+    "ci95": [
+     0.0135,
+     0.1097
+    ]
+   },
+   "false_pass_wrong": {
+    "rate": 0.6862,
+    "k": 199,
+    "n": 290,
+    "ci95": [
+     0.6307,
+     0.7369
+    ]
+   },
+   "false_pass_unrelated": {
+    "rate": 0.7868,
+    "k": 203,
+    "n": 258,
+    "ci95": [
+     0.7328,
+     0.8324
+    ]
+   }
+  },
+  {
+   "tau": 0.15,
+   "false_flag": {
+    "rate": 0.0395,
+    "k": 3,
+    "n": 76,
+    "ci95": [
+     0.0135,
+     0.1097
+    ]
+   },
+   "false_pass_wrong": {
+    "rate": 0.5966,
+    "k": 173,
+    "n": 290,
+    "ci95": [
+     0.5392,
+     0.6514
+    ]
+   },
+   "false_pass_unrelated": {
+    "rate": 0.6977,
+    "k": 180,
+    "n": 258,
+    "ci95": [
+     0.6391,
+     0.7505
+    ]
+   }
+  },
+  {
+   "tau": 0.2,
+   "false_flag": {
+    "rate": 0.0395,
+    "k": 3,
+    "n": 76,
+    "ci95": [
+     0.0135,
+     0.1097
+    ]
+   },
+   "false_pass_wrong": {
+    "rate": 0.5172,
+    "k": 150,
+    "n": 290,
+    "ci95": [
+     0.4599,
+     0.5742
+    ]
+   },
+   "false_pass_unrelated": {
+    "rate": 0.6318,
+    "k": 163,
+    "n": 258,
+    "ci95": [
+     0.5714,
+     0.6883
+    ]
+   }
+  },
+  {
+   "tau": 0.25,
+   "false_flag": {
+    "rate": 0.0526,
+    "k": 4,
+    "n": 76,
+    "ci95": [
+     0.0207,
+     0.1277
+    ]
+   },
+   "false_pass_wrong": {
+    "rate": 0.4552,
+    "k": 132,
+    "n": 290,
+    "ci95": [
+     0.3988,
+     0.5127
+    ]
+   },
+   "false_pass_unrelated": {
+    "rate": 0.5736,
+    "k": 148,
+    "n": 258,
+    "ci95": [
+     0.5127,
+     0.6325
+    ]
+   }
+  },
+  {
+   "tau": 0.3,
+   "false_flag": {
+    "rate": 0.0526,
+    "k": 4,
+    "n": 76,
+    "ci95": [
+     0.0207,
+     0.1277
+    ]
+   },
+   "false_pass_wrong": {
+    "rate": 0.4069,
+    "k": 118,
+    "n": 290,
+    "ci95": [
+     0.3519,
+     0.4643
+    ]
+   },
+   "false_pass_unrelated": {
+    "rate": 0.5116,
+    "k": 132,
+    "n": 258,
+    "ci95": [
+     0.4509,
+     0.572
+    ]
+   }
+  },
+  {
+   "tau": 0.35,
+   "false_flag": {
+    "rate": 0.0526,
+    "k": 4,
+    "n": 76,
+    "ci95": [
+     0.0207,
+     0.1277
+    ]
+   },
+   "false_pass_wrong": {
+    "rate": 0.3414,
+    "k": 99,
+    "n": 290,
+    "ci95": [
+     0.2892,
+     0.3977
+    ]
+   },
+   "false_pass_unrelated": {
+    "rate": 0.4341,
+    "k": 112,
+    "n": 258,
+    "ci95": [
+     0.375,
+     0.4951
+    ]
+   }
+  },
+  {
+   "tau": 0.4,
+   "false_flag": {
+    "rate": 0.0658,
+    "k": 5,
+    "n": 76,
+    "ci95": [
+     0.0284,
+     0.1449
+    ]
+   },
+   "false_pass_wrong": {
+    "rate": 0.3172,
+    "k": 92,
+    "n": 290,
+    "ci95": [
+     0.2664,
+     0.3729
+    ]
+   },
+   "false_pass_unrelated": {
+    "rate": 0.3798,
+    "k": 98,
+    "n": 258,
+    "ci95": [
+     0.3228,
+     0.4404
+    ]
+   }
+  },
+  {
+   "tau": 0.45,
+   "false_flag": {
+    "rate": 0.0658,
+    "k": 5,
+    "n": 76,
+    "ci95": [
+     0.0284,
+     0.1449
+    ]
+   },
+   "false_pass_wrong": {
+    "rate": 0.2621,
+    "k": 76,
+    "n": 290,
+    "ci95": [
+     0.2148,
+     0.3156
+    ]
+   },
+   "false_pass_unrelated": {
+    "rate": 0.3333,
+    "k": 86,
+    "n": 258,
+    "ci95": [
+     0.2786,
+     0.3929
+    ]
+   }
+  },
+  {
+   "tau": 0.5,
+   "false_flag": {
+    "rate": 0.0658,
+    "k": 5,
+    "n": 76,
+    "ci95": [
+     0.0284,
+     0.1449
+    ]
+   },
+   "false_pass_wrong": {
+    "rate": 0.2241,
+    "k": 65,
+    "n": 290,
+    "ci95": [
+     0.1799,
+     0.2756
+    ]
+   },
+   "false_pass_unrelated": {
+    "rate": 0.2907,
+    "k": 75,
+    "n": 258,
+    "ci95": [
+     0.2387,
+     0.3489
+    ]
+   }
+  },
+  {
+   "tau": 0.55,
+   "false_flag": {
+    "rate": 0.0789,
+    "k": 6,
+    "n": 76,
+    "ci95": [
+     0.0367,
+     0.1617
+    ]
+   },
+   "false_pass_wrong": {
+    "rate": 0.1793,
+    "k": 52,
+    "n": 290,
+    "ci95": [
+     0.1394,
+     0.2276
+    ]
+   },
+   "false_pass_unrelated": {
+    "rate": 0.2326,
+    "k": 60,
+    "n": 258,
+    "ci95": [
+     0.1852,
+     0.2878
+    ]
+   }
+  },
+  {
+   "tau": 0.6,
+   "false_flag": {
+    "rate": 0.1053,
+    "k": 8,
+    "n": 76,
+    "ci95": [
+     0.0543,
+     0.1942
+    ]
+   },
+   "false_pass_wrong": {
+    "rate": 0.1448,
+    "k": 42,
+    "n": 290,
+    "ci95": [
+     0.109,
+     0.19
+    ]
+   },
+   "false_pass_unrelated": {
+    "rate": 0.1977,
+    "k": 51,
+    "n": 258,
+    "ci95": [
+     0.1537,
+     0.2506
+    ]
+   }
+  },
+  {
+   "tau": 0.65,
+   "false_flag": {
+    "rate": 0.1184,
+    "k": 9,
+    "n": 76,
+    "ci95": [
+     0.0636,
+     0.21
+    ]
+   },
+   "false_pass_wrong": {
+    "rate": 0.1069,
+    "k": 31,
+    "n": 290,
+    "ci95": [
+     0.0763,
+     0.1477
+    ]
+   },
+   "false_pass_unrelated": {
+    "rate": 0.1705,
+    "k": 44,
+    "n": 258,
+    "ci95": [
+     0.1296,
+     0.2212
+    ]
+   }
+  },
+  {
+   "tau": 0.7,
+   "false_flag": {
+    "rate": 0.1447,
+    "k": 11,
+    "n": 76,
+    "ci95": [
+     0.0828,
+     0.2409
+    ]
+   },
+   "false_pass_wrong": {
+    "rate": 0.0552,
+    "k": 16,
+    "n": 290,
+    "ci95": [
+     0.0342,
+     0.0877
+    ]
+   },
+   "false_pass_unrelated": {
+    "rate": 0.1279,
+    "k": 33,
+    "n": 258,
+    "ci95": [
+     0.0925,
+     0.1742
+    ]
+   }
+  },
+  {
+   "tau": 0.75,
+   "false_flag": {
+    "rate": 0.1842,
+    "k": 14,
+    "n": 76,
+    "ci95": [
+     0.113,
+     0.2858
+    ]
+   },
+   "false_pass_wrong": {
+    "rate": 0.0276,
+    "k": 8,
+    "n": 290,
+    "ci95": [
+     0.014,
+     0.0535
+    ]
+   },
+   "false_pass_unrelated": {
+    "rate": 0.0853,
+    "k": 22,
+    "n": 258,
+    "ci95": [
+     0.057,
+     0.1257
+    ]
+   }
+  },
+  {
+   "tau": 0.8,
+   "false_flag": {
+    "rate": 0.2368,
+    "k": 18,
+    "n": 76,
+    "ci95": [
+     0.1554,
+     0.3436
+    ]
+   },
+   "false_pass_wrong": {
+    "rate": 0.0103,
+    "k": 3,
+    "n": 290,
+    "ci95": [
+     0.0035,
+     0.03
+    ]
+   },
+   "false_pass_unrelated": {
+    "rate": 0.0426,
+    "k": 11,
+    "n": 258,
+    "ci95": [
+     0.024,
+     0.0747
+    ]
+   }
+  },
+  {
+   "tau": 0.85,
+   "false_flag": {
+    "rate": 0.3421,
+    "k": 26,
+    "n": 76,
+    "ci95": [
+     0.2454,
+     0.454
+    ]
+   },
+   "false_pass_wrong": {
+    "rate": 0.0034,
+    "k": 1,
+    "n": 290,
+    "ci95": [
+     0.0006,
+     0.0193
+    ]
+   },
+   "false_pass_unrelated": {
+    "rate": 0.0194,
+    "k": 5,
+    "n": 258,
+    "ci95": [
+     0.0083,
+     0.0446
+    ]
+   }
+  },
+  {
+   "tau": 0.9,
+   "false_flag": {
+    "rate": 0.5526,
+    "k": 42,
+    "n": 76,
+    "ci95": [
+     0.441,
+     0.6592
+    ]
+   },
+   "false_pass_wrong": {
+    "rate": 0.0,
+    "k": 0,
+    "n": 290,
+    "ci95": [
+     0,
+     0.0131
+    ]
+   },
+   "false_pass_unrelated": {
+    "rate": 0.0039,
+    "k": 1,
+    "n": 258,
+    "ci95": [
+     0.0007,
+     0.0216
+    ]
+   }
+  }
+ ],
+ "test": {
+  "valid_false_flag": {
+   "rate": 0.11,
+   "k": 11,
+   "n": 100,
+   "ci95": [
+    0.0625,
+    0.1863
+   ]
+  },
+  "wrong_false_pass": {
+   "rate": 0.045,
+   "k": 13,
+   "n": 289,
+   "ci95": [
+    0.0265,
+    0.0754
+   ]
+  },
+  "unrelated_false_pass": {
+   "rate": 0.062,
+   "k": 16,
+   "n": 258,
+   "ci95": [
+    0.0385,
+    0.0984
+   ]
+  }
+ },
+ "test_at_tau_0.25": {
+  "valid_false_flag": {
+   "rate": 0.03,
+   "k": 3,
+   "n": 100,
+   "ci95": [
+    0.0103,
+    0.0845
+   ]
+  },
+  "wrong_false_pass": {
+   "rate": 0.4152,
+   "k": 120,
+   "n": 289,
+   "ci95": [
+    0.3599,
+    0.4728
+   ]
+  },
+  "unrelated_false_pass": {
+   "rate": 0.5116,
+   "k": 132,
+   "n": 258,
+   "ci95": [
+    0.4509,
+    0.572
+   ]
+  }
+ },
+ "image_level_test": {
+  "recall": {
+   "rate": 0.7512,
+   "k": 157,
+   "n": 209,
+   "ci95": [
+    0.6884,
+    0.8049
+   ]
+  },
+  "unrelated_pass": {
+   "rate": 0.032,
+   "k": 16,
+   "n": 500,
+   "ci95": [
+    0.0198,
+    0.0513
+   ]
+  }
+ },
+ "external": {},
+ "workload_simulation": {
+  "note": "Simulation of supervisor workload, not a measure of staff decisions. Invalid complaints split evenly between wrong-category and unrelated.",
+  "rows": [
+   {
+    "assumed_invalid_share": 0.05,
+    "flagged_per_100": 15.2,
+    "valid_among_flagged_per_100": 10.4,
+    "invalid_passed_unflagged_per_100": 0.3,
+    "complaints_needing_close_look_without_ai": 100
+   },
+   {
+    "assumed_invalid_share": 0.1,
+    "flagged_per_100": 19.4,
+    "valid_among_flagged_per_100": 9.9,
+    "invalid_passed_unflagged_per_100": 0.5,
+    "complaints_needing_close_look_without_ai": 100
+   },
+   {
+    "assumed_invalid_share": 0.2,
+    "flagged_per_100": 27.7,
+    "valid_among_flagged_per_100": 8.8,
+    "invalid_passed_unflagged_per_100": 1.1,
+    "complaints_needing_close_look_without_ai": 100
+   }
+  ]
+ }
+}

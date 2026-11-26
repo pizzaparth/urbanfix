@@ -56,6 +56,28 @@ python scripts/build_yolo_sets.py          # YOLO folders -> data/v2/
 
 The pothole model moves to RDD2022 (boxes); see `DATASETS.md` for why.
 
+## Phase 3: training and evaluation on the new splits
+
+```bash
+scripts/run_queue.sh                      # laptop training queue (YOLOv8n, YOLO11n, India-trained pothole model)
+python scripts/evaluate.py                # test and external sets once, bootstrap 95 % CIs, CPU latency
+python scripts/score_images.py            # highest confidence per image, as the vision service computes it
+python scripts/complaint_eval.py --tag <run>   # tau rule, complaint-level rates, fairness, workload
+python scripts/error_examples.py --tag <run>   # A6 figure
+python scripts/summarize.py               # results/phase3_summary.md, built only from the result files
+```
+
+Heavier runs (RT-DETR-l, YOLOv8s, extra seeds, pothole and litter YOLO11n) use
+`notebooks/colab_train.ipynb` on Colab's free GPU; it rebuilds the data from public sources with
+`scripts/prepare_sources.py` and downloads a zip of results and weights. Training budget: 40 epochs,
+early stopping after 10. Results: `results/train`, `results/eval`, `results/scores`,
+`results/complaints`, summary in `results/phase3_summary.md`. Checkpoints are in `weights/v2/`
+(git-ignored); the deployed ones will be copied to `weights/`.
+
+`splits/pothole_india.json` is a second pothole split with Indian photos added (the deployed pothole
+model); its Indian test images are also the external set `pothole_india_test_split` for the model
+trained without India.
+
 ## Results (old splits, superseded)
 
 The four models of the submitted paper are YOLOv8 nano, fine-tuned from COCO weights at 640 px, batch 16, with early stopping after 15 epochs without improvement. They were trained on an Apple M5 laptop with the MPS backend.

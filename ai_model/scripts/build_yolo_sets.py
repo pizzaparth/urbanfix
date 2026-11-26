@@ -25,8 +25,8 @@ ROOT = Path(__file__).resolve().parents[1]
 SPLITS = ROOT / "splits"
 OUT = ROOT / "data" / "v2"
 
-TASK = {"pothole": "detect", "garbage_litter": "segment", "graffiti": "detect"}
-NAMES = {"pothole": "Pothole", "garbage_litter": "Litter", "graffiti": "Graffiti"}
+TASK = {"pothole": "detect", "pothole_india": "detect", "garbage_litter": "segment", "graffiti": "detect"}
+NAMES = {"pothole": "Pothole", "pothole_india": "Pothole", "garbage_litter": "Litter", "graffiti": "Graffiti"}
 
 
 def poly_to_box(vals: list[float]) -> list[float]:

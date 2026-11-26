@@ -64,5 +64,27 @@
   "images": 297,
   "images_with_defect": 297,
   "objects": 807
+ },
+ "pothole_india": {
+  "train": {
+   "images": 2938,
+   "images_with_defect": 2348,
+   "objects": 4127
+  },
+  "val": {
+   "images": 628,
+   "images_with_defect": 506,
+   "objects": 940
+  },
+  "test": {
+   "images": 625,
+   "images_with_defect": 500,
+   "objects": 930
+  }
+ },
+ "external/pothole_india_test_split": {
+  "images": 286,
+  "images_with_defect": 232,
+  "objects": 498
  }
 }

@@ -488,6 +488,49 @@ def audit() -> dict:
     return out
 
 
+
+def build_pothole_india() -> dict:
+    """Pothole split with Indian photos added (decision of 2026-11-26, after the India gap was measured).
+
+    Japan, Czech Republic, United States and China keep exactly the groups and splits of
+    splits/pothole.json, so the two pothole models share their non-Indian test images.
+    The Indian photos (RDD2022 India, same 25 % background rule) are split 70/15/15 by group
+    with their own seeded generator. The India test images are also written as an external set
+    for the pothole model trained without India, so the gap is measured on identical photos.
+    """
+    base = json.loads((SPLITS / "pothole.json").read_text())
+    india = json.loads((SPLITS / "external" / "pothole_rdd2022_india.json").read_text())["test"]
+    offset = 1 + max(it["group"] for v in base["splits"].values() for it in v)
+    by_group: dict[int, list[dict]] = defaultdict(list)
+    for it in india:
+        by_group[it["group"]].append(dict(it, group=it["group"] + offset, namespace="India", stratum="India"))
+    groups = sorted(by_group)
+    random.Random(f"{SEED}-India").shuffle(groups)
+    n = len(groups)
+    n_train, n_val = round(n * RATIOS[0]), round(n * RATIOS[1])
+    splits = {s: [dict(it, namespace=it["stratum"]) for it in v] for s, v in base["splits"].items()}
+    for k, g in enumerate(groups):
+        s = "train" if k < n_train else ("val" if k < n_train + n_val else "test")
+        splits[s].extend(by_group[g])
+    for s in splits:
+        splits[s].sort(key=lambda it: it["file"])
+    check = verify(splits)
+    assert check["shared_groups"] == 0 and check["cross_split_near_duplicate_pairs"] == 0 \
+        and check["cross_split_stems"] == 0, check
+    source = base["source"] + "; plus RDD2022 India (same class and background rule)"
+    (SPLITS / "pothole_india.json").write_text(json.dumps({
+        "category": "pothole_india", "source": source, "seed": SEED, "ratios": RATIOS,
+        "hamming_64": HAMMING, "hamming_256": CONFIRM, "check": check,
+        "splits": {s: [item_out(it) for it in v] for s, v in splits.items()}}, indent=1))
+    india_test = [item_out(it) for it in splits["test"] if it["stratum"] == "India"]
+    (SPLITS / "external" / "pothole_india_test_split.json").write_text(json.dumps({
+        "name": "pothole_india_test_split", "category": "pothole", "dropped_near_duplicates": 0,
+        "note": "India test images of splits/pothole_india.json, for the model trained without India",
+        "test": india_test}, indent=1))
+    summary = {s: summarise(v) for s, v in splits.items()}
+    print("pothole_india", json.dumps(summary), check)
+    return {"source": source, "splits": summary, "check": check}
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--audit", action="store_true", help="measure leakage in the old splits only")
@@ -498,7 +541,10 @@ def main() -> None:
     if args.audit:
         (RESULTS / "split_audit_old.json").write_text(json.dumps(audit(), indent=1))
         return
-    report = build(args.only)
+    report = build([c for c in args.only if c != "pothole_india"] if args.only else None) \
+        if not (args.only == ["pothole_india"]) else {"categories": {}, "external": {}}
+    if not args.only or "pothole" in args.only or "pothole_india" in args.only:
+        report["categories"]["pothole_india"] = build_pothole_india()
     path = RESULTS / "split_report.json"
     if args.only and path.exists():
         prev = json.loads(path.read_text())

@@ -37,10 +37,11 @@ def sets_for(cat: str) -> dict[str, list[dict]]:
     out = {"val": spec["splits"]["val"], "test": spec["splits"]["test"]}
     for ext in sorted((SPLITS / "external").glob("*.json")):
         e = json.loads(ext.read_text())
-        if e["category"] == cat:
+        if e["category"] == cat or (cat == "pothole_india" and ext.stem == "pothole_roboflow"):
             out[ext.stem] = e["test"]
+    family = "pothole" if cat.startswith("pothole") else cat
     for other in CATEGORIES:
-        if other != cat:
+        if other != family:
             other_spec = json.loads((SPLITS / f"{other}.json").read_text())["splits"]
             out[f"other_val:{other}"] = other_spec["val"]
             out[f"other:{other}"] = other_spec["test"]

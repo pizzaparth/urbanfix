@@ -1,0 +1,24 @@
+{
+ "category": "pothole",
+ "model": "rtdetr-l",
+ "base_weights": "rtdetr-l.pt",
+ "seed": 0,
+ "task": "detect",
+ "imgsz": 640,
+ "batch": 8,
+ "max_epochs": 40,
+ "patience": 10,
+ "epochs_run": 40,
+ "best_epoch": 30,
+ "train_minutes": 97.6,
+ "device": "0",
+ "machine": "Linux-6.6.159+-x86_64-with-glibc2.39 / x86_64",
+ "torch": "2.14.1+cu130",
+ "val_metrics_at_best_epoch": {
+  "metrics/precision(B)": 0.71772,
+  "metrics/recall(B)": 0.61337,
+  "metrics/mAP50(B)": 0.67775,
+  "metrics/mAP50-95(B)": 0.32688
+ },
+ "weights": "weights/v2/pothole__rtdetr-l__s0.pt"
+}

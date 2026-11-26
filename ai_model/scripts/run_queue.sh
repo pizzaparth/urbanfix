@@ -2,7 +2,7 @@
 # Phase 3 training queue for the laptop (A2 and A8), limited to BUDGET_MIN minutes.
 # A job is skipped when its results/train/<tag>.json already exists (restart-safe),
 # and a job is not started when its estimated time would end past the budget.
-# Seeds 1 and 2, YOLOv8s and RT-DETR-l run on Colab (notebooks/colab_train.ipynb).
+# Seeds 1 and 2, YOLOv8s, RT-DETR-l, and pothole and litter YOLO11n run on Colab (notebooks/colab_train.ipynb).
 #
 #   nohup scripts/run_queue.sh > logs/queue.log 2>&1 &
 set -u
@@ -13,7 +13,10 @@ BUDGET_MIN=${BUDGET_MIN:-240}
 # category model seed estimated-minutes (40 epochs on the M5; measured 70 s/epoch for pothole)
 JOBS=(
   "pothole yolov8n 0 47" "garbage_litter yolov8n 0 37" "graffiti yolov8n 0 20"
-  "pothole yolo11n 0 52" "garbage_litter yolo11n 0 41" "graffiti yolo11n 0 22"
+  # Pothole with Indian photos added (deployed pothole model; decided 2026-11-26 after the India gap)
+  "pothole_india yolov8n 0 70"
+  "graffiti yolo11n 0 22"
+  # pothole and litter yolo11n run on Colab to keep this queue within the budget
 )
 
 start=$(date +%s)

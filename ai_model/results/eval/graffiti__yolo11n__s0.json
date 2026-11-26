@@ -1,0 +1,49 @@
+{
+ "tag": "graffiti__yolo11n__s0",
+ "category": "graffiti",
+ "model": "yolo11n",
+ "seed": 0,
+ "task": "detect",
+ "weights": "weights/v2/graffiti__yolo11n__s0.pt",
+ "bootstrap_resamples": 1000,
+ "machine": "macOS-27.2-arm64-arm-64bit-Mach-O / arm",
+ "sets": {
+  "test": {
+   "images": 209,
+   "images_with_defect": 209,
+   "objects": 450,
+   "box": {
+    "precision": {
+     "value": 0.6915,
+     "ci95": [
+      0.6294,
+      0.8864
+     ]
+    },
+    "recall": {
+     "value": 0.6178,
+     "ci95": [
+      0.5108,
+      0.6826
+     ]
+    },
+    "mAP50": {
+     "value": 0.6915,
+     "ci95": [
+      0.6326,
+      0.7652
+     ]
+    },
+    "mAP50-95": {
+     "value": 0.4856,
+     "ci95": [
+      0.4351,
+      0.554
+     ]
+    }
+   }
+  }
+ },
+ "cpu_latency_ms": 23.2,
+ "weights_mb": 5.5
+}

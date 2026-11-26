@@ -1,0 +1,218 @@
+{
+ "tag": "pothole__rtdetr-l__s0",
+ "category": "pothole",
+ "model": "rtdetr-l",
+ "seed": 0,
+ "task": "detect",
+ "weights": "weights/v2/pothole__rtdetr-l__s0.pt",
+ "bootstrap_resamples": 1000,
+ "machine": "Linux-6.6.159+-x86_64-with-glibc2.39 / x86_64",
+ "sets": {
+  "test": {
+   "images": 339,
+   "images_with_defect": 268,
+   "objects": 432,
+   "box": {
+    "precision": {
+     "value": 0.7008,
+     "ci95": [
+      0.653,
+      0.7472
+     ]
+    },
+    "recall": {
+     "value": 0.6074,
+     "ci95": [
+      0.5594,
+      0.6609
+     ]
+    },
+    "mAP50": {
+     "value": 0.6715,
+     "ci95": [
+      0.6245,
+      0.7191
+     ]
+    },
+    "mAP50-95": {
+     "value": 0.3107,
+     "ci95": [
+      0.2834,
+      0.3409
+     ]
+    }
+   },
+   "by_stratum": {
+    "China_MotorBike": {
+     "images": 31,
+     "box": {
+      "precision": {
+       "value": 0.9469,
+       "ci95": [
+        0.8931,
+        0.9939
+       ]
+      },
+      "recall": {
+       "value": 0.9545,
+       "ci95": [
+        0.8853,
+        1.0
+       ]
+      },
+      "mAP50": {
+       "value": 0.967,
+       "ci95": [
+        0.9144,
+        0.995
+       ]
+      },
+      "mAP50-95": {
+       "value": 0.5284,
+       "ci95": [
+        0.442,
+        0.6074
+       ]
+      }
+     }
+    },
+    "Czech": {
+     "images": 28,
+     "box": {
+      "precision": {
+       "value": 0.4102,
+       "ci95": [
+        0.2667,
+        0.7054
+       ]
+      },
+      "recall": {
+       "value": 0.5185,
+       "ci95": [
+        0.2692,
+        0.7097
+       ]
+      },
+      "mAP50": {
+       "value": 0.3852,
+       "ci95": [
+        0.2125,
+        0.602
+       ]
+      },
+      "mAP50-95": {
+       "value": 0.153,
+       "ci95": [
+        0.0765,
+        0.2612
+       ]
+      }
+     }
+    },
+    "Japan": {
+     "images": 259,
+     "box": {
+      "precision": {
+       "value": 0.6864,
+       "ci95": [
+        0.6337,
+        0.7374
+       ]
+      },
+      "recall": {
+       "value": 0.6012,
+       "ci95": [
+        0.5442,
+        0.6574
+       ]
+      },
+      "mAP50": {
+       "value": 0.6384,
+       "ci95": [
+        0.5838,
+        0.69
+       ]
+      },
+      "mAP50-95": {
+       "value": 0.2887,
+       "ci95": [
+        0.2597,
+        0.3258
+       ]
+      }
+     }
+    },
+    "United_States": {
+     "images": 21,
+     "box": {
+      "precision": {
+       "value": 0.7945,
+       "ci95": [
+        0.5827,
+        0.9528
+       ]
+      },
+      "recall": {
+       "value": 0.6,
+       "ci95": [
+        0.4,
+        0.8065
+       ]
+      },
+      "mAP50": {
+       "value": 0.6869,
+       "ci95": [
+        0.499,
+        0.8752
+       ]
+      },
+      "mAP50-95": {
+       "value": 0.3164,
+       "ci95": [
+        0.197,
+        0.4409
+       ]
+      }
+     }
+    }
+   }
+  },
+  "pothole_rdd2022_india": {
+   "images": 1911,
+   "images_with_defect": 1530,
+   "objects": 3187,
+   "box": {
+    "precision": {
+     "value": 0.3041,
+     "ci95": [
+      0.2618,
+      0.3407
+     ]
+    },
+    "recall": {
+     "value": 0.1716,
+     "ci95": [
+      0.159,
+      0.1879
+     ]
+    },
+    "mAP50": {
+     "value": 0.1359,
+     "ci95": [
+      0.1219,
+      0.1509
+     ]
+    },
+    "mAP50-95": {
+     "value": 0.0514,
+     "ci95": [
+      0.045,
+      0.0583
+     ]
+    }
+   }
+  }
+ },
+ "cpu_latency_ms": 1207.9,
+ "weights_mb": 66.2
+}

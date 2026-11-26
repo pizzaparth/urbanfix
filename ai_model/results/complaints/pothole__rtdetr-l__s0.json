@@ -1,0 +1,814 @@
+{
+ "tag": "pothole__rtdetr-l__s0",
+ "category": "pothole",
+ "rule": "largest tau on 0.05..0.9 (step 0.05) with validation false-flag rate <= 20%",
+ "tau": 0.65,
+ "sweep_on_validation": [
+  {
+   "tau": 0.05,
+   "false_flag": {
+    "rate": 0.0,
+    "k": 0,
+    "n": 143,
+    "ci95": [
+     0,
+     0.0262
+    ]
+   },
+   "false_pass_wrong": {
+    "rate": 1.0,
+    "k": 76,
+    "n": 76,
+    "ci95": [
+     0.9519,
+     1.0
+    ]
+   },
+   "false_pass_unrelated": {
+    "rate": 0.9961,
+    "k": 257,
+    "n": 258,
+    "ci95": [
+     0.9784,
+     0.9993
+    ]
+   }
+  },
+  {
+   "tau": 0.1,
+   "false_flag": {
+    "rate": 0.0,
+    "k": 0,
+    "n": 143,
+    "ci95": [
+     0,
+     0.0262
+    ]
+   },
+   "false_pass_wrong": {
+    "rate": 0.9868,
+    "k": 75,
+    "n": 76,
+    "ci95": [
+     0.9292,
+     0.9977
+    ]
+   },
+   "false_pass_unrelated": {
+    "rate": 0.9496,
+    "k": 245,
+    "n": 258,
+    "ci95": [
+     0.9157,
+     0.9703
+    ]
+   }
+  },
+  {
+   "tau": 0.15,
+   "false_flag": {
+    "rate": 0.0,
+    "k": 0,
+    "n": 143,
+    "ci95": [
+     0,
+     0.0262
+    ]
+   },
+   "false_pass_wrong": {
+    "rate": 0.9737,
+    "k": 74,
+    "n": 76,
+    "ci95": [
+     0.909,
+     0.9928
+    ]
+   },
+   "false_pass_unrelated": {
+    "rate": 0.8798,
+    "k": 227,
+    "n": 258,
+    "ci95": [
+     0.8345,
+     0.914
+    ]
+   }
+  },
+  {
+   "tau": 0.2,
+   "false_flag": {
+    "rate": 0.0,
+    "k": 0,
+    "n": 143,
+    "ci95": [
+     0,
+     0.0262
+    ]
+   },
+   "false_pass_wrong": {
+    "rate": 0.9211,
+    "k": 70,
+    "n": 76,
+    "ci95": [
+     0.8383,
+     0.9633
+    ]
+   },
+   "false_pass_unrelated": {
+    "rate": 0.7713,
+    "k": 199,
+    "n": 258,
+    "ci95": [
+     0.7163,
+     0.8184
+    ]
+   }
+  },
+  {
+   "tau": 0.25,
+   "false_flag": {
+    "rate": 0.007,
+    "k": 1,
+    "n": 143,
+    "ci95": [
+     0.0012,
+     0.0385
+    ]
+   },
+   "false_pass_wrong": {
+    "rate": 0.8421,
+    "k": 64,
+    "n": 76,
+    "ci95": [
+     0.744,
+     0.9073
+    ]
+   },
+   "false_pass_unrelated": {
+    "rate": 0.6899,
+    "k": 178,
+    "n": 258,
+    "ci95": [
+     0.631,
+     0.7432
+    ]
+   }
+  },
+  {
+   "tau": 0.3,
+   "false_flag": {
+    "rate": 0.014,
+    "k": 2,
+    "n": 143,
+    "ci95": [
+     0.0038,
+     0.0496
+    ]
+   },
+   "false_pass_wrong": {
+    "rate": 0.6974,
+    "k": 53,
+    "n": 76,
+    "ci95": [
+     0.5867,
+     0.7891
+    ]
+   },
+   "false_pass_unrelated": {
+    "rate": 0.5775,
+    "k": 149,
+    "n": 258,
+    "ci95": [
+     0.5165,
+     0.6362
+    ]
+   }
+  },
+  {
+   "tau": 0.35,
+   "false_flag": {
+    "rate": 0.014,
+    "k": 2,
+    "n": 143,
+    "ci95": [
+     0.0038,
+     0.0496
+    ]
+   },
+   "false_pass_wrong": {
+    "rate": 0.5526,
+    "k": 42,
+    "n": 76,
+    "ci95": [
+     0.441,
+     0.6592
+    ]
+   },
+   "false_pass_unrelated": {
+    "rate": 0.4496,
+    "k": 116,
+    "n": 258,
+    "ci95": [
+     0.3901,
+     0.5106
+    ]
+   }
+  },
+  {
+   "tau": 0.4,
+   "false_flag": {
+    "rate": 0.014,
+    "k": 2,
+    "n": 143,
+    "ci95": [
+     0.0038,
+     0.0496
+    ]
+   },
+   "false_pass_wrong": {
+    "rate": 0.4474,
+    "k": 34,
+    "n": 76,
+    "ci95": [
+     0.3408,
+     0.559
+    ]
+   },
+   "false_pass_unrelated": {
+    "rate": 0.3527,
+    "k": 91,
+    "n": 258,
+    "ci95": [
+     0.297,
+     0.4128
+    ]
+   }
+  },
+  {
+   "tau": 0.45,
+   "false_flag": {
+    "rate": 0.028,
+    "k": 4,
+    "n": 143,
+    "ci95": [
+     0.0109,
+     0.0697
+    ]
+   },
+   "false_pass_wrong": {
+    "rate": 0.3553,
+    "k": 27,
+    "n": 76,
+    "ci95": [
+     0.257,
+     0.4674
+    ]
+   },
+   "false_pass_unrelated": {
+    "rate": 0.2829,
+    "k": 73,
+    "n": 258,
+    "ci95": [
+     0.2315,
+     0.3408
+    ]
+   }
+  },
+  {
+   "tau": 0.5,
+   "false_flag": {
+    "rate": 0.035,
+    "k": 5,
+    "n": 143,
+    "ci95": [
+     0.015,
+     0.0792
+    ]
+   },
+   "false_pass_wrong": {
+    "rate": 0.2895,
+    "k": 22,
+    "n": 76,
+    "ci95": [
+     0.1996,
+     0.3996
+    ]
+   },
+   "false_pass_unrelated": {
+    "rate": 0.2171,
+    "k": 56,
+    "n": 258,
+    "ci95": [
+     0.1711,
+     0.2713
+    ]
+   }
+  },
+  {
+   "tau": 0.55,
+   "false_flag": {
+    "rate": 0.0629,
+    "k": 9,
+    "n": 143,
+    "ci95": [
+     0.0335,
+     0.1153
+    ]
+   },
+   "false_pass_wrong": {
+    "rate": 0.2368,
+    "k": 18,
+    "n": 76,
+    "ci95": [
+     0.1554,
+     0.3436
+    ]
+   },
+   "false_pass_unrelated": {
+    "rate": 0.155,
+    "k": 40,
+    "n": 258,
+    "ci95": [
+     0.116,
+     0.2042
+    ]
+   }
+  },
+  {
+   "tau": 0.6,
+   "false_flag": {
+    "rate": 0.0909,
+    "k": 13,
+    "n": 143,
+    "ci95": [
+     0.0539,
+     0.1493
+    ]
+   },
+   "false_pass_wrong": {
+    "rate": 0.1579,
+    "k": 12,
+    "n": 76,
+    "ci95": [
+     0.0927,
+     0.256
+    ]
+   },
+   "false_pass_unrelated": {
+    "rate": 0.0891,
+    "k": 23,
+    "n": 258,
+    "ci95": [
+     0.0601,
+     0.1302
+    ]
+   }
+  },
+  {
+   "tau": 0.65,
+   "false_flag": {
+    "rate": 0.1329,
+    "k": 19,
+    "n": 143,
+    "ci95": [
+     0.0867,
+     0.1982
+    ]
+   },
+   "false_pass_wrong": {
+    "rate": 0.1053,
+    "k": 8,
+    "n": 76,
+    "ci95": [
+     0.0543,
+     0.1942
+    ]
+   },
+   "false_pass_unrelated": {
+    "rate": 0.0465,
+    "k": 12,
+    "n": 258,
+    "ci95": [
+     0.0268,
+     0.0795
+    ]
+   }
+  },
+  {
+   "tau": 0.7,
+   "false_flag": {
+    "rate": 0.2238,
+    "k": 32,
+    "n": 143,
+    "ci95": [
+     0.1632,
+     0.2988
+    ]
+   },
+   "false_pass_wrong": {
+    "rate": 0.0658,
+    "k": 5,
+    "n": 76,
+    "ci95": [
+     0.0284,
+     0.1449
+    ]
+   },
+   "false_pass_unrelated": {
+    "rate": 0.0465,
+    "k": 12,
+    "n": 258,
+    "ci95": [
+     0.0268,
+     0.0795
+    ]
+   }
+  },
+  {
+   "tau": 0.75,
+   "false_flag": {
+    "rate": 0.3566,
+    "k": 51,
+    "n": 143,
+    "ci95": [
+     0.2828,
+     0.438
+    ]
+   },
+   "false_pass_wrong": {
+    "rate": 0.0263,
+    "k": 2,
+    "n": 76,
+    "ci95": [
+     0.0072,
+     0.091
+    ]
+   },
+   "false_pass_unrelated": {
+    "rate": 0.0271,
+    "k": 7,
+    "n": 258,
+    "ci95": [
+     0.0132,
+     0.0549
+    ]
+   }
+  },
+  {
+   "tau": 0.8,
+   "false_flag": {
+    "rate": 0.7063,
+    "k": 101,
+    "n": 143,
+    "ci95": [
+     0.627,
+     0.7748
+    ]
+   },
+   "false_pass_wrong": {
+    "rate": 0.0,
+    "k": 0,
+    "n": 76,
+    "ci95": [
+     0,
+     0.0481
+    ]
+   },
+   "false_pass_unrelated": {
+    "rate": 0.0039,
+    "k": 1,
+    "n": 258,
+    "ci95": [
+     0.0007,
+     0.0216
+    ]
+   }
+  },
+  {
+   "tau": 0.85,
+   "false_flag": {
+    "rate": 0.986,
+    "k": 141,
+    "n": 143,
+    "ci95": [
+     0.9504,
+     0.9962
+    ]
+   },
+   "false_pass_wrong": {
+    "rate": 0.0,
+    "k": 0,
+    "n": 76,
+    "ci95": [
+     0,
+     0.0481
+    ]
+   },
+   "false_pass_unrelated": {
+    "rate": 0.0,
+    "k": 0,
+    "n": 258,
+    "ci95": [
+     0,
+     0.0147
+    ]
+   }
+  },
+  {
+   "tau": 0.9,
+   "false_flag": {
+    "rate": 1.0,
+    "k": 143,
+    "n": 143,
+    "ci95": [
+     0.9738,
+     1
+    ]
+   },
+   "false_pass_wrong": {
+    "rate": 0.0,
+    "k": 0,
+    "n": 76,
+    "ci95": [
+     0,
+     0.0481
+    ]
+   },
+   "false_pass_unrelated": {
+    "rate": 0.0,
+    "k": 0,
+    "n": 258,
+    "ci95": [
+     0,
+     0.0147
+    ]
+   }
+  }
+ ],
+ "test": {
+  "valid_false_flag": {
+   "rate": 0.2263,
+   "k": 31,
+   "n": 137,
+   "ci95": [
+    0.1642,
+    0.3032
+   ]
+  },
+  "wrong_false_pass": {
+   "rate": 0.19,
+   "k": 19,
+   "n": 100,
+   "ci95": [
+    0.1251,
+    0.2778
+   ]
+  },
+  "unrelated_false_pass": {
+   "rate": 0.0814,
+   "k": 21,
+   "n": 258,
+   "ci95": [
+    0.0539,
+    0.1212
+   ]
+  },
+  "road_without_pothole_false_pass": {
+   "rate": 0.0571,
+   "k": 2,
+   "n": 35,
+   "ci95": [
+    0.0158,
+    0.1861
+   ]
+  }
+ },
+ "test_at_tau_0.25": {
+  "valid_false_flag": {
+   "rate": 0.0,
+   "k": 0,
+   "n": 137,
+   "ci95": [
+    0,
+    0.0273
+   ]
+  },
+  "wrong_false_pass": {
+   "rate": 0.85,
+   "k": 85,
+   "n": 100,
+   "ci95": [
+    0.7672,
+    0.9069
+   ]
+  },
+  "unrelated_false_pass": {
+   "rate": 0.6744,
+   "k": 174,
+   "n": 258,
+   "ci95": [
+    0.615,
+    0.7287
+   ]
+  },
+  "road_without_pothole_false_pass": {
+   "rate": 0.8,
+   "k": 28,
+   "n": 35,
+   "ci95": [
+    0.6411,
+    0.8996
+   ]
+  }
+ },
+ "image_level_test": {
+  "recall": {
+   "rate": 0.6604,
+   "k": 177,
+   "n": 268,
+   "ci95": [
+    0.6018,
+    0.7145
+   ]
+  },
+  "unrelated_pass": {
+   "rate": 0.042,
+   "k": 21,
+   "n": 500,
+   "ci95": [
+    0.0276,
+    0.0634
+   ]
+  }
+ },
+ "external": {
+  "pothole_rdd2022_india": {
+   "valid_false_flag": {
+    "rate": 0.6782,
+    "k": 527,
+    "n": 777,
+    "ci95": [
+     0.6446,
+     0.7102
+    ]
+   },
+   "image_recall": {
+    "rate": 0.1817,
+    "k": 278,
+    "n": 1530,
+    "ci95": [
+     0.1632,
+     0.2018
+    ]
+   }
+  },
+  "pothole_roboflow": {
+   "valid_false_flag": {
+    "rate": null,
+    "k": 0,
+    "n": 0,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "image_recall": {
+    "rate": null,
+    "k": 0,
+    "n": 0,
+    "ci95": [
+     null,
+     null
+    ]
+   }
+  }
+ },
+ "fairness_by_country": {
+  "China_MotorBike": {
+   "image_recall": {
+    "rate": 1.0,
+    "k": 27,
+    "n": 27,
+    "ci95": [
+     0.8754,
+     1
+    ]
+   },
+   "complaint_false_flag": {
+    "rate": 0.0,
+    "k": 0,
+    "n": 13,
+    "ci95": [
+     0,
+     0.2281
+    ]
+   }
+  },
+  "Czech": {
+   "image_recall": {
+    "rate": 0.2273,
+    "k": 5,
+    "n": 22,
+    "ci95": [
+     0.1012,
+     0.4344
+    ]
+   },
+   "complaint_false_flag": {
+    "rate": 0.6364,
+    "k": 7,
+    "n": 11,
+    "ci95": [
+     0.3538,
+     0.8483
+    ]
+   }
+  },
+  "India (external)": {
+   "image_recall": {
+    "rate": 0.1817,
+    "k": 278,
+    "n": 1530,
+    "ci95": [
+     0.1632,
+     0.2018
+    ]
+   },
+   "complaint_false_flag": {
+    "rate": 0.6782,
+    "k": 527,
+    "n": 777,
+    "ci95": [
+     0.6446,
+     0.7102
+    ]
+   }
+  },
+  "Japan": {
+   "image_recall": {
+    "rate": 0.6667,
+    "k": 134,
+    "n": 201,
+    "ci95": [
+     0.5989,
+     0.7282
+    ]
+   },
+   "complaint_false_flag": {
+    "rate": 0.1458,
+    "k": 14,
+    "n": 96,
+    "ci95": [
+     0.0889,
+     0.23
+    ]
+   }
+  },
+  "United_States": {
+   "image_recall": {
+    "rate": 0.6111,
+    "k": 11,
+    "n": 18,
+    "ci95": [
+     0.3862,
+     0.797
+    ]
+   },
+   "complaint_false_flag": {
+    "rate": 0.1111,
+    "k": 1,
+    "n": 9,
+    "ci95": [
+     0.0199,
+     0.435
+    ]
+   }
+  }
+ },
+ "workload_simulation": {
+  "note": "Simulation of supervisor workload, not a measure of staff decisions. Invalid complaints split evenly between wrong-category and unrelated.",
+  "rows": [
+   {
+    "assumed_invalid_share": 0.05,
+    "flagged_per_100": 25.8,
+    "valid_among_flagged_per_100": 21.5,
+    "invalid_passed_unflagged_per_100": 0.7,
+    "complaints_needing_close_look_without_ai": 100
+   },
+   {
+    "assumed_invalid_share": 0.1,
+    "flagged_per_100": 29.0,
+    "valid_among_flagged_per_100": 20.4,
+    "invalid_passed_unflagged_per_100": 1.4,
+    "complaints_needing_close_look_without_ai": 100
+   },
+   {
+    "assumed_invalid_share": 0.2,
+    "flagged_per_100": 35.4,
+    "valid_among_flagged_per_100": 18.1,
+    "invalid_passed_unflagged_per_100": 2.7,
+    "complaints_needing_close_look_without_ai": 100
+   }
+  ]
+ }
+}

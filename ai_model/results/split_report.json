@@ -127,6 +127,52 @@
     "cross_split_near_duplicate_pairs": 0,
     "cross_split_stems": 0
    }
+  },
+  "pothole_india": {
+   "source": "RDD2022 (Arya et al., 2024), doi:10.6084/m9.figshare.21431547, CC BY 4.0, class D40; plus RDD2022 India (same class and background rule)",
+   "splits": {
+    "train": {
+     "images": 2938,
+     "source_groups": 2927,
+     "with_defect": 2348,
+     "by_stratum": {
+      "China_MotorBike": 144,
+      "Czech": 135,
+      "India": 1338,
+      "Japan": 1219,
+      "United_States": 102
+     }
+    },
+    "val": {
+     "images": 628,
+     "source_groups": 628,
+     "with_defect": 506,
+     "by_stratum": {
+      "China_MotorBike": 30,
+      "Czech": 29,
+      "India": 287,
+      "Japan": 260,
+      "United_States": 22
+     }
+    },
+    "test": {
+     "images": 625,
+     "source_groups": 625,
+     "with_defect": 500,
+     "by_stratum": {
+      "China_MotorBike": 31,
+      "Czech": 28,
+      "India": 286,
+      "Japan": 259,
+      "United_States": 21
+     }
+    }
+   },
+   "check": {
+    "shared_groups": 0,
+    "cross_split_near_duplicate_pairs": 0,
+    "cross_split_stems": 0
+   }
   }
  },
  "external": {

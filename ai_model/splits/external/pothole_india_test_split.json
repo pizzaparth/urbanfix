@@ -1,0 +1,2010 @@
+{
+ "name": "pothole_india_test_split",
+ "category": "pothole",
+ "dropped_near_duplicates": 0,
+ "note": "India test images of splits/pothole_india.json, for the model trained without India",
+ "test": [
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_000109.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_000109.xml",
+   "group": 2283,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_000140.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_000140.xml",
+   "group": 3937,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_000155.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_000155.xml",
+   "group": 2290,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_000169.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_000169.xml",
+   "group": 3987,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_000173.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_000173.xml",
+   "group": 2292,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_000223.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_000223.xml",
+   "group": 2296,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_000241.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_000241.xml",
+   "group": 2298,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_000261.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_000261.xml",
+   "group": 2299,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_000273.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_000273.xml",
+   "group": 4109,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_000320.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_000320.xml",
+   "group": 2307,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_000365.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_000365.xml",
+   "group": 4044,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_000367.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_000367.xml",
+   "group": 2311,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_000391.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_000391.xml",
+   "group": 2317,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_000444.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_000444.xml",
+   "group": 4141,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_000470.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_000470.xml",
+   "group": 2328,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_000579.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_000579.xml",
+   "group": 2344,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_000580.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_000580.xml",
+   "group": 2345,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_000586.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_000586.xml",
+   "group": 2347,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_000590.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_000590.xml",
+   "group": 2348,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_000659.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_000659.xml",
+   "group": 2362,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_000669.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_000669.xml",
+   "group": 2363,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_000729.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_000729.xml",
+   "group": 2373,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_000743.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_000743.xml",
+   "group": 2377,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_000785.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_000785.xml",
+   "group": 2388,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_000808.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_000808.xml",
+   "group": 2391,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_000853.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_000853.xml",
+   "group": 2400,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_000911.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_000911.xml",
+   "group": 4116,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_000914.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_000914.xml",
+   "group": 2407,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_000915.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_000915.xml",
+   "group": 2408,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_000931.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_000931.xml",
+   "group": 2411,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_000935.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_000935.xml",
+   "group": 2412,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_000970.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_000970.xml",
+   "group": 2419,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_000977.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_000977.xml",
+   "group": 2420,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_001037.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_001037.xml",
+   "group": 2432,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_001049.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_001049.xml",
+   "group": 2434,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_001096.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_001096.xml",
+   "group": 4107,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_001103.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_001103.xml",
+   "group": 2442,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_001174.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_001174.xml",
+   "group": 2460,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_001240.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_001240.xml",
+   "group": 4004,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_001247.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_001247.xml",
+   "group": 2477,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_001251.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_001251.xml",
+   "group": 2479,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_001262.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_001262.xml",
+   "group": 2481,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_001385.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_001385.xml",
+   "group": 2495,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_001443.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_001443.xml",
+   "group": 2505,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_001480.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_001480.xml",
+   "group": 2511,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_001485.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_001485.xml",
+   "group": 2512,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_001534.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_001534.xml",
+   "group": 2524,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_001558.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_001558.xml",
+   "group": 4040,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_001580.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_001580.xml",
+   "group": 2533,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_001635.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_001635.xml",
+   "group": 4058,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_001648.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_001648.xml",
+   "group": 2542,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_001684.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_001684.xml",
+   "group": 2546,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_001704.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_001704.xml",
+   "group": 2553,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_001757.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_001757.xml",
+   "group": 2560,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_001798.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_001798.xml",
+   "group": 2567,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_001808.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_001808.xml",
+   "group": 2568,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_001815.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_001815.xml",
+   "group": 2571,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_001821.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_001821.xml",
+   "group": 2574,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_001859.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_001859.xml",
+   "group": 3870,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_001866.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_001866.xml",
+   "group": 2580,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_001877.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_001877.xml",
+   "group": 2582,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_001887.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_001887.xml",
+   "group": 2583,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_001906.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_001906.xml",
+   "group": 2590,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_001907.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_001907.xml",
+   "group": 2591,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_001925.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_001925.xml",
+   "group": 2594,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_001928.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_001928.xml",
+   "group": 3829,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_002048.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_002048.xml",
+   "group": 2609,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_002070.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_002070.xml",
+   "group": 2616,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_002079.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_002079.xml",
+   "group": 2618,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_002148.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_002148.xml",
+   "group": 2636,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_002250.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_002250.xml",
+   "group": 2647,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_002305.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_002305.xml",
+   "group": 2650,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_002390.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_002390.xml",
+   "group": 2662,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_002410.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_002410.xml",
+   "group": 2666,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_002487.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_002487.xml",
+   "group": 2674,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_002516.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_002516.xml",
+   "group": 2680,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_002527.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_002527.xml",
+   "group": 4128,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_002544.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_002544.xml",
+   "group": 3983,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_002558.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_002558.xml",
+   "group": 4121,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_002563.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_002563.xml",
+   "group": 2686,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_002657.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_002657.xml",
+   "group": 4009,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_002673.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_002673.xml",
+   "group": 2700,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_002702.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_002702.xml",
+   "group": 2706,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_002708.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_002708.xml",
+   "group": 2707,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_002793.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_002793.xml",
+   "group": 2720,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_002795.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_002795.xml",
+   "group": 2721,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_002846.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_002846.xml",
+   "group": 2727,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_002850.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_002850.xml",
+   "group": 3958,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_002880.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_002880.xml",
+   "group": 2733,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_002973.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_002973.xml",
+   "group": 2752,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_002998.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_002998.xml",
+   "group": 4048,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_003013.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_003013.xml",
+   "group": 2759,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_003017.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_003017.xml",
+   "group": 2760,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_003056.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_003056.xml",
+   "group": 2768,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_003063.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_003063.xml",
+   "group": 2770,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_003065.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_003065.xml",
+   "group": 2771,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_003079.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_003079.xml",
+   "group": 2772,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_003125.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_003125.xml",
+   "group": 2784,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_003171.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_003171.xml",
+   "group": 2792,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_003252.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_003252.xml",
+   "group": 4166,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_003365.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_003365.xml",
+   "group": 2816,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_003373.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_003373.xml",
+   "group": 2819,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_003383.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_003383.xml",
+   "group": 3816,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_003424.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_003424.xml",
+   "group": 2827,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_003426.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_003426.xml",
+   "group": 2828,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_003434.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_003434.xml",
+   "group": 3909,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_003490.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_003490.xml",
+   "group": 2833,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_003495.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_003495.xml",
+   "group": 2834,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_003522.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_003522.xml",
+   "group": 3856,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_003624.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_003624.xml",
+   "group": 2852,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_003628.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_003628.xml",
+   "group": 3888,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_003643.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_003643.xml",
+   "group": 3936,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_003658.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_003658.xml",
+   "group": 2854,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_003700.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_003700.xml",
+   "group": 2861,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_003702.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_003702.xml",
+   "group": 2862,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_003778.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_003778.xml",
+   "group": 2875,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_003795.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_003795.xml",
+   "group": 2876,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_003806.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_003806.xml",
+   "group": 2878,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_003835.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_003835.xml",
+   "group": 2880,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_003883.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_003883.xml",
+   "group": 2887,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_003889.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_003889.xml",
+   "group": 4134,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_003928.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_003928.xml",
+   "group": 3927,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_003951.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_003951.xml",
+   "group": 2899,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_003980.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_003980.xml",
+   "group": 2904,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_003987.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_003987.xml",
+   "group": 2905,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_003993.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_003993.xml",
+   "group": 2906,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_004033.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_004033.xml",
+   "group": 2911,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_004100.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_004100.xml",
+   "group": 2918,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_004110.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_004110.xml",
+   "group": 2922,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_004182.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_004182.xml",
+   "group": 3943,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_004209.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_004209.xml",
+   "group": 2938,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_004254.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_004254.xml",
+   "group": 3955,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_004293.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_004293.xml",
+   "group": 2947,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_004299.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_004299.xml",
+   "group": 2950,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_004312.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_004312.xml",
+   "group": 2951,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_004331.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_004331.xml",
+   "group": 2955,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_004345.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_004345.xml",
+   "group": 2960,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_004365.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_004365.xml",
+   "group": 2962,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_004387.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_004387.xml",
+   "group": 2965,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_004444.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_004444.xml",
+   "group": 2974,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_004553.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_004553.xml",
+   "group": 2989,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_004556.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_004556.xml",
+   "group": 2990,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_004586.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_004586.xml",
+   "group": 2991,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_004600.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_004600.xml",
+   "group": 2994,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_004705.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_004705.xml",
+   "group": 3011,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_004812.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_004812.xml",
+   "group": 3939,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_004815.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_004815.xml",
+   "group": 3026,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_004865.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_004865.xml",
+   "group": 3032,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_004877.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_004877.xml",
+   "group": 3034,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_004882.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_004882.xml",
+   "group": 3036,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_004894.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_004894.xml",
+   "group": 3038,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_004900.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_004900.xml",
+   "group": 3822,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_004914.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_004914.xml",
+   "group": 3823,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_004958.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_004958.xml",
+   "group": 3045,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_005014.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_005014.xml",
+   "group": 3050,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_005059.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_005059.xml",
+   "group": 3057,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_005071.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_005071.xml",
+   "group": 3059,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_005081.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_005081.xml",
+   "group": 3062,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_005084.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_005084.xml",
+   "group": 3063,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_005197.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_005197.xml",
+   "group": 3074,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_005258.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_005258.xml",
+   "group": 3079,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_005335.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_005335.xml",
+   "group": 4014,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_005343.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_005343.xml",
+   "group": 3096,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_005369.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_005369.xml",
+   "group": 3855,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_005445.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_005445.xml",
+   "group": 3112,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_005469.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_005469.xml",
+   "group": 3117,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_005537.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_005537.xml",
+   "group": 3977,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_005539.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_005539.xml",
+   "group": 3127,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_005559.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_005559.xml",
+   "group": 3135,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_005595.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_005595.xml",
+   "group": 3140,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_005627.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_005627.xml",
+   "group": 3951,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_005643.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_005643.xml",
+   "group": 3146,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_005784.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_005784.xml",
+   "group": 3171,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_005878.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_005878.xml",
+   "group": 3179,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_005976.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_005976.xml",
+   "group": 3190,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_006027.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_006027.xml",
+   "group": 3194,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_006130.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_006130.xml",
+   "group": 3970,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_006160.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_006160.xml",
+   "group": 3214,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_006197.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_006197.xml",
+   "group": 3219,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_006320.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_006320.xml",
+   "group": 3239,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_006358.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_006358.xml",
+   "group": 4117,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_006378.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_006378.xml",
+   "group": 3255,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_006397.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_006397.xml",
+   "group": 3258,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_006536.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_006536.xml",
+   "group": 3282,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_006580.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_006580.xml",
+   "group": 3287,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_006634.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_006634.xml",
+   "group": 3300,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_006635.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_006635.xml",
+   "group": 4045,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_006685.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_006685.xml",
+   "group": 4018,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_006697.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_006697.xml",
+   "group": 3310,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_006710.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_006710.xml",
+   "group": 3314,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_006777.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_006777.xml",
+   "group": 3324,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_006901.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_006901.xml",
+   "group": 3862,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_006910.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_006910.xml",
+   "group": 3339,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_006945.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_006945.xml",
+   "group": 3345,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_006962.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_006962.xml",
+   "group": 3347,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_006995.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_006995.xml",
+   "group": 3353,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_007001.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_007001.xml",
+   "group": 3357,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_007071.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_007071.xml",
+   "group": 3365,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_007074.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_007074.xml",
+   "group": 3366,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_007147.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_007147.xml",
+   "group": 3371,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_007159.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_007159.xml",
+   "group": 3374,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_007175.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_007175.xml",
+   "group": 3377,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_007198.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_007198.xml",
+   "group": 3380,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_007246.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_007246.xml",
+   "group": 3386,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_007362.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_007362.xml",
+   "group": 3404,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_007363.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_007363.xml",
+   "group": 3405,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_007413.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_007413.xml",
+   "group": 3850,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_007432.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_007432.xml",
+   "group": 3416,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_007484.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_007484.xml",
+   "group": 3421,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_007491.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_007491.xml",
+   "group": 3422,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_007572.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_007572.xml",
+   "group": 3428,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_007579.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_007579.xml",
+   "group": 3430,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_007582.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_007582.xml",
+   "group": 3979,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_007627.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_007627.xml",
+   "group": 3438,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_007630.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_007630.xml",
+   "group": 3441,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_007642.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_007642.xml",
+   "group": 3445,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_007650.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_007650.xml",
+   "group": 3448,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_007706.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_007706.xml",
+   "group": 3454,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_007735.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_007735.xml",
+   "group": 3463,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_007740.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_007740.xml",
+   "group": 3465,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_007810.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_007810.xml",
+   "group": 3476,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_007818.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_007818.xml",
+   "group": 4162,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_007890.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_007890.xml",
+   "group": 3482,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_007893.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_007893.xml",
+   "group": 3483,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_007946.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_007946.xml",
+   "group": 3490,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_007998.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_007998.xml",
+   "group": 3500,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_008011.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_008011.xml",
+   "group": 3818,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_008105.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_008105.xml",
+   "group": 3520,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_008209.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_008209.xml",
+   "group": 3534,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_008223.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_008223.xml",
+   "group": 3535,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_008227.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_008227.xml",
+   "group": 3538,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_008242.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_008242.xml",
+   "group": 4179,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_008279.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_008279.xml",
+   "group": 3548,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_008285.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_008285.xml",
+   "group": 3550,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_008330.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_008330.xml",
+   "group": 4160,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_008336.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_008336.xml",
+   "group": 3560,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_008339.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_008339.xml",
+   "group": 3561,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_008367.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_008367.xml",
+   "group": 3562,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_008465.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_008465.xml",
+   "group": 3578,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_008492.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_008492.xml",
+   "group": 3582,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_008563.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_008563.xml",
+   "group": 3594,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_008576.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_008576.xml",
+   "group": 3597,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_008620.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_008620.xml",
+   "group": 3601,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_008627.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_008627.xml",
+   "group": 3602,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_008632.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_008632.xml",
+   "group": 3603,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_008636.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_008636.xml",
+   "group": 3604,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_008657.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_008657.xml",
+   "group": 3813,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_008673.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_008673.xml",
+   "group": 3612,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_008677.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_008677.xml",
+   "group": 3614,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_008694.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_008694.xml",
+   "group": 3616,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_008698.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_008698.xml",
+   "group": 3618,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_008701.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_008701.xml",
+   "group": 3619,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_008733.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_008733.xml",
+   "group": 3624,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_008789.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_008789.xml",
+   "group": 3632,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_008802.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_008802.xml",
+   "group": 3634,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_008906.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_008906.xml",
+   "group": 3645,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_008944.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_008944.xml",
+   "group": 3652,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_008947.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_008947.xml",
+   "group": 4172,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_008963.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_008963.xml",
+   "group": 3657,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_008984.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_008984.xml",
+   "group": 3660,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_009001.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_009001.xml",
+   "group": 3663,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_009017.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_009017.xml",
+   "group": 3667,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_009097.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_009097.xml",
+   "group": 3675,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_009148.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_009148.xml",
+   "group": 3685,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_009153.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_009153.xml",
+   "group": 3687,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_009157.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_009157.xml",
+   "group": 3688,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_009191.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_009191.xml",
+   "group": 4122,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_009205.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_009205.xml",
+   "group": 3696,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_009229.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_009229.xml",
+   "group": 3857,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_009249.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_009249.xml",
+   "group": 3702,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_009298.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_009298.xml",
+   "group": 3962,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_009320.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_009320.xml",
+   "group": 4100,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_009376.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_009376.xml",
+   "group": 3722,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_009381.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_009381.xml",
+   "group": 3725,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_009391.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_009391.xml",
+   "group": 3727,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_009415.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_009415.xml",
+   "group": 3731,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_009425.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_009425.xml",
+   "group": 4092,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_009436.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_009436.xml",
+   "group": 3736,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_009455.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_009455.xml",
+   "group": 3739,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_009510.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_009510.xml",
+   "group": 3742,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_009517.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_009517.xml",
+   "group": 3743,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_009528.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_009528.xml",
+   "group": 3745,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_009610.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_009610.xml",
+   "group": 4113,
+   "positive": false,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_009734.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_009734.xml",
+   "group": 3774,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_009832.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_009832.xml",
+   "group": 3790,
+   "positive": true,
+   "stratum": "India"
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_009836.jpg",
+   "label": "data/raw/rdd2022/India/train/annotations/xmls/India_009836.xml",
+   "group": 3791,
+   "positive": true,
+   "stratum": "India"
+  }
+ ]
+}

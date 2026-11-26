@@ -91,7 +91,7 @@ def main() -> None:
     test = {"valid": complaints(pos("test")),
             "wrong": complaints(sum((sets[f"other:{o}"] for o in others), [])),
             "unrelated": complaints(coco("coco"))}
-    if cat == "pothole":
+    if cat.startswith("pothole"):
         test["road_without_pothole"] = complaints([r for r in sets["test"] if not r["positive"]])
 
     sweep = []
@@ -127,13 +127,16 @@ def main() -> None:
                                     "image_recall": wilson(sum(r["max_conf"] >= tau for r in pos(name)), len(pos(name)))}
 
     # Fairness (A11): per country for potholes, India from the external set.
-    if cat == "pothole":
+    if cat.startswith("pothole"):
         by = defaultdict(list)
         for r in pos("test"):
             by[r["stratum"]].append(r)
         india = [r for r in sets.get("pothole_rdd2022_india", []) if r["positive"]]
         if india:
-            by["India (external)"] = india
+            by["India (external, all)"] = india
+        india_split = [r for r in sets.get("pothole_india_test_split", []) if r["positive"]]
+        if india_split:
+            by["India (test split of pothole_india)"] = india_split
         result["fairness_by_country"] = {
             c: {"image_recall": wilson(sum(r["max_conf"] >= tau for r in rows), len(rows)),
                 "complaint_false_flag": wilson(flagged(complaints(rows), tau), len(complaints(rows)))}

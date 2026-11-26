@@ -154,15 +154,17 @@ def main() -> None:
         model = (RTDETR if is_rtdetr else YOLO)(str(weights))
 
         strata = None
-        if cat == "pothole":
-            spec = json.loads((SPLITS / "pothole.json").read_text())
+        if cat in ("pothole", "pothole_india"):
+            spec = json.loads((SPLITS / f"{cat}.json").read_text())
             strata = {link_name(it["file"]): it["stratum"] for it in spec["splits"]["test"]}
         result = {"tag": tag, "category": cat, "model": run["model"], "seed": run["seed"], "task": task,
                   "weights": run["weights"], "bootstrap_resamples": BOOT,
                   "machine": f"{platform.platform()} / {platform.processor()}", "sets": {}}
         result["sets"]["test"] = evaluate_set(model, DATA / cat / "data.yaml", task, args.device, strata)
         for ext in sorted((SPLITS / "external").glob("*.json")):
-            if json.loads(ext.read_text())["category"] != cat:
+            ext_cat = json.loads(ext.read_text())["category"]
+            # The India-trained pothole model is tested on the Roboflow set only: India is in-domain for it.
+            if ext_cat != cat and not (cat == "pothole_india" and ext.stem == "pothole_roboflow"):
                 continue
             if not (DATA / "external" / ext.stem / "data.yaml").exists():
                 print(f"{ext.stem}: not built on this machine, skipped")

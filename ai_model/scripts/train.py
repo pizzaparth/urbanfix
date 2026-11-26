@@ -53,7 +53,7 @@ def default_device() -> str | int:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("category", choices=["pothole", "garbage_litter", "graffiti"])
+    ap.add_argument("category", choices=["pothole", "pothole_india", "garbage_litter", "graffiti"])
     ap.add_argument("--model", default="yolov8n", choices=MODELS)
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--epochs", type=int, default=40)

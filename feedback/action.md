@@ -700,6 +700,58 @@ Details and sources: `ai_model/DATASETS.md`. Numbers: `ai_model/results/split_au
 - **F24. CI never ran the backend tests** (see the CI row above). Both earlier pushes showed a failed run; only the vision-service job passed.
 - **F22. RDD2022 is box-only**, so the pothole model becomes a box detector. This removes the last mask-based model that δ in Eq. (4) relied on, apart from litter. A10 (drop the δ-to-urgency rule) is now required, not just recommended.
 
+### Phase 3, training and evaluation: in progress (started 2026-11-26)
+
+**Rule for numbers:** every number about models comes from a JSON file written by a script
+(`ai_model/results/{train,eval,scores,complaints}/<run>.json`). `ai_model/scripts/summarize.py`
+turns them into `ai_model/results/phase3_summary.md`. The paper's tables are taken from that file
+only. Numbers in this log are copied from it and name their source.
+
+**Pipeline (all in `ai_model/scripts/`):** `train.py` (one run; checkpoint chosen on val only) →
+`evaluate.py` (test and external sets once; bootstrap 95 % CIs over images, 1,000 resamples;
+per-country for potholes; CPU latency) → `score_images.py` (highest confidence per image, as the
+service computes s*) → `complaint_eval.py` (τ rule, complaint-level rates with Wilson CIs, fairness,
+workload simulation) → `error_examples.py` (A6 figure) → `summarize.py`. Colab runs use
+`notebooks/colab_train.ipynb`, which rebuilds the data from public sources with `prepare_sources.py`.
+
+**Decisions and why:**
+
+| Date | Decision | Why |
+|---|---|---|
+| 2026-11-26 | Training budget 40 epochs, early stopping after 10 (paper: 60 and 15) | The user limited the laptop queue to 4 hours. Every model in the comparison gets the same budget. Must be stated in the paper. |
+| 2026-11-26 | Laptop runs YOLOv8n seed 0 and YOLO11n; Colab runs RT-DETR-l, YOLOv8s, pothole YOLO11n and seeds 1 and 2 | Laptop budget; RT-DETR-l is too heavy for the laptop. Seeds are optional: the reviewers asked for CIs, which the bootstrap gives. |
+| 2026-11-26 | τ rule: largest τ on 0.05 to 0.90 (step 0.05) with validation false-flag rate ≤ 20 %; chosen on validation data only (k's val split, other categories' val splits, half of the COCO photos), reported on the test data | A4. Keeps τ selection away from the test set. |
+| 2026-11-26 | Unrelated photos: 1,000 seeded COCO 2017 val photos (`scripts/fetch_coco_negatives.py`); for litter, the 124 with a bottle, cup or wine glass are left out | A5. COCO has no pothole or graffiti class; some COCO street scenes may still show one (checked in A6). |
+| 2026-11-26 | **India gap found, India-trained pothole model added.** The pothole model trained without India scored far lower on Indian photos than on its own test set and flagged about two thirds of genuine Indian pothole complaints (source: `results/eval/pothole__yolov8n__s0.json`, `results/complaints/pothole__yolov8n__s0.json`). A second split `splits/pothole_india.json` keeps the other countries' splits unchanged and adds India 70/15/15 by group; its India test images are also an external set for the no-India model, so both are compared on identical photos. The India-trained model is the one to deploy; the paper reports both. | User decision after the measurement. It turns A11 from a limitation into a measured gap plus a measured fix. |
+| 2026-11-26 | Pothole and litter YOLO11n moved from the laptop to Colab (litter at 23:10, on the user's instruction) | To fit the India model into the 4-hour laptop queue. Graffiti YOLO11n stays on the laptop. |
+| 2026-11-26 | **Observation:** the laptop YOLOv8n runs for pothole, litter and graffiti all reached their best validation fitness at epoch 39 or 40 of 40 (`best_epoch` in `results/train/*__yolov8n__s0.json`), so they were still improving when the 40-epoch cap stopped them. | The cap may understate YOLOv8n against models that converge faster. Either state this in the paper or rerun the deployed models with 60 epochs on Colab if GPU time allows. |
+
+**Result of the India decision** (sources: `results/eval/pothole__yolov8n__s0.json` set `pothole_india_test_split`; `results/eval/pothole_india__yolov8n__s0.json` set `test`, stratum `India`; `results/complaints/*.json` `fairness_by_country`). On the same 286 Indian test photos, box mAP50 rose from 0.101 (0.073–0.135) without Indian training data to 0.378 (0.335–0.429) with it, and the share of genuine Indian pothole complaints flagged fell from 67.0 % (τ 0.50) to 27.8 % (τ 0.40). India stays below Japan (0.617 for the India-trained model), so a smaller gap remains; the paper should report both numbers.
+
+**Run status (2026-11-27 01:15; numbers in `ai_model/results/phase3_summary.md`):**
+
+| Run | Machine | Trained | Evaluated | Complete |
+|---|---|---|---|---|
+| pothole yolov8n s0 | laptop | yes | yes | yes (latency to remeasure on idle laptop) |
+| pothole_india yolov8n s0 (to deploy) | laptop | yes | yes | yes (latency to remeasure) |
+| garbage_litter yolov8n s0 | laptop | yes | yes | yes (latency to remeasure) |
+| graffiti yolov8n s0 | laptop | yes | yes | yes (latency to remeasure) |
+| graffiti yolo11n s0 | laptop | yes | yes | yes |
+| graffiti rtdetr-l s0 | Colab | yes | on Colab | re-score on laptop (wrong-category photos missing on Colab), latency on laptop |
+| pothole rtdetr-l s0 | Colab | yes | on Colab | re-evaluate and re-score on laptop (Roboflow and India test split missing on Colab), latency on laptop |
+| garbage_litter rtdetr-l s0 | Colab | no | no | to do |
+| pothole yolo11n s0 | Colab | no | no | to do |
+| garbage_litter yolo11n s0 | Colab | no | no | to do |
+| yolov8s and yolov8n seeds 1, 2 | Colab | no | no | optional |
+
+The laptop queue finished at 00:54 after 99 minutes of its second start (first start 21:10); no job was skipped.
+
+**Open items in this phase:** remeasure CPU latency for every model on the idle laptop
+(`evaluate.py --latency-only`; latencies measured during training or on Colab are not comparable);
+re-score the Colab-trained models on the laptop so the wrong-category check includes the other
+categories' photos; A6 figures; choose the deployed models and copy them into `ai_model/weights/`
+with their τ in `ai_service/thresholds.json`; switch the vision service to the box-only pothole model.
+
 ## 11. Done checklist
 
 - [x] No source photo appears in two splits (script output saved in `ai_model/results/split_report.json`).

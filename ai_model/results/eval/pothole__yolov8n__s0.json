@@ -1,0 +1,288 @@
+{
+ "tag": "pothole__yolov8n__s0",
+ "category": "pothole",
+ "model": "yolov8n",
+ "seed": 0,
+ "task": "detect",
+ "weights": "weights/v2/pothole__yolov8n__s0.pt",
+ "bootstrap_resamples": 1000,
+ "machine": "macOS-27.2-arm64-arm-64bit-Mach-O / arm",
+ "sets": {
+  "test": {
+   "images": 339,
+   "images_with_defect": 268,
+   "objects": 432,
+   "box": {
+    "precision": {
+     "value": 0.6597,
+     "ci95": [
+      0.6122,
+      0.7425
+     ]
+    },
+    "recall": {
+     "value": 0.6372,
+     "ci95": [
+      0.587,
+      0.6931
+     ]
+    },
+    "mAP50": {
+     "value": 0.6714,
+     "ci95": [
+      0.6214,
+      0.7226
+     ]
+    },
+    "mAP50-95": {
+     "value": 0.3092,
+     "ci95": [
+      0.2773,
+      0.3438
+     ]
+    }
+   },
+   "by_stratum": {
+    "China_MotorBike": {
+     "images": 31,
+     "box": {
+      "precision": {
+       "value": 0.9061,
+       "ci95": [
+        0.8288,
+        0.9921
+       ]
+      },
+      "recall": {
+       "value": 0.8864,
+       "ci95": [
+        0.8056,
+        1.0
+       ]
+      },
+      "mAP50": {
+       "value": 0.9428,
+       "ci95": [
+        0.8488,
+        0.9921
+       ]
+      },
+      "mAP50-95": {
+       "value": 0.5066,
+       "ci95": [
+        0.4143,
+        0.6041
+       ]
+      }
+     }
+    },
+    "Czech": {
+     "images": 28,
+     "box": {
+      "precision": {
+       "value": 0.4736,
+       "ci95": [
+        0.2419,
+        0.7647
+       ]
+      },
+      "recall": {
+       "value": 0.4668,
+       "ci95": [
+        0.2759,
+        0.68
+       ]
+      },
+      "mAP50": {
+       "value": 0.4085,
+       "ci95": [
+        0.2131,
+        0.6721
+       ]
+      },
+      "mAP50-95": {
+       "value": 0.1573,
+       "ci95": [
+        0.0699,
+        0.2797
+       ]
+      }
+     }
+    },
+    "Japan": {
+     "images": 259,
+     "box": {
+      "precision": {
+       "value": 0.6439,
+       "ci95": [
+        0.5907,
+        0.7291
+       ]
+      },
+      "recall": {
+       "value": 0.625,
+       "ci95": [
+        0.5719,
+        0.6848
+       ]
+      },
+      "mAP50": {
+       "value": 0.6575,
+       "ci95": [
+        0.6056,
+        0.7063
+       ]
+      },
+      "mAP50-95": {
+       "value": 0.2942,
+       "ci95": [
+        0.2655,
+        0.3295
+       ]
+      }
+     }
+    },
+    "United_States": {
+     "images": 21,
+     "box": {
+      "precision": {
+       "value": 0.7032,
+       "ci95": [
+        0.5094,
+        0.9593
+       ]
+      },
+      "recall": {
+       "value": 0.6,
+       "ci95": [
+        0.3871,
+        0.8108
+       ]
+      },
+      "mAP50": {
+       "value": 0.5931,
+       "ci95": [
+        0.3955,
+        0.8017
+       ]
+      },
+      "mAP50-95": {
+       "value": 0.3353,
+       "ci95": [
+        0.2084,
+        0.4765
+       ]
+      }
+     }
+    }
+   }
+  },
+  "pothole_india_test_split": {
+   "images": 286,
+   "images_with_defect": 232,
+   "objects": 498,
+   "box": {
+    "precision": {
+     "value": 0.2583,
+     "ci95": [
+      0.2012,
+      0.3415
+     ]
+    },
+    "recall": {
+     "value": 0.1466,
+     "ci95": [
+      0.1148,
+      0.1781
+     ]
+    },
+    "mAP50": {
+     "value": 0.1014,
+     "ci95": [
+      0.073,
+      0.1346
+     ]
+    },
+    "mAP50-95": {
+     "value": 0.0406,
+     "ci95": [
+      0.0273,
+      0.0583
+     ]
+    }
+   }
+  },
+  "pothole_rdd2022_india": {
+   "images": 1911,
+   "images_with_defect": 1530,
+   "objects": 3187,
+   "box": {
+    "precision": {
+     "value": 0.2813,
+     "ci95": [
+      0.2311,
+      0.3199
+     ]
+    },
+    "recall": {
+     "value": 0.1437,
+     "ci95": [
+      0.132,
+      0.16
+     ]
+    },
+    "mAP50": {
+     "value": 0.1151,
+     "ci95": [
+      0.102,
+      0.1282
+     ]
+    },
+    "mAP50-95": {
+     "value": 0.045,
+     "ci95": [
+      0.0395,
+      0.0515
+     ]
+    }
+   }
+  },
+  "pothole_roboflow": {
+   "images": 297,
+   "images_with_defect": 297,
+   "objects": 807,
+   "box": {
+    "precision": {
+     "value": 0.3115,
+     "ci95": [
+      0.2659,
+      0.3647
+     ]
+    },
+    "recall": {
+     "value": 0.2763,
+     "ci95": [
+      0.2368,
+      0.3163
+     ]
+    },
+    "mAP50": {
+     "value": 0.1942,
+     "ci95": [
+      0.1589,
+      0.2385
+     ]
+    },
+    "mAP50-95": {
+     "value": 0.0507,
+     "ci95": [
+      0.0412,
+      0.0627
+     ]
+    }
+   }
+  }
+ },
+ "cpu_latency_ms": 65.5,
+ "weights_mb": 6.2
+}
