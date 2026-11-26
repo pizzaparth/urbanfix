@@ -24,11 +24,11 @@ def jpeg(color=(128, 128, 128), size=(320, 240)) -> bytes:
     return buf.getvalue()
 
 
-def test_health_lists_four_models(client):
+def test_health_lists_three_models(client):
     body = client.get("/health").json()
-    assert set(body["models"]) == {"pothole_road_damage", "garbage_litter", "open_manhole", "graffiti"}
+    assert set(body["models"]) == {"pothole_road_damage", "garbage_litter", "graffiti"}
     assert body["models"]["pothole_road_damage"]["task"] == "segment"
-    assert body["models"]["open_manhole"]["task"] == "detect"
+    assert body["models"]["graffiti"]["task"] == "detect"
     assert all(0 < t < 1 for t in body["tau"].values())
 
 

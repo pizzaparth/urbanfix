@@ -18,6 +18,8 @@ export const CATEGORY_QUESTIONNAIRES = {
     { id: 'q_public_facility', question: 'Is a school, hospital, or food market located nearby?', weight: 1 },
     { id: 'q_inconvenience', question: 'Is the issue causing severe public inconvenience?', weight: 1 },
   ],
+  // Withdrawn category: no longer offered for filing, kept so that the published
+  // answers of complaints filed before November 2026 can still be recomputed.
   'Open Manhole': [
     { id: 'q_uncovered', question: 'Is the manhole completely uncovered, posing a fall hazard?', weight: 2 },
     { id: 'q_busy_area', question: 'Is it located on a busy road, pathway, or residential area with children?', weight: 2 },

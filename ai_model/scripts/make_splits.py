@@ -16,7 +16,7 @@ Rules
 2. Groups, not images, are split 70/15/15 with a fixed seed, separately
    inside each stratum (for RDD2022 the stratum is the country).
 3. Fixed splits published by the dataset authors are kept: the STORM graffiti
-   test split and the camera-disjoint splits of the synthetic manhole set.
+   test split.
    A training image that is a near-duplicate of a fixed test image is dropped.
 4. In val, test and the external sets only one image per group is kept (the
    un-augmented copy when there is one), so a photo is never counted twice.
@@ -160,15 +160,9 @@ class UnionFind:
             self.p[max(ra, rb)] = min(ra, rb)
 
 
-def pairs_on_disk(items: list[dict]) -> list[tuple[int, int]]:
-    """Near-duplicate pairs among the items whose image is on disk (indices into items).
-
-    Only the synthetic manhole set can be partly on disk (its download is slow);
-    its split is fixed by the publisher, so missing images cannot move between splits.
-    """
-    idx = [k for k, it in enumerate(items) if (ROOT / it["file"]).exists()]
-    hashes = [dhash_pair(items[k]["file"]) for k in idx]
-    return [(idx[i], idx[j]) for i, j in near_duplicate_pairs(hashes)]
+def item_pairs(items: list[dict]) -> list[tuple[int, int]]:
+    """Near-duplicate pairs among items (indices into items)."""
+    return near_duplicate_pairs([dhash_pair(it["file"]) for it in items])
 
 
 def group_items(items: list[dict]) -> list[int]:
@@ -181,7 +175,7 @@ def group_items(items: list[dict]) -> list[int]:
             uf.union(i, by_stem[key])
         else:
             by_stem[key] = i
-    for i, j in pairs_on_disk(items):
+    for i, j in item_pairs(items):
         uf.union(i, j)
     roots = [uf.find(i) for i in range(len(items))]
     ids = {r: k for k, r in enumerate(sorted(set(roots)))}
@@ -241,22 +235,6 @@ def local_pool(rel_dirs: list[str], namespace: str = "", fixed: str | None = Non
     return items
 
 
-def synthetic_manhole_pool() -> list[dict]:
-    base = RAW / "synthetic_manhole"
-    manifest = base / "manifest.csv"
-    if not manifest.exists():
-        return []
-    import csv
-    items = []
-    for row in csv.DictReader(open(manifest)):
-        img = base / "jpg" / row["camera"] / f"Img{row['frame_id']}.jpg"
-        items.append({"file": str(img.relative_to(ROOT)), "namespace": row["camera"], "stratum": "all",
-                      "label": str((base / row["bbox_path"]).relative_to(ROOT)),
-                      "positive": int(row["open_manhole_bbox_count"]) > 0,
-                      "fixed": row["split"]})
-    return items
-
-
 def roboflow_pothole_pool() -> list[dict]:
     rf = "Pothole_Segmentation_YOLOv8.v1i.yolov8"
     items = []
@@ -309,15 +287,6 @@ def categories() -> dict:
             "pool": lambda: local_pool(["data/graffiti/images/train"])
             + local_pool(["data/graffiti/images/val"], fixed="test"),
             "external": {},
-        },
-        "open_manhole": {
-            "source": "Synthetic Urban Manhole Cover Dataset (Strakos et al., 2026), doi:10.5281/zenodo.21291309, CC BY 4.0",
-            "pool": synthetic_manhole_pool,
-            "external": {
-                # Real photos from the Kaggle Road Hazards set: evaluation only (see D3).
-                "open_manhole_kaggle_real": lambda: local_pool(
-                    ["data/open_manhole/images/train", "data/open_manhole/images/val"]),
-            },
         },
     }
 
@@ -403,15 +372,13 @@ def verify(splits: dict[str, list[dict]]) -> dict:
         groups_by_split[s].add(it["group"])
     shared_groups = sum(len(groups_by_split[a] & groups_by_split[b])
                         for a, b in (("train", "val"), ("train", "test"), ("val", "test")))
-    cross_pairs = sum(1 for i, j in pairs_on_disk([it for _, it in flat]) if flat[i][0] != flat[j][0])
-    missing = sum(1 for _, it in flat if not (ROOT / it["file"]).exists())
+    cross_pairs = sum(1 for i, j in item_pairs([it for _, it in flat]) if flat[i][0] != flat[j][0])
     stems = defaultdict(set)
     for s, it in flat:
         stems[(it.get("namespace", ""), stem_key(it["file"]))].add(s)
     cross_stems = sum(1 for v in stems.values() if len(v) > 1)
     return {"shared_groups": shared_groups, "cross_split_near_duplicate_pairs": cross_pairs,
-            "cross_split_stems": cross_stems, "images_checked_on_disk": len(flat) - missing,
-            "images_not_yet_downloaded": missing}
+            "cross_split_stems": cross_stems}
 
 
 def item_out(it: dict) -> dict:
@@ -424,7 +391,7 @@ def dedupe_external(ext: list[dict], domain: list[dict]) -> tuple[list[dict], in
     combined = domain + ext
     n = len(domain)
     bad = set()
-    for i, j in pairs_on_disk(combined):
+    for i, j in item_pairs(combined):
         if (i < n) != (j < n):
             bad.add(max(i, j))
     kept = [it for k, it in enumerate(ext) if k + n not in bad]
@@ -486,7 +453,10 @@ def build(only: list[str] | None) -> dict:
 
 
 def audit() -> dict:
-    """Measure group overlap between the old train and val folders (findings F1 to F3)."""
+    """Measure group overlap between the old train and val folders (findings F1 to F3).
+
+    The open manhole category was withdrawn (DATASETS.md), but its old split is still
+    audited because the submitted paper reported a score on it."""
     old = {
         "pothole_roboflow": {"train": "Pothole_Segmentation_YOLOv8.v1i.yolov8/train/images",
                              "val": "Pothole_Segmentation_YOLOv8.v1i.yolov8/valid/images"},

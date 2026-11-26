@@ -42,7 +42,6 @@ ANNOTATED_MAX_SIDE = 1024
 MODELS = {
     "pothole_road_damage": "pothole_road_damage_model.pt",
     "garbage_litter": "garbage_litter_model.pt",
-    "open_manhole": "open_manhole_model.pt",
     "graffiti": "graffiti_model.pt",
 }
 

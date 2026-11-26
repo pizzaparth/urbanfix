@@ -17,7 +17,7 @@ The cycle has six links, all handled inside one system:
 5. **Prove:** closing generates a PDF resolution receipt. Every complaint, with its full status history, is published in a public registry.
 6. **Learn:** approved researchers query and export anonymised data, and administrators track performance by category, ward, and urgency.
 
-Complaints fall into four categories. Each one is backed by a public, annotated image dataset that its detection model is trained on: **Pothole / Road Damage**, **Garbage / Litter**, **Open Manhole**, and **Graffiti**. Categories without a proper public dataset are not offered, so every report the app accepts can be checked by AI.
+Complaints fall into three categories. Each one is backed by a public, annotated image dataset with documented provenance and a usable licence that its detection model is trained on: **Pothole / Road Damage**, **Garbage / Litter**, and **Graffiti**. (Open Manhole was offered until November 2026; it was withdrawn because its only dataset names no photographer or source. Older complaints keep that category.) Categories without a proper public dataset are not offered, so every report the app accepts can be checked by AI.
 
 The system has three parts:
 
@@ -56,8 +56,8 @@ Staff and researchers are onboarded through an **invite flow**. The admin create
 
 #### 3.1 Citizen Complaint Filing & Email Verification
 Filing is a 6-step wizard on the **Report** tab:
-1. **Category:** pick one of the 4 categories.
-2. **Questions:** answer that category's 5 yes/no questions on swipeable cards (e.g. "Is the manhole completely uncovered, posing a fall hazard?"). Each question has a severity weight (2 = safety-critical, 1 = standard context). The urgency is the share of weighted "Yes" answers: **High Urgency** at 60% or more, **Medium Urgency** at 30% or more, otherwise **Standard Urgency**. The citizen sees the result live.
+1. **Category:** pick one of the 3 categories.
+2. **Questions:** answer that category's 5 yes/no questions on swipeable cards (e.g. "Is the pothole/damage large or deep enough to be a serious hazard?"). Each question has a severity weight (2 = safety-critical, 1 = standard context). The urgency is the share of weighted "Yes" answers: **High Urgency** at 60% or more, **Medium Urgency** at 30% or more, otherwise **Standard Urgency**. The citizen sees the result live.
 3. **Details:** Subject, Description, Location, and **Ward** (Ward 1–10, required).
 4. **Upload:** up to 3 photos (camera or gallery).
 5. **Contact:** Name, Email, optional Phone.
@@ -203,7 +203,7 @@ The app shows a different bottom tab set for each role. The server's role, not t
 * `citizenId` (ObjectId → `User`, Required, Indexed)
 * `title` (String, Required, 5–100 characters)
 * `description` (String, Required, at least 15 characters)
-* `category` (String, Required, Indexed). New complaints must use one of the 4 categories: `Pothole / Road Damage`, `Garbage / Litter`, `Open Manhole`, `Graffiti`.
+* `category` (String, Required, Indexed). New complaints must use one of the 3 categories: `Pothole / Road Damage`, `Garbage / Litter`, `Graffiti`. Complaints filed before November 2026 may also hold the withdrawn `Open Manhole`.
 * `location` (String, Required, Indexed)
 * `ward` (Enum: `Ward 1` … `Ward 10`, Indexed). Required on new complaints; `null` only on legacy records.
 * `images` (Array of file paths, max 3)
@@ -343,26 +343,24 @@ The AI model:
 
 The AI system is an automated validation and localisation layer. It does not reject complaints on its own. When the AI cannot confidently detect the selected issue, the complaint is flagged `needsReview` and stays in the supervisor's triage queue for a human decision.
 
-**Category policy:** a category is offered in the app only when a public, documented, annotated image dataset exists for it. Without real training data, a model cannot validate the photos, so the category list is limited to the four below. The list lives in `backend/constants/categories.js` (enforced by the API) and `mobile/src/constants/categories.js` (shown in the app).
+**Category policy:** a category is offered in the app only when a public, documented, annotated image dataset exists for it. Without real training data, a model cannot validate the photos, so the category list is limited to the three below. The list lives in `backend/constants/categories.js` (enforced by the API) and `mobile/src/constants/categories.js` (shown in the app).
 
 #### 8.2 AI Models, Datasets and Category Mapping
 
 | Complaint Category | AI Model | Task | Training Dataset |
 |---|---|---|---|
-| Pothole / Road Damage | `pothole_road_damage_model.pt` | Segmentation | Roboflow **Pothole Segmentation (YOLOv8)**, 780 images (720 train, 60 validation) with polygon masks, CC BY 4.0, included in `ai_model/`. A second public source, **RDD2022**, adds 47,420 road images from six countries, including India, with more than 55,000 boxed damage instances (cracks and potholes). |
+| Pothole / Road Damage | `pothole_road_damage_model.pt` | Segmentation (submitted paper); detection after retraining | Submitted paper: Roboflow **Pothole Segmentation (YOLOv8)**, CC BY 4.0, image sources undocumented. 2026 revision: **RDD2022** class D40 (potholes), CC BY 4.0, from Japan, the Czech Republic, the United States and China; India is held out as an external test set. See `ai_model/DATASETS.md`. |
 | Garbage / Litter | `garbage_litter_model.pt` | Segmentation | **TACO** (Trash Annotations in Context): 1,500 images and 4,784 litter annotations, with COCO-format masks, taken on roads, in woods and on beaches. |
-| Open Manhole | `open_manhole_model.pt` | Detection | **Road Hazards Dataset**: 2.7k road images with YOLO-format boxes for potholes, cracks and open manholes. |
 | Graffiti | `graffiti_model.pt` | Detection | **STORM graffiti/tagging detection dataset** (University of West Attica, CC BY 4.0): 1,022 smartphone images with bounding boxes, collected through a crowdsensing app. |
 
-The `.pt` files are trained PyTorch model files that hold each model's learned weights. All four models are YOLOv8 models fine-tuned independently for their category. Segmentation is used where the dataset has masks, and detection where it has boxes.
+The `.pt` files are trained PyTorch model files that hold each model's learned weights. All three models are YOLOv8 models fine-tuned independently for their category. Segmentation is used where the dataset has masks, and detection where it has boxes.
 
 **Dataset sources:**
-* RDD2022: [figshare](https://figshare.com/articles/dataset/RDD2022_-_The_multi-national_Road_Damage_Dataset_released_through_CRDDC_2022/21431547), [paper](https://arxiv.org/abs/2209.08538)
+* RDD2022: [figshare](https://figshare.com/articles/dataset/RDD2022_-_The_multi-national_Road_Damage_Dataset_released_through_CRDDC_2022/21431547), [paper](https://doi.org/10.1002/gdj3.260)
 * TACO: [tacodataset.org](http://tacodataset.org), [paper](https://arxiv.org/abs/2003.06975)
-* Road Hazards Dataset: [dataset page](https://hyper.ai/en/datasets/38237)
 * STORM graffiti dataset: [Zenodo](https://zenodo.org/records/3238357)
 
-**Categories not offered:** water leakage, faulty streetlights, illegal parking, fallen trees, damaged road signs, and damaged electrical poles/wires. For these, only small hobby datasets, image-level labels, synthetic images, or undocumented collections were found. None of them can train a reliable street-level detector.
+**Categories not offered:** open manholes (dataset without documented provenance), water leakage, faulty streetlights, illegal parking, fallen trees, damaged road signs, and damaged electrical poles/wires. For these, only small hobby datasets, image-level labels, synthetic images, or undocumented collections were found. None of them can train a reliable street-level detector.
 
 #### 8.3 AI Model Training Strategy
 Each complaint category is trained independently on its own dataset, in its own notebook in `ai_model/`:
@@ -380,7 +378,7 @@ Category Dataset (e.g. Pothole Segmentation YOLOv8)
 pothole_road_damage_model.pt
 ```
 
-The trained weights are produced by each notebook's training cell and copied into `ai_model/weights/` (`pothole_road_damage_model.pt`, `garbage_litter_model.pt`, `open_manhole_model.pt`, `graffiti_model.pt`), the model storage the AI service loads.
+The trained weights are produced by each notebook's training cell and copied into `ai_model/weights/` (`pothole_road_damage_model.pt`, `garbage_litter_model.pt`, `graffiti_model.pt`), the model storage the AI service loads.
 
 **Reference result:** the Pothole / Road Damage segmentation model reaches a mask mAP50 of **0.72** (precision 0.71, recall 0.66) on its 60-image validation split.
 
@@ -393,7 +391,6 @@ The per-category models are served by a dedicated AI inference service. The back
                                        │                         │
                                        │ pothole_road_damage.pt  │
                                        │ garbage_litter.pt       │
-                                       │ open_manhole.pt         │
                                        │ graffiti.pt             │
                                        └────────────┬────────────┘
                                                      │

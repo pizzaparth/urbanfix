@@ -3,104 +3,66 @@
   "train": {
    "images": 1000,
    "images_with_defect": 1000,
-   "objects": 3360,
-   "not_downloaded": 0
+   "objects": 3360
   },
   "val": {
    "images": 214,
    "images_with_defect": 214,
-   "objects": 785,
-   "not_downloaded": 0
+   "objects": 785
   },
   "test": {
    "images": 214,
    "images_with_defect": 214,
-   "objects": 655,
-   "not_downloaded": 0
+   "objects": 655
   }
  },
  "graffiti": {
   "train": {
    "images": 670,
    "images_with_defect": 670,
-   "objects": 1604,
-   "not_downloaded": 0
+   "objects": 1604
   },
   "val": {
    "images": 143,
    "images_with_defect": 143,
-   "objects": 285,
-   "not_downloaded": 0
+   "objects": 285
   },
   "test": {
    "images": 209,
    "images_with_defect": 209,
-   "objects": 450,
-   "not_downloaded": 0
-  }
- },
- "external/garbage_litter_taco_unofficial": {
-  "images": 2308,
-  "images_with_defect": 2303,
-  "objects": 4890,
-  "not_downloaded": 0
- },
- "open_manhole": {
-  "train": {
-   "images": 0,
-   "images_with_defect": 0,
-   "objects": 0,
-   "not_downloaded": 794
-  },
-  "val": {
-   "images": 0,
-   "images_with_defect": 0,
-   "objects": 0,
-   "not_downloaded": 191
-  },
-  "test": {
-   "images": 0,
-   "images_with_defect": 0,
-   "objects": 0,
-   "not_downloaded": 199
+   "objects": 450
   }
  },
  "pothole": {
   "train": {
    "images": 1600,
    "images_with_defect": 1281,
-   "objects": 1959,
-   "not_downloaded": 0
+   "objects": 1959
   },
   "val": {
    "images": 341,
    "images_with_defect": 275,
-   "objects": 419,
-   "not_downloaded": 0
+   "objects": 419
   },
   "test": {
    "images": 339,
    "images_with_defect": 268,
-   "objects": 432,
-   "not_downloaded": 0
+   "objects": 432
   }
  },
- "external/open_manhole_kaggle_real": {
-  "images": 564,
-  "images_with_defect": 138,
-  "objects": 140,
-  "not_downloaded": 0
+ "external/garbage_litter_taco_unofficial": {
+  "images": 2308,
+  "images_with_defect": 2303,
+  "objects": 4890
  },
  "external/pothole_rdd2022_india": {
   "images": 1911,
   "images_with_defect": 1530,
-  "objects": 3187,
-  "not_downloaded": 0
+  "objects": 3187
  },
  "external/pothole_roboflow": {
   "images": 297,
   "images_with_defect": 297,
-  "objects": 807,
-  "not_downloaded": 0
+  "objects": 807
  }
 }

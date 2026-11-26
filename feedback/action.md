@@ -87,7 +87,7 @@ I checked the paper (`paper/urbanfix_ieee_access/latex/main.tex`) against the co
 
 **Steps:**
 
-1. Retrain the four YOLOv8n models on the new train sets. Select the checkpoint on the new val sets only. Use the free GPU on Kaggle Notebooks or Colab if the laptop is too slow. The current settings stay the same (640 px, batch 16, 60 epochs, patience 15).
+1. Retrain the YOLOv8n models (three since D3) on the new train sets. Select the checkpoint on the new val sets only. Use the free GPU on Kaggle Notebooks or Colab if the laptop is too slow. The current settings stay the same (640 px, batch 16, 60 epochs, patience 15).
 2. Add `ai_model/notebooks/07_test_evaluation.ipynb`. It runs each final model **once** on its test set and writes `results/test_eval.json`.
 3. Train each model with **3 seeds** (0, 1, 2). Report the mean and the range across seeds.
 4. **Confidence intervals:** bootstrap over test images (1,000 resamples, resample images with replacement, recompute P, R, mAP50, mAP50-95). Report 95 % percentile intervals. Ultralytics returns per-image statistics, so this costs only CPU time.
@@ -372,6 +372,8 @@ Add columns to Table IV: source and collector, licence, URL with version or acce
 
 ### D3. Open manhole [18]: verify by hand, then keep, replace or drop (P0)
 
+**Outcome (2026-11-26):** dropped. See section 10a.
+
 1. Open the Kaggle page in a browser and record the licence shown in its "License" field, and any source statement.
 2. If the licence is CC0, CC BY or another usable licence and the collector is named: keep it, document it, and use the leak-free split from A1.
 3. If the licence is "Unknown", "Other" without terms, or missing: by the paper's own Eq. (1) the category does not qualify. Either replace it with a Roboflow Universe manhole dataset that states CC BY 4.0 and a source, or drop open manholes from the supported categories and say so. Dropping a category is acceptable; the screening rule then works as designed, and it is an honest result.
@@ -600,7 +602,7 @@ The reviewer is right that the submitted system did not implement k-anonymity. *
 
 ### J11. References [16] and [18] (R2 iv, Q5): agreed
 
-The reviewer is right. The pothole set has a licence but no documented provenance; the manhole set's licence could not be confirmed. **Done:** pothole moves to RDD2022 (D2); manhole is documented, replaced, or dropped according to the manual check (D3); Eq. (1) now lists all five criteria (D4).
+The reviewer is right. The pothole set has a licence but no documented provenance; the manhole set's licence could not be confirmed. **Done:** pothole moves to RDD2022 (D2); the manhole set fails the provenance criterion, so the open manhole category was withdrawn (D3, F18); Eq. (1) now lists all five criteria and Fig. 4 shows them (D4).
 
 ### J12. Points where the reviewers are fully right and no defence is offered
 
@@ -650,7 +652,7 @@ Work in this order. Each phase depends on the one before.
 - **The vision service does not slow filing:** p50 filing time is 4.27 s without the service and 4.30 s with it, because the model call runs after the response.
 - Load test percentiles: `autocannon` reports p97.5, not p95. Report p97.5 or switch to k6 if the paper must show p95.
 
-### Phase 2, data and splits: done on 2026-11-25
+### Phase 2, data and splits: done on 2026-11-26
 
 Details and sources: `ai_model/DATASETS.md`. Numbers: `ai_model/results/split_audit_old.json`, `split_report.json`, `yolo_sets.json`.
 
@@ -658,16 +660,18 @@ Details and sources: `ai_model/DATASETS.md`. Numbers: `ai_model/results/split_au
 |---|---|---|
 | D1 Provenance and licences | Done. Every dataset checked against its publisher page or API on 2026-11-24, with collector, licence, DOI or URL, version, source photos versus copies, redistribution and role. | `ai_model/DATASETS.md` |
 | D2 Pothole | Done. Moved to **RDD2022 class D40** (boxes, CC BY 4.0). India is held out completely as the external test set. Training pool: Japan, Czech Republic, United States, China motorbike, split 70/15/15 by source group inside each country. Norway (10.6 GB) and China drone (aerial) are left out. The Roboflow set becomes an external test set. | `scripts/fetch_rdd2022.py` |
-| D3 Open manhole | Done. Kaggle set **fails Eq. (1)** (F18). Replaced by the **Synthetic Urban Manhole Cover Dataset** (Zenodo, CC BY 4.0, named authors, camera-disjoint splits). Kaggle photos kept as an evaluation-only real-photo test set. | `scripts/fetch_synthetic_manhole.py` |
-| D4 Eq. (1) | Eq. (1) in `main.tex` now has five criteria. Fig. 4 still needs a licence column and a corrected open manhole row (phase 6, P4). | `paper/.../main.tex` |
-| A1 Splits | Done. Groups from file stems plus near-duplicate hashes (64-bit dHash ≤ 10 bits as candidates, confirmed by 256-bit dHash ≤ 24 bits, mirror images included). 0 shared groups, 0 cross-split near-duplicate pairs and 0 cross-split stems in all four categories. Val, test and external sets keep one image per group. | `ai_model/scripts/make_splits.py`, `ai_model/splits/` |
-| A3 External test sets | Done for pothole (India, Roboflow), litter (TACO unofficial) and open manhole (Kaggle real photos). Graffiti uses the untouched STORM test split; no second licensed graffiti set was found. | `ai_model/splits/external/` |
+| D3 Open manhole | Done: **category withdrawn**. The Kaggle set fails Eq. (1) (F18). A synthetic CC BY replacement (Zenodo doi:10.5281/zenodo.21291309) was considered and rejected because it has no real photos. Removed from the API category list, the app, the vision service, the seed script, the load test, the notebooks and the weights. Earlier complaints keep the category; their questionnaire stays so their published urgency can be recomputed. A test checks that the API refuses the category. | `backend/constants/categories.js`, `ai_model/DATASETS.md` |
+| D4 Eq. (1) | Done. Eq. (1) has five criteria. Fig. 4 redrawn from a script with a licence column and the corrected open manhole row; screening text says three of ten categories qualify and why open manholes were withdrawn. | `ai_model/scripts/fig_dataset_screening.py`, `paper/.../figs/fig04.jpg` |
+| D1 in the paper | Done. Table IV lists dataset, licence, collector and capture, DOI, splits, external test sets and model for the three categories. References updated: RDD2022 journal version and data DOI, TACO data DOI, Kaggle set cited as the withdrawn dataset. | `paper/.../main.tex` |
+| A1 Splits | Done. Groups from file stems plus near-duplicate hashes (64-bit dHash ≤ 10 bits as candidates, confirmed by 256-bit dHash ≤ 24 bits, mirror images included). 0 shared groups, 0 cross-split near-duplicate pairs and 0 cross-split stems in all three categories. Val, test and external sets keep one image per group. | `ai_model/scripts/make_splits.py`, `ai_model/splits/` |
+| A3 External test sets | Done for pothole (India, Roboflow) and litter (TACO unofficial). Graffiti: a second set was searched for on 2026-11-26 and none is both open and documented (City Risks: provenance not stated; 17K-Graffiti: on request only; Lisbon: on request only), so the untouched STORM test split is the only test. PlastOPol (litter, CC BY 4.0, verified) is an optional extra test; it is 7.7 GB on Zenodo, so it would be fetched on Colab in phase 3. | `ai_model/splits/external/`, `ai_model/DATASETS.md` |
+| CI | Fixed. The backend job had never run: Node 22 on GitHub does not accept a folder as `--test` argument (`Cannot find module .../tests`). The test script now uses the glob `tests/**/*.test.js`, and the end-to-end job waits for `/health` instead of a fixed 15 s. | `backend/package.json`, `.github/workflows/test.yml` |
 
 **Old splits, measured (A9):**
 
 | Old set | Train images / source photos | Val images / source photos | Val images sharing a source photo with train |
 |---|---|---|---|
-| Open manhole (Kaggle) | 1,123 / 460 | 480 / 169 | **262** (65 source photos); 368 of the 480 are augmented copies |
+| Open manhole (Kaggle; category now withdrawn) | 1,123 / 460 | 480 / 169 | **262** (65 source photos); 368 of the 480 are augmented copies |
 | Pothole (Roboflow) | 720 / 238 | 60 / 60 | 1 (all 60 val images are Roboflow augmentations) |
 | Litter (TACO) | 1,214 / 1,212 | 214 / 214 | 1 |
 | Graffiti (STORM; "val" was the official test split) | 813 / 812 | 209 / 209 | 0 |
@@ -679,13 +683,12 @@ Details and sources: `ai_model/DATASETS.md`. Numbers: `ai_model/results/split_au
 | Pothole | RDD2022 D40 (Japan 1,219 / Czech 135 / US 102 / China 144 train images) | 1,600 (1,281 with a pothole) | 341 (275) | 339 (268) | RDD2022 India 1,911 (1,530 with a pothole); Roboflow 297 |
 | Litter | TACO official | 1,000 | 214 | 214 | TACO unofficial 2,308 (6 near-duplicates of TACO official dropped) |
 | Graffiti | STORM | 670 | 143 | 209 (official test) | none |
-| Open manhole | Synthetic (cameras 1–8 / 9–10 / 11–12) | 794 (764 with an open cover) | 191 (161) | 199 (194) | Kaggle real photos 564 (138 with an open manhole) |
 
 **Still open from phase 2 scope:**
 
-- The synthetic manhole images are not downloaded yet. Zenodo served only 80 to 160 KB/s to the home network (the 12 GB set would take about a day), so the download runs on the Kaggle or Colab machine in phase 3. The split cannot change, because each camera belongs to one split. The near-duplicate check, which has covered 7 of 1,184 frames so far, is rerun there with `make_splits.py --only open_manhole`.
-- Fig. 4 redraw (phase 6).
 - Negatives for A5 (COCO 2017 val) are fetched in phase 3.
+- The abstract, the results section (Table V, Figs. 10 to 14), the graphical abstract caption and Fig. 5 still show the old four-category numbers, including open manholes. They are regenerated from the new results in phase 6.
+- Downloads from Zenodo ran at 80 to 160 KB/s from the home network. Large Zenodo files (PlastOPol, COCO if needed) go to a Colab VM disk, not to personal cloud storage (4 GB limit).
 
 **New findings during phase 2:**
 
@@ -693,11 +696,13 @@ Details and sources: `ai_model/DATASETS.md`. Numbers: `ai_model/results/split_au
 - **F19. The RDD2022 licence is CC BY 4.0** on the figshare record, not CC BY-SA 4.0 as this plan said. The P10 reference and Table IV should say CC BY 4.0.
 - **F20. TACO unofficial annotations mix licences.** 1,432 of 3,831 images are OpenLitterMap photos under the ODbL (a database licence). Only the 2,399 TACO-hosted "CC" images are used; 2,328 could still be downloaded, and 2,308 remain after removing rotated thumbnails and duplicates.
 - **F21. A 64-bit dHash alone gives false duplicates on plain walls.** On STORM it matched 5 unrelated graffiti pairs. The 256-bit confirmation step separates the two cases cleanly: true duplicates differ in at most 11 of 256 bits, false matches in at least 43. The old Roboflow pothole split contains one true near-duplicate pair (`pic-88` in val, `pic-142` in train), and so does the old TACO split (`taco_1081` and `taco_1110`).
+- **F23. Open manhole category withdrawn.** The system now offers three categories. In the response letter this is the screening rule working as designed, not a loss: the paper's own Eq. (1) excludes the only real-photo dataset.
+- **F24. CI never ran the backend tests** (see the CI row above). Both earlier pushes showed a failed run; only the vision-service job passed.
 - **F22. RDD2022 is box-only**, so the pothole model becomes a box detector. This removes the last mask-based model that δ in Eq. (4) relied on, apart from litter. A10 (drop the δ-to-urgency rule) is now required, not just recommended.
 
 ## 11. Done checklist
 
-- [ ] No source photo appears in two splits (script output saved). Done for pothole, litter and graffiti; open manhole waits for the near-duplicate check on the downloaded frames.
+- [x] No source photo appears in two splits (script output saved in `ai_model/results/split_report.json`).
 - [ ] Every number in the paper comes from a `results/*.json` file in the release.
 - [ ] Test-set metrics with 95 % CIs, 3 seeds.
 - [ ] Complaint-level false-flag and false-pass rates per category.

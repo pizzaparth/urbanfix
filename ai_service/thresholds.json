@@ -3,7 +3,6 @@
   "tau": {
     "pothole_road_damage": 0.25,
     "garbage_litter": 0.25,
-    "open_manhole": 0.25,
     "graffiti": 0.25
   }
 }

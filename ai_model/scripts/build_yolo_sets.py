@@ -7,12 +7,8 @@ Images are linked, not copied. Labels are written fresh from each source's own
 annotation format, with the defect as class 0:
 
 - RDD2022 Pascal VOC XML: class D40 (pothole), boxes.
-- Synthetic manhole box files: class open_manhole, boxes. Boxes smaller than
-  MIN_SIDE pixels on either side at the 640-px training size are dropped,
-  because they are a few pixels wide in the 1920x1080 render and no resident
-  photo would show a manhole that small.
 - TACO unofficial COCO JSON: every litter polygon, as a segmentation label.
-- Existing YOLO label files (TACO official, STORM, Kaggle manholes, Roboflow
+- Existing YOLO label files (TACO official, STORM, Roboflow
   potholes): copied; polygons are reduced to boxes for box-only models.
 """
 from __future__ import annotations
@@ -28,10 +24,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SPLITS = ROOT / "splits"
 OUT = ROOT / "data" / "v2"
-MIN_SIDE = 8 / 640
 
-TASK = {"pothole": "detect", "garbage_litter": "segment", "graffiti": "detect", "open_manhole": "detect"}
-NAMES = {"pothole": "Pothole", "garbage_litter": "Litter", "graffiti": "Graffiti", "open_manhole": "Open manhole"}
+TASK = {"pothole": "detect", "garbage_litter": "segment", "graffiti": "detect"}
+NAMES = {"pothole": "Pothole", "garbage_litter": "Litter", "graffiti": "Graffiti"}
 
 
 def poly_to_box(vals: list[float]) -> list[float]:
@@ -74,22 +69,6 @@ def from_rdd(label_rel: str) -> list[str]:
     return out
 
 
-def from_synthetic(label_rel: str) -> list[str]:
-    out = []
-    for line in (ROOT / label_rel).read_text().splitlines():
-        parts = line.split()
-        if len(parts) != 6 or parts[0] != "open_manhole":
-            continue
-        x0, y0, x1, y1 = map(float, parts[2:])
-        w, h = x1 - x0, y1 - y0
-        # The 16:9 render becomes 640x360 at training time, so a normalised height
-        # counts 1080/1920 as much as a normalised width.
-        if w < MIN_SIDE or h * 1080 / 1920 < MIN_SIDE:
-            continue
-        out.append(f"0 {(x0 + x1) / 2:.6f} {(y0 + y1) / 2:.6f} {w:.6f} {h:.6f}")
-    return out
-
-
 @lru_cache(maxsize=2)
 def _coco(path: str) -> tuple[dict, dict]:
     coco = json.loads((ROOT / path).read_text())
@@ -124,8 +103,6 @@ def labels_for(item: dict, task: str) -> list[str]:
     ref = item["label"]
     if ref.endswith(".xml"):
         return from_rdd(ref)
-    if "/synthetic_manhole/" in ref:
-        return from_synthetic(ref)
     if "#" in ref:
         return from_coco(ref, task)
     return from_yolo(ref, task)
@@ -139,11 +116,8 @@ def link_name(rel: str) -> str:
 def write_split(items: list[dict], img_dir: Path, lab_dir: Path, task: str) -> dict:
     img_dir.mkdir(parents=True, exist_ok=True)
     lab_dir.mkdir(parents=True, exist_ok=True)
-    n_obj = n_pos = missing = 0
+    n_obj = n_pos = 0
     for it in items:
-        if not (ROOT / it["file"]).exists() or not (ROOT / it["label"].split("#")[0]).exists():
-            missing += 1  # not downloaded yet (synthetic manholes); rerun when it is
-            continue
         name = link_name(it["file"])
         dest = img_dir / name
         if not dest.exists():
@@ -152,8 +126,7 @@ def write_split(items: list[dict], img_dir: Path, lab_dir: Path, task: str) -> d
         n_obj += len(lines)
         n_pos += bool(lines)
         (lab_dir / f"{Path(name).stem}.txt").write_text("".join(l + "\n" for l in lines))
-    return {"images": len(items) - missing, "images_with_defect": n_pos, "objects": n_obj,
-            "not_downloaded": missing}
+    return {"images": len(items), "images_with_defect": n_pos, "objects": n_obj}
 
 
 def build_category(cat: str) -> dict:

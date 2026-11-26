@@ -13,7 +13,7 @@
     "backfill:stage-ward": "node scripts/backfillStageAndWard.js",
     "backfill:public": "node scripts/backfillIsPublic.js",
     "backfill:urgency": "node scripts/backfillUrgencyLevels.js",
-    "test": "node --test --test-concurrency=1 tests/",
+    "test": "node --test --test-concurrency=1 \"tests/**/*.test.js\"",
     "test:load": "node tests/load/run.js",
     "audit:verify": "node scripts/verifyAuditLog.js"
   },

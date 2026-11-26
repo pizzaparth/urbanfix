@@ -12,9 +12,7 @@
  "check": {
   "shared_groups": 0,
   "cross_split_near_duplicate_pairs": 0,
-  "cross_split_stems": 0,
-  "images_checked_on_disk": 1022,
-  "images_not_yet_downloaded": 0
+  "cross_split_stems": 0
  },
  "splits": {
   "train": [

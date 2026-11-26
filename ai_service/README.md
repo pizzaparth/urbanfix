@@ -21,8 +21,7 @@ Then set `AI_SERVICE_URL=http://127.0.0.1:8000` in `backend/.env`.
 `GET /health` lists the loaded models, their versions (file hash) and τ per category.
 
 `POST /predict/{category}` with 1 to 3 images in the multipart field `files`.
-`category` is one of `pothole_road_damage`, `garbage_litter`, `open_manhole`,
-`graffiti`. The response has:
+`category` is one of `pothole_road_damage`, `garbage_litter`, `graffiti`. The response has:
 
 | Field | Meaning |
 |---|---|
@@ -35,7 +34,7 @@ Then set `AI_SERVICE_URL=http://127.0.0.1:8000` in `backend/.env`.
 
 ## Thresholds
 
-`thresholds.json` holds τ per category. All four are 0.25, the value in the submitted
+`thresholds.json` holds τ per category. All three are 0.25, the value in the submitted
 paper, until the τ sweep (feedback/action.md, A4) picks per-category values.
 `TAU_<CATEGORY>` environment variables override single values.
 

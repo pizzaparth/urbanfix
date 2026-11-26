@@ -12,7 +12,6 @@ import { uploadDir } from '../config/paths.js';
 export const CATEGORY_MODEL = {
   'Pothole / Road Damage': 'pothole_road_damage',
   'Garbage / Litter': 'garbage_litter',
-  'Open Manhole': 'open_manhole',
   Graffiti: 'graffiti',
 };
 

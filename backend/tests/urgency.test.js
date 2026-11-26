@@ -8,6 +8,7 @@ import request from 'supertest';
 
 import { startServer, stopServer, resetState, fileComplaint, noAnswers, app } from './helpers.js';
 import { CATEGORY_QUESTIONNAIRES } from '../constants/questionnaires.js';
+import { CATEGORIES } from '../constants/categories.js';
 import { scoreAnswers, bandForScore } from '../utils/urgency.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -56,8 +57,8 @@ describe('Server-side urgency', () => {
   });
 
   it('anyone can recompute the published score from the published answers', async () => {
-    const category = 'Open Manhole';
-    const answers = { ...noAnswers(category), q_uncovered: 'Yes', q_busy_area: 'Yes', q_lighting: 'Yes' };
+    const category = 'Pothole / Road Damage';
+    const answers = { ...noAnswers(category), q_accident: 'Yes', q_size: 'Yes', q_duration: 'Yes' };
     await fileComplaint({ category, answers: JSON.stringify(answers) });
     const c = (await request(app).get('/api/public/complaints').expect(200)).body.complaints[0];
     const qs = CATEGORY_QUESTIONNAIRES[c.category];
@@ -76,10 +77,15 @@ describe('Server-side urgency', () => {
     }
   });
 
+  it('a withdrawn category (Open Manhole) can no longer be filed', async () => {
+    const res = await fileComplaint({ category: 'Open Manhole', answers: JSON.stringify(noAnswers('Open Manhole')) });
+    assert.equal(res.status, 400);
+  });
+
   it('the app copy of the questionnaires matches the server copy', () => {
     const mobile = fs.readFileSync(path.join(here, '../../mobile/src/constants/categories.js'), 'utf8');
-    for (const [category, qs] of Object.entries(CATEGORY_QUESTIONNAIRES)) {
-      for (const q of qs) {
+    for (const category of CATEGORIES) {
+      for (const q of CATEGORY_QUESTIONNAIRES[category]) {
         const line = new RegExp(`id: '${q.id}', question: '${q.question.replace(/[.*+?^${}()|[\]\\/]/g, '\\$&')}', weight: ${q.weight}`);
         assert.match(mobile, line, `${category} ${q.id}`);
       }

@@ -36,11 +36,10 @@ const FRESH = args.includes('--fresh');
 // utils/urgency.js), so seeded urgency matches what the API would compute.
 
 // Weighted so the category donut isn't flat — potholes/garbage are the most common
-// municipal complaint types in practice, rarer hazards (open manholes, graffiti) less so.
+// municipal complaint types in practice, graffiti less so.
 const CATEGORY_WEIGHTS = {
   'Pothole / Road Damage': 6,
   'Garbage / Litter': 5,
-  'Open Manhole': 2,
   Graffiti: 2,
 };
 
@@ -79,13 +78,6 @@ const TITLE_TEMPLATES = {
     'Foul smell from uncollected trash in {loc}',
     'Litter scattered across {loc} pavement',
   ],
-  'Open Manhole': [
-    'Uncovered manhole poses fall risk near {loc}',
-    'Open manhole cover reported on {loc} main road',
-    'Missing manhole cover near {loc} school zone',
-    'Manhole left uncovered after maintenance in {loc}',
-    'Dangerous open drain cover spotted at {loc}',
-  ],
   Graffiti: [
     'Graffiti covering public wall near {loc}',
     'Offensive graffiti spotted on {loc} community center',
@@ -105,11 +97,6 @@ const DESCRIPTION_TEMPLATES = {
     'Household waste has been piling up uncollected near {loc} for over 48 hours, attracting stray animals and pests.',
     'The community dustbin at {loc} is overflowing onto the street, creating a foul smell and health hazard for nearby residents.',
     'Litter and food wrappers are scattered across the pavement at {loc}, making the area look neglected and unhygienic.',
-  ],
-  'Open Manhole': [
-    'An uncovered manhole near {loc} poses a serious fall risk to pedestrians, especially after dark.',
-    'The manhole cover on the main road at {loc} appears to have been missing for several days, endangering commuters.',
-    'A drain cover near the {loc} school zone has been left open, putting children at risk while walking to school.',
   ],
   Graffiti: [
     'A public wall near {loc} has been covered in graffiti, making the area look unkempt and neglected.',

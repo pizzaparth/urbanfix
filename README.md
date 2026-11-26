@@ -18,7 +18,7 @@
 
 # UrbanFix
 
-UrbanFix is an AI-powered governance system for civic infrastructure complaints. Citizens report potholes, litter, open manholes and graffiti from a mobile app without creating an account. A YOLOv8 model trained for the selected category checks each photo, a weighted questionnaire sets the urgency, and a ward-based staff workflow takes the complaint from triage to field repair, photo proof and a closing PDF receipt. Every complaint and its status history is published in a public registry, and approved researchers can export pseudonymised research records.
+UrbanFix is an AI-powered governance system for civic infrastructure complaints. Citizens report potholes, litter and graffiti from a mobile app without creating an account. A YOLOv8 model trained for the selected category checks each photo, a weighted questionnaire sets the urgency, and a ward-based staff workflow takes the complaint from triage to field repair, photo proof and a closing PDF receipt. Every complaint and its status history is published in a public registry, and approved researchers can export pseudonymised research records.
 
 ## Contents
 
@@ -39,7 +39,7 @@ UrbanFix is an AI-powered governance system for civic infrastructure complaints.
 |:--|:--|:--|
 | [`mobile/`](./mobile) | Expo SDK 57, React Native 0.86, React 19, React Navigation 7, Reanimated 4, FlashList, react-native-svg | The only client. Role-based tab sets for citizens, supervisors, field workers, admins and researchers. Runs in Expo Go on Android and iOS, and in the browser for development. |
 | [`backend/`](./backend) | Node.js 20, Express 4, Mongoose 8, JWT, bcrypt, Zod, Multer, Nodemailer, PDFKit | REST API: auth and invites, complaint intake with email OTP, workflow engine, attendance and leave, PDF receipts, public registry, research access with audit logging. |
-| [`ai_model/`](./ai_model) | Python 3, PyTorch 2.14, Ultralytics 8.4 | Dataset preparation, training and evaluation notebooks for the four category models, trained weights and evaluation results. |
+| [`ai_model/`](./ai_model) | Python 3, PyTorch 2.14, Ultralytics 8.4 | Dataset preparation, training and evaluation notebooks and scripts for the three category models, trained weights and evaluation results. |
 | [`ai_service/`](./ai_service) | Python 3, FastAPI, Ultralytics 8.4 | Vision service the backend calls after filing. Returns detections, s*, δ and the `needsReview` flag (Eqs. 3 to 5) and annotated photos. |
 | [`docs/`](./docs) | Markdown, Word | System description, project report, report figures and README graphics. |
 
@@ -81,7 +81,7 @@ flowchart LR
         PDF["PDFKit"]
     end
 
-    AI["AI service (FastAPI)<br/>YOLOv8, 4 category models"]
+    AI["AI service (FastAPI)<br/>YOLOv8, 3 category models"]
 
     P --> AU & CO
     S --> WF & AD
@@ -175,162 +175,27 @@ cd backend && npm run test:load     # load test on this machine; results in test
 
 ### AI models
 
-```bash
-cd ai_model
-python3 -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
-jupyter lab notebooks/
-```
+Each complaint category has its own YOLOv8 nano model, fine-tuned from COCO weights. A category is offered only if a public dataset of street-level images with localised labels (boxes or masks), documented provenance and a usable licence exists (Eq. 1 of the paper). Three categories qualify: pothole / road damage, garbage / litter and graffiti. The category list is enforced by `backend/constants/categories.js` and mirrored in `mobile/src/constants/categories.js`.
 
-Run `00_download_datasets.ipynb` once, then `01` to `04` to train a category model. Each training notebook copies its best checkpoint into `ai_model/weights/`. The trained weights for all four models are already in that folder.
+Open manholes were offered until November 2026. The only real-photo dataset found (Kaggle "Road Hazards") names no photographer or source, so the category was withdrawn. Complaints filed under it earlier keep their category and stay readable.
 
-### Development accounts
+### Datasets and splits (2026 revision)
 
-Created by `npm run seed:roles` (idempotent; refuses to run when `NODE_ENV=production`).
-
-| Role | Email | Password |
-|:--|:--|:--|
-| Admin | `admin@example.com` | `Passw0rd!123` |
-| Supervisor (Ward 1) | `supervisor@example.com` | `Passw0rd!123` |
-| Field worker (Ward 1) | `field1@example.com` | `Passw0rd!123` |
-| Field worker (Ward 2) | `field2@example.com` | `Passw0rd!123` |
-| Researcher, aggregate only | `researcher@example.com` | `Passw0rd!123` |
-| Researcher, anonymised records | `researcher-records@example.com` | `Passw0rd!123` |
-
-`npm run seed:admin` also creates `admin@complaintsystem.gov` / `admin_password_123`.
-
-### Backend scripts
-
-| Command | Purpose |
-|:--|:--|
-| `npm run dev` | Start the API with nodemon |
-| `npm start` | Start the API |
-| `npm run seed:admin` | Create the original admin account |
-| `npm run seed:roles` | Create one account per role |
-| `npm run seed:complaints` | Insert sample complaints (`--count`, `--days`, `--fresh`) |
-| `npm run backfill:stage-ward` | Fill `stage` and `ward` on legacy complaints |
-| `npm run backfill:public` | Mark legacy complaints public |
-| `npm run backfill:urgency` | Normalise legacy urgency values |
-| `npm test` | Run the backend test suite |
-| `npm run test:load` | Run the load test (`--count`, `--duration`, `--connections`, `--ai`) |
-| `npm run audit:verify` | Recompute the research access log hash chain; exit 1 if it is broken |
-
-## Configuration
-
-`backend/.env`
-
-| Variable | Required | Description |
-|:--|:--|:--|
-| `PORT` | no | API port. The app expects `5001`. |
-| `MONGO_URI` | no | Defaults to `mongodb://localhost:27017/complaint_system` |
-| `JWT_SECRET` | yes | Signs session tokens |
-| `RESEARCH_HMAC_KEY` | yes | Keys the per-researcher HMAC for research record IDs. At least 32 bytes and different from `JWT_SECRET`; the server refuses to start otherwise. Rotating it breaks joins with earlier exports. |
-| `AI_SERVICE_URL` | no | Vision service base URL. Unset: complaints are flagged for review. |
-| `AI_TIMEOUT_MS` | no | Timeout per vision call, default `20000`; two retries follow a failure |
-| `TRUST_PROXY` | no | Number of reverse proxies, so rate limits see client IPs |
-| `UPLOAD_DIR` | no | Photo directory, default `./uploads` |
-| `JWT_EXPIRES_IN` | no | Token lifetime, default `7d` |
-| `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_USER`, `EMAIL_PASS`, `EMAIL_FROM` | no | SMTP transport. Ethereal is used when unset. |
-| `APP_LINK_BASE` | no | Deep-link base for invite emails, default `dsn://` |
-| `DISABLE_JOBS` | no | `true` disables the researcher expiry email job |
-
-`mobile/.env`
-
-| Variable | Required | Description |
-|:--|:--|:--|
-| `EXPO_PUBLIC_API_URL` | no | Overrides the API base URL, for a deployed backend or `expo start --tunnel` |
-
-## AI models
-
-Each complaint category has its own YOLOv8 nano model, fine-tuned from COCO weights. A category is offered in the app only if a public, documented dataset with localised labels (boxes or masks) of street-level images exists for it; the category list is enforced by `backend/constants/categories.js` and mirrored in `mobile/src/constants/categories.js`.
-
-### Models
-
-| Category | Weights | Base model | Task | Output |
+| Category | Training dataset | Licence | Train / val / test | External test sets |
 |:--|:--|:--|:--|:--|
-| Pothole / Road Damage | `ai_model/weights/pothole_road_damage_model.pt` | `yolov8n-seg` | Instance segmentation | Boxes, masks, damaged-area share |
-| Garbage / Litter | `ai_model/weights/garbage_litter_model.pt` | `yolov8n-seg` | Instance segmentation | Boxes, masks |
-| Open Manhole | `ai_model/weights/open_manhole_model.pt` | `yolov8n` | Object detection | Boxes |
-| Graffiti | `ai_model/weights/graffiti_model.pt` | `yolov8n` | Object detection | Boxes |
+| Pothole / Road Damage | [RDD2022](https://doi.org/10.6084/m9.figshare.21431547), class D40, Japan, Czech Republic, United States, China | CC BY 4.0 | 1,600 / 341 / 339 | RDD2022 India (1,911, never used in training); Roboflow pothole set (297) |
+| Garbage / Litter | [TACO](https://doi.org/10.5281/zenodo.3587843) official annotations | CC BY 4.0 | 1,000 / 214 / 214 | TACO unofficial annotations (2,308) |
+| Graffiti | [STORM graffiti/tagging](https://doi.org/10.5281/zenodo.3238357) | CC BY 4.0 | 670 / 143 / 209 (official test split) | none found |
 
-### Datasets
+Splits are grouped by source photo (file-name stems plus near-duplicate image hashes), so no photo or edited copy of it appears in two splits; val, test and external sets keep one image per source photo. The split lists are in `ai_model/splits/` and the provenance of every dataset is in [`ai_model/DATASETS.md`](./ai_model/DATASETS.md).
 
-| Category | Dataset | Labels | Images used | Train / val | Licence |
-|:--|:--|:--|:--|:--|:--|
-| Pothole / Road Damage | [Roboflow Pothole Segmentation YOLOv8 v1](https://universe.roboflow.com/farzad/pothole_segmentation_yolov8/dataset/1) | Polygon masks, 1 class | 780 | 720 / 60 | CC BY 4.0 |
-| Garbage / Litter | [TACO](http://tacodataset.org) (Proença and Simões, 2020) | COCO masks, 60 classes merged to `Litter` | 1,428 of 1,500 (rest no longer downloadable) | 1,214 / 214 (85:15, seed 0) | See TACO repository |
-| Open Manhole | [Road Hazards Dataset](https://www.kaggle.com/datasets/sabidrahman/pothole-cracks-and-openmanhole) | YOLO boxes, manhole class kept | 1,603 | 1,123 / 480 | See Kaggle page |
-| Graffiti | [STORM graffiti/tagging dataset](https://zenodo.org/records/3238357) (University of West Attica) | Bounding boxes, 1 class | 1,022 | 813 / 209 | CC BY 4.0 |
+### Models and results
 
-The open manhole training split holds all 673 images containing a manhole plus 450 random negatives; validation is the dataset's full validation split (148 of 480 images contain a manhole).
+The weights in `ai_model/weights/` (pothole and litter segmentation, graffiti detection) are the models of the submitted paper. They were trained and selected on the old splits, which leaked between training and validation, so their validation numbers are not reported here any more. New models, trained on the splits above and measured once on the test sets with confidence intervals, replace them in phase 3 of `feedback/action.md`. The pothole model then becomes a box detector, because RDD2022 has boxes only.
 
-### Training configuration
+Training settings: 640 x 640 images, batch 16, Ultralytics default optimiser and augmentation, early stopping with patience 15.
 
-| Setting | Value |
-|:--|:--|
-| Image size, batch | 640 x 640, 16 |
-| Epochs | 60 pothole, 45 litter, 45 manhole, 50 graffiti; early stopping with patience 15 |
-| Optimiser, augmentation | Ultralytics defaults (`optimizer=auto`, mosaic, HSV, flips, scale, translate) |
-| Hardware | Apple M5, 16 GB, PyTorch 2.14 MPS backend, seed 0 |
-
-### Results
-
-Validation metrics of the best checkpoint (`ai_model/results/eval.json`, produced by `05_evaluate_models.ipynb`).
-
-| Model | Metric set | Precision | Recall | mAP50 | mAP50-95 |
-|:--|:--|--:|--:|--:|--:|
-| Pothole / Road Damage | box | 0.733 | 0.682 | 0.719 | 0.447 |
-| Pothole / Road Damage | mask | 0.725 | 0.711 | **0.724** | 0.426 |
-| Garbage / Litter | box | 0.748 | 0.446 | 0.521 | 0.375 |
-| Garbage / Litter | mask | 0.757 | 0.434 | **0.502** | 0.317 |
-| Open Manhole | box | 0.890 | 0.874 | **0.908** | 0.469 |
-| Graffiti | box | 0.836 | 0.604 | **0.729** | 0.526 |
-
-| Model | Epochs run | Best epoch | Training time | CPU latency | MPS latency |
-|:--|--:|--:|--:|--:|--:|
-| Pothole / Road Damage | 60 | 50 | 41 min | 33 ms | 11 ms |
-| Garbage / Litter | 45 | 43 | 52 min | 24 ms | 20 ms |
-| Open Manhole | 42 (early stop) | 39 | 34 min | 19 ms | 8 ms |
-| Graffiti | 50 | 48 | 29 min | 20 ms | 6 ms |
-
-Latency is the mean over 40 validation images at 640 px, batch size 1, after three warm-up runs, including pre- and post-processing.
-
-Notes:
-
-- The Road Hazards dataset ships augmented copies of some photos, so the open manhole score is likely optimistic.
-- Litter recall is limited by the 60-to-1 class merge and the large share of small objects in TACO.
-- A low-confidence or empty result marks the complaint `needsReview` for a supervisor. The model never rejects a complaint.
-
-### Inference interface
-
-The backend calls the AI service with the complaint photos after the complaint is saved and stores the response in `Complaint.aiAnalysis`.
-
-| Endpoint | Description |
-|:--|:--|
-| `POST /predict/{category}` | Multipart photos. Returns `detected`, `confidence`, `detections` (`image`, `label`, `confidence`, `box`), `damagePercent` for segmentation models, and annotated images. |
-| `GET /models` | Loaded model per category |
-| `GET /health` | Health check |
-
-```python
-from ultralytics import YOLO
-
-model = YOLO("ai_model/weights/pothole_road_damage_model.pt")
-result = model.predict("photo.jpg", imgsz=640, conf=0.25)[0]
-boxes = result.boxes.xyxy.tolist()
-scores = result.boxes.conf.tolist()
-```
-
-### Notebooks
-
-| Notebook | Purpose |
-|:--|:--|
-| `00_download_datasets.ipynb` | Download TACO, STORM and Road Hazards into `ai_model/data/raw/` |
-| `01_pothole_road_damage.ipynb` | Train the pothole segmentation model |
-| `02_garbage_litter.ipynb` | Convert TACO to single-class YOLO segmentation and train |
-| `03_open_manhole.ipynb` | Extract the manhole class from Road Hazards and train |
-| `04_graffiti.ipynb` | Convert STORM CSV boxes to YOLO and train |
-| `05_evaluate_models.ipynb` | Metrics, PR curves, confusion counts, latency, training history |
-| `06_report_figures.ipynb` | Model figures used in the project report |
+The vision service that runs the models, its endpoints and τ per category are described in [`ai_service/README.md`](./ai_service/README.md). A low-confidence or empty result marks the complaint `needsReview` for a supervisor; the model never rejects a complaint.
 
 More detail: [`ai_model/README.md`](./ai_model/README.md).
 

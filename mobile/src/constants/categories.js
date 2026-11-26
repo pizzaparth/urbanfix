@@ -4,7 +4,6 @@
 export const CATEGORIES = [
   'Pothole / Road Damage',
   'Garbage / Litter',
-  'Open Manhole',
   'Graffiti',
 ];
 
@@ -25,13 +24,6 @@ export const CATEGORY_QUESTIONNAIRES = {
     { id: 'q_uncollected', question: 'Has garbage been uncollected for more than 48 hours?', weight: 1 },
     { id: 'q_public_facility', question: 'Is a school, hospital, or food market located nearby?', weight: 1 },
     { id: 'q_inconvenience', question: 'Is the issue causing severe public inconvenience?', weight: 1 },
-  ],
-  'Open Manhole': [
-    { id: 'q_uncovered', question: 'Is the manhole completely uncovered, posing a fall hazard?', weight: 2 },
-    { id: 'q_busy_area', question: 'Is it located on a busy road, pathway, or residential area with children?', weight: 2 },
-    { id: 'q_duration', question: 'Has it been open for more than 2 days?', weight: 1 },
-    { id: 'q_lighting', question: 'Is the area poorly lit, making the manhole hard to notice at night?', weight: 1 },
-    { id: 'q_near_facility', question: 'Is a school or playground located nearby?', weight: 1 },
   ],
   Graffiti: [
     { id: 'q_offensive', question: 'Does the graffiti contain offensive, hateful, or inappropriate content?', weight: 2 },

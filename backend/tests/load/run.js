@@ -45,7 +45,7 @@ const env = {
 delete env.AI_SERVICE_URL_E2E;
 if (!AI_URL) delete env.AI_SERVICE_URL;
 
-const CATEGORIES = ['Pothole / Road Damage', 'Garbage / Litter', 'Open Manhole', 'Graffiti'];
+const CATEGORIES = ['Pothole / Road Damage', 'Garbage / Litter', 'Graffiti'];
 const STATUSES = [['submitted', 'Pending'], ['accepted', 'In Progress'], ['closed', 'Resolved'], ['triage_rejected', 'Rejected']];
 const pick = (a) => a[Math.floor(Math.random() * a.length)];
 

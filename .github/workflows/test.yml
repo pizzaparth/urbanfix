@@ -53,6 +53,10 @@ jobs:
           cache: pip
           cache-dependency-path: ai_service/requirements.txt
       - run: pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu && pip install -r ai_service/requirements.txt
-      - run: (cd ai_service && uvicorn main:app --host 127.0.0.1 --port 8000 &) && sleep 15
+      - name: Start the vision service and wait until it answers
+        run: |
+          (cd ai_service && uvicorn main:app --host 127.0.0.1 --port 8000 &)
+          for i in $(seq 1 60); do curl -sf http://127.0.0.1:8000/health && exit 0; sleep 2; done
+          echo "vision service did not start" && exit 1
       - run: npm ci && AI_SERVICE_E2E_URL=http://127.0.0.1:8000 node --test --test-name-pattern="end to end" tests/ai.test.js
         working-directory: backend

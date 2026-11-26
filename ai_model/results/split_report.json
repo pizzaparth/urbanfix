@@ -51,9 +51,7 @@
    "check": {
     "shared_groups": 0,
     "cross_split_near_duplicate_pairs": 0,
-    "cross_split_stems": 0,
-    "images_checked_on_disk": 2280,
-    "images_not_yet_downloaded": 0
+    "cross_split_stems": 0
    }
   },
   "garbage_litter": {
@@ -90,9 +88,7 @@
    "check": {
     "shared_groups": 0,
     "cross_split_near_duplicate_pairs": 0,
-    "cross_split_stems": 0,
-    "images_checked_on_disk": 1428,
-    "images_not_yet_downloaded": 0
+    "cross_split_stems": 0
    }
   },
   "graffiti": {
@@ -129,48 +125,7 @@
    "check": {
     "shared_groups": 0,
     "cross_split_near_duplicate_pairs": 0,
-    "cross_split_stems": 0,
-    "images_checked_on_disk": 1022,
-    "images_not_yet_downloaded": 0
-   }
-  },
-  "open_manhole": {
-   "source": "Synthetic Urban Manhole Cover Dataset (Strakos et al., 2026), doi:10.5281/zenodo.21291309, CC BY 4.0",
-   "pool_images": 1184,
-   "pool_groups": 1184,
-   "dropped_cross_fixed_split": 0,
-   "splits": {
-    "train": {
-     "images": 794,
-     "source_groups": 794,
-     "with_defect": 764,
-     "by_stratum": {
-      "all": 794
-     }
-    },
-    "val": {
-     "images": 191,
-     "source_groups": 191,
-     "with_defect": 161,
-     "by_stratum": {
-      "all": 191
-     }
-    },
-    "test": {
-     "images": 199,
-     "source_groups": 199,
-     "with_defect": 194,
-     "by_stratum": {
-      "all": 199
-     }
-    }
-   },
-   "check": {
-    "shared_groups": 0,
-    "cross_split_near_duplicate_pairs": 0,
-    "cross_split_stems": 0,
-    "images_checked_on_disk": 7,
-    "images_not_yet_downloaded": 1177
+    "cross_split_stems": 0
    }
   }
  },
@@ -203,16 +158,6 @@
    "with_defect": 2308,
    "by_stratum": {
     "all": 2308
-   }
-  },
-  "open_manhole_kaggle_real": {
-   "category": "open_manhole",
-   "images": 564,
-   "dropped_near_duplicates_of_training_pool": 0,
-   "source_groups": 564,
-   "with_defect": 138,
-   "by_stratum": {
-    "all": 564
    }
   }
  }
