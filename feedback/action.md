@@ -665,7 +665,7 @@ Details and sources: `ai_model/DATASETS.md`. Numbers: `ai_model/results/split_au
 | D1 in the paper | Done. Table IV lists dataset, licence, collector and capture, DOI, splits, external test sets and model for the three categories. References updated: RDD2022 journal version and data DOI, TACO data DOI, Kaggle set cited as the withdrawn dataset. | `paper/.../main.tex` |
 | A1 Splits | Done. Groups from file stems plus near-duplicate hashes (64-bit dHash ≤ 10 bits as candidates, confirmed by 256-bit dHash ≤ 24 bits, mirror images included). 0 shared groups, 0 cross-split near-duplicate pairs and 0 cross-split stems in all three categories. Val, test and external sets keep one image per group. | `ai_model/scripts/make_splits.py`, `ai_model/splits/` |
 | A3 External test sets | Done for pothole (India, Roboflow) and litter (TACO unofficial). Graffiti: a second set was searched for on 2026-11-26 and none is both open and documented (City Risks: provenance not stated; 17K-Graffiti: on request only; Lisbon: on request only), so the untouched STORM test split is the only test. PlastOPol (litter, CC BY 4.0, verified) is an optional extra test; it is 7.7 GB on Zenodo, so it would be fetched on Colab in phase 3. | `ai_model/splits/external/`, `ai_model/DATASETS.md` |
-| CI | Fixed. The backend job had never run: Node 22 on GitHub does not accept a folder as `--test` argument (`Cannot find module .../tests`). The test script now uses the glob `tests/**/*.test.js`, and the end-to-end job waits for `/health` instead of a fixed 15 s. | `backend/package.json`, `.github/workflows/test.yml` |
+| CI | Fixed. The backend job had never run: Node 22 on GitHub does not accept a folder as `--test` argument (`Cannot find module .../tests`). The test script now uses the glob `tests/**/*.test.js`, and the end-to-end job waits for `/health` instead of a fixed 15 s. Backend, vision-service and end-to-end jobs all passed on GitHub (run 45847742015). | `backend/package.json`, `.github/workflows/test.yml` |
 
 **Old splits, measured (A9):**
 
@@ -715,7 +715,7 @@ Details and sources: `ai_model/DATASETS.md`. Numbers: `ai_model/results/split_au
 - [ ] Separate research HMAC key, per-grant keys, k ≥ 5 suppression.
 - [ ] Linkage analysis on Chicago 311 in the paper.
 - [x] OTP attempt limit and rate limits, with tests.
-- [ ] Concurrency, audit-integrity, privacy and load tests in `backend/tests/`, run by CI.
+- [x] Concurrency, audit-integrity, privacy and load tests in `backend/tests/`, run by CI (all three CI jobs passed on 2026-11-26, run 45847742015; the load test runs by hand with `npm run test:load`; the k-anonymity test waits for B5).
 - [x] Dataset provenance and licence documented; Eq. (1) has five criteria. (Fig. 4 redraw left for phase 6.)
 - [ ] One glossary for stage counts used everywhere.
 - [ ] Fairness subsection with the measured geographic gap.
