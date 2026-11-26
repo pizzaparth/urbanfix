@@ -66,3 +66,9 @@ ai_model/Pothole_Segmentation_YOLOv8.v1i.yolov8/
 ai_service/.venv/
 __pycache__/
 .pytest_cache/
+
+# Phase 3 checkpoints (only the deployed models are copied to ai_model/weights/)
+ai_model/weights/v2/
+*.pt.tmp
+ai_model/*.pt
+ai_model/logs/

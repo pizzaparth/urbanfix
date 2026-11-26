@@ -116,8 +116,13 @@ def link_name(rel: str) -> str:
 def write_split(items: list[dict], img_dir: Path, lab_dir: Path, task: str) -> dict:
     img_dir.mkdir(parents=True, exist_ok=True)
     lab_dir.mkdir(parents=True, exist_ok=True)
-    n_obj = n_pos = 0
+    n_obj = n_pos = missing = 0
     for it in items:
+        if not (ROOT / it["file"]).exists():
+            # A source that could not be downloaded on this machine (for example the Roboflow
+            # set without an account, or TACO photos removed from Flickr). Counted, not hidden.
+            missing += 1
+            continue
         name = link_name(it["file"])
         dest = img_dir / name
         if not dest.exists():
@@ -126,7 +131,10 @@ def write_split(items: list[dict], img_dir: Path, lab_dir: Path, task: str) -> d
         n_obj += len(lines)
         n_pos += bool(lines)
         (lab_dir / f"{Path(name).stem}.txt").write_text("".join(l + "\n" for l in lines))
-    return {"images": len(items), "images_with_defect": n_pos, "objects": n_obj}
+    out = {"images": len(items) - missing, "images_with_defect": n_pos, "objects": n_obj}
+    if missing:
+        out["missing_on_this_machine"] = missing
+    return out
 
 
 def build_category(cat: str) -> dict:
@@ -143,12 +151,15 @@ def build_category(cat: str) -> dict:
     return stats
 
 
-def build_external(path: Path) -> dict:
+def build_external(path: Path) -> dict | None:
     spec = json.loads(path.read_text())
     cat = spec["category"]
     base = OUT / "external" / spec["name"]
     if base.exists():
         shutil.rmtree(base)
+    if not any((ROOT / it["file"]).exists() for it in spec["test"]):
+        print(f"{spec['name']}: not on this machine, skipped")
+        return None
     stats = write_split(spec["test"], base / "images" / "test", base / "labels" / "test", TASK[cat])
     (base / "data.yaml").write_text(
         f"path: {base}\ntrain: images/test\nval: images/test\ntest: images/test\nnames: ['{NAMES[cat]}']\n")
@@ -169,8 +180,10 @@ def main() -> None:
         spec_cat = json.loads(f.read_text())["category"]
         if only and spec_cat not in only:
             continue
-        summary[f"external/{f.stem}"] = build_external(f)
-        print(f.stem, summary[f"external/{f.stem}"])
+        built = build_external(f)
+        if built is not None:
+            summary[f"external/{f.stem}"] = built
+            print(f.stem, built)
     summary_path.write_text(json.dumps(summary, indent=1))
 
 
