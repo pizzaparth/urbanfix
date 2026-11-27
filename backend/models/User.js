@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
+import { UNUSABLE_PATTERN } from '../utils/invite.js';
 import { ROLES, DATASET_SCOPES } from '../constants/roles.js';
 
 const userSchema = new mongoose.Schema(
@@ -79,6 +80,8 @@ userSchema.index({ role: 1, isActive: 1 });
 // Hash the password before saving if it has been modified
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
+  // A random unusable marker (utils/invite.js) is stored as is; see F15.
+  if (UNUSABLE_PATTERN.test(this.password)) return next();
 
   this.password = await bcrypt.hash(this.password, 12);
   next();
@@ -86,6 +89,7 @@ userSchema.pre('save', async function (next) {
 
 // Instance method to compare passwords during authentication
 userSchema.methods.comparePassword = async function (candidatePassword, userPassword) {
+  if (!userPassword || !userPassword.startsWith('$2')) return false; // unusable marker or no password
   return await bcrypt.compare(candidatePassword, userPassword);
 };
 

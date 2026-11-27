@@ -280,7 +280,7 @@ export const sendResearchApprovedEmail = (email, name, token, days, scope) =>
          <p>Your application was approved. Access lasts <strong>${days} day${days === 1 ? '' : 's'}</strong> from today and then ends automatically.</p>
          <p><strong>Dataset scope:</strong> ${
            scope === 'anonymised_records'
-             ? 'Anonymised records (ward-level location, no personal information)'
+             ? 'Pseudonymised records (ward and quarter only, no personal information)'
              : 'Aggregate statistics only'
          }</p>
          <p><strong>Terms:</strong> use the data only for the purpose you described, never attempt to re-identify individuals, and do not redistribute exports. All access is logged.</p>

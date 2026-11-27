@@ -182,7 +182,7 @@ export const getDashboard = catchAsync(async (req, res) => {
   });
 });
 
-// 3. Filtered aggregates, or anonymised records where the scope allows
+// 3. Filtered aggregates, or pseudonymised records where the scope allows
 export const runQuery = catchAsync(async (req, res, next) => {
   const q = validate(querySchema, req.query);
 
@@ -210,7 +210,7 @@ export const runQuery = catchAsync(async (req, res, next) => {
   res.status(200).json({ status: 'success', groupBy: q.groupBy, privacy: PRIVACY_NOTE, rows });
 });
 
-// 4. Export — anonymised, rate-limited, capped
+// 4. Export — pseudonymised, k-anonymised, rate-limited, capped
 export const exportData = catchAsync(async (req, res, next) => {
   const q = validate(querySchema, req.query);
   const format = req.query.format === 'json' ? 'json' : 'csv';

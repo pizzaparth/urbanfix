@@ -76,7 +76,7 @@ const ResearchApplyScreen = ({ navigation }) => {
     <AuthShell
       animationKey="research-apply"
       title="Research access"
-      subtitle="Time-limited, anonymised, logged."
+      subtitle="Time-limited, pseudonymised, logged."
       error={error}
     >
       <View style={a.fields}>

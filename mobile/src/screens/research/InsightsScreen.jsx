@@ -95,7 +95,7 @@ const InsightsScreen = ({ navigation }) => {
         />
       }
     >
-      <PageTitle sub="Anonymised civic data.">Insights</PageTitle>
+      <PageTitle sub="Pseudonymised civic data.">Insights</PageTitle>
 
       <View style={s.body}>
         <ErrorNote>{error}</ErrorNote>

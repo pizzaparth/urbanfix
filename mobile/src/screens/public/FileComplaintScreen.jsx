@@ -63,6 +63,7 @@ const FileComplaintScreen = ({ navigation }) => {
   const [formData, setFormData] = useState(INITIAL_FORM_DATA);
   const [answers, setAnswers] = useState({});
   const [files, setFiles] = useState([]);
+  const [consent, setConsent] = useState(false);
   const [formError, setFormError] = useState('');
   const [submittingForm, setSubmittingForm] = useState(false);
 
@@ -178,6 +179,9 @@ const FileComplaintScreen = ({ navigation }) => {
       if (!formData.name) return setFormError('Please enter your full name.');
       if (!formData.email) return setFormError('Please enter your email address.');
     }
+    if (type === 'review' && !consent) {
+      return setFormError('Please agree to the publication of this complaint in the public registry.');
+    }
 
     if (step < STEPS.length - 1) {
       setStep((prev) => prev + 1);
@@ -245,6 +249,7 @@ const FileComplaintScreen = ({ navigation }) => {
     data.append('category', formData.category);
     data.append('location', formData.location);
     data.append('ward', formData.ward);
+    data.append('consent', consent ? 'true' : 'false');
     // The server scores urgency from these answers (Eq. 2); the band shown while
     // filing is only a preview of the same calculation.
     data.append('answers', JSON.stringify(Object.fromEntries(questions.map((q) => [q.id, answers[q.id] || 'No']))));
@@ -260,6 +265,7 @@ const FileComplaintScreen = ({ navigation }) => {
 
       setFormData(INITIAL_FORM_DATA);
       setFiles([]);
+      setConsent(false);
       setOtpValue('');
       setShowOtpModal(false);
       setStep(0);
@@ -330,6 +336,8 @@ const FileComplaintScreen = ({ navigation }) => {
             onRemoveFile={removeFile}
             onNext={handleNext}
             submittingForm={submittingForm}
+            consent={consent}
+            onToggleConsent={() => setConsent((c) => !c)}
           />
         </ScrollView>
       </View>

@@ -16,4 +16,10 @@ export const createComplaintSchema = z.object({
   // Urgency is scored on the server from `answers` (utils/urgency.js); a client
   // urgencyLevel is accepted for old app versions but ignored.
   urgencyLevel: z.string().optional(),
+  // B7: publication consent. Multipart forms send it as the string "true".
+  consent: z
+    .union([z.literal(true), z.literal('true')], {
+      errorMap: () => ({ message: 'Please agree to the publication of this complaint in the public registry' }),
+    })
+    .transform(() => true),
 });

@@ -58,9 +58,57 @@ export const getAdminStats = catchAsync(async (req, res, next) => {
       categoryDistribution: categoryStats,
       urgencyDistribution: urgencyStats,
       timelineTrend: timelineStats,
+      wardMonitoring: await getWardMonitoring(),
     },
   });
 });
+
+const median = (xs) => {
+  if (!xs.length) return null;
+  const v = [...xs].sort((a, b) => a - b);
+  const m = Math.floor(v.length / 2);
+  return v.length % 2 ? v[m] : (v[m - 1] + v[m]) / 2;
+};
+
+// P9 fairness monitoring: per ward, the share of model-checked complaints the
+// model flagged for review, and the median days from filing to closure. A ward
+// whose complaints are flagged more often, or closed more slowly, becomes
+// visible here. Complaint counts per ward are shown but are not a measure of
+// need: who reports varies with income and access (paper, Section on fairness).
+export const getWardMonitoring = async () => {
+  const rows = await Complaint.aggregate([
+    {
+      $group: {
+        _id: { $ifNull: ['$ward', 'Unknown'] },
+        filed: { $sum: 1 },
+        checked: { $sum: { $cond: [{ $eq: ['$aiAnalysis.state', 'done'] }, 1, 0] } },
+        flagged: {
+          $sum: {
+            $cond: [{ $and: [{ $eq: ['$aiAnalysis.state', 'done'] }, { $eq: ['$aiAnalysis.needsReview', true] }] }, 1, 0],
+          },
+        },
+        days: {
+          $push: {
+            $cond: [
+              { $and: [{ $eq: ['$stage', 'closed'] }, { $ne: [{ $ifNull: ['$closedAt', null] }, null] }] },
+              { $divide: [{ $subtract: ['$closedAt', '$createdAt'] }, 86400000] },
+              '$$REMOVE',
+            ],
+          },
+        },
+      },
+    },
+    { $sort: { _id: 1 } },
+  ]);
+  return rows.map((r) => ({
+    ward: r._id,
+    filed: r.filed,
+    checked: r.checked,
+    flagRate: r.checked ? r.flagged / r.checked : null,
+    closed: r.days.length,
+    medianResolutionDays: r.days.length ? Math.round(median(r.days) * 10) / 10 : null,
+  }));
+};
 
 // 1b. Get daily filed+resolved activity for the admin action panel's heatmap
 export const getActivityHeatmap = catchAsync(async (req, res, next) => {

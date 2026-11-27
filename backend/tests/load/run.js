@@ -171,7 +171,7 @@ const main = async () => {
         const { body, type } = multipart({
           name: 'Load Citizen', email: `load${n++}@example.test`, otp: '123456', title: 'Pothole on load street',
           description: 'A deep pothole on the load test street.', category: 'Pothole / Road Damage',
-          location: 'Load street', ward: 'Ward 1', answers,
+          location: 'Load street', ward: 'Ward 1', answers, consent: 'true',
         }, image);
         return { ...req, body, headers: { ...req.headers, 'content-type': type } };
       },

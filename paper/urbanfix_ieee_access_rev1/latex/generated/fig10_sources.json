@@ -1,0 +1,17 @@
+{
+ "pothole": {
+  "file": "data/raw/rdd2022/Japan/train/images/Japan_001649.jpg",
+  "s_star": 0.61986,
+  "tau": 0.4
+ },
+ "litter": {
+  "file": "data/garbage_litter/images/val/taco_0281.jpg",
+  "s_star": 0.90638,
+  "tau": 0.8
+ },
+ "graffiti": {
+  "file": "data/graffiti/images/val/IMG_20180723_145854.jpg",
+  "s_star": 0.91147,
+  "tau": 0.85
+ }
+}

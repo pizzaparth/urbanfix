@@ -15,7 +15,7 @@ The cycle has six links, all handled inside one system:
 3. **Prioritise:** a weighted severity questionnaire and the AI's own damage estimate combine into an urgency level.
 4. **Act:** a ward-based staff workflow routes the complaint. A supervisor triages and assigns it, a field worker fixes it and uploads photo proof, and the supervisor closes it.
 5. **Prove:** closing generates a PDF resolution receipt. Every complaint, with its full status history, is published in a public registry.
-6. **Learn:** approved researchers query and export anonymised data, and administrators track performance by category, ward, and urgency.
+6. **Learn:** approved researchers query aggregates and export pseudonymised records, and administrators track performance by category, ward, and urgency.
 
 Complaints fall into three categories. Each one is backed by a public, annotated image dataset with documented provenance and a usable licence that its detection model is trained on: **Pothole / Road Damage**, **Garbage / Litter**, and **Graffiti**. (Open Manhole was offered until November 2026; it was withdrawn because its only dataset names no photographer or source. Older complaints keep that category.) Categories without a proper public dataset are not offered, so every report the app accepts can be checked by AI.
 
@@ -34,7 +34,7 @@ The system has three parts:
 * **Accountable Workflow:** A role-based staff pipeline (triage, assignment, field work, proof review) with server-enforced transitions.
 * **Absolute Transparency:** Every filed complaint and its status counters are public, with citizen details redacted.
 * **Audit Trails:** Every transition records the stage, the acting user, a timestamp, and remarks.
-* **Privacy-Safe Research:** Time-limited researcher access to aggregate or anonymised data, with every access logged.
+* **Privacy-Safe Research:** Time-limited researcher access to aggregates or pseudonymised records (k = 5), with every access logged.
 
 ---
 
@@ -118,7 +118,7 @@ Rules enforced by the server (`backend/services/complaintWorkflow.js`):
 * **Apply (public):** full name, email, institute, title, purpose (at least 100 characters), requested scope, and days (1–180).
 * **Approval (admin):** the admin sets the duration (capped at 180 days) and scope:
   * `aggregate_only`: grouped counts only.
-  * `anonymised_records`: row-level records as well.
+  * `anonymised_records`: row-level records as well. The identifier is historical; the records are pseudonymised (per-researcher HMAC IDs), generalised and k-anonymised, not anonymous.
 * **Insights:** status, category, ward, urgency, and monthly breakdowns, with average resolution time.
 * **Query:** group by category, ward, status, urgency, or month, with filters for category, ward, status, and date range.
 * **Export:** CSV or JSON. Limited to 5 exports per day and 5,000 rows per export.
@@ -320,7 +320,7 @@ Created by `npm run seed:roles` in `backend/`. The script is idempotent and refu
 | Field worker (Ward 1) | `field1@example.com` | `Passw0rd!123` |
 | Field worker (Ward 2) | `field2@example.com` | `Passw0rd!123` |
 | Researcher (aggregate only) | `researcher@example.com` | `Passw0rd!123` |
-| Researcher (anonymised records) | `researcher-records@example.com` | `Passw0rd!123` |
+| Researcher (pseudonymised records) | `researcher-records@example.com` | `Passw0rd!123` |
 
 `npm run seed:admin` also creates the original admin, `admin@complaintsystem.gov` / `admin_password_123`. Citizens have no seeded account.
 

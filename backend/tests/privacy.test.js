@@ -9,7 +9,7 @@ import request from 'supertest';
 import sharp from 'sharp';
 
 import {
-  startServer, stopServer, resetState, makeStaff, makeResearcher, fileComplaint, complaintAt, jpeg, app,
+  startServer, stopServer, resetState, makeStaff, makeResearcher, fileComplaint, complaintAt, jpeg, app, latestOtpFor,
 } from './helpers.js';
 import Complaint from '../models/Complaint.js';
 import { REGISTRY_FIELDS } from '../utils/publicView.js';
@@ -201,5 +201,42 @@ describe('Privacy', () => {
       assert.equal(out.status, 1, `started with ${JSON.stringify(override)}`);
       assert.match(out.stderr, /RESEARCH_HMAC_KEY/);
     }
+  });
+});
+
+describe('B7 publication consent and F15 unusable passwords', () => {
+  before(startServer);
+  after(stopServer);
+  beforeEach(resetState);
+
+  it('a complaint without publication consent is refused and the code stays usable', async () => {
+    const email = 'noconsent@example.test';
+    await request(app).post('/api/complaints/request-otp').send({ email }).expect(200);
+    const otp = latestOtpFor(email);
+    const refused = await fileComplaint({ email, consent: 'false' }, { otp });
+    assert.equal(refused.status, 400);
+    assert.match(refused.body.message, /publication/);
+    const withoutField = await fileComplaint({ email, consent: undefined }, { otp });
+    assert.equal(withoutField.status, 400);
+    const filed = await fileComplaint({ email }, { otp }); // same code: the refusals did not consume it
+    assert.equal(filed.status, 201, filed.body.message);
+    const stored = await Complaint.findOne({ trackingId: filed.body.complaint.trackingId });
+    assert.ok(stored.publicationConsentAt instanceof Date);
+  });
+
+  it('a citizen created by filing has an unusable password that is not hashed and cannot log in', async () => {
+    const res = await fileComplaint({ email: 'filer@example.test' });
+    assert.equal(res.status, 201, res.body.message);
+    const { default: User } = await import('../models/User.js');
+    const user = await User.findOne({ email: 'filer@example.test' }).select('+password');
+    assert.match(user.password, /^!unusable:[A-Za-z0-9_-]{32}$/);
+    const login = await request(app).post('/api/auth/login').send({ email: 'filer@example.test', password: user.password });
+    assert.equal(login.status, 401);
+  });
+
+  it('a chosen password with the unusable prefix is refused', async () => {
+    const res = await request(app).post('/api/auth/register')
+      .send({ name: 'Prefix Test', email: 'prefix@example.test', password: '!unusable:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' });
+    assert.equal(res.status, 400);
   });
 });

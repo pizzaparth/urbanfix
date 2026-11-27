@@ -66,6 +66,10 @@ export default function AdminDashboardScreen({ navigation }) {
     })).sort((a,b) => b.count - a.count);
   }, [stats?.urgencyDistribution]);
 
+  // P9: per-ward flag rate and median days to closure, so a ward whose
+  // complaints the model flags more often, or that waits longer, is visible.
+  const wards = stats?.wardMonitoring || [];
+
   return (
     <Screen 
       contentStyle={{ paddingTop: insets.top }}
@@ -137,11 +141,41 @@ export default function AdminDashboardScreen({ navigation }) {
           </View>
         </Card>
       )}
+
+      {wards.length > 0 && (
+        <Card style={s.chartCard}>
+          <Text style={s.cardTitle}>By ward</Text>
+          <Text style={s.wardNote}>
+            Model flag rate among checked complaints, and median days to closure. Complaint counts reflect who
+            reports, not need.
+          </Text>
+          <View style={s.wardHeadRow}>
+            <Text style={[s.wardCell, s.wardName, s.wardHead]}>Ward</Text>
+            <Text style={[s.wardCell, s.wardHead]}>Filed</Text>
+            <Text style={[s.wardCell, s.wardHead]}>Flagged</Text>
+            <Text style={[s.wardCell, s.wardHead]}>Median days</Text>
+          </View>
+          {wards.map((w) => (
+            <View key={w.ward} style={s.wardRow}>
+              <Text numberOfLines={1} style={[s.wardCell, s.wardName]}>{w.ward}</Text>
+              <Text style={s.wardCell}>{w.filed}</Text>
+              <Text style={s.wardCell}>{w.flagRate == null ? '—' : Math.round(w.flagRate * 100) + '%'}</Text>
+              <Text style={s.wardCell}>{w.medianResolutionDays == null ? '—' : String(w.medianResolutionDays)}</Text>
+            </View>
+          ))}
+        </Card>
+      )}
     </Screen>
   );
 }
 
 const s = StyleSheet.create({
+  wardNote: { fontFamily: font.bodyBold, fontSize: 14, lineHeight: 19, color: colors.muted, marginTop: -6, marginBottom: 14 },
+  wardHeadRow: { flexDirection: 'row', paddingBottom: 8, borderBottomWidth: 1, borderBottomColor: colors.surfaceInput },
+  wardRow: { flexDirection: 'row', paddingVertical: 9, borderBottomWidth: 1, borderBottomColor: colors.surfaceInput },
+  wardCell: { flex: 1, fontFamily: font.bodyBold, fontSize: 15, color: colors.text, textAlign: 'right' },
+  wardName: { flex: 1.4, textAlign: 'left' },
+  wardHead: { color: colors.muted, fontSize: 13 },
   header: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 20, paddingTop: 26, paddingBottom: 14 },
   title: { flex: 1, fontFamily: font.display, fontSize: 34, lineHeight: 36, color: colors.accent, letterSpacing: -0.4 },
   ringCard: { marginHorizontal: 20, flexDirection: 'row', alignItems: 'center', gap: 20 },

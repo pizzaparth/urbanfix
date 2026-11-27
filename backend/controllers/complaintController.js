@@ -91,6 +91,7 @@ const fileComplaint = async (req, res) => {
     status: 'Pending',
     stage: 'submitted',
     isPublic: true, // admin no longer has a manual toggle; all filed complaints are public
+    publicationConsentAt: new Date(), // the validator refuses a filing without consent
     aiAnalysis: { state: 'pending', needsReview: true },
     statusHistory: [
       {

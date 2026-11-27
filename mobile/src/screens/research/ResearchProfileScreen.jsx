@@ -11,7 +11,7 @@ import { colors, uf as font, statusColors } from '../../theme.js';
 
 const SCOPE_TEXT = {
   aggregate_only: 'Aggregate statistics only.',
-  anonymised_records: 'Anonymised records — ward-level location, no personal information.',
+  anonymised_records: 'Pseudonymised records: ward and quarter only, no personal information.',
 };
 
 const ResearchProfileScreen = () => {

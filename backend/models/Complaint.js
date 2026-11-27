@@ -142,6 +142,9 @@ const complaintSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    // B7: when the citizen agreed to publication in the registry. Complaints filed
+    // before the consent step have no value.
+    publicationConsentAt: { type: Date, default: null },
     remarks: {
       type: String,
       default: '',

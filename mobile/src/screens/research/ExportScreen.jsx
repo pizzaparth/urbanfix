@@ -50,7 +50,7 @@ const ExportScreen = ({ navigation }) => {
 
   const kinds = [
     { value: 'aggregate', label: 'Aggregates' },
-    { value: 'records', label: 'Anonymised records', disabled: !recordAccess },
+    { value: 'records', label: 'Pseudonymised records', disabled: !recordAccess },
   ];
 
   const download = async () => {

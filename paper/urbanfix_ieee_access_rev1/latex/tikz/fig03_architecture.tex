@@ -1,0 +1,66 @@
+% Fig. 3: layered architecture, drawn from backend/app.js, backend/routes/,
+% backend/middleware/ and ai_service/. Revised: three models, per-category tau_k,
+% seven request checks, rate limits, metadata removal, hash-chained access log.
+\begin{tikzpicture}[
+  font=\scriptsize,
+  box/.style={draw=markink, rounded corners=1.5pt, align=center, inner sep=2.5pt, minimum height=8.5mm, text width=#1},
+  box/.default=19mm,
+  actor/.style={draw=markline, fill=markline!12, rounded corners=1.5pt, align=center, minimum height=5mm, text width=17mm},
+  lbl/.style={font=\scriptsize\bfseries, text=markline, anchor=west},
+  arr/.style={-{Latex[length=1.6mm]}, markink, line width=0.5pt},
+  async/.style={-{Latex[length=1.6mm]}, teal!70!black, dashed, line width=0.6pt},
+]
+% actors
+\foreach \a [count=\i from 0] in {Citizen, Public, Supervisor, Field worker, Administrator, Researcher}
+  \node[actor] (a\i) at (\i*2.95, 0) {\a};
+% client
+\node[draw=markink, line width=0.7pt, rounded corners=2pt, minimum width=17.6cm, minimum height=9mm, anchor=north west,
+      align=left, inner sep=3pt] (client) at (-1.0,-0.65)
+  {\textbf{Expo / React Native client} (Android, iOS, web): one app, five role shells chosen by the server; citizens and the public share one};
+\foreach \i in {0,...,5} \draw[arr] (a\i) -- (a\i |- client.north);
+% pipeline
+\node[lbl] at (-1.0,-1.95) {REQUEST PIPELINE: seven checks on every call (Express)};
+\foreach \t [count=\i from 0] in {
+  {1 Transport\\HTTPS, CORS, body limit},
+  {2 Rate limits\\OTP, login, filing},
+  {3 Uploads\\$\le$3 photos, metadata removed},
+  {4 Authentication\\JWT + live account check},
+  {5 Authorisation\\role, scope, expiry},
+  {6 Validation\\Zod schemas, consent},
+  {7 Error boundary\\typed 4xx / 5xx}}
+  \node[box=21mm] (p\i) at (\i*2.53, -2.75) {\t};
+\foreach \i [evaluate=\i as \j using int(\i+1)] in {0,...,5} \draw[arr] (p\i) -- (p\j);
+\draw[arr, <->] (client.south -| p3) -- (p3.north) node[midway, right, font=\tiny] {REST / JSON};
+% services
+\node[lbl] at (-1.0,-3.75) {DOMAIN SERVICES (7 routers, 59 endpoints)};
+\foreach \t [count=\i from 0] in {
+  {Identity\\OTP, invites},
+  {Intake\\tracking ID, $U$, $u_Q$ (Eq.~\ref{eq:urg})},
+  {Workflow\\guarded FSM (Eq.~\ref{eq:fsm})},
+  {Workforce\\attendance, leave},
+  {Transparency\\registry, tracker, receipts},
+  {Analytics\\KPIs, ward monitoring},
+  {Research gateway\\$\pi$, $k$-suppression, quotas}}
+  \node[box=21mm] (s\i) at (\i*2.53, -4.55) {\t};
+\draw[arr] (p3.south) -- ++(0,-0.25) -| (s2.north);
+\draw[violet!70!black, line width=0.8pt, rounded corners=1.5pt] (s6.south west) rectangle (s6.north east);
+% inference tier
+\node[draw=teal!70!black, dashed, rounded corners=2pt, minimum width=8.6cm, minimum height=2.2cm, anchor=north west] (inf) at (-1.0,-5.75) {};
+\node[lbl, text=teal!70!black, anchor=south west] at (inf.south west) {VISION SERVICE (FastAPI, Ultralytics)};
+\node[box=13mm, fill=teal!8] (router) at (0.0,-6.7) {Category\\router};
+\node[box=27mm, minimum height=5mm] (m1) at (2.65,-6.1) {pothole: YOLOv8n (box)};
+\node[box=27mm, minimum height=5mm] (m2) at (2.65,-6.7) {litter: YOLOv8n-seg};
+\node[box=27mm, minimum height=5mm] (m3) at (2.65,-7.3) {graffiti: YOLOv8n (box)};
+\node[box=25mm, fill=teal!8] (post) at (6.1,-6.7) {$s^{*}$; $\delta$ (litter only);\\flag $r$ if $s^{*}<\tau_k$;\\annotated photos\\(Eqs.~\ref{eq:sstar}--\ref{eq:flag})};
+\foreach \m in {m1,m2,m3} {\draw[arr] (router.east) -- (\m.west); \draw[arr] (\m.east) -- (post.west);}
+\draw[async] ([xshift=-4mm]s1.south) -- node[left, font=\tiny, align=right] {photos, after the\\tracking ID is returned} ([xshift=-4mm]s1.south |- inf.north);
+\draw[async] (post.north) -- ++(0,0.62) -| node[pos=0.25, above, font=\tiny] {\texttt{aiAnalysis} for triage} ([xshift=4mm]s1.south);
+% data tier
+\node[draw=orange!70!black, dashed, rounded corners=2pt, minimum width=9.0cm, minimum height=2.2cm, anchor=north west] (dat) at (7.85,-5.75) {};
+\node[lbl, text=orange!70!black, anchor=south west] at (dat.south west) {DATA AND INTEGRATION};
+\node[box=21mm, fill=orange!8] (db) at (9.15,-6.7) {MongoDB\\8 collections\\embedded history and AI evidence};
+\node[box=17mm] (fs) at (11.35,-6.7) {Object store\\photos, proof};
+\node[box=17mm] (smtp) at (13.25,-6.7) {SMTP\\codes, receipts};
+\node[box=19mm] (log) at (15.3,-6.7) {Access log\\hash-chained, head hash public};
+\foreach \s in {s4, s5, s6} \draw[arr, orange!70!black] (\s.south) -- (\s.south |- dat.north);
+\end{tikzpicture}

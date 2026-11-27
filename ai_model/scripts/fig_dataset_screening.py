@@ -21,7 +21,7 @@ import matplotlib.pyplot as plt  # noqa: E402
 from matplotlib.patches import Wedge  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
-OUT = ROOT / "paper" / "urbanfix_ieee_access" / "latex" / "figs" / "fig04"
+OUT = ROOT / "paper" / "urbanfix_ieee_access_rev1" / "latex" / "figs" / "fig04"
 
 CRITERIA = ["localised labels", "documented source", "street-level", "usable licence", r"$\geq$1,000 images"]
 # name, images, kept, localised, documented, street-level, licence, >=1000

@@ -46,6 +46,8 @@ jobs:
           python-version: '3.12'
       # Rebuilds the model tables from the committed result files and fails if they differ.
       - run: ./reproduce.sh tables
+      # Rebuilds the revised paper's numbers and tables and fails if they differ.
+      - run: ./reproduce.sh paper
 
   end-to-end:
     needs: [backend, ai-service]

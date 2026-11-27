@@ -75,3 +75,6 @@ ai_model/logs/
 
 # Privacy analysis downloads (re-created by analysis/privacy/scripts/fetch_chicago311.py)
 analysis/privacy/data/
+
+# IEEE Access LaTeX template (fonts and logos from ieeeaccess.ieee.org; not redistributed)
+paper/urbanfix_ieee_access_rev1/template/

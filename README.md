@@ -53,7 +53,7 @@ UrbanFix is an AI-powered governance system for civic infrastructure complaints.
 | Supervisor | Admin invite | Triage, assign within ward, review proof, close or send for rework, approve field leave |
 | Field worker | Admin invite | Start assigned tasks, upload proof photos, check in and out, request leave |
 | Admin | Admin invite or seed script | Analytics, status override, staff accounts, supervisor leave, research approvals, research audit log |
-| Researcher | Public application, admin approval | Grouped queries and CSV or JSON export of anonymised data until access expires |
+| Researcher | Public application, admin approval | Grouped queries and CSV or JSON export of pseudonymised, k-anonymised records until access expires |
 
 ## Architecture
 
@@ -72,7 +72,7 @@ flowchart LR
         CO["complaints, public"]
         WF["supervisor, field<br/>workflow engine"]
         AD["admin"]
-        RS["research<br/>anonymising projection"]
+        RS["research<br/>pseudonymising projection"]
     end
 
     subgraph Data["Storage and services"]
@@ -283,6 +283,7 @@ Errors return `{ "status": "fail", "message": "..." }` for 4xx responses and `"s
 │   └── README.md
 ├── paper/                           IEEE paper
 │   ├── urbanfix_ieee_access/        IEEE Access submission: latex/, PDF, DOCX, cover letter, graphical abstract
+│   ├── urbanfix_ieee_access_rev1/   first revision: latex/ (numbers generated from results), scripts/, graphical abstract
 │   ├── urbanfix_paper/              earlier IEEE conference draft (LaTeX)
 │   ├── figures/                     all paper figures F01 to F53 (PNG, SVG, PDF), README.md
 │   ├── related_work/                prior papers cited in the literature review
@@ -309,6 +310,8 @@ Every number in the revised paper comes from a file that a script wrote. The res
 | `ai_model/results/split_report.json`, `split_audit_old.json` | `ai_model/scripts/make_splits.py` | Same datasets |
 | `analysis/privacy/results/linkage_chicago311.{json,md}` | `analysis/privacy/scripts/linkage_analysis.py` | Chicago 311 extract from `fetch_chicago311.py` |
 | `backend/tests/load/results/*.json` | `backend/tests/load/run.js` | Synthetic complaints in an in-memory MongoDB |
+| `backend/tests/results/junit.xml`, `ai_service/tests/results/junit.xml` | `./reproduce.sh tests` | The test suites |
+| `paper/urbanfix_ieee_access_rev1/latex/generated/*` | `paper/urbanfix_ieee_access_rev1/scripts/build_paper_data.py` | All result files above |
 
 `reproduce.sh` rebuilds the tables and checks them against the committed files:
 
@@ -316,6 +319,7 @@ Every number in the revised paper comes from a file that a script wrote. The res
 ./reproduce.sh tables     # model tables from the result JSON files (seconds, no download)
 ./reproduce.sh privacy    # downloads Chicago 311 2024 (18 MB) and reruns the linkage analysis
 ./reproduce.sh load       # load test on this machine; the numbers depend on the hardware
+./reproduce.sh paper      # the revised paper's numbers and tables, checked against the committed ones
 ```
 
 Retraining needs the datasets and a GPU. The free route (laptop plus Google Colab) and the order of the scripts are in [`ai_model/README.md`](./ai_model/README.md) and phase 3 of [`feedback/action.md`](./feedback/action.md). All runs use seed 0.

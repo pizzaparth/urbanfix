@@ -149,7 +149,7 @@ S.No. & Authors & Work done & Limitations\\
 
 \section{Related Work}\label{sec:rw}
 
-Table~\ref{tab:t1} groups 28 studies into five strands. Recent complaint platforms (A) route text with 90 to 97\% accuracy, yet none of them checks the photo against the reported defect. Studies of FixMyStreet and 311 data (B) find that who reports, and how often, varies with income and ethnicity \cite{b12,b13,b14}, so complaint counts alone are a biased guide to need. Detectors for road damage, potholes, litter and graffiti (C) are evaluated apart from any complaint workflow. Strands D and E cover open data, AI in government, human oversight and anonymised release. Table~\ref{tab:t2} compares UrbanFix with the seven platforms closest to it. Localised datasets now exist for road damage \cite{b15,b16}, litter \cite{b17} and graffiti \cite{b19}.
+Table~\ref{tab:t1} groups 28 studies into five strands. Recent complaint platforms (A) route text with 90 to 97\% accuracy, yet none of them checks the photo against the reported defect. Studies of FixMyStreet and 311 data (B) find that who reports, and how often, varies with income and ethnicity \cite{b12,b13,b14}, so complaint counts alone are a biased guide to need. Detectors for road damage, potholes, litter and graffiti (C) are evaluated apart from any complaint workflow. Strands D and E cover open data, AI in government, human oversight and anonymised release. Table~\ref{tab:t2} compares UrbanFix with the seven platforms closest to it. Localised datasets now exist for road damage \cite{b15,b16}, litter \cite{b17}, open manholes \cite{b18} and graffiti \cite{b19}.
 
 \section{System Architecture}\label{sec:arch}
 
@@ -187,7 +187,7 @@ Open research data & \no & \no & \no & \no & \no & \no & \no & \yes\\
 \end{tabular}
 \end{table}
 
-Fig.~\ref{fig:f3} reads from top to bottom. The six actors use the same client, which gives each of them one of five role shells; citizens and the public share one. Every call then passes the seven gateway stages in order, so a request that fails authentication never reaches validation or a controller. Seven domain services sit below the gateway. The research gateway is drawn in purple because it is the only path to bulk data. In the lower left tier, a router sends each photo to one of three YOLOv8n models, and a post-processing step computes the evidence of Eqs.~(\ref{eq:e3})--(\ref{eq:e5}). The lower right tier holds MongoDB and the services for files, email, receipts and scheduled expiry notices. The two dashed arrows are the only asynchronous paths: photos go to the model after the citizen already has a tracking ID, and the result returns as \texttt{aiAnalysis} for triage.
+Fig.~\ref{fig:f3} reads from top to bottom. The six actors use the same client, which gives each of them one of five role shells; citizens and the public share one. Every call then passes the seven gateway stages in order, so a request that fails authentication never reaches validation or a controller. Seven domain services sit below the gateway. The research gateway is drawn in purple because it is the only path to bulk data. In the lower left tier, a router sends each photo to one of four YOLOv8n models, and a post-processing step computes the evidence of Eqs.~(\ref{eq:e3})--(\ref{eq:e5}). The lower right tier holds MongoDB and the services for files, email, receipts and scheduled expiry notices. The two dashed arrows are the only asynchronous paths: photos go to the model after the citizen already has a tracking ID, and the result returns as \texttt{aiAnalysis} for triage.
 
 \section{Methodology}\label{sec:method}
 
@@ -196,12 +196,12 @@ Fig.~\ref{fig:f3} reads from top to bottom. The six actors use the same client, 
 Let $\mathcal{K}$ be the candidate complaint categories. A category $k$ is offered only if a public dataset $\mathcal{D}_k$ of street-level images with localised labels (boxes or masks), documented provenance and a usable licence exists:
 
 \begin{equation}
-\mathcal{C}=\{\,k\in\mathcal{K} : \mathcal{D}_k \text{ is public} \wedge \text{localised} \wedge \text{street-level} \wedge \text{documented} \wedge \text{licensed}\,\}.
+\mathcal{C}=\{\,k\in\mathcal{K} : \mathcal{D}_k \text{ is public} \wedge \text{localised} \wedge \text{street-level}\,\}.
 \label{eq:e1}
 \end{equation}
-\noindent Three of ten candidate categories qualify (Fig.~\ref{fig:f4}), and the API rejects the rest.
+\noindent Four of ten candidate categories qualify (Fig.~\ref{fig:f4}), and the API rejects the rest.
 
-In Fig.~\ref{fig:f4} each bar is the size of the largest public dataset we found for that category, on a log scale, and the five circles show whether it meets each criterion. Licences were checked only for datasets that pass every other criterion, since failing one already excludes a category. Electrical poles have the second largest dataset, 25,426 images, but its labels are only partly localised and its source is undocumented. Water leakage has localised labels, but its images are not street-level and its source is also undocumented. Open manholes were offered in an earlier version of this work, trained on a Kaggle dataset \cite{b40}. Its uploader states a non-commercial licence but names no photographer or source, and many of its 2,700 images are augmented copies of the same photos, so it fails the provenance criterion and the category was withdrawn. For potholes, the United States subset of RDD2022 consists of Google Street View images, which its licence cannot cover, so it is left out; the rest of the dataset is licensed CC BY 4.0. Graffiti has only 1,022 images and meets every criterion, so it is kept. The three smallest candidates have fewer than 1,000 images; road signs and fallen trees also lack a documented source, and the streetlight data has no localised labels. Only the three categories with every circle filled satisfy Eq.~(\ref{eq:e1}); their datasets are detailed in Table~\ref{tab:t4}.
+In Fig.~\ref{fig:f4} each bar is the size of the largest public dataset we found for that category, on a log scale, and the four circles show whether it meets each criterion. Electrical poles have the second largest dataset, 25,426 images, but its labels are only partly localised and its source is undocumented. Water leakage has localised labels, but its images are not street-level and its source is also undocumented. Graffiti has only 1,022 images and meets every criterion, so it is kept. The three smallest candidates have fewer than 1,000 images; road signs and fallen trees also lack a documented source, and the streetlight data has no localised labels. Only the four categories with every circle filled satisfy Eq.~(\ref{eq:e1}).
 
 \subsection{Traceable Questionnaire Urgency}
 
@@ -217,11 +217,11 @@ u_Q=\begin{cases}\text{High}, & U\ge 0.6\\ \text{Medium}, & 0.3\le U<0.6\\ \text
 \begin{figure}[!t]
 \centering
 \includegraphics[width=0.96\columnwidth]{figs/fig04.jpg}
-\caption{Screening of ten candidate categories against Eq.~(\ref{eq:e1}). Dark bars mark the three categories kept; circles show each criterion met, partly met or not met, and a dash marks a licence not assessed because another criterion already fails.}
+\caption{Screening of ten candidate categories against Eq.~(\ref{eq:e1}). Dark bars mark the four categories kept; circles show each criterion met, partly met or not met.}
 \label{fig:f4}
 \end{figure}
 
-Fig.~\ref{fig:f5} plots every score Eq.~(\ref{eq:e2}) can produce. The pothole questionnaire marks two questions as safety-critical, so its weights sum to 7 and $U$ moves in steps of 1/7. Litter and graffiti mark one, so the sum is 6 and the steps are 1/6. Both profiles have reachable scores in all three bands, but the same answers can land in different bands. One safety-critical ``yes'' gives a pothole $2/7=0.29$, just short of Medium, while the same answer for litter gives $2/6=0.33$ and reaches Medium. A pothole is rated High only when its ``yes'' answers carry at least 5 of the 7 weight points.
+Fig.~\ref{fig:f5} plots every score Eq.~(\ref{eq:e2}) can produce. The pothole and manhole questionnaires mark two questions as safety-critical, so their weights sum to 7 and $U$ moves in steps of 1/7. Litter and graffiti mark one, so the sum is 6 and the steps are 1/6. Both profiles have reachable scores in all three bands, but the same answers can land in different bands. One safety-critical ``yes'' gives a pothole $2/7=0.29$, just short of Medium, while the same answer for litter gives $2/6=0.33$ and reaches Medium. A pothole is rated High only when its ``yes'' answers carry at least 5 of the 7 weight points.
 
 \begin{figure}[!t]
 \centering
@@ -353,23 +353,24 @@ We report precision $P=TP/(TP+FP)$, recall $R=TP/(TP+FN)$ and
 \end{equation}
 \noindent with mAP50 at IoU 0.5 and mAP50--95 averaged over 0.50 to 0.95.
 
-\begin{table*}[!t]
-\caption{Datasets, provenance and splits per category. Splits are grouped by source photo; val, test and external sets hold one image per source photo. All three licences allow redistribution with attribution.}
+\begin{table}[!t]
+\caption{Datasets and models per category}
 \label{tab:t4}
 \centering
 \footnotesize
-\setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}lp{3.2cm}lp{4.2cm}ccp{2.6cm}c@{}}
+\setlength{\tabcolsep}{2.2pt}
+\begin{tabular}{@{}llccc@{}}
 \toprule
-Category & Dataset & Licence & Collector and capture & Labels & Train/val/test & External test (images) & Model\\
+Category & Dataset & Labels & Train/val & Model\\
 \midrule
-Pothole & RDD2022, class D40 \cite{b15}; Japan, Czech Rep., China, India$^{e}$ & CC BY 4.0 & Named research team; smartphone and dashboard cameras on public roads; figshare doi:10.6084/m9.figshare.21431547 & boxes & 2836/606/604 & Roboflow \cite{b16} (297)$^{a}$ & v8n\\
-Litter & TACO, official annotations \cite{b17} & CC BY 4.0 & Named authors and volunteers; photos of litter in woods, roads and beaches; Zenodo doi:10.5281/zenodo.3587843 & masks$^{b}$ & 1000/214/214 & TACO unofficial (2308)$^{c}$ & v8n-seg\\
-Graffiti & STORM graffiti/tagging \cite{b19} & CC BY 4.0 & Named authors; smartphone photos in Athens via a crowdsensing app; Zenodo doi:10.5281/zenodo.3238357 & boxes & 670/143/209$^{d}$ & none found & v8n\\
+Pothole / road damage & Roboflow \cite{b16} & masks & 720/60 & v8n-seg\\
+Garbage / litter & TACO \cite{b17} & masks$^{\dagger}$ & 1214/214 & v8n-seg\\
+Open manhole & Road Hazards \cite{b18} & boxes & 1123/480 & v8n\\
+Graffiti & STORM \cite{b19} & boxes & 813/209 & v8n\\
 \bottomrule
-\multicolumn{8}{@{}p{\textwidth}@{}}{\scriptsize $^{a}$Uploader anonymous, image sources not stated: used for testing only; the training set held 3 augmented copies of each of 240 photos. $^{b}$60 TACO classes merged into one; 1,428 of 1,500 images still available. $^{c}$Public submissions not reviewed by the TACO authors; only the TACO-hosted images marked CC. $^{d}$Test is the official STORM test split. $^{e}$The United States subset consists of Google Street View images, which the CC BY licence cannot cover, and is excluded; a variant trained without Indian photos is tested on all 1,911 of them to measure the geographic gap.}
+\multicolumn{5}{@{}l}{\scriptsize $^{\dagger}$60 TACO classes merged into one; 1,428 of 1,500 images still available.}
 \end{tabular}
-\end{table*}
+\end{table}
 
 \section{Results and Discussion}\label{sec:res}
 
@@ -487,9 +488,10 @@ UrbanFix takes a civic complaint from the citizen's photo to a recorded repair u
 \bibitem{b12} B. Y. Clark, J. L. Brudney, and S.-G. Jang, ``Coproduction of government services and the new information technology: Investigating the distributional biases,'' \textit{Public Admin. Rev.}, vol. 73, no. 5, pp. 687--701, 2013, doi: 10.1111/puar.12092.
 \bibitem{b13} B. Pak, A. Chua, and A. Vande Moere, ``FixMyStreet Brussels: Socio-demographic inequality in crowdsourced civic participation,'' \textit{J. Urban Technol.}, vol. 24, no. 2, pp. 65--87, 2017, doi: 10.1080/10630732.2016.1270047.
 \bibitem{b14} C. E. Kontokosta and B. Hong, ``Bias in smart city governance: How socio-spatial disparities in 311 complaint behavior impact the fairness of data-driven decisions,'' \textit{Sustain. Cities Soc.}, vol. 64, Art. no. 102503, 2021, doi: 10.1016/j.scs.2020.102503.
-\bibitem{b15} D. Arya, H. Maeda, S. K. Ghosh, D. Toshniwal, and Y. Sekimoto, ``RDD2022: A multi-national image dataset for automatic road damage detection,'' \textit{Geosci. Data J.}, 2024, doi: 10.1002/gdj3.260. Data: doi: 10.6084/m9.figshare.21431547, CC BY 4.0.
+\bibitem{b15} D. Arya, H. Maeda, S. K. Ghosh, D. Toshniwal, and Y. Sekimoto, ``RDD2022: A multi-national image dataset for automatic road damage detection,'' arXiv:2209.08538, 2022.
 \bibitem{b16} Roboflow Universe, ``Pothole segmentation YOLOv8 dataset, v1,'' CC BY 4.0. [Online]. Available: \url{https://universe.roboflow.com/farzad/pothole_segmentation_yolov8}
-\bibitem{b17} P. F. Proença and P. Simões, ``TACO: Trash annotations in context for litter detection,'' arXiv:2003.06975, 2020. Data: Zenodo, doi: 10.5281/zenodo.3587843, CC BY 4.0.
+\bibitem{b17} P. F. Proença and P. Simões, ``TACO: Trash annotations in context for litter detection,'' arXiv:2003.06975, 2020.
+\bibitem{b18} sabidrahman, ``potholes, cracks and openmanholes (Road Hazards),'' Kaggle dataset. [Online]. Available: \url{https://www.kaggle.com/datasets/sabidrahman/pothole-cracks-and-openmanhole}
 \bibitem{b19} C. Patrikakis, P. Kasnesis, L. Toumanidis, and A. Tzitamidis, ``STORM graffiti/tagging detection dataset,'' Univ. of West Attica, Zenodo, 2019, doi: 10.5281/zenodo.3238357.
 \bibitem{b20} S. Chen, Y. Zhang, B. Song, X. Du, and M. Guizani, ``An intelligent government complaint prediction approach,'' \textit{Big Data Res.}, vol. 30, Art. no. 100336, 2022, doi: 10.1016/j.bdr.2022.100336.
 \bibitem{b21} P. M. Javali, K. Naregal, A. Gudnavar, S. Athanikar, and S. Shinde, ``A web-based public grievance redressal system with image and geolocation support,'' in \textit{Proc. Int. Conf. Smart \& Sustainable Technology (INCSST)}, 2025, doi: 10.1109/INCSST64791.2025.11210297.
@@ -511,7 +513,6 @@ UrbanFix takes a civic complaint from the citizen's photo to a recorded repair u
 \bibitem{b37} L. Sweeney, ``\textit{k}-anonymity: A model for protecting privacy,'' \textit{Int. J. Uncertainty, Fuzziness Knowl.-Based Syst.}, vol. 10, no. 5, pp. 557--570, 2002, doi: 10.1142/S0218488502001648.
 \bibitem{b38} S. Amershi \textit{et al.}, ``Guidelines for human-AI interaction,'' in \textit{Proc. CHI Conf. Human Factors in Computing Systems}, 2019, pp. 1--13, doi: 10.1145/3290605.3300233.
 \bibitem{b39} X. Wu, L. Xiao, Y. Sun, J. Zhang, T. Ma, and L. He, ``A survey of human-in-the-loop for machine learning,'' \textit{Future Gener. Comput. Syst.}, vol. 135, pp. 364--381, 2022, doi: 10.1016/j.future.2022.05.014.
-\bibitem{b40} S. Rahman, ``potholes, cracks and openmanholes (Road Hazards),'' Kaggle dataset, v2, 2025, CC BY-NC-SA 4.0. [Online]. Available: \url{https://www.kaggle.com/datasets/sabidrahman/pothole-cracks-and-openmanhole}
 \end{thebibliography}
 
 \begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{photos/pancholi.jpg}}]{Parth Pancholi}

@@ -1,0 +1,30 @@
+% Fig. 6: photo screening and prioritisation, drawn from backend/services/aiClient.js,
+% ai_service/main.py and the supervisor triage screen. Revised: per-category tau_k,
+% no model-suggested urgency, delta only as evidence.
+\begin{tikzpicture}[
+  font=\scriptsize,
+  box/.style={draw=markink, rounded corners=1.5pt, align=center, inner sep=3pt, text width=#1, minimum height=8mm},
+  box/.default=30mm,
+  arr/.style={-{Latex[length=1.6mm]}, markink, line width=0.5pt},
+  async/.style={-{Latex[length=1.6mm]}, teal!70!black, dashed, line width=0.6pt},
+]
+\node[box] (q) at (0,0) {Questionnaire, scored on the server\\$U$, $u_Q$ (Eq.~\ref{eq:urg})};
+\node[box] (save) at (4.4,0) {Code checked, consent recorded,\\complaint saved and published,\\tracking ID returned};
+\draw[arr] (q) -- node[above] {file} (save);
+\node[box, fill=teal!8] (model) at (4.4,-2.0) {Model $f_k$ on each photo $x_m$:\\boxes $b_j$, scores $s_j$, masks $M_j$};
+\draw[async] (save) -- node[right] {async} (model);
+\node[box, fill=teal!8] (ev) at (0,-2.0) {$s^{*}$ (Eq.~\ref{eq:sstar});\\$\delta$ for litter (Eq.~\ref{eq:delta}),\\shown as evidence only};
+\draw[arr] (model) -- (ev);
+\node[diamond, draw=markink, fill=teal!8, aspect=2.2, inner sep=1pt, font=\scriptsize] (d) at (0,-3.55) {$s^{*}\ge\tau_k$?};
+\draw[arr] (ev) -- (d);
+\node[box=22mm, draw=red!60!black] (flag) at (-2.4,-4.85) {$r=1$\\\texttt{needsReview}};
+\node[box=22mm, draw=green!45!black] (ok) at (2.4,-4.85) {$r=0$\\no flag};
+\draw[arr, red!60!black] (d.west) -| node[pos=0.3, below, align=center] {no, or service\\failed} (flag);
+\draw[arr, green!45!black] (d.east) -| node[pos=0.25, above] {yes} (ok);
+\node[box=86mm, draw=violet!70!black, fill=violet!6] (tri) at (0.6,-6.25)
+  {Supervisor triage: photos with annotations, $u_Q$, $s^{*}$, $\tau_k$, flag $r$\\
+   $\Rightarrow$ accept or reject with remarks (a human decision, Eq.~\ref{eq:fsm}); urgency stays $u_Q$};
+\draw[arr] (flag) -- (flag |- tri.north);
+\draw[arr] (ok) -- (ok |- tri.north);
+\draw[arr, dotted, markline] (q.west) -- (-4.1,0 |- q.west) |- node[pos=0.25, left] {$u_Q$} (tri.west);
+\end{tikzpicture}

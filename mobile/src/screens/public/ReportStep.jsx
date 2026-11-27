@@ -28,6 +28,8 @@ const ReportStep = ({
   onRemoveFile,
   onNext,
   submittingForm,
+  consent,
+  onToggleConsent,
 }) => {
   const swipeRef = useRef(null);
   const type = card.type;
@@ -241,6 +243,18 @@ const ReportStep = ({
             <ReviewRow label="Name" value={formData.name || '—'} />
             <ReviewRow label="Email" value={formData.email || '—'} last />
           </Card>
+          {/* B7: the citizen agrees to publication before the code is sent. The
+              server refuses a complaint without this agreement. */}
+          <Tappable onPress={onToggleConsent} scaleTo={0.98} style={s.consentRow}>
+            <View style={[s.consentBox, consent && s.consentBoxOn]}>
+              {consent ? <Icon name="check" size={16} color={colors.surface} strokeWidth={3} /> : null}
+            </View>
+            <Text style={s.consentText}>
+              I agree that the title, description, photos, street location and ward of this complaint
+              are published in the public registry. My name, email and phone are never published.
+              Photo metadata is removed, and phone numbers and emails in the text are hidden.
+            </Text>
+          </Tappable>
         </View>
       ) : null}
 
@@ -358,6 +372,19 @@ const s = StyleSheet.create({
   photoHint: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 18 },
   photoHintText: { fontFamily: font.body, fontSize: 15, color: colors.muted },
   reviewCard: { gap: 0, paddingVertical: 6 },
+  consentRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 12, marginTop: 18 },
+  consentBox: {
+    width: 24,
+    height: 24,
+    marginTop: 2,
+    borderRadius: 6,
+    borderWidth: 2,
+    borderColor: colors.muted,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  consentBoxOn: { backgroundColor: colors.text, borderColor: colors.text },
+  consentText: { flex: 1, fontFamily: font.bodyBold, fontSize: 15, lineHeight: 21, color: colors.muted },
   reviewRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',

@@ -1,0 +1,63 @@
+% Fig. 7: physical data model, drawn from backend/models/*.js (eight collections).
+% Revised: aiAnalysis fields, consent time, hash-chained access log, export quota,
+% unusable password marker; open manhole removed (|C| = 3).
+\begin{tikzpicture}[
+  font=\tiny,
+  ent/.style={draw=#1, line width=0.6pt, rounded corners=1pt, align=left, inner sep=2.5pt, anchor=north west,
+              text width=56mm},
+  head/.style={fill=#1, text=white, font=\scriptsize\bfseries, anchor=south west, inner sep=2.5pt, text width=56mm},
+  rel/.style={markink, line width=0.5pt},
+  card/.style={font=\tiny, fill=white, inner sep=0.5pt},
+]
+% \entity{name}{colour}{position of the body's north-west corner}{body}
+\newcommand{\entity}[4]{%
+  \node[ent=#2] (#1) at (#3) {#4};
+  \node[head=#2] (#1h) at (#1.north west) {#1};}
+\entity{Complaint}{markink}{0,0}{%
+\textbf{PK} \_id; \textbf{UK} trackingId; \textbf{FK} citizenId $\to$ User\\
+title, description, location (identifiers removed)\\
+category $\in\mathcal{C}$ ($|\mathcal{C}|=3$), ward\\
+answers, urgency score $U$, urgency band $u_Q$\\
+stage $\in S$, public status $\varphi(s)$\\
+\textbf{FK} assignedTo, assignedBy $\to$ User\\
+images[$\le$3], completionImages[$\le$3] (metadata removed)\\
+publicationConsentAt, closedAt, isPublic, version key\\
+$\triangleright$ \emph{aiAnalysis (1:1)}: state, model, $\tau_k$, $s^{*}$, $\delta$ (litter),\\
+\quad needsReview $r$, detections, annotated photos\\
+$\triangleright$ \emph{statusHistory[ ]}: stage, actor, remarks, $t$ (append only)}
+\entity{Otp}{markline}{$(Complaint.south west)+(0,-0.75)$}{%
+email; code hash; attempts $\le$ 5; single use\\
+\textbf{TTL} 5 min; matched by email, no stored reference}
+\entity{User}{teal!70!black}{6.75,0}{%
+\textbf{PK} \_id; \textbf{UK} email; name, phone\\
+role (5 account roles), isActive (deactivate only)\\
+password: bcrypt (cost 12), or an unusable marker\\
+inviteToken (SHA-256, 72 h), mustSetPassword\\
+$\triangleright$ \emph{researcher}: scope $\sigma$, granted $t_g$, expires $t_e$\\
+$\triangleright$ \emph{employee}: code (\textbf{UK}), ward, supervisor}
+\entity{LeaveRequest}{orange!70!black}{$(User.south west)+(0,-0.75)$}{%
+\textbf{FK} employeeId, decidedBy $\to$ User\\
+fromDate, toDate, reason, status}
+\entity{AttendanceRecord}{orange!70!black}{$(LeaveRequest.south west)+(0,-0.75)$}{%
+\textbf{UK} (employeeId, date); check-in, check-out}
+\entity{ResearchApplication}{violet!70!black}{13.5,0}{%
+\textbf{PK} \_id; email, purpose ($\ge$100 characters)\\
+requestedDays (1--180), status\\
+\textbf{FK} reviewedBy, createdUserId $\to$ User}
+\entity{ResearchAccessLog}{violet!70!black}{$(ResearchApplication.south west)+(0,-0.75)$}{%
+\textbf{FK} researcherId $\to$ User; action, filters, recordCount\\
+\textbf{UK} seq; prevHash, hash (append-only chain)}
+\entity{ExportQuota}{violet!70!black}{$(ResearchAccessLog.south west)+(0,-0.75)$}{%
+\textbf{UK} (researcherId, UTC day); used $\le$ 5; \textbf{TTL} 3 days}
+% relationships
+\draw[rel] ([yshift=-3mm]Complaint.north east) -- node[card, above, pos=0.12] {0..*} node[card, above, pos=0.88] {1}
+  node[card, below, midway] {files} ([yshift=-3mm]Complaint.north east -| User.west);
+\draw[rel] ([yshift=-11mm]Complaint.north east) -- node[card, above, pos=0.12] {0..*} node[card, above, pos=0.88] {0..1}
+  node[card, below, midway] {assigned} ([yshift=-11mm]Complaint.north east -| User.west);
+\draw[rel] ([yshift=-3mm]User.north east) -- node[card, above, pos=0.12] {0..1} node[card, above, pos=0.88] {0..1}
+  ([yshift=-3mm]User.north east -| ResearchApplication.west);
+\draw[rel] ([yshift=-11mm]User.north east) -- ++(0.35,0) |- node[card, above, pos=0.88] {0..*} (ResearchAccessLog.west);
+\draw[rel] ([yshift=-11mm]User.north east) -- ++(0.35,0) |- node[card, above, pos=0.88] {0..*} (ExportQuota.west);
+\draw[rel] ([xshift=-12mm]User.south) -- node[card, right, pos=0.6] {0..*} ([xshift=-12mm]User.south |- LeaveRequesth.north);
+\draw[rel] (User.south west) ++(-0.2,0.3) -- ++(-0.25,0) |- node[card, above, pos=0.9] {0..*} (AttendanceRecord.west);
+\end{tikzpicture}

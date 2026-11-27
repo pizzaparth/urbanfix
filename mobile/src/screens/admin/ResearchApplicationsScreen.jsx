@@ -19,7 +19,7 @@ const FILTERS = [
 const DAYS = [30, 60, 90, 180].map((d) => ({ value: d, label: `${d} days` }));
 const SCOPES = [
   { value: 'aggregate_only', label: 'Statistics only' },
-  { value: 'anonymised_records', label: 'Anonymised records' },
+  { value: 'anonymised_records', label: 'Pseudonymised records' },
 ];
 
 const ResearchApplicationsScreen = ({ navigation }) => {
@@ -135,8 +135,8 @@ const ResearchApplicationsScreen = ({ navigation }) => {
                       <FieldLabel>Data to grant</FieldLabel>
                       <ChoiceGroup options={SCOPES} value={scope} onChange={setScope} color={colors.secondary} />
                       <Text style={s.hint}>
-                        Record-level access shows anonymised rows (ward, category, dates). Never names,
-                        contact details or free text.
+                        Record-level access shows pseudonymised rows (category, urgency, status, ward, quarter
+                        filed; groups under 5 withheld). Never names, contact details or free text.
                       </Text>
                     </View>
                     <Field label="Note (required to reject)" value={note} onChangeText={setNote} placeholder="Shown to the applicant on rejection" multiline />

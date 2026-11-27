@@ -860,28 +860,100 @@ The git history still holds the deleted files. Removing them from history would 
 2. Decide whether the Chicago 311 extract (18 MB, 2.2 MB gzipped) goes into the Zenodo archive, after reading the City of Chicago Data Portal terms. If it is not archived, the linkage analysis depends on the City not changing its 2024 records. `reproduce.sh privacy` reports such a change.
 3. Fill in the paper DOI and the version in `CITATION.cff`.
 4. Tag the release, and archive it on Zenodo through the GitHub integration (the user's Zenodo login).
-5. Write E3 in the paper. Cite the concept DOI, so a later version keeps the same citation.
+5. Replace the DOI placeholder (`\archiveDOI` in `paper/urbanfix_ieee_access_rev1/latex/main.tex`) in the paper's Code and Data Availability section, which phase 6 wrote. Cite the concept DOI, so a later version keeps the same citation.
+
+### Phase 6, paper: done on 2026-11-27
+
+**Where.** The revision is a new copy, `paper/urbanfix_ieee_access_rev1/` (user decision). The submitted copy `paper/urbanfix_ieee_access/latex/` was restored to its state at submission (commit 1370833). It had picked up the phase 2 edits to Table IV and Fig. 4. `fig_dataset_screening.py` now writes Fig. 4 into the revision.
+
+**Rule for numbers, enforced.** `main.tex` contains no number from a result. Every number is a macro in `latex/generated/numbers.tex` (351 macros). Every results table body is a `latex/generated/tab_*.tex` file. Both are written by `scripts/build_paper_data.py` from the committed result files. `./reproduce.sh paper` rebuilds them and fails if they differ, and it runs in CI.
+
+Numbers typed by hand that do not come from our results:
+- Literature and CPGRAMS figures in the introduction.
+- Dataset sizes in Fig. 4, from `fig_dataset_screening.py`.
+- Code constants: 5 attempts, 72 h, 180 days, 5,000 rows, 5 exports a day.
+- The seeded demonstration numbers of Fig. 16, unchanged from the submission.
+
+**Code changes made for the paper.**
+
+| Item | Change | Test |
+|---|---|---|
+| F15 | A citizen who only files, and an account waiting for its invite, get an unusable marker (`!unusable:` plus 32 random characters) instead of a bcrypt hash. `comparePassword` refuses anything that is not a bcrypt hash. The validators refuse chosen passwords with the prefix, so every real password is still hashed. Filing went from 4 to 40 requests per second (p50 4,274 to 437 ms). | Unusable marker stored and login refused; prefix refused at registration |
+| B7 | Publication consent. The filing screen has a checkbox on the review step. The server refuses a complaint without `consent: true` before the code is used, and stores `publicationConsentAt`. | Refused without consent; the same code still works afterwards |
+| P9 | Ward monitoring. `GET /api/admin/stats` returns `wardMonitoring`: per ward, the complaints filed, the model-checked share flagged, and the median days to closure. The admin dashboard shows them in a "By ward" table, with a note that counts reflect who reports. | Flag rate and median checked on seeded complaints |
+| P7 wording | User-visible "anonymised" changed to "pseudonymised" in the app, emails, README and docs. The stored scope id `anonymised_records` is unchanged; renaming it would need a data migration. The docs say so. | none (text only) |
+
+Backend: 69 tests, 68 passed, 1 skipped. Vision service: 10 passed. Both are recorded as JUnit reports (`*/tests/results/junit.xml`, written by `./reproduce.sh tests`, paths and host name stripped). The mobile changes were checked by parsing only. The app was not run on a device.
+
+**New load test** (`backend/tests/load/results/2026-11-27T17-38-29-761Z.json`), all scenarios on the current code:
+- At 50 connections:
+  - Registry: 1,575 req/s.
+  - Tracker: 6,552 req/s.
+  - Research records: 337 req/s.
+  - No errors in any scenario.
+- At 200 connections, error rates were:
+  - Registry 27.3 %.
+  - Tracker 2.2 %.
+  - Research records 2.5 %.
+  - The cause is the macOS backlog of 128, as in phase 1. The paper reports it as a limit of the test machine.
+- Filing at 20 connections: 40 req/s.
+
+**Paper changes (P1 to P12)**
+
+| Item | Done |
+|---|---|
+| P1 | Title as suggested. "AI-validated" became "AI-assisted" or "screening". "Accountable" became "auditable". Keywords now include pseudonymisation, k-anonymity and audit logs. |
+| P2 | New abstract. It gives test mAP50 with a CI, complaint-level flag and pass rates, and the India result. It says the model never rejects, the workflow figures come from seeded data and there was no deployment, and the privacy risk was measured on Chicago 311. |
+| P3 | Table III, "Counts used in this paper": loop 6, states 7, main path 5, request checks 7, roles 6. Fig. 3 now shows seven numbered request checks. |
+| P4 | Table VII (datasets) uses generated split counts. The split procedure is described, with the measured leak in the old open manhole split (262 of 480 validation images). |
+| P5 | τ_k per category (Eq. 11), with the rule. θδ and the δ urgency rule are removed. δ is litter-only descriptive evidence, with a sentence saying it is not a severity measure. Eq. 2 is computed on the server. Fig. 6 is redrawn in TikZ: the model can only set the flag. |
+| P6 | Table VIII: test metrics with CIs and a validation column. Table IX: baselines and ablations with latency and size. Table X: complaint screening at τ_k and at 0.25. Table XI and Fig. 14: geography. Fig. 11: τ sweep. Fig. 10: training curves, labelled. Fig. 12: examples. Fig. 13: error analysis. The workload simulation is stated as a simulation. Eq. 10 cites VOC and COCO. Stated plainly: seed 0 only, CIs cover test sampling only, 40-epoch cap with all three models still improving. |
+| P7 | Section IV-E rewritten in the planned structure: assets, adversaries (a) to (e), controls (Table V), pseudonymised versus anonymised, keys (Eq. 9, per-researcher HMAC), linkage measurement (Table VI, all eight variants), the registry framing, residual risks, and law (DPDP Act s. 17(2)(b), DPDP Rules 2025, GDPR). Eq. 7 is the new projection. Table IV (disclosure) is updated. |
+| P8 | Table XII (tests by group, from the JUnit reports), Table XIII (load), and the F15 finding with its fix. Fig. 15 is removed. The archive DOI is a placeholder until 5b. |
+| P9 | Fairness subsection: who reports, access, category selection, model bias by place (measured), and the monitoring now in the admin dashboard. |
+| P10 | 20 references added, b41 to b60. Each was checked against Crossref by DOI or query, or against the official source: the PIB note for the DPDP Rules, USENIX for Crosby and Wallach, statute text for s. 17(2)(b). Corrections found: Mehrabi et al. is vol. 54, no. 6, 2022 (print); Dwork and Roth is pp. 211 to 487. |
+| P11 | The introduction states the contribution as system design plus an open, tested implementation plus an evaluation protocol, with no new model. Limitations rewritten. |
+| P12 | Deployment cost subsection: 3 photos × 24.3 ms gives about 1.2 million complaints a day on one core, against 7,178 a day for CPGRAMS (0.6 % of a core). The cost that matters is triage time. |
+
+**Figures.**
+- Removed:
+  - fig11 to fig15 (old validation figures and the API test tiles).
+  - fig03, fig06 and fig07 as JPGs, replaced by TikZ in `latex/tikz/`. They are rebuilt from the code: 3 models, 8 collections, the hash-chained log, the consent check.
+- fig05 is redrawn from `backend/constants/questionnaires.js`. The old version was labelled "pothole, manhole".
+- fig10 is redrawn:
+  - One test photo per category, chosen by rule: the median s* among passing valid photos.
+  - Three app screens from the submission.
+  - The old research-profile screen was dropped because it said "anonymised".
+  - The open manhole panel is gone.
+- The graphical abstract is regenerated with test mAP50 and its CIs. The old one showed the Kaggle manhole photo and validation numbers. The caption is rewritten.
+
+**Compiling.** The official class needs pdfLaTeX. Installing TinyTeX was blocked by the tool's permission check, so the manuscript was compiled with tectonic and a stand-in class that loads IEEEtran. That gave 19 pages, no undefined references, and no overfull box over 10 pt. The final layout must be checked with the official class on Overleaf (free) or with a local pdfLaTeX.
+
+**Findings during phase 6**
+- **F26.** The pothole model flags 27.1 % of valid test complaints, above the 20 % the τ rule allowed on validation. The rule's bound does not carry over exactly from validation to test. The paper says so.
+- **F27.** For the Czech Republic (n = 11), training with India raised the flag rate from 54.5 % to 81.8 %. The intervals are too wide to rank, and the paper says that. A larger Czech test set would be needed to know whether adding India hurt there.
+- **F28.** The supervisor cannot change a complaint's urgency in the code. The submitted paper said the supervisor "sets the priority". The revision says urgency stays u_Q and the supervisor decides acceptance.
 
 ## 11. Done checklist
 
 - [x] No source photo appears in two splits (script output saved in `ai_model/results/split_report.json`).
-- [ ] Every number in the paper comes from a `results/*.json` file in the release.
+- [x] Every number in the paper comes from a `results/*.json` file in the release (generated macros and tables, checked in CI; phase 6).
 - [x] Test-set metrics with 95 % CIs (seed 0 only; seeds 1 and 2 dropped by user decision, 2026-11-27).
 - [x] Complaint-level false-flag and false-pass rates per category.
-- [ ] τ_k chosen by a written rule; θδ and the δ urgency rule removed.
+- [x] τ_k chosen by a written rule; θδ and the δ urgency rule removed (code phase 1 and 3, paper phase 6).
 - [x] At least one non-YOLO baseline and two YOLO variants compared (RT-DETR-l, YOLOv8n, YOLO11n).
 - [x] RDD2022 India cross-dataset result.
 - [x] AI service exists in the repository and the backend stores `aiAnalysis` and `needsReview`.
 - [x] Urgency computed on the server from stored answers.
-- [ ] EXIF removed, text redacted, registry allow-list, consent checkbox.
+- [x] EXIF removed, text redacted, registry allow-list, consent checkbox (consent added in phase 6).
 - [x] Separate research HMAC key, per-grant keys, k ≥ 5 suppression (phase 4, 2026-11-27).
-- [ ] Linkage analysis on Chicago 311 in the paper.
+- [x] Linkage analysis on Chicago 311 in the paper (Table VI, phase 6).
 - [x] OTP attempt limit and rate limits, with tests.
 - [x] Concurrency, audit-integrity, privacy and load tests in `backend/tests/`, run by CI (all three CI jobs passed on 2026-11-26, run 45847742015; the load test runs by hand with `npm run test:load`; k-anonymity tests added in phase 4).
 - [x] Dataset provenance and licence documented; Eq. (1) has five criteria. (Fig. 4 redraw left for phase 6.)
-- [ ] One glossary for stage counts used everywhere.
-- [ ] Fairness subsection with the measured geographic gap.
-- [ ] All new references checked against publisher pages.
+- [x] One glossary for stage counts used everywhere (Table III, phase 6).
+- [x] Fairness subsection with the measured geographic gap (phase 6).
+- [x] All new references checked against Crossref or the official source (phase 6).
 - [ ] Public repository with a Zenodo DOI and a data availability statement. (5a done 2026-11-27: licences, notices, image audit, `reproduce.sh`; DOI and statement in 5b.)
-- [ ] Title and claims say "AI-assisted", "auditable", "pseudonymised".
+- [x] Title and claims say "AI-assisted", "auditable", "pseudonymised" (phase 6).
 - [ ] Response letter answers every numbered comment.

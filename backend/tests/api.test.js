@@ -140,3 +140,26 @@ describe('Fig. 15 API tests', () => {
     assert.equal(res.status, 401);
   });
 });
+
+describe('P9 ward monitoring on the admin dashboard', () => {
+  before(startServer);
+  after(stopServer);
+  beforeEach(resetState);
+
+  it('reports flag rate among model-checked complaints and median days to closure per ward', async () => {
+    const day = 86400000;
+    const t0 = new Date('2026-01-01T00:00:00Z');
+    const done = (needsReview) => ({ state: 'done', needsReview, sStar: needsReview ? null : 0.9, tau: 0.4 });
+    await complaintAt('closed', { ward: 'Ward 1', createdAt: t0, closedAt: new Date(+t0 + 2 * day), aiAnalysis: done(false) });
+    await complaintAt('closed', { ward: 'Ward 1', createdAt: t0, closedAt: new Date(+t0 + 4 * day), aiAnalysis: done(true) });
+    await complaintAt('closed', { ward: 'Ward 1', createdAt: t0, closedAt: new Date(+t0 + 9 * day), aiAnalysis: done(true) });
+    await complaintAt('submitted', { ward: 'Ward 1', aiAnalysis: { state: 'failed', needsReview: true } });
+    await complaintAt('submitted', { ward: 'Ward 2', aiAnalysis: done(false) });
+
+    const admin = await makeUser('admin');
+    const res = await request(app).get('/api/admin/stats').set(admin.auth).expect(200);
+    const byWard = Object.fromEntries(res.body.stats.wardMonitoring.map((w) => [w.ward, w]));
+    assert.deepEqual(byWard['Ward 1'], { ward: 'Ward 1', filed: 4, checked: 3, flagRate: 2 / 3, closed: 3, medianResolutionDays: 4 });
+    assert.deepEqual(byWard['Ward 2'], { ward: 'Ward 2', filed: 1, checked: 1, flagRate: 0, closed: 0, medianResolutionDays: null });
+  });
+});

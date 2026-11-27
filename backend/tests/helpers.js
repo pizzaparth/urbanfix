@@ -86,6 +86,7 @@ export const complaintFields = (overrides = {}) => {
     location: 'MG Road near bus stop',
     ward: 'Ward 1',
     answers: JSON.stringify(noAnswers(category)),
+    consent: 'true',
     ...overrides,
   };
 };
