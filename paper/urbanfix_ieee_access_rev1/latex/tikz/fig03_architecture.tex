@@ -19,7 +19,7 @@
   {\textbf{Expo / React Native client} (Android, iOS, web): one app, five role shells chosen by the server; citizens and the public share one};
 \foreach \i in {0,...,5} \draw[arr] (a\i) -- (a\i |- client.north);
 % pipeline
-\node[lbl] at (-1.0,-1.95) {REQUEST PIPELINE: seven checks on every call (Express)};
+\node[lbl] at (-1.0,-1.95) {REQUEST PIPELINE: up to seven checks before the controllers (Express)};
 \foreach \t [count=\i from 0] in {
   {1 Transport\\HTTPS, CORS, body limit},
   {2 Rate limits\\OTP, login, filing},

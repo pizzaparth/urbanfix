@@ -308,6 +308,7 @@ def linkage() -> None:
                 val = val if isinstance(val, (int, float)) else val["median"]
                 m(name("chi", scope, urg, v, "withheld"), pct(val))
         m(name("chi city k one", v), pct(d["city"]["without_urgency"][v]["k1"]))
+        m(name("chi city k one urg", v), pct(d["city"]["with_urgency"][v]["k1"]))
         m(name("chi small singled", v), pct(d["small"]["without_urgency"][v]["adversary_raw.singled_out"]["median"]))
         m(name("chi small learns after", v), pct(d["small"]["with_urgency"][v]["adversary_after_k5.learns_outcome"]["median"]))
         m(name("chi small k one", v), pct(d["small"]["without_urgency"][v]["k1"]["median"]))

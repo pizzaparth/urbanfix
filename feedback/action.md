@@ -944,6 +944,33 @@ Floats are flushed before the references, so none land after the biographies.
   - The paper now states both, in the Table VII footnote and in the text on Fig. 13. `DATASETS.md` records the STORM finding.
 - **F28.** The supervisor cannot change a complaint's urgency in the code. The submitted paper said the supervisor "sets the priority". The revision says urgency stays u_Q and the supervisor decides acceptance.
 
+### Phase 6 check: simulated review of the revision (2026-11-28)
+
+The revised PDF was read as Reviewers 1 and 2 would read it, against `review.md`, and its claims were checked against the code.
+
+**Fixed:**
+- Abstract was 266 words. It is now 240, under the IEEE Access limit of 250. It also wrongly said the workflow "requires a receipt before closure"; the receipt is issued at closure.
+- "Every API call passes seven checks" was false: public routes skip authentication, and rate limits apply only to codes, login and filing. The text, Table III and Fig. 3 now say "up to seven checks".
+- "τ = 0.25 lets most wrong photos through" was not true for potholes (15.9 %). It now cites litter (81.5 %). "Close to useless" is limited to litter and graffiti.
+- "RT-DETR-l scores higher for every category" now says its interval overlaps YOLOv8n's in every category.
+- "Close-ups taken by hand": the Roboflow source is undocumented, so the claim was removed. The TACO unofficial result is "somewhat", not "well", below in-domain.
+- The deployment cost said "one CPU core". The latency was measured with PyTorch's default multi-threading, so it now says "one machine".
+- The text said 77.4 % unique for variant A, while Table VI shows 82.2 % (the table includes the simulated urgency). The text now gives both.
+- Added the utility cost of the k = 5 release: about a third of records are withheld in a small city.
+- YOLO11 had no citation. Added b61.
+- Smaller fixes:
+  - Double parentheses in "((Senior Member, IEEE))".
+  - Stray ",." after "graffiti".
+  - "Some requests failed" is now "up to 27.3 %".
+  - "Sixteen tests kept unchanged" is now "kept, now automated".
+  - "Japan, Europe and China" is now "outside India".
+
+**Open, needs a decision (F30).** The admin override contradicts the paper's workflow claims. `PATCH` admin status (`applyAdminOverride`) lets an administrator move In Progress to Resolved without proof, and In Progress to Rejected after acceptance. The paper says rejection is possible only from submitted, and that closure requires proof. Each override is recorded in the history with the actor and remarks of at least 10 characters. Either restrict the override to transitions the state machine allows, or state the override in the paper as a logged exception.
+
+**Left for the response letter (phase 7):**
+- R1.2 asks to compare staff decisions with and without AI. This was not done, because there was no deployment. The paper gives a simulation and states the limitation.
+- R2 (v) archive DOI: phase 5b.
+
 ## 11. Done checklist
 
 - [x] No source photo appears in two splits (script output saved in `ai_model/results/split_report.json`).
