@@ -98,6 +98,11 @@ def datasets() -> None:
     checks = [c["check"] for c in rep["categories"].values()]
     m(name("split shared groups"), sum(c["shared_groups"] + c["cross_split_near_duplicate_pairs"] + c["cross_split_stems"]
                                        for c in checks))
+    storm = load(AI / "storm_black_regions.json")
+    m(name("storm black"), storm["black_bottom_total"])
+    m(name("storm total"), thousands(storm["images_total"]))
+    m(name("storm black test"), storm["black_bottom"]["official_test"])
+    m(name("storm test"), storm["images"]["official_test"])
     old = load(AI / "split_audit_old.json")["open_manhole_kaggle"]
     m(name("old manhole val"), old["val_images"])
     m(name("old manhole leak"), old["val_images_sharing_group_with_train"])

@@ -24,6 +24,8 @@ research use.
 
 Correction to the plan: the RDD2022 figshare record states **CC BY 4.0**, not CC BY-SA 4.0.
 
+STORM photos with a black lower part: in 138 of the 1,022 published STORM photos (24 of the 209 official test photos), the bottom quarter of the image is black. Every such file is a complete JPEG, and `prepare_sources.py` copies STORM images byte for byte, so the black area is in the dataset as published. The files are used as they are. Source: `scripts/audit_storm_black.py`, which writes `results/storm_black_regions.json`.
+
 A second graffiti set was searched for on Zenodo, figshare and Mendeley on 2026-11-26. None was both
 open and documented (City Risks, 17K-Graffiti above; the Lisbon graffiti set of Applied Sciences 13(4)
 2249 is available on request only). Graffiti therefore has no external test set; its untouched

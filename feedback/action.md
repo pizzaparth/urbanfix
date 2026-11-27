@@ -938,6 +938,10 @@ Floats are flushed before the references, so none land after the biographies.
 **Findings during phase 6**
 - **F26.** The pothole model flags 27.1 % of valid test complaints, above the 20 % the τ rule allowed on validation. The rule's bound does not carry over exactly from validation to test. The paper says so.
 - **F27.** For the Czech Republic (n = 11), training with India raised the flag rate from 54.5 % to 81.8 %. The intervals are too wide to rank, and the paper says that. A larger Czech test set would be needed to know whether adding India hurt there.
+- **F29 (2026-11-28, user question).** Two errors in the error figure explained.
+  - The grey tiles are COCO photos whose licences do not allow reuse in a CC BY paper (phase 5a).
+  - The black lower halves are in the published STORM files: 138 of 1,022 photos, 24 of the 209 test photos. Every one is a complete JPEG, copied byte for byte (`scripts/audit_storm_black.py`, `results/storm_black_regions.json`).
+  - The paper now states both, in the Table VII footnote and in the text on Fig. 13. `DATASETS.md` records the STORM finding.
 - **F28.** The supervisor cannot change a complaint's urgency in the code. The submitted paper said the supervisor "sets the priority". The revision says urgency stays u_Q and the supervisor decides acceptance.
 
 ## 11. Done checklist

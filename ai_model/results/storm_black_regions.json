@@ -1,0 +1,15 @@
+{
+ "dataset": "STORM graffiti/tagging, doi:10.5281/zenodo.3238357",
+ "rule": "bottom quarter: >= 95 % of pixels below 8/255",
+ "images": {
+  "official_train": 813,
+  "official_test": 209
+ },
+ "black_bottom": {
+  "official_train": 114,
+  "official_test": 24
+ },
+ "black_bottom_total": 138,
+ "images_total": 1022,
+ "black_bottom_incomplete_jpeg": 0
+}
