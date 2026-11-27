@@ -1,102 +1,106 @@
 <?xml version="1.0" encoding="utf-8"?>
 <testsuites>
-	<testsuite name="AI analysis" time="5.983787" disabled="0" errors="0" tests="7" failures="0" skipped="1">
-		<testcase name="service not configured: filing succeeds and the complaint is flagged" time="0.097427" classname="AI analysis" file="backend/tests/ai.test.js"/>
-		<testcase name="service down: filing answers 201 at once, then 3 attempts, then flagged" time="0.067977" classname="AI analysis" file="backend/tests/ai.test.js"/>
-		<testcase name="service returns 500 twice then answers: the retry stores the result" time="0.074280" classname="AI analysis" file="backend/tests/ai.test.js"/>
-		<testcase name="a slow service does not delay the filing response" time="4.593551" classname="AI analysis" file="backend/tests/ai.test.js"/>
-		<testcase name="a complaint without photos is skipped and flagged" time="0.053891" classname="AI analysis" file="backend/tests/ai.test.js"/>
-		<testcase name="the supervisor sees aiAnalysis; the AI never changes stage or urgency" time="0.292859" classname="AI analysis" file="backend/tests/ai.test.js"/>
-		<testcase name="end to end with the real vision service" time="0.000070" classname="AI analysis" file="backend/tests/ai.test.js">
+	<testsuite name="AI analysis" time="6.950317" disabled="0" errors="0" tests="7" failures="0" skipped="1">
+		<testcase name="service not configured: filing succeeds and the complaint is flagged" time="0.095342" classname="AI analysis" file="backend/tests/ai.test.js"/>
+		<testcase name="service down: filing answers 201 at once, then 3 attempts, then flagged" time="0.066733" classname="AI analysis" file="backend/tests/ai.test.js"/>
+		<testcase name="service returns 500 twice then answers: the retry stores the result" time="0.070887" classname="AI analysis" file="backend/tests/ai.test.js"/>
+		<testcase name="a slow service does not delay the filing response" time="4.586951" classname="AI analysis" file="backend/tests/ai.test.js"/>
+		<testcase name="a complaint without photos is skipped and flagged" time="0.058846" classname="AI analysis" file="backend/tests/ai.test.js"/>
+		<testcase name="the supervisor sees aiAnalysis; the AI never changes stage or urgency" time="0.277119" classname="AI analysis" file="backend/tests/ai.test.js"/>
+		<testcase name="end to end with the real vision service" time="0.000057" classname="AI analysis" file="backend/tests/ai.test.js">
 			<skipped type="skipped" message="true"/>
 		</testcase>
 	</testsuite>
-	<testsuite name="Fig. 15 API tests" time="4.016488" disabled="0" errors="0" tests="16" failures="0" skipped="0">
-		<testcase name="T1 health check answers 200" time="0.026943" classname="Fig. 15 API tests" file="backend/tests/api.test.js"/>
-		<testcase name="T2 filing without an email is refused (400)" time="0.012889" classname="Fig. 15 API tests" file="backend/tests/api.test.js"/>
-		<testcase name="T3 a category outside the supported set is refused (400)" time="0.004607" classname="Fig. 15 API tests" file="backend/tests/api.test.js"/>
-		<testcase name="T4 a wrong OTP is refused (400)" time="0.019942" classname="Fig. 15 API tests" file="backend/tests/api.test.js"/>
-		<testcase name="T5 an expired OTP is refused (400)" time="0.005021" classname="Fig. 15 API tests" file="backend/tests/api.test.js"/>
-		<testcase name="T6 a valid complaint is filed (201) and gets a tracking ID" time="0.012127" classname="Fig. 15 API tests" file="backend/tests/api.test.js"/>
-		<testcase name="T7 the tracker shows the filing citizen only as &amp;quot;Citizen&amp;quot;" time="0.013178" classname="Fig. 15 API tests" file="backend/tests/api.test.js"/>
-		<testcase name="T8 the registry carries no citizen identity" time="0.007584" classname="Fig. 15 API tests" file="backend/tests/api.test.js"/>
-		<testcase name="T9 a field worker cannot accept a complaint (403)" time="0.416127" classname="Fig. 15 API tests" file="backend/tests/api.test.js"/>
-		<testcase name="T10 remarks shorter than ten characters are refused (400)" time="0.426163" classname="Fig. 15 API tests" file="backend/tests/api.test.js"/>
-		<testcase name="T11 a supervisor accepts a submitted complaint (200)" time="0.421167" classname="Fig. 15 API tests" file="backend/tests/api.test.js"/>
-		<testcase name="T12 rejecting after acceptance is an illegal transition (400)" time="0.425407" classname="Fig. 15 API tests" file="backend/tests/api.test.js"/>
-		<testcase name="T13 assigning field staff from another ward is refused (400)" time="0.619043" classname="Fig. 15 API tests" file="backend/tests/api.test.js"/>
-		<testcase name="T14 a receipt before closure is refused (400)" time="0.207533" classname="Fig. 15 API tests" file="backend/tests/api.test.js"/>
-		<testcase name="T15 an aggregate-only researcher cannot read records (403)" time="0.218970" classname="Fig. 15 API tests" file="backend/tests/api.test.js"/>
-		<testcase name="T16 a wrong password is refused (401)" time="0.412789" classname="Fig. 15 API tests" file="backend/tests/api.test.js"/>
+	<testsuite name="Fig. 15 API tests" time="3.955919" disabled="0" errors="0" tests="16" failures="0" skipped="0">
+		<testcase name="T1 health check answers 200" time="0.024170" classname="Fig. 15 API tests" file="backend/tests/api.test.js"/>
+		<testcase name="T2 filing without an email is refused (400)" time="0.010625" classname="Fig. 15 API tests" file="backend/tests/api.test.js"/>
+		<testcase name="T3 a category outside the supported set is refused (400)" time="0.003833" classname="Fig. 15 API tests" file="backend/tests/api.test.js"/>
+		<testcase name="T4 a wrong OTP is refused (400)" time="0.017347" classname="Fig. 15 API tests" file="backend/tests/api.test.js"/>
+		<testcase name="T5 an expired OTP is refused (400)" time="0.004390" classname="Fig. 15 API tests" file="backend/tests/api.test.js"/>
+		<testcase name="T6 a valid complaint is filed (201) and gets a tracking ID" time="0.011877" classname="Fig. 15 API tests" file="backend/tests/api.test.js"/>
+		<testcase name="T7 the tracker shows the filing citizen only as &amp;quot;Citizen&amp;quot;" time="0.012589" classname="Fig. 15 API tests" file="backend/tests/api.test.js"/>
+		<testcase name="T8 the registry carries no citizen identity" time="0.008822" classname="Fig. 15 API tests" file="backend/tests/api.test.js"/>
+		<testcase name="T9 a field worker cannot accept a complaint (403)" time="0.407947" classname="Fig. 15 API tests" file="backend/tests/api.test.js"/>
+		<testcase name="T10 remarks shorter than ten characters are refused (400)" time="0.404974" classname="Fig. 15 API tests" file="backend/tests/api.test.js"/>
+		<testcase name="T11 a supervisor accepts a submitted complaint (200)" time="0.406050" classname="Fig. 15 API tests" file="backend/tests/api.test.js"/>
+		<testcase name="T12 rejecting after acceptance is an illegal transition (400)" time="0.409010" classname="Fig. 15 API tests" file="backend/tests/api.test.js"/>
+		<testcase name="T13 assigning field staff from another ward is refused (400)" time="0.614099" classname="Fig. 15 API tests" file="backend/tests/api.test.js"/>
+		<testcase name="T14 a receipt before closure is refused (400)" time="0.203129" classname="Fig. 15 API tests" file="backend/tests/api.test.js"/>
+		<testcase name="T15 an aggregate-only researcher cannot read records (403)" time="0.202793" classname="Fig. 15 API tests" file="backend/tests/api.test.js"/>
+		<testcase name="T16 a wrong password is refused (401)" time="0.402410" classname="Fig. 15 API tests" file="backend/tests/api.test.js"/>
 	</testsuite>
-	<testsuite name="P9 ward monitoring on the admin dashboard" time="2.098815" disabled="0" errors="0" tests="1" failures="0" skipped="0">
-		<testcase name="reports flag rate among model-checked complaints and median days to closure per ward" time="1.301695" classname="P9 ward monitoring on the admin dashboard" file="backend/tests/api.test.js"/>
+	<testsuite name="P9 ward monitoring on the admin dashboard" time="2.061584" disabled="0" errors="0" tests="1" failures="0" skipped="0">
+		<testcase name="reports flag rate among model-checked complaints and median days to closure per ward" time="1.254131" classname="P9 ward monitoring on the admin dashboard" file="backend/tests/api.test.js"/>
 	</testsuite>
-	<testsuite name="Tamper-evident research audit log" time="2.573482" disabled="0" errors="0" tests="7" failures="0" skipped="0">
-		<testcase name="50 rows verify as intact" time="0.280770" classname="Tamper-evident research audit log" file="backend/tests/audit.test.js"/>
-		<testcase name="an edited row is reported" time="0.233681" classname="Tamper-evident research audit log" file="backend/tests/audit.test.js"/>
-		<testcase name="a deleted row is reported as a gap" time="0.227899" classname="Tamper-evident research audit log" file="backend/tests/audit.test.js"/>
-		<testcase name="a recomputed row that does not link to its predecessor is reported" time="0.211775" classname="Tamper-evident research audit log" file="backend/tests/audit.test.js"/>
-		<testcase name="the application cannot update or delete log rows" time="0.207903" classname="Tamper-evident research audit log" file="backend/tests/audit.test.js"/>
-		<testcase name="parallel research calls keep one unbroken chain" time="0.250023" classname="Tamper-evident research audit log" file="backend/tests/audit.test.js"/>
-		<testcase name="admins can run the verifier, and the public stats publish the head hash" time="0.415676" classname="Tamper-evident research audit log" file="backend/tests/audit.test.js"/>
+	<testsuite name="Admin status control follows the state machine" time="2.501040" disabled="0" errors="0" tests="2" failures="0" skipped="0">
+		<testcase name="cannot close without proof, reject after acceptance, or move backwards" time="0.862123" classname="Admin status control follows the state machine" file="backend/tests/api.test.js"/>
+		<testcase name="can accept or reject a submitted complaint and close one with proof" time="0.831329" classname="Admin status control follows the state machine" file="backend/tests/api.test.js"/>
 	</testsuite>
-	<testsuite name="Concurrency" time="3.405624" disabled="0" errors="0" tests="5" failures="0" skipped="0">
-		<testcase name="10 parallel exports: at most 5 succeed (daily quota)" time="0.278558" classname="Concurrency" file="backend/tests/concurrency.test.js"/>
-		<testcase name="two supervisors accept the same complaint at once: exactly one succeeds" time="0.636141" classname="Concurrency" file="backend/tests/concurrency.test.js"/>
-		<testcase name="accept and reject at once: one wins, history has one decision" time="0.418606" classname="Concurrency" file="backend/tests/concurrency.test.js"/>
-		<testcase name="close and rework at once on submitted proof: one legal result" time="0.641647" classname="Concurrency" file="backend/tests/concurrency.test.js"/>
-		<testcase name="field proof and supervisor rework race: final stage is legal and history consistent" time="0.626865" classname="Concurrency" file="backend/tests/concurrency.test.js"/>
+	<testsuite name="Tamper-evident research audit log" time="2.555840" disabled="0" errors="0" tests="7" failures="0" skipped="0">
+		<testcase name="50 rows verify as intact" time="0.275629" classname="Tamper-evident research audit log" file="backend/tests/audit.test.js"/>
+		<testcase name="an edited row is reported" time="0.229226" classname="Tamper-evident research audit log" file="backend/tests/audit.test.js"/>
+		<testcase name="a deleted row is reported as a gap" time="0.223562" classname="Tamper-evident research audit log" file="backend/tests/audit.test.js"/>
+		<testcase name="a recomputed row that does not link to its predecessor is reported" time="0.207175" classname="Tamper-evident research audit log" file="backend/tests/audit.test.js"/>
+		<testcase name="the application cannot update or delete log rows" time="0.203741" classname="Tamper-evident research audit log" file="backend/tests/audit.test.js"/>
+		<testcase name="parallel research calls keep one unbroken chain" time="0.244489" classname="Tamper-evident research audit log" file="backend/tests/audit.test.js"/>
+		<testcase name="admins can run the verifier, and the public stats publish the head hash" time="0.408611" classname="Tamper-evident research audit log" file="backend/tests/audit.test.js"/>
 	</testsuite>
-	<testsuite name="OTP hardening" time="0.859592" disabled="0" errors="0" tests="7" failures="0" skipped="0">
-		<testcase name="stores only a hash of the code" time="0.026997" classname="OTP hardening" file="backend/tests/otp.test.js"/>
-		<testcase name="locks a code after 5 wrong guesses; the 6th guess and the right code both fail" time="0.020736" classname="OTP hardening" file="backend/tests/otp.test.js"/>
-		<testcase name="parallel guesses cannot exceed the attempt limit" time="0.015403" classname="OTP hardening" file="backend/tests/otp.test.js"/>
-		<testcase name="a correct code works once only" time="0.009983" classname="OTP hardening" file="backend/tests/otp.test.js"/>
-		<testcase name="allows 3 code requests per email per 15 minutes (4th is 429)" time="0.007008" classname="OTP hardening" file="backend/tests/otp.test.js"/>
-		<testcase name="limits code requests per IP across many addresses (21st in an hour is 429)" time="0.023086" classname="OTP hardening" file="backend/tests/otp.test.js"/>
-		<testcase name="codes are 6 digits from a CSPRNG and spread over the whole range" time="0.001661" classname="OTP hardening" file="backend/tests/otp.test.js"/>
+	<testsuite name="Concurrency" time="3.378859" disabled="0" errors="0" tests="5" failures="0" skipped="0">
+		<testcase name="10 parallel exports: at most 5 succeed (daily quota)" time="0.268589" classname="Concurrency" file="backend/tests/concurrency.test.js"/>
+		<testcase name="two supervisors accept the same complaint at once: exactly one succeeds" time="0.615219" classname="Concurrency" file="backend/tests/concurrency.test.js"/>
+		<testcase name="accept and reject at once: one wins, history has one decision" time="0.409431" classname="Concurrency" file="backend/tests/concurrency.test.js"/>
+		<testcase name="close and rework at once on submitted proof: one legal result" time="0.626929" classname="Concurrency" file="backend/tests/concurrency.test.js"/>
+		<testcase name="field proof and supervisor rework race: final stage is legal and history consistent" time="0.617986" classname="Concurrency" file="backend/tests/concurrency.test.js"/>
 	</testsuite>
-	<testsuite name="Privacy" time="10.481014" disabled="0" errors="0" tests="12" failures="0" skipped="0">
-		<testcase name="uploaded photos are served without EXIF, GPS or device tags" time="0.043486" classname="Privacy" file="backend/tests/privacy.test.js"/>
-		<testcase name="a file that is not an image is refused and not kept" time="0.003065" classname="Privacy" file="backend/tests/privacy.test.js"/>
-		<testcase name="phone numbers, emails, Aadhaar, PAN and plates are removed from published text" time="0.013050" classname="Privacy" file="backend/tests/privacy.test.js"/>
-		<testcase name="staff remarks are redacted before they reach the tracker" time="0.422154" classname="Privacy" file="backend/tests/privacy.test.js"/>
-		<testcase name="registry and tracker contain no identity, contact, citizen ID or staff ID" time="0.219321" classname="Privacy" file="backend/tests/privacy.test.js"/>
-		<testcase name="the registry returns only allow-listed fields, even for fields added later" time="0.007344" classname="Privacy" file="backend/tests/privacy.test.js"/>
-		<testcase name="two researchers get different record IDs for the same complaint; one researcher gets stable IDs" time="1.453083" classname="Privacy" file="backend/tests/privacy.test.js"/>
-		<testcase name="research records carry only generalised fields (quarter filed, no dates, no resolution time, no text)" time="1.236393" classname="Privacy" file="backend/tests/privacy.test.js"/>
-		<testcase name="records in classes smaller than k = 5 are withheld from queries and exports, without a count" time="2.262122" classname="Privacy" file="backend/tests/privacy.test.js"/>
-		<testcase name="a day-level date filter returns the whole quarter, so it cannot split a class" time="1.232705" classname="Privacy" file="backend/tests/privacy.test.js"/>
-		<testcase name="aggregate cells below 5 show no counts; small resolved or unresolved parts are hidden" time="2.263610" classname="Privacy" file="backend/tests/privacy.test.js"/>
-		<testcase name="the server refuses to start without RESEARCH_HMAC_KEY, or with a short or reused key" time="0.523187" classname="Privacy" file="backend/tests/privacy.test.js"/>
+	<testsuite name="OTP hardening" time="0.900153" disabled="0" errors="0" tests="7" failures="0" skipped="0">
+		<testcase name="stores only a hash of the code" time="0.035197" classname="OTP hardening" file="backend/tests/otp.test.js"/>
+		<testcase name="locks a code after 5 wrong guesses; the 6th guess and the right code both fail" time="0.022380" classname="OTP hardening" file="backend/tests/otp.test.js"/>
+		<testcase name="parallel guesses cannot exceed the attempt limit" time="0.015347" classname="OTP hardening" file="backend/tests/otp.test.js"/>
+		<testcase name="a correct code works once only" time="0.008809" classname="OTP hardening" file="backend/tests/otp.test.js"/>
+		<testcase name="allows 3 code requests per email per 15 minutes (4th is 429)" time="0.006936" classname="OTP hardening" file="backend/tests/otp.test.js"/>
+		<testcase name="limits code requests per IP across many addresses (21st in an hour is 429)" time="0.021484" classname="OTP hardening" file="backend/tests/otp.test.js"/>
+		<testcase name="codes are 6 digits from a CSPRNG and spread over the whole range" time="0.001669" classname="OTP hardening" file="backend/tests/otp.test.js"/>
 	</testsuite>
-	<testsuite name="B7 publication consent and F15 unusable passwords" time="0.890775" disabled="0" errors="0" tests="3" failures="0" skipped="0">
-		<testcase name="a complaint without publication consent is refused and the code stays usable" time="0.037279" classname="B7 publication consent and F15 unusable passwords" file="backend/tests/privacy.test.js"/>
-		<testcase name="a citizen created by filing has an unusable password that is not hashed and cannot log in" time="0.020286" classname="B7 publication consent and F15 unusable passwords" file="backend/tests/privacy.test.js"/>
-		<testcase name="a chosen password with the unusable prefix is refused" time="0.002624" classname="B7 publication consent and F15 unusable passwords" file="backend/tests/privacy.test.js"/>
+	<testsuite name="Privacy" time="10.418981" disabled="0" errors="0" tests="12" failures="0" skipped="0">
+		<testcase name="uploaded photos are served without EXIF, GPS or device tags" time="0.071207" classname="Privacy" file="backend/tests/privacy.test.js"/>
+		<testcase name="a file that is not an image is refused and not kept" time="0.003722" classname="Privacy" file="backend/tests/privacy.test.js"/>
+		<testcase name="phone numbers, emails, Aadhaar, PAN and plates are removed from published text" time="0.014520" classname="Privacy" file="backend/tests/privacy.test.js"/>
+		<testcase name="staff remarks are redacted before they reach the tracker" time="0.412770" classname="Privacy" file="backend/tests/privacy.test.js"/>
+		<testcase name="registry and tracker contain no identity, contact, citizen ID or staff ID" time="0.214571" classname="Privacy" file="backend/tests/privacy.test.js"/>
+		<testcase name="the registry returns only allow-listed fields, even for fields added later" time="0.007991" classname="Privacy" file="backend/tests/privacy.test.js"/>
+		<testcase name="two researchers get different record IDs for the same complaint; one researcher gets stable IDs" time="1.428121" classname="Privacy" file="backend/tests/privacy.test.js"/>
+		<testcase name="research records carry only generalised fields (quarter filed, no dates, no resolution time, no text)" time="1.219551" classname="Privacy" file="backend/tests/privacy.test.js"/>
+		<testcase name="records in classes smaller than k = 5 are withheld from queries and exports, without a count" time="2.233739" classname="Privacy" file="backend/tests/privacy.test.js"/>
+		<testcase name="a day-level date filter returns the whole quarter, so it cannot split a class" time="1.219023" classname="Privacy" file="backend/tests/privacy.test.js"/>
+		<testcase name="aggregate cells below 5 show no counts; small resolved or unresolved parts are hidden" time="2.233923" classname="Privacy" file="backend/tests/privacy.test.js"/>
+		<testcase name="the server refuses to start without RESEARCH_HMAC_KEY, or with a short or reused key" time="0.524192" classname="Privacy" file="backend/tests/privacy.test.js"/>
 	</testsuite>
-	<testsuite name="Registry filters" time="2.106986" disabled="0" errors="0" tests="5" failures="0" skipped="0">
-		<testcase name="a catastrophic-backtracking pattern is treated as text and answers fast" time="0.259254" classname="Registry filters" file="backend/tests/registry.test.js"/>
-		<testcase name="&amp;quot;.*&amp;quot; does not match everything" time="0.210370" classname="Registry filters" file="backend/tests/registry.test.js"/>
-		<testcase name="operator objects in the query string are not passed to MongoDB" time="0.208037" classname="Registry filters" file="backend/tests/registry.test.js"/>
-		<testcase name="page size is capped" time="0.211054" classname="Registry filters" file="backend/tests/registry.test.js"/>
-		<testcase name="the supervisor search is escaped too" time="0.415573" classname="Registry filters" file="backend/tests/registry.test.js"/>
+	<testsuite name="B7 publication consent and F15 unusable passwords" time="0.871019" disabled="0" errors="0" tests="3" failures="0" skipped="0">
+		<testcase name="a complaint without publication consent is refused and the code stays usable" time="0.035677" classname="B7 publication consent and F15 unusable passwords" file="backend/tests/privacy.test.js"/>
+		<testcase name="a citizen created by filing has an unusable password that is not hashed and cannot log in" time="0.018664" classname="B7 publication consent and F15 unusable passwords" file="backend/tests/privacy.test.js"/>
+		<testcase name="a chosen password with the unusable prefix is refused" time="0.002485" classname="B7 publication consent and F15 unusable passwords" file="backend/tests/privacy.test.js"/>
 	</testsuite>
-	<testsuite name="Server-side urgency" time="0.889831" disabled="0" errors="0" tests="6" failures="0" skipped="0">
-		<testcase name="scores all 64 answer combinations of both weight profiles to the right band" time="0.005492" classname="Server-side urgency" file="backend/tests/urgency.test.js"/>
-		<testcase name="ignores a tampered client urgency and stores the answers and score" time="0.055599" classname="Server-side urgency" file="backend/tests/urgency.test.js"/>
-		<testcase name="anyone can recompute the published score from the published answers" time="0.010246" classname="Server-side urgency" file="backend/tests/urgency.test.js"/>
-		<testcase name="refuses missing, unknown or non yes/no answers" time="0.005363" classname="Server-side urgency" file="backend/tests/urgency.test.js"/>
-		<testcase name="a withdrawn category (Open Manhole) can no longer be filed" time="0.002904" classname="Server-side urgency" file="backend/tests/urgency.test.js"/>
-		<testcase name="the app copy of the questionnaires matches the server copy" time="0.001202" classname="Server-side urgency" file="backend/tests/urgency.test.js"/>
+	<testsuite name="Registry filters" time="2.067141" disabled="0" errors="0" tests="5" failures="0" skipped="0">
+		<testcase name="a catastrophic-backtracking pattern is treated as text and answers fast" time="0.256465" classname="Registry filters" file="backend/tests/registry.test.js"/>
+		<testcase name="&amp;quot;.*&amp;quot; does not match everything" time="0.207726" classname="Registry filters" file="backend/tests/registry.test.js"/>
+		<testcase name="operator objects in the query string are not passed to MongoDB" time="0.205403" classname="Registry filters" file="backend/tests/registry.test.js"/>
+		<testcase name="page size is capped" time="0.205454" classname="Registry filters" file="backend/tests/registry.test.js"/>
+		<testcase name="the supervisor search is escaped too" time="0.409695" classname="Registry filters" file="backend/tests/registry.test.js"/>
 	</testsuite>
-	<!-- tests 69 -->
-	<!-- suites 10 -->
-	<!-- pass 68 -->
+	<testsuite name="Server-side urgency" time="0.884488" disabled="0" errors="0" tests="6" failures="0" skipped="0">
+		<testcase name="scores all 64 answer combinations of both weight profiles to the right band" time="0.007559" classname="Server-side urgency" file="backend/tests/urgency.test.js"/>
+		<testcase name="ignores a tampered client urgency and stores the answers and score" time="0.051207" classname="Server-side urgency" file="backend/tests/urgency.test.js"/>
+		<testcase name="anyone can recompute the published score from the published answers" time="0.010059" classname="Server-side urgency" file="backend/tests/urgency.test.js"/>
+		<testcase name="refuses missing, unknown or non yes/no answers" time="0.005312" classname="Server-side urgency" file="backend/tests/urgency.test.js"/>
+		<testcase name="a withdrawn category (Open Manhole) can no longer be filed" time="0.003252" classname="Server-side urgency" file="backend/tests/urgency.test.js"/>
+		<testcase name="the app copy of the questionnaires matches the server copy" time="0.001272" classname="Server-side urgency" file="backend/tests/urgency.test.js"/>
+	</testsuite>
+	<!-- tests 71 -->
+	<!-- suites 11 -->
+	<!-- pass 70 -->
 	<!-- fail 0 -->
 	<!-- cancelled 0 -->
 	<!-- skipped 1 -->
 	<!-- todo 0 -->
-	<!-- duration_ms 35429.40425 -->
+	<!-- duration_ms 39245.924583 -->
 </testsuites>

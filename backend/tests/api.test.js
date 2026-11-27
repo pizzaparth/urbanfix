@@ -163,3 +163,35 @@ describe('P9 ward monitoring on the admin dashboard', () => {
     assert.deepEqual(byWard['Ward 2'], { ward: 'Ward 2', filed: 1, checked: 1, flagRate: 0, closed: 0, medianResolutionDays: null });
   });
 });
+
+describe('Admin status control follows the state machine', () => {
+  before(startServer);
+  after(stopServer);
+  beforeEach(resetState);
+
+  const patch = async (admin, c, status) =>
+    request(app).patch(`/api/admin/complaints/${c._id}/status`).set(admin.auth)
+      .send({ status, remarks: 'Administrator decision with a reason.' });
+
+  it('cannot close without proof, reject after acceptance, or move backwards', async () => {
+    const admin = await makeUser('admin');
+    for (const stage of ['accepted', 'assigned', 'work_in_progress']) {
+      const c = await complaintAt(stage);
+      assert.equal((await patch(admin, c, 'Resolved')).status, 400, `closed from ${stage}`);
+      assert.equal((await patch(admin, c, 'Rejected')).status, 400, `rejected from ${stage}`);
+      assert.equal((await patch(admin, c, 'Pending')).status, 400, `moved back from ${stage}`);
+    }
+  });
+
+  it('can accept or reject a submitted complaint and close one with proof', async () => {
+    const admin = await makeUser('admin');
+    const a = await complaintAt('submitted');
+    assert.equal((await patch(admin, a, 'In Progress')).status, 200);
+    const r = await complaintAt('submitted');
+    assert.equal((await patch(admin, r, 'Rejected')).status, 200);
+    const p = await complaintAt('proof_submitted', { completionImages: ['/uploads/proof.jpg'] });
+    const res = await patch(admin, p, 'Resolved');
+    assert.equal(res.status, 200, res.body.message);
+    assert.equal(res.body.complaint.stage, 'closed');
+  });
+});

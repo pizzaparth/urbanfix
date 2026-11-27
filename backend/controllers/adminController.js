@@ -3,7 +3,7 @@ import User from '../models/User.js';
 import AppError from '../utils/appError.js';
 import catchAsync from '../utils/catchAsync.js';
 import { updateStatusSchema } from '../validators/adminValidator.js';
-import { applyAdminOverride } from '../services/complaintWorkflow.js';
+import { applyTransition } from '../services/complaintWorkflow.js';
 import { getStatusBreakdown, getActivityByDay } from '../utils/statsHelpers.js';
 import { containsInsensitive } from '../utils/escapeRegex.js';
 
@@ -185,19 +185,25 @@ export const updateComplaintStatus = catchAsync(async (req, res, next) => {
     return next(new AppError('No complaint found with this ID', 404));
   }
 
-  const currentStatus = complaint.status;
-
-  // State transitions constraints validation
-  if (currentStatus === 'Resolved' || currentStatus === 'Rejected') {
-    return next(new AppError('Complaint is in a terminal status and cannot be modified.', 400));
+  // The admin's status control goes through the same state machine as everyone
+  // else (paper Eq. 6): it can accept or reject a submitted complaint and close one
+  // whose proof has been submitted. It cannot close without proof, reject after
+  // acceptance, or move a complaint backwards.
+  const ADMIN_STATUS_ACTIONS = {
+    'In Progress': { submitted: 'accept' },
+    Rejected: { submitted: 'reject' },
+    Resolved: { proof_submitted: 'close' },
+  };
+  const action = ADMIN_STATUS_ACTIONS[newStatus]?.[complaint.stage];
+  if (!action) {
+    return next(new AppError(
+      newStatus === 'Resolved'
+        ? 'A complaint can be resolved only after field staff have submitted proof of the repair.'
+        : `Cannot set "${newStatus}" on a complaint that is at stage "${complaint.stage}".`,
+      400
+    ));
   }
-
-  if (currentStatus === 'Pending' && newStatus === 'Resolved') {
-    return next(new AppError('A pending complaint must be transitioned to "In Progress" before resolution.', 400));
-  }
-
-  // Override path: stage is kept in step with the public status.
-  await applyAdminOverride(complaint, newStatus, req.user, remarks);
+  await applyTransition(complaint, action, req.user, { remarks });
 
   res.status(200).json({
     status: 'success',

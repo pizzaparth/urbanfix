@@ -330,7 +330,7 @@ def linkage() -> None:
 # ---------------------------------------------------------------- tests (JUnit reports)
 def tests() -> None:
     groups = OrderedDict([
-        ("api.test.js", "Intake, workflow guards, scope (the 16 submitted tests) and ward monitoring"),
+        ("api.test.js", "Intake, workflow guards, scope (the 16 submitted tests), admin status control, ward monitoring"),
         ("otp.test.js", "OTP brute force, single use, rate limits"),
         ("concurrency.test.js", "Simultaneous transitions and export quotas"),
         ("audit.test.js", "Hash-chained audit log"),

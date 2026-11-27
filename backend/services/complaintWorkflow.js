@@ -5,7 +5,6 @@ import {
   TRANSITIONS,
   MIN_REMARKS,
   statusForStage,
-  stageForStatus,
 } from '../utils/complaintStage.js';
 import { sendStatusUpdateEmail, sendResolutionEmailWithPdf } from './emailService.js';
 import { generateResolutionPdf } from './pdfService.js';
@@ -174,27 +173,3 @@ export const applyTransition = async (complaint, action, actor, input = {}) => {
   return complaint;
 };
 
-/**
- * The admin's long-standing status override (PATCH /admin/complaints/:id/status).
- * Kept so an admin can still force any legal public-status move on any complaint,
- * but it now keeps `stage` in step so the two fields never disagree.
- */
-export const applyAdminOverride = async (complaint, newStatus, actor, rawRemarks) => {
-  const remarks = redactText(rawRemarks);
-  complaint.status = newStatus;
-  complaint.stage = stageForStatus(newStatus);
-  complaint.remarks = remarks;
-  complaint.statusHistory.push({
-    status: newStatus,
-    stage: complaint.stage,
-    changedBy: actor._id,
-    remarks,
-  });
-
-  const closed = newStatus === 'Resolved';
-  if (closed) markClosed(complaint);
-
-  await complaint.save();
-  await notifyCitizen(complaint, { closed, statusChanged: true, remarks });
-  return complaint;
-};

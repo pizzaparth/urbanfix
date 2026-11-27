@@ -965,7 +965,16 @@ The revised PDF was read as Reviewers 1 and 2 would read it, against `review.md`
   - "Sixteen tests kept unchanged" is now "kept, now automated".
   - "Japan, Europe and China" is now "outside India".
 
-**Open, needs a decision (F30).** The admin override contradicts the paper's workflow claims. `PATCH` admin status (`applyAdminOverride`) lets an administrator move In Progress to Resolved without proof, and In Progress to Rejected after acceptance. The paper says rejection is possible only from submitted, and that closure requires proof. Each override is recorded in the history with the actor and remarks of at least 10 characters. Either restrict the override to transitions the state machine allows, or state the override in the paper as a logged exception.
+**F30, fixed (user decision: restrict).** Before the fix, the admin override contradicted the paper's workflow claims: `applyAdminOverride` let an administrator close an In Progress complaint without proof, and reject a complaint after acceptance.
+
+The admin status control now maps onto the state machine:
+- In Progress means *accept* (from submitted).
+- Rejected means *reject* (from submitted).
+- Resolved means *close* (from proof submitted).
+- Every other change is refused with 400.
+- `applyAdminOverride` was removed.
+
+Two tests were added, and the paper states that administrators use the same transitions. Backend: 71 tests, 70 passed, 1 skipped.
 
 **Left for the response letter (phase 7):**
 - R1.2 asks to compare staff decisions with and without AI. This was not done, because there was no deployment. The paper gives a simulation and states the limitation.
