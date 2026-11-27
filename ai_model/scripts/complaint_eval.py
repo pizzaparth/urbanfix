@@ -82,7 +82,7 @@ def main() -> None:
         return [r for r in sets[name] if r["positive"]]
 
     def coco(name):
-        return [r for r in sets[name] if not (cat == "garbage_litter" and r.get("litter_like"))]
+        return [r for r in sets[name] if not (cat.startswith("garbage_litter") and r.get("litter_like"))]
 
     others = sorted(k.split(":", 1)[1] for k in sets if k.startswith("other:"))
     val = {"valid": complaints(pos("val")),

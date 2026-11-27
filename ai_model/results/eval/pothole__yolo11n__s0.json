@@ -1,0 +1,256 @@
+{
+ "tag": "pothole__yolo11n__s0",
+ "category": "pothole",
+ "model": "yolo11n",
+ "seed": 0,
+ "task": "detect",
+ "weights": "weights/v2/pothole__yolo11n__s0.pt",
+ "bootstrap_resamples": 1000,
+ "machine": "macOS-27.2-arm64-arm-64bit-Mach-O / arm",
+ "sets": {
+  "test": {
+   "images": 318,
+   "images_with_defect": 250,
+   "objects": 407,
+   "box": {
+    "precision": {
+     "value": 0.6878,
+     "ci95": [
+      0.6047,
+      0.7987
+     ]
+    },
+    "recall": {
+     "value": 0.5627,
+     "ci95": [
+      0.5125,
+      0.6447
+     ]
+    },
+    "mAP50": {
+     "value": 0.6448,
+     "ci95": [
+      0.5933,
+      0.6972
+     ]
+    },
+    "mAP50-95": {
+     "value": 0.2895,
+     "ci95": [
+      0.2613,
+      0.3228
+     ]
+    }
+   },
+   "by_stratum": {
+    "China_MotorBike": {
+     "images": 31,
+     "box": {
+      "precision": {
+       "value": 0.9515,
+       "ci95": [
+        0.8571,
+        1.0
+       ]
+      },
+      "recall": {
+       "value": 0.8918,
+       "ci95": [
+        0.7899,
+        0.999
+       ]
+      },
+      "mAP50": {
+       "value": 0.9516,
+       "ci95": [
+        0.8635,
+        0.9946
+       ]
+      },
+      "mAP50-95": {
+       "value": 0.4973,
+       "ci95": [
+        0.4163,
+        0.5754
+       ]
+      }
+     }
+    },
+    "Czech": {
+     "images": 28,
+     "box": {
+      "precision": {
+       "value": 0.6683,
+       "ci95": [
+        0.1596,
+        0.9327
+       ]
+      },
+      "recall": {
+       "value": 0.2222,
+       "ci95": [
+        0.1667,
+        0.7083
+       ]
+      },
+      "mAP50": {
+       "value": 0.3321,
+       "ci95": [
+        0.1818,
+        0.5512
+       ]
+      },
+      "mAP50-95": {
+       "value": 0.1661,
+       "ci95": [
+        0.0756,
+        0.3048
+       ]
+      }
+     }
+    },
+    "Japan": {
+     "images": 259,
+     "box": {
+      "precision": {
+       "value": 0.6445,
+       "ci95": [
+        0.5484,
+        0.7532
+       ]
+      },
+      "recall": {
+       "value": 0.5744,
+       "ci95": [
+        0.5106,
+        0.6646
+       ]
+      },
+      "mAP50": {
+       "value": 0.6149,
+       "ci95": [
+        0.561,
+        0.6771
+       ]
+      },
+      "mAP50-95": {
+       "value": 0.268,
+       "ci95": [
+        0.2406,
+        0.3036
+       ]
+      }
+     }
+    }
+   }
+  },
+  "pothole_india_test_split": {
+   "images": 286,
+   "images_with_defect": 232,
+   "objects": 498,
+   "box": {
+    "precision": {
+     "value": 0.2555,
+     "ci95": [
+      0.1675,
+      0.3325
+     ]
+    },
+    "recall": {
+     "value": 0.1285,
+     "ci95": [
+      0.0984,
+      0.1605
+     ]
+    },
+    "mAP50": {
+     "value": 0.0963,
+     "ci95": [
+      0.0681,
+      0.1306
+     ]
+    },
+    "mAP50-95": {
+     "value": 0.0367,
+     "ci95": [
+      0.0242,
+      0.0531
+     ]
+    }
+   }
+  },
+  "pothole_rdd2022_india": {
+   "images": 1911,
+   "images_with_defect": 1530,
+   "objects": 3187,
+   "box": {
+    "precision": {
+     "value": 0.2683,
+     "ci95": [
+      0.2332,
+      0.3013
+     ]
+    },
+    "recall": {
+     "value": 0.1443,
+     "ci95": [
+      0.1335,
+      0.1581
+     ]
+    },
+    "mAP50": {
+     "value": 0.1153,
+     "ci95": [
+      0.1034,
+      0.1298
+     ]
+    },
+    "mAP50-95": {
+     "value": 0.0432,
+     "ci95": [
+      0.038,
+      0.0493
+     ]
+    }
+   }
+  },
+  "pothole_roboflow": {
+   "images": 297,
+   "images_with_defect": 297,
+   "objects": 807,
+   "box": {
+    "precision": {
+     "value": 0.336,
+     "ci95": [
+      0.2743,
+      0.4518
+     ]
+    },
+    "recall": {
+     "value": 0.2342,
+     "ci95": [
+      0.1905,
+      0.2698
+     ]
+    },
+    "mAP50": {
+     "value": 0.1785,
+     "ci95": [
+      0.1445,
+      0.2174
+     ]
+    },
+    "mAP50-95": {
+     "value": 0.0465,
+     "ci95": [
+      0.0373,
+      0.0586
+     ]
+    }
+   }
+  }
+ },
+ "cpu_latency_ms": 24.6,
+ "weights_mb": 5.5,
+ "latency_machine": "macOS-27.2-arm64-arm-64bit-Mach-O / arm"
+}

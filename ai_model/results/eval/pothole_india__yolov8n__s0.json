@@ -1,0 +1,219 @@
+{
+ "tag": "pothole_india__yolov8n__s0",
+ "category": "pothole_india",
+ "model": "yolov8n",
+ "seed": 0,
+ "task": "detect",
+ "weights": "weights/v2/pothole_india__yolov8n__s0.pt",
+ "bootstrap_resamples": 1000,
+ "machine": "macOS-27.2-arm64-arm-64bit-Mach-O / arm",
+ "sets": {
+  "test": {
+   "images": 604,
+   "images_with_defect": 482,
+   "objects": 905,
+   "box": {
+    "precision": {
+     "value": 0.5925,
+     "ci95": [
+      0.5472,
+      0.6397
+     ]
+    },
+    "recall": {
+     "value": 0.4932,
+     "ci95": [
+      0.4593,
+      0.5288
+     ]
+    },
+    "mAP50": {
+     "value": 0.5162,
+     "ci95": [
+      0.4836,
+      0.5561
+     ]
+    },
+    "mAP50-95": {
+     "value": 0.2251,
+     "ci95": [
+      0.2072,
+      0.2472
+     ]
+    }
+   },
+   "by_stratum": {
+    "China_MotorBike": {
+     "images": 31,
+     "box": {
+      "precision": {
+       "value": 0.9625,
+       "ci95": [
+        0.906,
+        1.0
+       ]
+      },
+      "recall": {
+       "value": 0.9091,
+       "ci95": [
+        0.8235,
+        0.9831
+       ]
+      },
+      "mAP50": {
+       "value": 0.9523,
+       "ci95": [
+        0.864,
+        0.995
+       ]
+      },
+      "mAP50-95": {
+       "value": 0.4967,
+       "ci95": [
+        0.414,
+        0.5868
+       ]
+      }
+     }
+    },
+    "Czech": {
+     "images": 28,
+     "box": {
+      "precision": {
+       "value": 0.3484,
+       "ci95": [
+        0.2038,
+        0.6301
+       ]
+      },
+      "recall": {
+       "value": 0.4161,
+       "ci95": [
+        0.25,
+        0.6522
+       ]
+      },
+      "mAP50": {
+       "value": 0.318,
+       "ci95": [
+        0.1846,
+        0.5263
+       ]
+      },
+      "mAP50-95": {
+       "value": 0.129,
+       "ci95": [
+        0.0665,
+        0.2446
+       ]
+      }
+     }
+    },
+    "India": {
+     "images": 286,
+     "box": {
+      "precision": {
+       "value": 0.4762,
+       "ci95": [
+        0.4198,
+        0.5477
+       ]
+      },
+      "recall": {
+       "value": 0.4337,
+       "ci95": [
+        0.3755,
+        0.4799
+       ]
+      },
+      "mAP50": {
+       "value": 0.4043,
+       "ci95": [
+        0.3566,
+        0.4542
+       ]
+      },
+      "mAP50-95": {
+       "value": 0.1607,
+       "ci95": [
+        0.1389,
+        0.1854
+       ]
+      }
+     }
+    },
+    "Japan": {
+     "images": 259,
+     "box": {
+      "precision": {
+       "value": 0.676,
+       "ci95": [
+        0.6073,
+        0.7413
+       ]
+      },
+      "recall": {
+       "value": 0.5923,
+       "ci95": [
+        0.5402,
+        0.6452
+       ]
+      },
+      "mAP50": {
+       "value": 0.612,
+       "ci95": [
+        0.5561,
+        0.6728
+       ]
+      },
+      "mAP50-95": {
+       "value": 0.2822,
+       "ci95": [
+        0.2506,
+        0.3222
+       ]
+      }
+     }
+    }
+   }
+  },
+  "pothole_roboflow": {
+   "images": 297,
+   "images_with_defect": 297,
+   "objects": 807,
+   "box": {
+    "precision": {
+     "value": 0.4036,
+     "ci95": [
+      0.3295,
+      0.476
+     ]
+    },
+    "recall": {
+     "value": 0.2935,
+     "ci95": [
+      0.2589,
+      0.3346
+     ]
+    },
+    "mAP50": {
+     "value": 0.2686,
+     "ci95": [
+      0.2252,
+      0.3173
+     ]
+    },
+    "mAP50-95": {
+     "value": 0.0845,
+     "ci95": [
+      0.0695,
+      0.1023
+     ]
+    }
+   }
+  }
+ },
+ "cpu_latency_ms": 24.3,
+ "weights_mb": 6.2,
+ "latency_machine": "macOS-27.2-arm64-arm-64bit-Mach-O / arm"
+}

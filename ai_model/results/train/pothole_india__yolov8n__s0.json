@@ -1,0 +1,24 @@
+{
+ "category": "pothole_india",
+ "model": "yolov8n",
+ "base_weights": "yolov8n.pt",
+ "seed": 0,
+ "task": "detect",
+ "imgsz": 640,
+ "batch": 16,
+ "max_epochs": 40,
+ "patience": 10,
+ "epochs_run": 40,
+ "best_epoch": 39,
+ "train_minutes": 92.6,
+ "device": "mps",
+ "machine": "macOS-27.2-arm64-arm-64bit-Mach-O / arm",
+ "torch": "2.15.0",
+ "val_metrics_at_best_epoch": {
+  "metrics/precision(B)": 0.60648,
+  "metrics/recall(B)": 0.49349,
+  "metrics/mAP50(B)": 0.52625,
+  "metrics/mAP50-95(B)": 0.22239
+ },
+ "weights": "weights/v2/pothole_india__yolov8n__s0.pt"
+}

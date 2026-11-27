@@ -38,7 +38,7 @@ def link_name(rel: str) -> str:  # same rule as build_yolo_sets.py
     return f"{p.parent.parent.name}__{p.parent.name}__{p.name}".replace(" ", "_")
 
 
-def collect(model, data_yaml: Path, device: str) -> tuple[list[dict], list[str]]:
+def collect(model, data_yaml: Path, device: str, single_cls: bool = False) -> tuple[list[dict], list[str]]:
     """Run validation on the test split and return per-image statistics and file names."""
     per_image: list[dict] = []
     state = {"files": None, "seen": 0}
@@ -53,7 +53,7 @@ def collect(model, data_yaml: Path, device: str) -> tuple[list[dict], list[str]]
             state["files"] = list(validator.dataloader.dataset.im_files)
 
     model.callbacks["on_val_batch_end"] = [on_batch_end]
-    model.val(data=str(data_yaml), split="test", imgsz=640, batch=16, device=device, conf=0.001,
+    model.val(data=str(data_yaml), split="test", imgsz=640, batch=16, device=device, conf=0.001, single_cls=single_cls,
               plots=False, verbose=False, save_json=False, project=str(ROOT / "runs" / "v2" / "_eval"),
               name="tmp", exist_ok=True)
     files = [Path(f).name for f in state["files"]]
@@ -95,8 +95,9 @@ def with_ci(items: list[dict], tp_key: str, seed: int = 0) -> dict:
     return out
 
 
-def evaluate_set(model, data_yaml: Path, task: str, device: str, strata: dict | None) -> dict:
-    per_image, files = collect(model, data_yaml, device)
+def evaluate_set(model, data_yaml: Path, task: str, device: str, strata: dict | None,
+                 single_cls: bool = False) -> dict:
+    per_image, files = collect(model, data_yaml, device, single_cls)
     n_obj = int(sum(len(d["target_cls"]) for d in per_image))
     res = {"images": len(per_image), "images_with_defect": int(sum(len(d["target_cls"]) > 0 for d in per_image)),
            "objects": n_obj, "box": with_ci(per_image, "tp")}
@@ -160,17 +161,21 @@ def main() -> None:
         result = {"tag": tag, "category": cat, "model": run["model"], "seed": run["seed"], "task": task,
                   "weights": run["weights"], "bootstrap_resamples": BOOT,
                   "machine": f"{platform.platform()} / {platform.processor()}", "sets": {}}
-        result["sets"]["test"] = evaluate_set(model, DATA / cat / "data.yaml", task, args.device, strata)
+        # Class-merge ablation (A8b): the 28-class litter model is scored as one "litter" class, on the
+        # same images and polygons as the merged model (Ultralytics single_cls collapses labels and predictions).
+        merge = cat == "garbage_litter_super"
+        result["sets"]["test"] = evaluate_set(model, DATA / cat / "data.yaml", task, args.device, strata, merge)
         for ext in sorted((SPLITS / "external").glob("*.json")):
             ext_cat = json.loads(ext.read_text())["category"]
             # The India-trained pothole model is tested on the Roboflow set only: India is in-domain for it.
-            if ext_cat != cat and not (cat == "pothole_india" and ext.stem == "pothole_roboflow"):
+            if ext_cat != cat and not (cat == "pothole_india" and ext.stem == "pothole_roboflow") \
+                    and not (merge and ext_cat == "garbage_litter"):
                 continue
             if not (DATA / "external" / ext.stem / "data.yaml").exists():
                 print(f"{ext.stem}: not built on this machine, skipped")
                 continue
             result["sets"][ext.stem] = evaluate_set(model, DATA / "external" / ext.stem / "data.yaml",
-                                                    task, args.device, None)
+                                                    task, args.device, None, merge)
         test_imgs = sorted((DATA / cat / "images" / "test").iterdir())
         result["cpu_latency_ms"] = latency_ms(weights, is_rtdetr, test_imgs)
         result["weights_mb"] = round(weights.stat().st_size / 1e6, 1)

@@ -33,13 +33,15 @@ CATEGORIES = ("pothole", "garbage_litter", "graffiti")
 
 
 def sets_for(cat: str) -> dict[str, list[dict]]:
-    spec = json.loads((SPLITS / f"{cat}.json").read_text())
+    # The class-merge ablation uses the litter split and litter sets (its labels differ, not its images).
+    base = "garbage_litter" if cat == "garbage_litter_super" else cat
+    spec = json.loads((SPLITS / f"{base}.json").read_text())
     out = {"val": spec["splits"]["val"], "test": spec["splits"]["test"]}
     for ext in sorted((SPLITS / "external").glob("*.json")):
         e = json.loads(ext.read_text())
-        if e["category"] == cat or (cat == "pothole_india" and ext.stem == "pothole_roboflow"):
+        if e["category"] == base or (cat == "pothole_india" and ext.stem == "pothole_roboflow"):
             out[ext.stem] = e["test"]
-    family = "pothole" if cat.startswith("pothole") else cat
+    family = "pothole" if cat.startswith("pothole") else base
     for other in CATEGORIES:
         if other != family:
             other_spec = json.loads((SPLITS / f"{other}.json").read_text())["splits"]

@@ -7,20 +7,49 @@ Intervals are 95 % bootstrap percentile intervals over images (metrics) or Wilso
 
 | Run | Device | Epochs run | Best epoch | Minutes | Val mAP50 (box) |
 |---|---|---|---|---|---|
+| garbage_litter__rtdetr-l__s0 | 0 | 40 | 38 | 56.2 | 0.516 |
+| garbage_litter__yolo11n__s0 | 0 | 40 | 40 | 17.3 | 0.453 |
 | garbage_litter__yolov8n__s0 | mps | 40 | 39 | 46.0 | 0.451 |
+| garbage_litter_super__yolov8n__s0 | mps | 40 | 39 | 43.9 | 0.161 |
 | graffiti__rtdetr-l__s0 | 0 | 40 | 37 | 42.4 | 0.769 |
 | graffiti__yolo11n__s0 | mps | 40 | 37 | 21.3 | 0.630 |
+| graffiti__yolov8n-scratch__s0 | mps | 40 | 40 | 21.3 | 0.356 |
 | graffiti__yolov8n__s0 | mps | 40 | 40 | 27.4 | 0.655 |
+| pothole__rtdetr-l__s0 | 0 | 40 | 40 | 88.4 | 0.728 |
+| pothole__yolo11n__s0 | 0 | 40 | 34 | 17.2 | 0.622 |
+| pothole__yolov8n__s0 | mps | 40 | 39 | 65.1 | 0.654 |
+| pothole_india__yolov8n__s0 | mps | 40 | 39 | 92.6 | 0.526 |
 
 ## Test and external sets (A2, A3, A8)
 
 | Run | Set | Images | Box P | Box R | Box mAP50 | Box mAP50-95 | Mask mAP50 | CPU ms | MB |
 |---|---|---|---|---|---|---|---|---|---|
-| garbage_litter__yolov8n__s0 | test | 214 | 0.651 | 0.403 | 0.456 (0.393–0.524) | 0.325 (0.276–0.386) | 0.440 (0.377–0.509) | 58.2 | 6.8 |
-| garbage_litter__yolov8n__s0 | garbage_litter_taco_unofficial | 2308 | 0.568 | 0.436 | 0.410 (0.390–0.433) | 0.215 (0.203–0.230) | 0.369 (0.350–0.393) | 58.2 | 6.8 |
-| graffiti__rtdetr-l__s0 | test | 209 | 0.831 | 0.730 | 0.801 (0.754–0.853) | 0.615 (0.559–0.677) |  | 345.7 | 66.2 |
-| graffiti__yolo11n__s0 | test | 209 | 0.692 | 0.618 | 0.692 (0.633–0.765) | 0.486 (0.435–0.554) |  | 23.2 | 5.5 |
-| graffiti__yolov8n__s0 | test | 209 | 0.718 | 0.650 | 0.708 (0.654–0.771) | 0.510 (0.458–0.579) |  | 39.0 | 6.2 |
+| garbage_litter__rtdetr-l__s0 | test | 214 | 0.615 | 0.490 | 0.512 (0.453–0.579) | 0.369 (0.319–0.427) |  | 352.8 | 66.2 |
+| garbage_litter__rtdetr-l__s0 | garbage_litter_taco_unofficial | 2308 | 0.560 | 0.464 | 0.430 (0.410–0.451) | 0.243 (0.230–0.259) |  | 352.8 | 66.2 |
+| garbage_litter__yolo11n__s0 | test | 214 | 0.653 | 0.400 | 0.445 (0.382–0.513) | 0.318 (0.267–0.374) | 0.420 (0.360–0.491) | 24.0 | 6.0 |
+| garbage_litter__yolo11n__s0 | garbage_litter_taco_unofficial | 2308 | 0.567 | 0.428 | 0.410 (0.389–0.436) | 0.217 (0.203–0.233) | 0.356 (0.335–0.380) | 24.0 | 6.0 |
+| garbage_litter__yolov8n__s0 | test | 214 | 0.651 | 0.403 | 0.456 (0.393–0.524) | 0.325 (0.276–0.386) | 0.440 (0.377–0.509) | 23.7 | 6.8 |
+| garbage_litter__yolov8n__s0 | garbage_litter_taco_unofficial | 2308 | 0.568 | 0.436 | 0.410 (0.390–0.433) | 0.215 (0.203–0.230) | 0.369 (0.350–0.393) | 23.7 | 6.8 |
+| garbage_litter_super__yolov8n__s0 | test | 214 | 0.596 | 0.403 | 0.425 (0.365–0.489) | 0.299 (0.253–0.352) | 0.409 (0.353–0.471) | 24.1 | 6.8 |
+| garbage_litter_super__yolov8n__s0 | garbage_litter_taco_unofficial | 2308 | 0.501 | 0.424 | 0.365 (0.345–0.386) | 0.189 (0.177–0.203) | 0.328 (0.309–0.349) | 24.1 | 6.8 |
+| graffiti__rtdetr-l__s0 | test | 209 | 0.831 | 0.730 | 0.801 (0.754–0.853) | 0.615 (0.559–0.677) |  | 348.6 | 66.2 |
+| graffiti__yolo11n__s0 | test | 209 | 0.692 | 0.618 | 0.692 (0.633–0.765) | 0.486 (0.435–0.554) |  | 20.1 | 5.5 |
+| graffiti__yolov8n-scratch__s0 | test | 209 | 0.599 | 0.398 | 0.457 (0.394–0.532) | 0.260 (0.218–0.308) |  | 19.5 | 6.2 |
+| graffiti__yolov8n__s0 | test | 209 | 0.718 | 0.650 | 0.708 (0.654–0.771) | 0.510 (0.458–0.579) |  | 19.5 | 6.2 |
+| pothole__rtdetr-l__s0 | test | 318 | 0.720 | 0.638 | 0.683 (0.634–0.733) | 0.327 (0.297–0.360) |  | 349.1 | 66.2 |
+| pothole__rtdetr-l__s0 | pothole_india_test_split | 286 | 0.253 | 0.165 | 0.124 (0.092–0.156) | 0.048 (0.033–0.065) |  | 349.1 | 66.2 |
+| pothole__rtdetr-l__s0 | pothole_rdd2022_india | 1911 | 0.294 | 0.186 | 0.149 (0.135–0.164) | 0.057 (0.051–0.064) |  | 349.1 | 66.2 |
+| pothole__rtdetr-l__s0 | pothole_roboflow | 297 | 0.435 | 0.385 | 0.330 (0.288–0.370) | 0.128 (0.109–0.150) |  | 349.1 | 66.2 |
+| pothole__yolo11n__s0 | test | 318 | 0.688 | 0.563 | 0.645 (0.593–0.697) | 0.289 (0.261–0.323) |  | 24.6 | 5.5 |
+| pothole__yolo11n__s0 | pothole_india_test_split | 286 | 0.256 | 0.129 | 0.096 (0.068–0.131) | 0.037 (0.024–0.053) |  | 24.6 | 5.5 |
+| pothole__yolo11n__s0 | pothole_rdd2022_india | 1911 | 0.268 | 0.144 | 0.115 (0.103–0.130) | 0.043 (0.038–0.049) |  | 24.6 | 5.5 |
+| pothole__yolo11n__s0 | pothole_roboflow | 297 | 0.336 | 0.234 | 0.178 (0.144–0.217) | 0.046 (0.037–0.059) |  | 24.6 | 5.5 |
+| pothole__yolov8n__s0 | test | 318 | 0.740 | 0.567 | 0.659 (0.608–0.710) | 0.308 (0.279–0.344) |  | 24.0 | 6.2 |
+| pothole__yolov8n__s0 | pothole_india_test_split | 286 | 0.189 | 0.171 | 0.113 (0.084–0.145) | 0.043 (0.030–0.058) |  | 24.0 | 6.2 |
+| pothole__yolov8n__s0 | pothole_rdd2022_india | 1911 | 0.271 | 0.157 | 0.125 (0.112–0.140) | 0.048 (0.042–0.054) |  | 24.0 | 6.2 |
+| pothole__yolov8n__s0 | pothole_roboflow | 297 | 0.319 | 0.227 | 0.171 (0.135–0.212) | 0.047 (0.036–0.061) |  | 24.0 | 6.2 |
+| pothole_india__yolov8n__s0 | test | 604 | 0.593 | 0.493 | 0.516 (0.484–0.556) | 0.225 (0.207–0.247) |  | 24.3 | 6.2 |
+| pothole_india__yolov8n__s0 | pothole_roboflow | 297 | 0.404 | 0.293 | 0.269 (0.225–0.317) | 0.085 (0.070–0.102) |  | 24.3 | 6.2 |
 
 CPU latency is only comparable when measured on the same idle machine; see `latency_machine` in each file.
 
@@ -28,41 +57,116 @@ CPU latency is only comparable when measured on the same idle machine; see `late
 
 | Run | tau | Valid complaints flagged | Wrong-category passed | Unrelated passed | Road without pothole passed |
 |---|---|---|---|---|---|
+| garbage_litter__rtdetr-l__s0 | 0.9 | 10.6% (6.0%–17.9%), n=104 | 27.0% (22.1%–32.6%), n=274 | 47.7% (41.2%–54.3%), n=220 | n/a |
+| garbage_litter__yolo11n__s0 | 0.8 | 16.4% (10.5%–24.6%), n=104 | 15.0% (11.2%–19.7%), n=274 | 25.9% (20.6%–32.1%), n=220 | n/a |
 | garbage_litter__yolov8n__s0 | 0.8 | 11.5% (6.7%–19.1%), n=104 | 15.7% (11.9%–20.3%), n=287 | 28.2% (22.7%–34.5%), n=220 | n/a |
-| graffiti__rtdetr-l__s0 | 0.9 | 11.0% (6.2%–18.6%), n=100 | n/a | 5.0% (3.0%–8.4%), n=258 | n/a |
+| garbage_litter_super__yolov8n__s0 | 0.5 | 12.5% (7.4%–20.2%), n=104 | 32.1% (26.9%–37.9%), n=274 | 52.7% (46.1%–59.2%), n=220 | n/a |
+| graffiti__rtdetr-l__s0 | 0.9 | 10.0% (5.5%–17.4%), n=100 | 1.8% (0.8%–4.2%), n=274 | 5.0% (3.0%–8.4%), n=258 | n/a |
 | graffiti__yolo11n__s0 | 0.75 | 11.0% (6.2%–18.6%), n=100 | 4.5% (2.6%–7.5%), n=289 | 6.2% (3.9%–9.8%), n=258 | n/a |
+| graffiti__yolov8n-scratch__s0 | 0.35 | 21.0% (14.2%–30.0%), n=100 | 17.2% (13.2%–22.1%), n=274 | 22.9% (18.2%–28.4%), n=258 | n/a |
 | graffiti__yolov8n__s0 | 0.85 | 20.0% (13.3%–28.9%), n=100 | 0.4% (0.1%–1.9%), n=289 | 1.6% (0.6%–3.9%), n=258 | n/a |
+| pothole__rtdetr-l__s0 | 0.75 | 23.4% (16.8%–31.6%), n=124 | 9.3% (6.1%–14.0%), n=214 | 1.9% (0.8%–4.5%), n=258 | 3.0% (0.5%–15.3%), n=33 |
+| pothole__yolo11n__s0 | 0.45 | 20.2% (14.1%–28.1%), n=124 | 10.3% (6.9%–15.1%), n=214 | 0.4% (0.1%–2.2%), n=258 | 9.1% (3.1%–23.6%), n=33 |
+| pothole__yolov8n__s0 | 0.5 | 21.8% (15.4%–29.8%), n=124 | 7.5% (4.7%–11.8%), n=214 | 1.6% (0.6%–3.9%), n=258 | 9.1% (3.1%–23.6%), n=33 |
+| pothole_india__yolov8n__s0 | 0.4 | 27.1% (22.0%–33.0%), n=247 | 9.3% (6.1%–14.0%), n=214 | 3.1% (1.6%–6.0%), n=258 | 6.2% (2.5%–15.0%), n=64 |
 
 Same at the submitted paper's tau = 0.25:
 
 | Run | Valid flagged | Wrong passed | Unrelated passed |
 |---|---|---|---|
+| garbage_litter__rtdetr-l__s0 | 0.0% (0.0%–3.6%), n=104 | 100.0% (98.6%–100.0%), n=274 | 100.0% (98.3%–100.0%), n=220 |
+| garbage_litter__yolo11n__s0 | 1.9% (0.5%–6.7%), n=104 | 85.4% (80.7%–89.1%), n=274 | 89.5% (84.8%–92.9%), n=220 |
 | garbage_litter__yolov8n__s0 | 1.0% (0.2%–5.2%), n=104 | 81.5% (76.6%–85.6%), n=287 | 94.1% (90.1%–96.5%), n=220 |
-| graffiti__rtdetr-l__s0 | 0.0% (0.0%–3.7%), n=100 | n/a | 88.0% (83.5%–91.4%), n=258 |
+| garbage_litter_super__yolov8n__s0 | 3.9% (1.5%–9.5%), n=104 | 62.0% (56.2%–67.6%), n=274 | 75.0% (68.9%–80.3%), n=220 |
+| graffiti__rtdetr-l__s0 | 0.0% (0.0%–3.7%), n=100 | 73.4% (67.8%–78.2%), n=274 | 88.4% (83.9%–91.7%), n=258 |
 | graffiti__yolo11n__s0 | 3.0% (1.0%–8.5%), n=100 | 41.5% (36.0%–47.3%), n=289 | 51.2% (45.1%–57.2%), n=258 |
+| graffiti__yolov8n-scratch__s0 | 11.0% (6.2%–18.6%), n=100 | 29.9% (24.8%–35.6%), n=274 | 39.5% (33.8%–45.6%), n=258 |
 | graffiti__yolov8n__s0 | 2.0% (0.5%–7.0%), n=100 | 47.4% (41.7%–53.2%), n=289 | 52.7% (46.6%–58.7%), n=258 |
+| pothole__rtdetr-l__s0 | 1.6% (0.4%–5.7%), n=124 | 72.4% (66.1%–78.0%), n=214 | 58.5% (52.4%–64.4%), n=258 |
+| pothole__yolo11n__s0 | 6.5% (3.3%–12.2%), n=124 | 24.3% (19.0%–30.5%), n=214 | 4.7% (2.7%–8.0%), n=258 |
+| pothole__yolov8n__s0 | 5.7% (2.8%–11.2%), n=124 | 26.2% (20.7%–32.4%), n=214 | 8.1% (5.4%–12.1%), n=258 |
+| pothole_india__yolov8n__s0 | 11.7% (8.3%–16.4%), n=247 | 15.9% (11.6%–21.4%), n=214 | 5.4% (3.3%–8.9%), n=258 |
 
 ## External sets at the chosen tau (A3)
 
 | Run | Set | Valid complaints flagged | Image recall |
 |---|---|---|---|
+| garbage_litter__rtdetr-l__s0 | garbage_litter_taco_unofficial | 17.2% (15.1%–19.5%), n=1140 | 63.9% (61.9%–65.8%), n=2308 |
+| garbage_litter__yolo11n__s0 | garbage_litter_taco_unofficial | 28.2% (25.6%–30.8%), n=1140 | 51.6% (49.6%–53.6%), n=2308 |
 | garbage_litter__yolov8n__s0 | garbage_litter_taco_unofficial | 22.5% (20.2%–25.1%), n=1140 | 57.9% (55.9%–59.9%), n=2308 |
+| garbage_litter_super__yolov8n__s0 | garbage_litter_taco_unofficial | 21.6% (19.3%–24.1%), n=1140 | 57.3% (55.3%–59.3%), n=2308 |
+| pothole__rtdetr-l__s0 | pothole_india_test_split | 75.6% (67.1%–82.6%), n=115 | 13.8% (9.9%–18.8%), n=232 |
+| pothole__rtdetr-l__s0 | pothole_rdd2022_india | 72.7% (69.5%–75.7%), n=777 | 14.9% (13.2%–16.8%), n=1530 |
+| pothole__rtdetr-l__s0 | pothole_roboflow | 35.3% (28.2%–43.1%), n=153 | 45.8% (40.2%–51.5%), n=297 |
+| pothole__yolo11n__s0 | pothole_india_test_split | 74.8% (66.1%–81.8%), n=115 | 13.8% (9.9%–18.8%), n=232 |
+| pothole__yolo11n__s0 | pothole_rdd2022_india | 74.3% (71.1%–77.2%), n=777 | 14.2% (12.6%–16.1%), n=1530 |
+| pothole__yolo11n__s0 | pothole_roboflow | 47.7% (40.0%–55.6%), n=153 | 33.0% (27.9%–38.5%), n=297 |
+| pothole__yolov8n__s0 | pothole_india_test_split | 65.2% (56.1%–73.3%), n=115 | 20.7% (16.0%–26.4%), n=232 |
+| pothole__yolov8n__s0 | pothole_rdd2022_india | 64.7% (61.3%–68.0%), n=777 | 20.3% (18.3%–22.4%), n=1530 |
+| pothole__yolov8n__s0 | pothole_roboflow | 47.1% (39.3%–54.9%), n=153 | 34.0% (28.8%–39.6%), n=297 |
+| pothole_india__yolov8n__s0 | pothole_roboflow | 33.3% (26.4%–41.1%), n=153 | 47.5% (41.9%–53.1%), n=297 |
+
+## Fairness by country, potholes (A11)
+
+| Run | Country | Image recall | Valid complaints flagged |
+|---|---|---|---|
+| pothole__rtdetr-l__s0 | China_MotorBike | 96.3% (81.7%–99.3%), n=27 | 0.0% (0.0%–22.8%), n=13 |
+| pothole__rtdetr-l__s0 | Czech | 18.2% (7.3%–38.5%), n=22 | 72.7% (43.4%–90.2%), n=11 |
+| pothole__rtdetr-l__s0 | India (external, all) | 14.9% (13.2%–16.8%), n=1530 | 72.7% (69.5%–75.7%), n=777 |
+| pothole__rtdetr-l__s0 | India (test split of pothole_india) | 13.8% (9.9%–18.8%), n=232 | 75.6% (67.1%–82.6%), n=115 |
+| pothole__rtdetr-l__s0 | Japan | 56.2% (49.3%–62.9%), n=201 | 22.9% (15.7%–32.3%), n=96 |
+| pothole__yolo11n__s0 | China_MotorBike | 77.8% (59.2%–89.4%), n=27 | 7.7% (1.4%–33.3%), n=13 |
+| pothole__yolo11n__s0 | Czech | 22.7% (10.1%–43.4%), n=22 | 72.7% (43.4%–90.2%), n=11 |
+| pothole__yolo11n__s0 | India (external, all) | 14.2% (12.6%–16.1%), n=1530 | 74.3% (71.1%–77.2%), n=777 |
+| pothole__yolo11n__s0 | India (test split of pothole_india) | 13.8% (9.9%–18.8%), n=232 | 74.8% (66.1%–81.8%), n=115 |
+| pothole__yolo11n__s0 | Japan | 61.2% (54.3%–67.7%), n=201 | 16.7% (10.5%–25.4%), n=96 |
+| pothole__yolov8n__s0 | China_MotorBike | 92.6% (76.6%–97.9%), n=27 | 0.0% (0.0%–22.8%), n=13 |
+| pothole__yolov8n__s0 | Czech | 22.7% (10.1%–43.4%), n=22 | 54.5% (28.0%–78.7%), n=11 |
+| pothole__yolov8n__s0 | India (external, all) | 20.3% (18.3%–22.4%), n=1530 | 64.7% (61.3%–68.0%), n=777 |
+| pothole__yolov8n__s0 | India (test split of pothole_india) | 20.7% (16.0%–26.4%), n=232 | 65.2% (56.1%–73.3%), n=115 |
+| pothole__yolov8n__s0 | Japan | 61.7% (54.8%–68.1%), n=201 | 17.7% (11.4%–26.5%), n=96 |
+| pothole_india__yolov8n__s0 | China_MotorBike | 77.8% (59.2%–89.4%), n=27 | 7.7% (1.4%–33.3%), n=13 |
+| pothole_india__yolov8n__s0 | Czech | 13.6% (4.8%–33.3%), n=22 | 81.8% (52.3%–94.9%), n=11 |
+| pothole_india__yolov8n__s0 | India | 45.7% (39.4%–52.1%), n=232 | 34.8% (26.7%–43.9%), n=115 |
+| pothole_india__yolov8n__s0 | Japan | 61.2% (54.3%–67.7%), n=201 | 17.7% (11.4%–26.5%), n=96 |
 
 ## Workload simulation (A7; a simulation, not a measure of staff decisions)
 
 | Run | Assumed invalid share | Flagged per 100 | Valid among flagged | Invalid passed unflagged |
 |---|---|---|---|---|
+| garbage_litter__rtdetr-l__s0 | 5% | 13.2 | 10.1 | 1.9 |
+| garbage_litter__rtdetr-l__s0 | 10% | 15.8 | 9.5 | 3.7 |
+| garbage_litter__rtdetr-l__s0 | 20% | 21.0 | 8.5 | 7.5 |
+| garbage_litter__yolo11n__s0 | 5% | 19.5 | 15.5 | 1.0 |
+| garbage_litter__yolo11n__s0 | 10% | 22.7 | 14.7 | 2.0 |
+| garbage_litter__yolo11n__s0 | 20% | 29.0 | 13.1 | 4.1 |
 | garbage_litter__yolov8n__s0 | 5% | 14.9 | 11.0 | 1.1 |
 | garbage_litter__yolov8n__s0 | 10% | 18.2 | 10.4 | 2.2 |
 | garbage_litter__yolov8n__s0 | 20% | 24.8 | 9.2 | 4.4 |
-| graffiti__rtdetr-l__s0 | 5% | 15.3 | 10.4 | 0.1 |
-| graffiti__rtdetr-l__s0 | 10% | 19.6 | 9.9 | 0.3 |
-| graffiti__rtdetr-l__s0 | 20% | 28.3 | 8.8 | 0.5 |
+| garbage_litter_super__yolov8n__s0 | 5% | 14.8 | 11.9 | 2.1 |
+| garbage_litter_super__yolov8n__s0 | 10% | 17.0 | 11.2 | 4.2 |
+| garbage_litter_super__yolov8n__s0 | 20% | 21.5 | 10.0 | 8.5 |
+| graffiti__rtdetr-l__s0 | 5% | 14.3 | 9.5 | 0.2 |
+| graffiti__rtdetr-l__s0 | 10% | 18.7 | 9.0 | 0.3 |
+| graffiti__rtdetr-l__s0 | 20% | 27.3 | 8.0 | 0.7 |
 | graffiti__yolo11n__s0 | 5% | 15.2 | 10.4 | 0.3 |
 | graffiti__yolo11n__s0 | 10% | 19.4 | 9.9 | 0.5 |
 | graffiti__yolo11n__s0 | 20% | 27.7 | 8.8 | 1.1 |
+| graffiti__yolov8n-scratch__s0 | 5% | 23.9 | 19.9 | 1.0 |
+| graffiti__yolov8n-scratch__s0 | 10% | 26.9 | 18.9 | 2.0 |
+| graffiti__yolov8n-scratch__s0 | 20% | 32.8 | 16.8 | 4.0 |
 | graffiti__yolov8n__s0 | 5% | 24.0 | 19.0 | 0.0 |
 | graffiti__yolov8n__s0 | 10% | 27.9 | 18.0 | 0.1 |
 | graffiti__yolov8n__s0 | 20% | 35.8 | 16.0 | 0.2 |
-
-**Incomplete:** these runs were scored without the other categories' photos (Colab) and must be re-scored on the laptop: graffiti__rtdetr-l__s0
+| pothole__rtdetr-l__s0 | 5% | 26.9 | 22.2 | 0.3 |
+| pothole__rtdetr-l__s0 | 10% | 30.5 | 21.1 | 0.6 |
+| pothole__rtdetr-l__s0 | 20% | 37.6 | 18.7 | 1.1 |
+| pothole__yolo11n__s0 | 5% | 23.9 | 19.2 | 0.3 |
+| pothole__yolo11n__s0 | 10% | 27.6 | 18.1 | 0.5 |
+| pothole__yolo11n__s0 | 20% | 35.1 | 16.1 | 1.1 |
+| pothole__yolov8n__s0 | 5% | 25.5 | 20.7 | 0.2 |
+| pothole__yolov8n__s0 | 10% | 29.1 | 19.6 | 0.5 |
+| pothole__yolov8n__s0 | 20% | 36.5 | 17.4 | 0.9 |
+| pothole_india__yolov8n__s0 | 5% | 30.5 | 25.8 | 0.3 |
+| pothole_india__yolov8n__s0 | 10% | 33.8 | 24.4 | 0.6 |
+| pothole_india__yolov8n__s0 | 20% | 40.5 | 21.7 | 1.2 |

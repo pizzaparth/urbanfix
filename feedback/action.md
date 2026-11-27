@@ -702,7 +702,7 @@ Details and sources: `ai_model/DATASETS.md`. Numbers: `ai_model/results/split_au
 - **F25. RDD2022's United States subset is Google Street View imagery** (RDD2022 paper, data collection section: "the data for the United States comprises Google Street View Images"). Its CC BY 4.0 label cannot cover Google's images, so it fails the licence criterion of Eq. (1). Found on 2026-11-27 through a Google watermark in the A6 error figure; the subset was removed and the pothole models retrained.
 - **F22. RDD2022 is box-only**, so the pothole model becomes a box detector. This removes the last mask-based model that δ in Eq. (4) relied on, apart from litter. A10 (drop the δ-to-urgency rule) is now required, not just recommended.
 
-### Phase 3, training and evaluation: in progress (started 2026-11-26)
+### Phase 3, training and evaluation: done (2026-11-26 to 2026-11-27)
 
 **Rule for numbers:** every number about models comes from a JSON file written by a script
 (`ai_model/results/{train,eval,scores,complaints}/<run>.json`). `ai_model/scripts/summarize.py`
@@ -726,45 +726,51 @@ workload simulation) → `error_examples.py` (A6 figure) → `summarize.py`. Col
 | 2026-11-26 | Unrelated photos: 1,000 seeded COCO 2017 val photos (`scripts/fetch_coco_negatives.py`); for litter, the 124 with a bottle, cup or wine glass are left out | A5. COCO has no pothole or graffiti class; some COCO street scenes may still show one (checked in A6). |
 | 2026-11-26 | **India gap found, India-trained pothole model added.** The pothole model trained without India scored far lower on Indian photos than on its own test set and flagged about two thirds of genuine Indian pothole complaints (source: `results/eval/pothole__yolov8n__s0.json`, `results/complaints/pothole__yolov8n__s0.json`). A second split `splits/pothole_india.json` keeps the other countries' splits unchanged and adds India 70/15/15 by group; its India test images are also an external set for the no-India model, so both are compared on identical photos. The India-trained model is the one to deploy; the paper reports both. | User decision after the measurement. It turns A11 from a limitation into a measured gap plus a measured fix. |
 | 2026-11-27 | **RDD2022 United States subset removed; pothole models retrained (F25).** The A6 error figure showed a Google watermark on a US test photo; the RDD2022 paper confirms the US images are Google Street View captures. Both pothole splits were rebuilt without them (Japan, Czech and China splits unchanged, checked file by file). The three pothole runs trained with US images were moved to `ai_model/results/superseded/2026-11-27_with_US_streetview/` and may not be used in the paper. Retrained: pothole and pothole_india YOLOv8n on the laptop; pothole RT-DETR-l and YOLO11n on Colab. | User decision. Our own Eq. (1) requires a usable licence, and Reviewer 2 asked about licences. |
-| 2026-11-27 | **Deployed models:** `pothole_india__yolov8n__s0` (box detector), `garbage_litter__yolov8n__s0` (segmentation), `graffiti__yolov8n__s0` (box detector), copied to `ai_model/weights/` with τ from `results/complaints/<run>.json` in `ai_service/thresholds.json`. (The pothole weights and τ installed on 2026-11-27 morning came from the run with US images and are replaced after the retraining.) Service and backend tests updated: the pothole model reports no δ (A10); the service fixture is now an RDD2022 India test photo (CC BY 4.0). Service 10 tests, backend 61 tests and the end-to-end test pass. | YOLOv8n per the A8 rule (smallest CPU model). Graffiti is an open question: RT-DETR-l scores higher on the test set but is about 10 times slower on the laptop CPU and 10 times larger; to be decided with the final latency numbers. |
+| 2026-11-27 | **A8 ablations added to phase 3** (user decision): (a) graffiti YOLOv8n trained from scratch vs COCO-pretrained; (b) litter YOLOv8n trained on TACO's 28 super-categories and scored as one class vs the merged-class model. Same splits and 40-epoch budget; laptop, after the pothole queue (`scripts/run_ablations.sh`). For (b), `scripts/build_litter_supercategories.py` writes the same images and polygons with super-category ids (object counts identical: 3,360 / 785 / 655), and `evaluate.py` scores it with Ultralytics `single_cls`; scoring the merged model this way reproduced its own test numbers exactly (box mAP50 0.4559, mask 0.4397), which checks the method. | Reviewer 2 (i) asks for an ablation justifying the model choice; it was the one experimental item not yet scheduled. |
+| 2026-11-27 | **Deployed models:** `pothole_india__yolov8n__s0` (box detector), `garbage_litter__yolov8n__s0` (segmentation), `graffiti__yolov8n__s0` (box detector), copied to `ai_model/weights/` with τ from `results/complaints/<run>.json` in `ai_service/thresholds.json`. (The pothole weights installed on 2026-11-27 morning came from the run with US images; they were replaced at 17:40 by the retrained `pothole_india__yolov8n__s0`, whose τ is also 0.40.) Service and backend tests updated: the pothole model reports no δ (A10); the service fixture is now an RDD2022 India test photo (CC BY 4.0). Service 10 tests, backend 61 tests and the end-to-end test pass. | YOLOv8n per the A8 rule; see "Deployment choice" below for the final latency numbers. |
+| 2026-11-27 | **YOLOv8s and seeds 1 and 2 not run** (user decision). Phase 3 ends with seed 0 for every model. | Not requested by the reviewers (checked in `review.md`): Reviewer 2 (i) asks for a held-out test set or cross-validation, confidence intervals, at least one baseline detector and an ablation justifying YOLOv8n. These are covered by the leak-free test split, the bootstrap 95 % CIs, RT-DETR-l and YOLO11n for all three categories, and the two A8 ablations. The paper must say that each number comes from one training run (seed 0) and that the CIs cover test-set sampling, not training variation. |
 | 2026-11-26 | Pothole and litter YOLO11n moved from the laptop to Colab (litter at 23:10, on the user's instruction) | To fit the India model into the 4-hour laptop queue. Graffiti YOLO11n stays on the laptop. |
 | 2026-11-26 | **Observation:** the laptop YOLOv8n runs for pothole, litter and graffiti all reached their best validation fitness at epoch 39 or 40 of 40 (`best_epoch` in `results/train/*__yolov8n__s0.json`), so they were still improving when the 40-epoch cap stopped them. | The cap may understate YOLOv8n against models that converge faster. Either state this in the paper or rerun the deployed models with 60 epochs on Colab if GPU time allows. |
 
-**Result of the India decision — SUPERSEDED on 2026-11-27:** the numbers in this paragraph came from runs trained with the RDD2022 United States subset (now in `results/superseded/`). They will be replaced by the retrained runs. (Original sources: `results/eval/pothole__yolov8n__s0.json` set `pothole_india_test_split`; `results/eval/pothole_india__yolov8n__s0.json` set `test`, stratum `India`; `results/complaints/*.json` `fairness_by_country`). On the same 286 Indian test photos, box mAP50 rose from 0.101 (0.073–0.135) without Indian training data to 0.378 (0.335–0.429) with it, and the share of genuine Indian pothole complaints flagged fell from 67.0 % (τ 0.50) to 27.8 % (τ 0.40). India stays below Japan (0.617 for the India-trained model), so a smaller gap remains; the paper should report both numbers.
+**Result of the India decision (retrained without US images, 2026-11-27).** Sources: `results/eval/pothole__yolov8n__s0.json` set `pothole_india_test_split`; `results/eval/pothole_india__yolov8n__s0.json` set `test`, `by_stratum`; `fairness_by_country` in `results/complaints/pothole__yolov8n__s0.json` and `results/complaints/pothole_india__yolov8n__s0.json`. On the same 286 Indian test photos, box mAP50 rose from 0.113 (0.084–0.145) without Indian training data to 0.404 (0.357–0.454) with it. The share of genuine Indian pothole complaints flagged fell from 65.2 % (56.1–73.3 %, n = 115, τ 0.50) to 34.8 % (26.7–43.9 %, n = 115, τ 0.40). India stays below Japan (box mAP50 0.612 for the India-trained model; Japanese complaints flagged 17.7 %), so a smaller gap remains. RT-DETR-l and YOLO11n trained without India show the same gap (India test split box mAP50 0.124 and 0.096), so the gap comes from the training data, not from the detector. The earlier numbers from the runs with US images are in `results/superseded/` and are not used.
 
-**Run status (2026-11-27 01:15; numbers in `ai_model/results/phase3_summary.md`):**
+**Deployment choice (A8 rule, 2026-11-27).** Source: `results/phase3_summary.md`. YOLO11n does not beat YOLOv8n on the test set for any category (box mAP50: pothole 0.645 vs 0.659, litter 0.445 vs 0.456, graffiti 0.692 vs 0.708) at the same CPU latency, so YOLOv8n stays. RT-DETR-l scores higher (pothole 0.683, litter 0.512, graffiti 0.801) but takes 349 to 353 ms per image on the idle laptop CPU against 19.5 to 24.3 ms for YOLOv8n (about 14 to 18 times slower) and is 66.2 MB against 6.2 to 6.8 MB. This is far outside the "2 to 4 times the latency" range of the A8 rule, so YOLOv8n is deployed for all three categories. The graffiti gain (0.801, CI 0.754–0.853, vs 0.708, CI 0.654–0.771) is the largest and should be stated in the paper as the trade-off.
 
-| Run | Machine | Trained | Evaluated | Complete |
-|---|---|---|---|---|
-| pothole yolov8n s0 | laptop | retraining without US (2026-11-27) | no | no |
-| pothole_india yolov8n s0 (to deploy) | laptop | queued for retraining without US | no | no |
-| garbage_litter yolov8n s0 | laptop | yes | yes | yes (latency to remeasure) |
-| graffiti yolov8n s0 | laptop | yes | yes | yes (latency to remeasure) |
-| graffiti yolo11n s0 | laptop | yes | yes | yes |
-| graffiti rtdetr-l s0 | Colab | yes | re-evaluated on laptop (2026-11-27); re-scoring running | latency on idle laptop |
-| pothole rtdetr-l s0 | Colab | to retrain without US | no | no |
-| garbage_litter rtdetr-l s0 | Colab | no | no | to do |
-| pothole yolo11n s0 | Colab | no | no | to do |
-| garbage_litter yolo11n s0 | Colab | no | no | to do |
-| yolov8s and yolov8n seeds 1, 2 | Colab | no | no | optional |
+**Ablation results (A8, 2026-11-27).** Source: `results/phase3_summary.md`. (a) Graffiti YOLOv8n from scratch: test box mAP50 0.457 (0.394–0.532) against 0.708 (0.654–0.771) with COCO pretraining, and at its own τ (0.35) it passes 17.2 % of wrong-category and 22.9 % of unrelated complaints against 0.4 % and 1.6 %. (b) Litter YOLOv8n on 28 super-categories, scored as one class: test box mAP50 0.425 (0.365–0.489), mask 0.409, against 0.456 and 0.440 for the merged-class model; at its τ (0.5) it passes 32.1 % of wrong-category and 52.7 % of unrelated complaints against 15.7 % and 28.2 %. Both ablations support the submitted design (pretrained weights, one merged class).
 
-The laptop queue finished at 00:54 after 99 minutes of its second start (first start 21:10); no job was skipped.
+**Run status (2026-11-27 18:30; all numbers in `ai_model/results/phase3_summary.md`).** Every run: seed 0, 40 epochs, patience 10, evaluated on the laptop, scored with the other categories' photos, CPU latency measured on the idle laptop (2026-11-27 17:36). Colab originals of every file the laptop replaced are in `ai_model/data/raw/colab/original_results/` (git-ignored).
 
-**Open items in this phase:** remeasure CPU latency for every model on the idle laptop
-(`evaluate.py --latency-only`; latencies measured during training or on Colab are not comparable);
-re-score the Colab-trained models on the laptop so the wrong-category check includes the other
-categories' photos; A6 figures; choose the deployed models and copy them into `ai_model/weights/`
-with their τ in `ai_service/thresholds.json`; switch the vision service to the box-only pothole model.
+| Run | Trained on | Best epoch | Complete |
+|---|---|---|---|
+| pothole yolov8n s0 | laptop | 39 | yes |
+| pothole_india yolov8n s0 (deployed) | laptop | 39 | yes |
+| pothole yolo11n s0 | Colab T4 | 34 | yes |
+| pothole rtdetr-l s0 | Colab T4 | 40 | yes |
+| garbage_litter yolov8n s0 (deployed) | laptop | 39 | yes |
+| garbage_litter yolo11n s0 | Colab T4 | 40 | yes |
+| garbage_litter rtdetr-l s0 | Colab T4 | 38 | yes |
+| graffiti yolov8n s0 (deployed) | laptop | 40 | yes |
+| graffiti yolo11n s0 | laptop | 37 | yes |
+| graffiti rtdetr-l s0 | Colab T4 | 37 | yes |
+| graffiti yolov8n-scratch s0 (ablation a) | laptop | 40 | yes |
+| garbage_litter_super yolov8n s0 (ablation b) | laptop | 39 | yes |
+| yolov8s, seeds 1 and 2 | — | — | not run (user decision, see above) |
+
+Error figures (A6): `ai_model/results/figures/errors_{pothole,pothole_india,garbage_litter,graffiti}.jpg`, from the YOLOv8n models.
+
+Tests with the deployed models (2026-11-27): vision service 10 passed; backend 61 passed, 1 skipped (the end-to-end test, which needs the vision service); end-to-end test against the running vision service passed. The service fixture `ai_service/tests/fixtures/pothole.jpg` now scores 0.814 with the deployed pothole model (`results/scores/pothole_india__yolov8n__s0.json`).
+
+**Phase 3 is done.** Left for the paper (phase 6): 11 of the 12 runs reached their best validation fitness at epoch 37 to 40 of 40 (`best_epoch` in `results/train/*.json`), so they may still have been improving when the cap stopped them (see the observation above). This must be stated. Each number comes from one training run (seed 0). The CIs cover test-set sampling only.
 
 ## 11. Done checklist
 
 - [x] No source photo appears in two splits (script output saved in `ai_model/results/split_report.json`).
 - [ ] Every number in the paper comes from a `results/*.json` file in the release.
-- [ ] Test-set metrics with 95 % CIs, 3 seeds.
-- [ ] Complaint-level false-flag and false-pass rates per category.
+- [x] Test-set metrics with 95 % CIs (seed 0 only; seeds 1 and 2 dropped by user decision, 2026-11-27).
+- [x] Complaint-level false-flag and false-pass rates per category.
 - [ ] τ_k chosen by a written rule; θδ and the δ urgency rule removed.
-- [ ] At least one non-YOLO baseline and two YOLO variants compared.
-- [ ] RDD2022 India cross-dataset result.
+- [x] At least one non-YOLO baseline and two YOLO variants compared (RT-DETR-l, YOLOv8n, YOLO11n).
+- [x] RDD2022 India cross-dataset result.
 - [x] AI service exists in the repository and the backend stores `aiAnalysis` and `needsReview`.
 - [x] Urgency computed on the server from stored answers.
 - [ ] EXIF removed, text redacted, registry allow-list, consent checkbox.

@@ -139,6 +139,7 @@
    }
   }
  },
- "cpu_latency_ms": 58.2,
- "weights_mb": 6.8
+ "cpu_latency_ms": 23.7,
+ "weights_mb": 6.8,
+ "latency_machine": "macOS-27.2-arm64-arm-64bit-Mach-O / arm"
 }

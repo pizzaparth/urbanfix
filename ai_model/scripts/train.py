@@ -35,13 +35,17 @@ RUNS = ROOT / "runs" / "v2"
 WEIGHTS = ROOT / "weights" / "v2"
 RESULTS = ROOT / "results" / "train"
 
-SEGMENT = {"garbage_litter"}
-MODELS = ("yolov8n", "yolov8s", "yolo11n", "rtdetr-l")
+SEGMENT = {"garbage_litter", "garbage_litter_super"}
+MODELS = ("yolov8n", "yolov8s", "yolo11n", "rtdetr-l", "yolov8n-scratch")
 
 
 def base_weights(model: str, category: str) -> str:
+    """COCO-pretrained weights, or a bare architecture file for the from-scratch ablation (A8a)."""
     if model.startswith("rtdetr"):
         return f"{model}.pt"
+    if model.endswith("-scratch"):
+        arch = model[: -len("-scratch")]
+        return f"{arch}-seg.yaml" if category in SEGMENT else f"{arch}.yaml"
     return f"{model}-seg.pt" if category in SEGMENT else f"{model}.pt"
 
 
@@ -53,7 +57,7 @@ def default_device() -> str | int:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("category", choices=["pothole", "pothole_india", "garbage_litter", "graffiti"])
+    ap.add_argument("category", choices=["pothole", "pothole_india", "garbage_litter", "garbage_litter_super", "graffiti"])
     ap.add_argument("--model", default="yolov8n", choices=MODELS)
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--epochs", type=int, default=40)
