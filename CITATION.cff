@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "UrbanFix: civic complaint platform with AI-assisted photo triage, a public registry and pseudonymised research access"
+type: software
+license: MIT
+repository-code: "https://github.com/pizzaparth/urbanfix"
+authors:
+  - family-names: Pancholi
+    given-names: Parth
+    affiliation: "VIT Bhopal University"
+  - family-names: Soni
+    given-names: Gaurav
+    affiliation: "VIT Bhopal University"
+  - family-names: Chandravanshi
+    given-names: Kamlesh
+    affiliation: "VIT Bhopal University"
+  - family-names: Sahare
+    given-names: Mahendra
+    affiliation: "VIT-AP University"
+  - family-names: Maurya
+    given-names: Jay Prakash
+    affiliation: "VIT Bhopal University"
+keywords:
+  - civic complaints
+  - object detection
+  - k-anonymity
+  - public registry

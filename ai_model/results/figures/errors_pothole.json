@@ -4,41 +4,81 @@
  "flagged_valid": [
   {
    "file": "data/raw/rdd2022/Japan/train/images/Japan_008721.jpg",
-   "s_star": 0.01024
+   "s_star": 0.01024,
+   "source": {
+    "dataset": "RDD2022",
+    "licence": "CC BY 4.0",
+    "drawn": true
+   }
   },
   {
    "file": "data/raw/rdd2022/Japan/train/images/Japan_009196.jpg",
-   "s_star": 0.02411
+   "s_star": 0.02411,
+   "source": {
+    "dataset": "RDD2022",
+    "licence": "CC BY 4.0",
+    "drawn": true
+   }
   },
   {
    "file": "data/raw/rdd2022/Japan/train/images/Japan_011955.jpg",
-   "s_star": 0.0351
+   "s_star": 0.0351,
+   "source": {
+    "dataset": "RDD2022",
+    "licence": "CC BY 4.0",
+    "drawn": true
+   }
   },
   {
    "file": "data/raw/rdd2022/Japan/train/images/Japan_005869.jpg",
-   "s_star": 0.07037
+   "s_star": 0.07037,
+   "source": {
+    "dataset": "RDD2022",
+    "licence": "CC BY 4.0",
+    "drawn": true
+   }
   }
  ],
  "passed_negative": [
   {
    "file": "data/garbage_litter/images/train/taco_0091.jpg",
    "kind": "litter",
-   "s_star": 0.78695
+   "s_star": 0.78695,
+   "source": {
+    "dataset": "TACO",
+    "licence": "CC BY 4.0",
+    "drawn": true
+   }
   },
   {
    "file": "data/graffiti/images/val/IMG_1234.jpg",
    "kind": "graffiti",
-   "s_star": 0.78248
+   "s_star": 0.78248,
+   "source": {
+    "dataset": "STORM graffiti",
+    "licence": "CC BY 4.0",
+    "drawn": true
+   }
   },
   {
    "file": "data/garbage_litter/images/train/taco_0469.jpg",
    "kind": "litter",
-   "s_star": 0.74787
+   "s_star": 0.74787,
+   "source": {
+    "dataset": "TACO",
+    "licence": "CC BY 4.0",
+    "drawn": true
+   }
   },
   {
    "file": "data/garbage_litter/images/train/taco_0619.jpg",
    "kind": "litter",
-   "s_star": 0.74678
+   "s_star": 0.74678,
+   "source": {
+    "dataset": "TACO",
+    "licence": "CC BY 4.0",
+    "drawn": true
+   }
   }
  ]
 }

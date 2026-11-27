@@ -4,41 +4,84 @@
  "flagged_valid": [
   {
    "file": "data/garbage_litter/images/val/taco_0181.jpg",
-   "s_star": 0.04472
+   "s_star": 0.04472,
+   "source": {
+    "dataset": "TACO",
+    "licence": "CC BY 4.0",
+    "drawn": true
+   }
   },
   {
    "file": "data/garbage_litter/images/val/taco_0947.jpg",
-   "s_star": 0.06507
+   "s_star": 0.06507,
+   "source": {
+    "dataset": "TACO",
+    "licence": "CC BY 4.0",
+    "drawn": true
+   }
   },
   {
    "file": "data/garbage_litter/images/train/taco_0801.jpg",
-   "s_star": 0.07807
+   "s_star": 0.07807,
+   "source": {
+    "dataset": "TACO",
+    "licence": "CC BY 4.0",
+    "drawn": true
+   }
   },
   {
    "file": "data/garbage_litter/images/train/taco_1326.jpg",
-   "s_star": 0.12063
+   "s_star": 0.12063,
+   "source": {
+    "dataset": "TACO",
+    "licence": "CC BY 4.0",
+    "drawn": true
+   }
   }
  ],
  "passed_negative": [
   {
    "file": "data/graffiti/images/val/IMG_1246.jpg",
    "kind": "graffiti",
-   "s_star": 0.95557
+   "s_star": 0.95557,
+   "source": {
+    "dataset": "STORM graffiti",
+    "licence": "CC BY 4.0",
+    "drawn": true
+   }
   },
   {
    "file": "data/raw/coco_val2017/000000216277.jpg",
    "kind": "unrelated",
-   "s_star": 0.95478
+   "s_star": 0.95478,
+   "source": {
+    "dataset": "COCO 2017 val",
+    "coco_id": 216277,
+    "licence": "CC BY-NC-ND 2.0",
+    "drawn": false
+   }
   },
   {
    "file": "data/raw/coco_val2017/000000419379.jpg",
    "kind": "unrelated",
-   "s_star": 0.95311
+   "s_star": 0.95311,
+   "source": {
+    "dataset": "COCO 2017 val",
+    "coco_id": 419379,
+    "licence": "CC BY-NC-ND 2.0",
+    "drawn": false
+   }
   },
   {
    "file": "data/raw/coco_val2017/000000298396.jpg",
    "kind": "unrelated",
-   "s_star": 0.94489
+   "s_star": 0.94489,
+   "source": {
+    "dataset": "COCO 2017 val",
+    "coco_id": 298396,
+    "licence": "CC BY-SA 2.0",
+    "drawn": false
+   }
   }
  ]
 }

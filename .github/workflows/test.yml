@@ -37,6 +37,16 @@ jobs:
       - run: pip install -r requirements.txt
       - run: python -m pytest -q tests
 
+  results:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      # Rebuilds the model tables from the committed result files and fails if they differ.
+      - run: ./reproduce.sh tables
+
   end-to-end:
     needs: [backend, ai-service]
     runs-on: ubuntu-latest

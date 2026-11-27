@@ -618,9 +618,12 @@ Work in this order. Each phase depends on the one before.
 2. **Data and splits (2 to 3 days):** D1 to D4 decisions, A1 splits, external test sets for A3.
 3. **Training and evaluation (about 1 week, mostly waiting for free GPU):** A2 with 3 seeds, A8 baselines, A4 τ sweep, A5 complaint-level, A3 cross-dataset, A11 fairness, A6 error analysis, A7 simulation.
 4. **Privacy analysis (2 to 3 days):** B5 on Chicago 311, then fix k and the generalisation in code.
-5. **Release (1 day):** E1 to E3 (public repository, Zenodo DOI, split lists, results).
+5. **Release, split on 2026-11-27 (user decision):**
+   - **5a, before the paper:** E1 and E2 without the archive. Licences, third-party notices, image audit, weights licence, `reproduce.sh`, citation file.
+   - **5b, last, before submission:** tag, Zenodo archive and DOI, E3 paragraph in the paper. A Zenodo version cannot change once published, so it must hold the final paper's scripts and figures.
 6. **Paper (about 1 week):** P1 to P12, regenerate all tables and figures from `results/*.json`.
 7. **Response letter (1 day):** P13, using Section 9.
+8. **5b:** see above.
 
 ## 10a. Progress log
 
@@ -808,6 +811,57 @@ All numbers below are copied from `analysis/privacy/results/linkage_chicago311.m
 - The real residual risks are in the registry content: free text (B3 removes patterns but not names) and photos (B7).
 - Minimum cell sizes protect each table, not differences between tables from different filters.
 
+### Phase 5a, release preparation: done on 2026-11-27
+
+The repository was already public on GitHub. Phase 5 was split (see section 10): the tag and the Zenodo archive wait until the paper and the response letter are final.
+
+**Licences**
+
+| Part | Licence | Reason |
+|---|---|---|
+| Source code | MIT (`LICENSE`) | Plan E1 default. |
+| Model weights (`ai_model/weights/*.pt`) | AGPL-3.0 (`ai_model/weights/README.md`) | They are fine-tuned from Ultralytics' pretrained `yolov8n.pt` and `yolov8n-seg.pt`, which are AGPL-3.0. The training data (RDD2022, TACO, STORM) is CC BY 4.0, which allows this with attribution. The plan's "CC BY-SA weights" case does not arise: RDD2022 is CC BY 4.0 (D1). |
+| Ultralytics library | AGPL-3.0 | Imported by `ai_service/` and `ai_model/scripts/`; installed from PyPI, not shipped. Stated in `THIRD_PARTY_NOTICES.md`. |
+
+**Image audit.** Every tracked image was checked for where it came from.
+
+| Finding | Action |
+|---|---|
+| Error figures (A6) drew 9 COCO photos: 1 CC BY 2.0, 1 CC BY-SA 2.0, 7 NonCommercial (licence ids from `instances_val2017.json`). NonCommercial photos cannot appear in a paper published under CC BY (IEEE Access). | `error_examples.py` now draws a COCO photo only when it is CC BY, has no known copyright restriction, or is a US Government work. Other photos stay in the selection but appear as a grey tile naming the COCO id and licence. The selection was checked to be identical before and after. The four figures were regenerated, and each `.json` now lists every photo's dataset and licence. One COCO photo is drawn (id 80153, CC BY 2.0), credited in `THIRD_PARTY_NOTICES.md`. |
+| The superseded pothole error figure (run with United States images) contained a Google Street View photo. | The `.jpg` was deleted; its `.json` stays (it names the photos only). |
+| `docs/sample-images/` held 3 photos of unknown source. One file name has a stock-photo site's numbering. | Deleted. F16 (section 10a, phase 2) still describes what they showed. |
+| `ai_service/tests/fixtures/pothole.jpg` | RDD2022 India, CC BY 4.0; already documented. |
+| Author photos (`paper/.../latex/photos/`) and author e-mails in `main.tex` | Kept. They are the authors' own and appear in the published paper. |
+| **Open:** submitted-paper figures that show dataset photos. `paper/figures/05_ai_models/F23`, `F32`, `paper/urbanfix_paper/figs/det_open_manhole.jpg` and `latex/figs/fig10.jpg` panel (c) contain Kaggle Road Hazards photos (checked by eye) (no stated source, D3). F19, F21 and F25 show Roboflow, TACO and STORM photos (CC BY 4.0). | Left in place as the record of the submitted version. Phase 6 replaces fig10. **Gate for 5b:** delete every figure with Kaggle photos before the tag. |
+
+The git history still holds the deleted files. Removing them from history would need a force-push to main. This was not done.
+
+**Reproduction**
+
+- `reproduce.sh tables` reruns `summarize.py` on the committed result files and fails if `phase3_summary.md` changes. It runs in CI as a new `results` job.
+- `reproduce.sh privacy` downloads the Chicago 311 extract if it is missing and reruns the linkage analysis. It then compares every result with the committed JSON, ignoring the download record. Run on 2026-11-27, every result matched.
+- `reproduce.sh load` runs the load test; its numbers depend on the machine.
+- README has a new "Reproducing the results" section, with a table from each result file to the script that writes it and that script's input.
+
+**Other files.** `THIRD_PARTY_NOTICES.md` (datasets, weights, software, photos inside figures), `CITATION.cff` (five authors, MIT), README "Licence and citation" section.
+
+**Checked and unchanged.**
+
+- Split lists for every set are committed (`ai_model/splits/`, 2.9 MB).
+- Download scripts:
+  - `fetch_rdd2022.py`, `fetch_taco_unofficial.py`, `fetch_coco_negatives.py` and `fetch_chicago311.py`.
+  - TACO official and STORM are fetched by `notebooks/00_download_datasets.ipynb` and `colab_train.ipynb`.
+- No `.env` or key is tracked; only `.env.example`.
+- The `complaintsystem.gov` addresses are placeholders in the seed script and e-mail defaults.
+
+**Left for 5b (after phases 6 and 7)**
+
+1. Delete the figures with Kaggle photos (gate above).
+2. Decide whether the Chicago 311 extract (18 MB, 2.2 MB gzipped) goes into the Zenodo archive, after reading the City of Chicago Data Portal terms. If it is not archived, the linkage analysis depends on the City not changing its 2024 records. `reproduce.sh privacy` reports such a change.
+3. Fill in the paper DOI and the version in `CITATION.cff`.
+4. Tag the release, and archive it on Zenodo through the GitHub integration (the user's Zenodo login).
+5. Write E3 in the paper. Cite the concept DOI, so a later version keeps the same citation.
+
 ## 11. Done checklist
 
 - [x] No source photo appears in two splits (script output saved in `ai_model/results/split_report.json`).
@@ -828,6 +882,6 @@ All numbers below are copied from `analysis/privacy/results/linkage_chicago311.m
 - [ ] One glossary for stage counts used everywhere.
 - [ ] Fairness subsection with the measured geographic gap.
 - [ ] All new references checked against publisher pages.
-- [ ] Public repository with a Zenodo DOI and a data availability statement.
+- [ ] Public repository with a Zenodo DOI and a data availability statement. (5a done 2026-11-27: licences, notices, image audit, `reproduce.sh`; DOI and statement in 5b.)
 - [ ] Title and claims say "AI-assisted", "auditable", "pseudonymised".
 - [ ] Response letter answers every numbered comment.

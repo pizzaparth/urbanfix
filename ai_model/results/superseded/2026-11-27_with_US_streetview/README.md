@@ -5,3 +5,6 @@ paper states that those images are Google Street View captures, so the dataset's
 cannot cover them and they fail the licence criterion of Eq. (1) (feedback/action.md, F25).
 On 2026-11-27 the United States subset was removed and the pothole models were retrained.
 These files are kept only as a record; no number from them may be used in the paper.
+
+The error figure of this run (`figures/errors_pothole_india.jpg`) was deleted on 2026-11-27 because
+one of its photos is a Google Street View image. Its `.json` file, which names the photos, is kept.

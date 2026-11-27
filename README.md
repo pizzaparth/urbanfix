@@ -31,7 +31,9 @@ UrbanFix is an AI-powered governance system for civic infrastructure complaints.
 - [API reference](#api-reference)
 - [Security and privacy](#security-and-privacy)
 - [Repository layout](#repository-layout)
+- [Reproducing the results](#reproducing-the-results)
 - [Documentation](#documentation)
+- [Licence and citation](#licence-and-citation)
 
 ## Components
 
@@ -292,11 +294,31 @@ Errors return `{ "status": "fail", "message": "..." }` for 4xx responses and `"s
     │   ├── report.docx, report.pdf  Project Exhibition I report (editable source)
     │   ├── UrbanFix_Literature_Survey.pdf
     │   └── figures/                 report-only figures, INDEX.md (shared ones live in paper/figures/)
-    ├── assets/                      README graphics
-    └── sample-images/               test photos
+    └── assets/                      README graphics
 ```
 
 `ai_model/data/` and `ai_model/runs/` are created by the notebooks and are git-ignored. The pothole dataset is also git-ignored; download it from Roboflow into `ai_model/Pothole_Segmentation_YOLOv8.v1i.yolov8/`. `node_modules/` and `backend/uploads/` are created by `npm install` and at runtime.
+
+## Reproducing the results
+
+Every number in the revised paper comes from a file that a script wrote. The result files are committed:
+
+| Results | Written by | Input |
+|:--|:--|:--|
+| `ai_model/results/{train,eval,scores,complaints}/*.json`, `phase3_summary.md`, `figures/errors_*` | `ai_model/scripts/train.py`, `evaluate.py`, `score_images.py`, `complaint_eval.py`, `error_examples.py`, `summarize.py` | Datasets named in `ai_model/DATASETS.md`, split lists in `ai_model/splits/` |
+| `ai_model/results/split_report.json`, `split_audit_old.json` | `ai_model/scripts/make_splits.py` | Same datasets |
+| `analysis/privacy/results/linkage_chicago311.{json,md}` | `analysis/privacy/scripts/linkage_analysis.py` | Chicago 311 extract from `fetch_chicago311.py` |
+| `backend/tests/load/results/*.json` | `backend/tests/load/run.js` | Synthetic complaints in an in-memory MongoDB |
+
+`reproduce.sh` rebuilds the tables and checks them against the committed files:
+
+```bash
+./reproduce.sh tables     # model tables from the result JSON files (seconds, no download)
+./reproduce.sh privacy    # downloads Chicago 311 2024 (18 MB) and reruns the linkage analysis
+./reproduce.sh load       # load test on this machine; the numbers depend on the hardware
+```
+
+Retraining needs the datasets and a GPU. The free route (laptop plus Google Colab) and the order of the scripts are in [`ai_model/README.md`](./ai_model/README.md) and phase 3 of [`feedback/action.md`](./feedback/action.md). All runs use seed 0.
 
 ## Documentation
 
@@ -309,6 +331,10 @@ Errors return `{ "status": "fail", "message": "..." }` for 4xx responses and `"s
 | [`paper/figures/README.md`](./paper/figures/README.md) | Paper figures F01 to F53 with captions |
 | [`ai_model/README.md`](./ai_model/README.md) | Model training, results and dataset licences |
 | [`mobile/README.md`](./mobile/README.md) | Running the app on devices and in the browser |
+
+## Licence and citation
+
+The source code is released under the [MIT licence](./LICENSE). The model weights in `ai_model/weights/` are fine-tuned from Ultralytics' pretrained weights and are released under AGPL-3.0 ([`ai_model/weights/README.md`](./ai_model/weights/README.md)). Datasets are not redistributed, and photos inside figures keep their own licences ([`THIRD_PARTY_NOTICES.md`](./THIRD_PARTY_NOTICES.md)). To cite this software, use [`CITATION.cff`](./CITATION.cff).
 
 ## Authors
 
