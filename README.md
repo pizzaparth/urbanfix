@@ -241,7 +241,7 @@ Errors return `{ "status": "fail", "message": "..." }` for 4xx responses and `"s
 | Staff onboarding | Admin-created accounts receive a 72-hour invite link; only the SHA-256 hash of the token is stored. Login is blocked until the password is set. |
 | Authentication | bcrypt (cost 12), JWT (default 7 days), role checks on every protected route, deactivated users rejected. |
 | Audit trail | Staff are soft-deleted (`isActive: false`) so history references stay valid. |
-| Research data | One projection strips identity, free text, street address, tracking ID and photos; location coarsened to ward, dates to day; record IDs are HMACs. Exports capped at 5 per day and 5,000 rows, CSV cells guarded against formula injection, every access logged, hard expiry with a 3-day email warning. |
+| Research data | One projection strips identity, free text, street address, tracking ID and photos; location coarsened to ward, filing date to quarter, no closing date or resolution time; record IDs are per-researcher HMACs. Records in classes of fewer than 5 identical records are withheld (k = 5) and aggregate counts below 5 are hidden; the generalisation was chosen on Chicago 311 data (`analysis/privacy/`). Exports capped at 5 per day and 5,000 rows, CSV cells guarded against formula injection, every access logged, hard expiry with a 3-day email warning. |
 
 ## Repository layout
 

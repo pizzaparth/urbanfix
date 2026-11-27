@@ -8,8 +8,16 @@ import crypto from 'crypto';
 // `location`, the tracking id (the public tracker returns the description for
 // it), images, and staff identities. Location is coarsened to ward.
 
-export const RESEARCH_FIELDS =
-  'category urgencyLevel status stage ward createdAt closedAt';
+export const RESEARCH_FIELDS = 'category urgencyLevel status ward createdAt';
+
+// k-anonymity (B5). Every released record shares all its released fields with at
+// least K - 1 others; smaller classes are withheld. Aggregate cells below MIN_CELL
+// are suppressed. The generalisation (quarter filed, no closing date, no resolution
+// time) was chosen on Chicago 311 data by analysis/privacy/scripts/linkage_analysis.py:
+// in a system of 10 wards and 1,000 complaints a year it withholds the fewest records
+// of the variants measured (results: analysis/privacy/results/linkage_chicago311.md).
+export const K_ANONYMITY = 5;
+export const MIN_CELL = 5;
 
 // Key management. RESEARCH_HMAC_KEY lives only in the server environment (never in
 // the database or the repository) and is used for nothing else. The server refuses
@@ -32,34 +40,85 @@ export const grantKey = (researcherId) =>
 export const recordId = (key, id) =>
   crypto.createHmac('sha256', key).update(String(id)).digest('hex').slice(0, 12);
 
-// ISO 8601 week, e.g. 2026-W07. Coarser than a day: fewer records are unique on
-// (category, ward, time), which is what lets a neighbour single one out.
-export const isoWeek = (d) => {
-  if (!d) return null;
-  const date = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
-  const weekday = date.getUTCDay() || 7;
-  date.setUTCDate(date.getUTCDate() + 4 - weekday); // Thursday decides the year
-  const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
-  const week = Math.ceil(((date - yearStart) / 86400000 + 1) / 7);
-  return `${date.getUTCFullYear()}-W${String(week).padStart(2, '0')}`;
+// Calendar quarter in UTC, e.g. 2026-Q3.
+export const quarterOf = (d) => (d ? `${d.getUTCFullYear()}-Q${Math.floor(d.getUTCMonth() / 3) + 1}` : null);
+
+// Start of the UTC month or quarter that contains d.
+export const periodStart = (d, unit) => {
+  const m = unit === 'quarter' ? Math.floor(d.getUTCMonth() / 3) * 3 : d.getUTCMonth();
+  return new Date(Date.UTC(d.getUTCFullYear(), m, 1));
 };
 
-// Quasi-identifiers are generalised: week filed instead of day, no closing date,
-// resolution time in whole days.
+// Start of the next UTC month or quarter after the one that contains d.
+export const periodEnd = (d, unit) => {
+  const start = periodStart(d, unit);
+  return new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth() + (unit === 'quarter' ? 3 : 1), 1));
+};
+
+// Quasi-identifiers are generalised: quarter filed instead of day, no closing date,
+// no resolution time (resolution times are available as suppressed aggregates).
 export const toResearchRecord = (c, key) => ({
   recordId: recordId(key, c._id),
   category: c.category,
   urgency: c.urgencyLevel,
   status: c.status,
   ward: c.ward || 'Unknown',
-  filedWeek: isoWeek(c.createdAt ? new Date(c.createdAt) : null),
-  resolutionDays:
-    c.closedAt && c.createdAt
-      ? Math.round((new Date(c.closedAt) - new Date(c.createdAt)) / 86400000)
-      : null,
+  filedQuarter: quarterOf(c.createdAt ? new Date(c.createdAt) : null),
 });
 
-export const RECORD_COLUMNS = ['recordId', 'category', 'urgency', 'status', 'ward', 'filedWeek', 'resolutionDays'];
+export const RECORD_COLUMNS = ['recordId', 'category', 'urgency', 'status', 'ward', 'filedQuarter'];
+
+// Equivalence class of a complaint: every released field except the record ID.
+// Computed in MongoDB (UTC, like quarterOf) so that class sizes need no documents.
+export const CLASS_GROUP = {
+  category: '$category',
+  urgency: '$urgencyLevel',
+  status: '$status',
+  ward: { $ifNull: ['$ward', 'Unknown'] },
+  year: { $year: '$createdAt' },
+  quarter: { $ceil: { $divide: [{ $month: '$createdAt' }, 3] } },
+};
+
+const cmp = (a, b) => (a < b ? -1 : a > b ? 1 : 0);
+
+// Release order: newest quarter first, then category, urgency, status, ward; inside a
+// class by record ID, so the order says nothing about filing times within a class.
+export const orderClasses = (classes) =>
+  [...classes].sort((a, b) => cmp(b.year * 10 + b.quarter, a.year * 10 + a.quarter)
+    || cmp(a.category, b.category) || cmp(a.urgency, b.urgency) || cmp(a.status, b.status) || cmp(a.ward, b.ward));
+
+// Query for the members of one class, within the researcher's own filter.
+export const classMatch = (match, c) => {
+  const start = new Date(Date.UTC(c.year, (c.quarter - 1) * 3, 1));
+  const end = new Date(Date.UTC(c.year, c.quarter * 3, 1));
+  const createdAt = { $gte: start, $lt: end };
+  if (match.createdAt?.$gte > start) createdAt.$gte = match.createdAt.$gte;
+  if (match.createdAt?.$lt < end) createdAt.$lt = match.createdAt.$lt;
+  return {
+    ...match,
+    category: c.category,
+    urgencyLevel: c.urgency,
+    status: c.status,
+    ward: c.ward === 'Unknown' ? null : c.ward,
+    createdAt,
+  };
+};
+
+const small = (n) => n > 0 && n < MIN_CELL;
+
+// Minimum cell size for aggregates. A cell with fewer than MIN_CELL complaints shows
+// no numbers. The resolved count is shown only when neither the resolved nor the
+// unresolved part is a small group, and the mean resolution time only when it rests
+// on at least MIN_CELL closed complaints.
+export const suppressCell = ({ key, count, resolved, closed, avgResolutionDays }) => {
+  if (small(count)) return { key, count: null, resolved: null, avgResolutionDays: null, suppressed: true };
+  return {
+    key,
+    count,
+    resolved: small(resolved) || small(count - resolved) ? null : resolved,
+    avgResolutionDays: closed >= MIN_CELL ? avgResolutionDays : null,
+  };
+};
 
 const csvCell = (v) => {
   if (v === null || v === undefined) return '';

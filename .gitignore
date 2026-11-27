@@ -72,3 +72,6 @@ ai_model/weights/v2/
 *.pt.tmp
 ai_model/*.pt
 ai_model/logs/
+
+# Privacy analysis downloads (re-created by analysis/privacy/scripts/fetch_chicago311.py)
+analysis/privacy/data/

@@ -13,7 +13,7 @@ import {
 } from './helpers.js';
 import Complaint from '../models/Complaint.js';
 import { REGISTRY_FIELDS } from '../utils/publicView.js';
-import { RECORD_COLUMNS } from '../utils/researchProjection.js';
+import { RECORD_COLUMNS, K_ANONYMITY, MIN_CELL } from '../utils/researchProjection.js';
 
 const backendDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -118,27 +118,75 @@ describe('Privacy', () => {
     assert.ok(!JSON.stringify(reg.body).includes('aiAnalysis'));
   });
 
+  // Five complaints that share every released field form one class of size k = 5.
+  const sameClass = (n, stage = 'submitted', extra = {}) =>
+    Promise.all(Array.from({ length: n }, () => complaintAt(stage, extra)));
+
   it('two researchers get different record IDs for the same complaint; one researcher gets stable IDs', async () => {
-    await complaintAt('submitted');
+    await sameClass(K_ANONYMITY);
     const a = await makeResearcher();
     const b = await makeResearcher();
     const ra1 = await request(app).get('/api/research/query?records=true').set(a.auth).expect(200);
     const ra2 = await request(app).get('/api/research/query?records=true').set(a.auth).expect(200);
     const rb = await request(app).get('/api/research/query?records=true').set(b.auth).expect(200);
-    assert.equal(ra1.body.records[0].recordId, ra2.body.records[0].recordId);
-    assert.notEqual(ra1.body.records[0].recordId, rb.body.records[0].recordId);
+    assert.equal(ra1.body.records.length, K_ANONYMITY);
+    assert.deepEqual(ra1.body.records.map((r) => r.recordId), ra2.body.records.map((r) => r.recordId));
+    const ids = new Set(ra1.body.records.map((r) => r.recordId));
+    assert.ok(rb.body.records.every((r) => !ids.has(r.recordId)));
   });
 
-  it('research records carry only generalised fields (ISO week, no dates, no text)', async () => {
-    await complaintAt('closed', { closedAt: new Date() });
+  it('research records carry only generalised fields (quarter filed, no dates, no resolution time, no text)', async () => {
+    await sameClass(K_ANONYMITY, 'closed', { closedAt: new Date() });
     const r = await makeResearcher();
     const res = await request(app).get('/api/research/query?records=true').set(r.auth).expect(200);
     const rec = res.body.records[0];
     assert.deepEqual(Object.keys(rec).sort(), [...RECORD_COLUMNS].sort());
-    assert.match(rec.filedWeek, /^\d{4}-W\d{2}$/);
-    assert.ok(Number.isInteger(rec.resolutionDays));
+    assert.match(rec.filedQuarter, /^\d{4}-Q[1-4]$/);
+    assert.ok(!('resolutionDays' in rec) && !('filedWeek' in rec));
     const csv = await request(app).get('/api/research/export?records=true').set(r.auth).expect(200);
     assert.equal(csv.text.split('\n')[0], RECORD_COLUMNS.join(','));
+  });
+
+  it('records in classes smaller than k = 5 are withheld from queries and exports, without a count', async () => {
+    await sameClass(K_ANONYMITY);                                  // released
+    await sameClass(K_ANONYMITY - 1, 'submitted', { ward: 'Ward 2' }); // class of 4: withheld
+    await sameClass(1, 'closed', { closedAt: new Date() });        // unique: withheld
+    const r = await makeResearcher();
+    const res = await request(app).get('/api/research/query?records=true').set(r.auth).expect(200);
+    assert.equal(res.body.records.length, K_ANONYMITY);
+    assert.equal(res.body.pagination.total, K_ANONYMITY);
+    assert.ok(res.body.records.every((x) => x.ward === 'Ward 1' && x.status === 'Pending'));
+    assert.ok(!JSON.stringify(res.body).includes('suppressed"'), 'the number withheld must not be returned');
+    const onlyWard2 = await request(app).get('/api/research/query?records=true&ward=Ward%202').set(r.auth).expect(200);
+    assert.equal(onlyWard2.body.records.length, 0);
+    const exp = await request(app).get('/api/research/export?records=true&format=json').set(r.auth).expect(200);
+    assert.equal(exp.body.rowCount, K_ANONYMITY);
+  });
+
+  it('a day-level date filter returns the whole quarter, so it cannot split a class', async () => {
+    const days = ['2025-01-06', '2025-01-20', '2025-02-11', '2025-03-03', '2025-03-28'];
+    await Promise.all(days.map((d) => complaintAt('submitted', { createdAt: new Date(`${d}T10:00:00Z`) })));
+    const r = await makeResearcher();
+    const res = await request(app)
+      .get('/api/research/query?records=true&from=2025-02-11&to=2025-02-11').set(r.auth).expect(200);
+    assert.equal(res.body.records.length, days.length);
+    assert.ok(res.body.records.every((x) => x.filedQuarter === '2025-Q1'));
+  });
+
+  it('aggregate cells below 5 show no counts; small resolved or unresolved parts are hidden', async () => {
+    await sameClass(MIN_CELL);                                     // Ward 1: 5 pending
+    await sameClass(1, 'closed', { closedAt: new Date() });        // Ward 1: 1 resolved
+    await sameClass(MIN_CELL - 1, 'submitted', { ward: 'Ward 2' }); // Ward 2: 4
+    const r = await makeResearcher();
+    const res = await request(app).get('/api/research/query?groupBy=ward').set(r.auth).expect(200);
+    const by = Object.fromEntries(res.body.rows.map((x) => [x.key, x]));
+    assert.equal(by['Ward 1'].count, MIN_CELL + 1);
+    assert.equal(by['Ward 1'].resolved, null, 'one resolved complaint is a small group');
+    assert.equal(by['Ward 1'].avgResolutionDays, null);
+    assert.equal(by['Ward 2'].count, null);
+    assert.equal(by['Ward 2'].suppressed, true);
+    const dash = await request(app).get('/api/research/dashboard').set(r.auth).expect(200);
+    assert.equal(dash.body.dashboard.byWard.find((x) => x.key === 'Ward 2').count, null);
   });
 
   it('the server refuses to start without RESEARCH_HMAC_KEY, or with a short or reused key', () => {

@@ -5,24 +5,27 @@ import { colors, uf as font } from '../theme.js';
 
 // Labelled horizontal bars — the admin dashboard's "By urgency" rows, made
 // reusable for the research charts. rows: [{ key, count }]; `color` is a single
-// colour or a function of the row index.
+// colour or a function of the row index. A research cell with fewer than 5
+// complaints arrives with count null (suppressed on the server); it is shown as
+// "fewer than 5" and left out of the percentages.
 export default function BarRows({ rows, color, max, unit }) {
-  const top = max ?? Math.max(...rows.map((r) => r.count), 1);
-  const total = rows.reduce((n, r) => n + r.count, 0) || 1;
+  const top = max ?? Math.max(...rows.map((r) => r.count ?? 0), 1);
+  const total = rows.reduce((n, r) => n + (r.count ?? 0), 0) || 1;
 
   return (
     <View style={s.stack}>
       {rows.map((r, i) => {
-        const pct = Math.round((r.count / total) * 100);
+        const hidden = r.count == null;
+        const pct = Math.round(((r.count ?? 0) / total) * 100);
         const tone = typeof color === 'function' ? color(i, r) : color;
         return (
           <View key={r.key}>
             <View style={s.head}>
               <Text numberOfLines={1} style={s.label}>{r.key}</Text>
-              <Text style={s.meta}>{`${r.count}${unit ? ` ${unit}` : ''}  ·  ${pct}%`}</Text>
+              <Text style={s.meta}>{hidden ? 'fewer than 5' : `${r.count}${unit ? ` ${unit}` : ''}  ·  ${pct}%`}</Text>
             </View>
             <View style={s.track}>
-              <View style={[s.fill, { width: `${Math.max(3, (r.count / top) * 100)}%`, backgroundColor: tone }]} />
+              <View style={[s.fill, { width: `${Math.max(3, ((r.count ?? 0) / top) * 100)}%`, backgroundColor: tone }]} />
             </View>
           </View>
         );

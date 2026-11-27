@@ -639,7 +639,7 @@ Work in this order. Each phase depends on the one before.
 | C4 Audit log | Done. Hash chain with unique sequence numbers, append-only hooks, `npm run audit:verify`, admin endpoint, head hash published in `GET /api/public/stats`. | `backend/utils/auditLog.js` |
 | C7 Regex injection | Done for registry, supervisor, admin and user searches; operator injection and page size also fixed. | `backend/utils/escapeRegex.js` |
 | C1 Test suite | Done. 61 backend tests (16 from Fig. 15 plus 45 new) and 9 service tests; GitHub Actions workflow with an end-to-end job. | `backend/tests/`, `ai_service/tests/`, `.github/workflows/test.yml` |
-| C6 Privacy tests | Done except the k-anonymity test, which waits for B5 (phase 4). | `backend/tests/privacy.test.js` |
+| C6 Privacy tests | Done; the k-anonymity tests were added in phase 4. | `backend/tests/privacy.test.js` |
 | C5 Load test | Done on the M5 laptop, 10,000 seeded complaints, 60 s per scenario. At 50 connections, with no errors: registry list 1,792 req/s (p50 28 ms, p99 38 ms), tracker 6,840 req/s (p50 7 ms, p99 10 ms), research records with audit logging 1,237 req/s (p50 40 ms, p99 45 ms). At 200 connections, 2 % to 7 % socket errors; macOS caps the listen backlog at 128 (`kern.ipc.somaxconn`), and the load generator runs on the same machine. Filing with a 263 KB photo at 20 connections: 4 req/s, p50 4.3 s, with or without the vision service (F15). | `backend/tests/load/run.js`, `backend/tests/load/results/` |
 
 **Still open from phase 1 scope:** k ≥ 5 suppression (B5, phase 4 by design); B7 consent checkbox (not in phase 1); G2 docs beyond the README setup sections.
@@ -762,6 +762,52 @@ Tests with the deployed models (2026-11-27): vision service 10 passed; backend 6
 
 **Phase 3 is done.** Left for the paper (phase 6): 11 of the 12 runs reached their best validation fitness at epoch 37 to 40 of 40 (`best_epoch` in `results/train/*.json`), so they may still have been improving when the cap stopped them (see the observation above). This must be stated. Each number comes from one training run (seed 0). The CIs cover test-set sampling only.
 
+### Phase 4, privacy analysis: done on 2026-11-27
+
+All numbers below are copied from `analysis/privacy/results/linkage_chicago311.md` (written by `analysis/privacy/scripts/linkage_analysis.py`) and from `backend/tests/load/results/2026-11-27T12-55-33-084Z.json`.
+
+**Data (free).** City of Chicago Data Portal, 311 Service Requests (v6vf-nfxy), public API, fetched by `analysis/privacy/scripts/fetch_chicago311.py` (one request per type and month; the data is git-ignored, the manifest keeps the query, row count and SHA-256). Requests created in 2024 of the three types that match UrbanFix's categories: Pothole in Street Complaint, Fly Dumping Complaint (litter), Graffiti Removal Request. 162,916 rows downloaded; duplicates (18,955) and rows without a ward (514) removed; 143,447 used in 50 wards. Street address and coordinates were not downloaded. Chicago has no urgency field, so every variant is also measured with a simulated three-level urgency (uniform, the worst case for splitting classes). Open manholes are no longer a category, so three request types are used, not the four in B5 step 1.
+
+**Decisions and why:**
+
+| Decision | Why |
+|---|---|
+| Every released field counts as a quasi-identifier (category, urgency, status, ward, time, resolution) | A neighbour can see whether a pothole was fixed and how dangerous it was. Treating status and resolution as known is the conservative choice. |
+| Small system = 10 wards, 1,000 requests a year, 200 random draws; a 10,000-request size reported for context | B5 step 3. The rule below uses the small size only. |
+| Rule for the code, written before the results were seen: the finest variant whose median withheld share at k = 5 in the small system with urgency is at most 10 %; if none, the variant with the smallest share | Utility (records kept) against detail; k = 5 itself guarantees the protection. |
+| The number of withheld records is not returned to researchers (B5 asked to report it) | By narrowing the filters to one class, a researcher could read a withheld class's size from it, which is what suppression hides. |
+| Date filters widen to whole quarters (records) or months (aggregates) | A day-level filter would split a quarter and undo the generalisation, and overlapping ranges could be differenced. |
+
+**Results (small system, median with 5th to 95th percentile).**
+
+- Submitted projection, Eq. (7) (day filed, day closed, exact resolution time): 95.6 % of requests are unique (91.9–97.7 %; Chicago fields only), and across the whole city 77.4 % are unique. An adversary who knows the category, ward and day filed singles out 71.0 % (67.2–75.4 %) of requests. This confirms R2's point.
+- Phase-1 code (ISO week filed, resolution in whole days): k < 5 for 96.5 % of requests (91.7–99.0 %), and for 100.0 % with urgency. The adversary singles out 31.3 % (27.6–35.5 %).
+- No variant meets the 10 % rule in the small system. With urgency, the withheld share is 54.0 % for quarter filed with a resolution band (G) and 35.8 % (30.9–42.0 %) for quarter filed with no resolution (H). Rule result: **H**.
+- H in other sizes (with urgency): 2.0 % withheld in the 10,000-request system and 0.4 % across the city. Without urgency the small system withholds 11.8 %.
+- After k = 5 suppression no adversary singles out a request in any variant, population or draw (largest share 0.0 %). The remaining risk is homogeneity: in H after suppression, 64.0 % of requests sit in a group that shares one status, so the adversary learns the status. Status is public in the registry and visible on the street, so this is reported, not treated (l-diversity, P10).
+- Aggregates: in the small system 70.2 % (65.2–74.4 %) of non-empty ward × category × month cells hold 1 to 4 requests, against 3.0 % for the city. A minimum cell size of 5 hides these.
+
+**Code (B5).**
+
+- `backend/utils/researchProjection.js`: records are (recordId, category, urgency, status, ward, filedQuarter), with no closing date or resolution time. Classes are counted in MongoDB over every matching complaint, and classes under `K_ANONYMITY = 5` are withheld. Records are ordered by class, then by record ID, so the order says nothing about filing times within a class. Aggregate cells under `MIN_CELL = 5` show no numbers. The resolved count is hidden when the resolved or the unresolved part has 1 to 4 complaints, and the mean resolution time is hidden when it rests on fewer than 5 closed complaints. Researchers get resolution times only from these aggregates.
+- `backend/controllers/researchController.js`: query, export and dashboard go through suppression. Responses carry a `privacy` note giving k, the minimum cell size and the date rule.
+- `mobile/src/components/BarRows.jsx`: a suppressed cell is shown as "fewer than 5".
+- Tests (`backend/tests/privacy.test.js`):
+  - withheld classes of 4 and of 1, with no withheld count returned;
+  - a day filter returns the whole quarter;
+  - aggregate cells below 5 and small resolved parts are hidden;
+  - record IDs per grant, with classes of 5.
+  
+  Backend: 65 tests, 64 passed, 1 skipped (end-to-end).
+- Load: research records at 50 connections run at 353 req/s (p50 140 ms, p99 181 ms, no errors) against 1,237 req/s before. Each request now counts classes over all matching complaints. A first version that read every complaint in Node ran at 11 req/s and was replaced.
+
+**For the paper (P7, phase 6), stated plainly:**
+
+- The public registry shows every complaint's category, ward, street location and exact filing and closing times, with no filer identity, for accountability. Chicago's own open 311 data does the same.
+- The research records therefore add nothing the registry does not already show. The k = 5 rule on research records is defence in depth. It keeps the research tier safe on its own if a municipality restricts or turns off the registry, and it covers bulk, machine-readable exports that leave the system.
+- The real residual risks are in the registry content: free text (B3 removes patterns but not names) and photos (B7).
+- Minimum cell sizes protect each table, not differences between tables from different filters.
+
 ## 11. Done checklist
 
 - [x] No source photo appears in two splits (script output saved in `ai_model/results/split_report.json`).
@@ -774,10 +820,10 @@ Tests with the deployed models (2026-11-27): vision service 10 passed; backend 6
 - [x] AI service exists in the repository and the backend stores `aiAnalysis` and `needsReview`.
 - [x] Urgency computed on the server from stored answers.
 - [ ] EXIF removed, text redacted, registry allow-list, consent checkbox.
-- [ ] Separate research HMAC key, per-grant keys, k ≥ 5 suppression.
+- [x] Separate research HMAC key, per-grant keys, k ≥ 5 suppression (phase 4, 2026-11-27).
 - [ ] Linkage analysis on Chicago 311 in the paper.
 - [x] OTP attempt limit and rate limits, with tests.
-- [x] Concurrency, audit-integrity, privacy and load tests in `backend/tests/`, run by CI (all three CI jobs passed on 2026-11-26, run 45847742015; the load test runs by hand with `npm run test:load`; the k-anonymity test waits for B5).
+- [x] Concurrency, audit-integrity, privacy and load tests in `backend/tests/`, run by CI (all three CI jobs passed on 2026-11-26, run 45847742015; the load test runs by hand with `npm run test:load`; k-anonymity tests added in phase 4).
 - [x] Dataset provenance and licence documented; Eq. (1) has five criteria. (Fig. 4 redraw left for phase 6.)
 - [ ] One glossary for stage counts used everywhere.
 - [ ] Fairness subsection with the measured geographic gap.
