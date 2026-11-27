@@ -6,6 +6,9 @@
 % Every number in this file comes from generated/numbers.tex or a
 % generated/tab_*.tex table, written by ../scripts/build_paper_data.py from the
 % committed result files. Do not type numbers from results into this file.
+% ieeeaccess.cls redefines the TeX primitive \year, which TikZ needs while it loads.
+% Keep the primitive, give it back to TikZ, then restore the class's \year.
+\let\primitiveyear\year
 \documentclass{ieeeaccess}
 \usepackage{cite}
 \usepackage{amsmath,amssymb,amsfonts}
@@ -14,8 +17,14 @@
 \usepackage{booktabs}
 \usepackage{array}
 \usepackage{url}
+\let\classyear\year
+\let\year\primitiveyear
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta,shapes.geometric,calc}
+\let\year\classyear
+% pgf replaces the page resources that hold the class's PANTONE 3015 C spot colour,
+% so viewers report "Bad color space". Use the same CMYK values as a process colour.
+\definecolor{accessblue}{cmyk}{1,0.3,0,0.2}
 
 \input{generated/numbers}
 % \input cannot be used inside a tabular before \bottomrule; the primitive can.
@@ -71,7 +80,7 @@ e-governance, civic technology, object detection, YOLOv8, human-in-the-loop AI, 
 
 Fig.~\ref{fig:f1}(a) shows pothole accidents dipping slightly in 2021, peaking at 5,840 in 2023 and staying above 5,000 in 2024, so the problem grew over the five years. In Fig.~\ref{fig:f1}(b) the light bars are the backlog carried over from the previous year, which fell from 10.7 lakh in 2020 to 3.1 lakh in 2024; the portal now clears most of what it receives. The dark bars are new grievances, and they reached their highest value, 26.2 lakh, in the same year. Faster disposal has not reduced the number of people who need to complain, so this paper looks at what happens to a complaint after it is filed.
 
-\begin{figure}[!t]
+\begin{figure}[!tb]
 \centering
 \includegraphics[width=0.89\columnwidth]{figs/fig01.jpg}
 \caption{Motivation: (a) pothole-related road accidents in India \cite{b2}; (b) grievances received on CPGRAMS and the backlog brought forward each year \cite{b3,b4}.}
@@ -90,7 +99,7 @@ The contribution of this paper is a system design and an open, tested implementa
 
 Fig.~\ref{fig:f2} reads clockwise from the top. A citizen reports without an account, and the model for the chosen category screens the photo. A supervisor triages the complaint with the questionnaire urgency $u_Q$, the model's confidence and any review flag side by side. Field staff carry out the work inside the state machine of Eq.~(\ref{eq:fsm}) and prove the repair with photos, the citizen receives a PDF receipt, and the closed record feeds the public registry and the research data. The centre of the ring is a single complaint record. Every step reads and appends to the same document, so the history the public and researchers see is the one staff produced while working.
 
-\begin{figure}[!t]
+\begin{figure}[!tb]
 \centering
 \includegraphics[width=0.63\columnwidth]{figs/fig02.jpg}
 \caption{The governance loop: six steps every complaint passes through in UrbanFix.}
@@ -177,7 +186,7 @@ One Expo client serves all six roles, and the server decides which screens a use
 \label{fig:f3}
 \end{figure*}
 
-\begin{table}[!t]
+\begin{table}[!tb]
 \caption{Capabilities of reviewed systems and UrbanFix (UF)}
 \label{tab:t2}
 \centering
@@ -202,7 +211,7 @@ Pseudonymised research data & \no & \no & \no & \no & \no & \no & \no & \yes\\
 \end{tabular}
 \end{table}
 
-\begin{table}[!t]
+\begin{table}[!tb]
 \caption{Counts used in this paper}
 \label{tab:t3}
 \centering
@@ -251,7 +260,7 @@ u_Q=\begin{cases}\text{High}, & U\ge 0.6\\ \text{Medium}, & 0.3\le U<0.6\\ \text
 \end{equation}
 \noindent The server computes $U$ and $u_Q$ from the stored answers and ignores any urgency the client sends; the app only previews the same calculation while the citizen files. The answers and the score are published with the complaint, so anyone can recompute $u_Q$ (Fig.~\ref{fig:f5}). Dividing by $\sum w_i$ keeps categories with different weights comparable. The weights were set by hand; fitting them to closed complaints needs real data and is future work.
 
-\begin{figure}[!t]
+\begin{figure}[!tb]
 \centering
 \includegraphics[width=0.96\columnwidth]{figs/fig04.jpg}
 \caption{Screening of ten candidate categories against Eq.~(\ref{eq:e1}). Dark bars mark the three categories kept; circles show each criterion met, partly met or not met, and a dash marks a licence not assessed because another criterion already fails.}
@@ -260,7 +269,7 @@ u_Q=\begin{cases}\text{High}, & U\ge 0.6\\ \text{Medium}, & 0.3\le U<0.6\\ \text
 
 Fig.~\ref{fig:f5} plots every score Eq.~(\ref{eq:urg}) can produce, read from the server's questionnaire definitions. The pothole questionnaire marks two questions as safety-critical, so its weights sum to 7 and $U$ moves in steps of 1/7. Litter and graffiti mark one, so the sum is 6 and the steps are 1/6. Both profiles have reachable scores in all three bands, but the same answers can land in different bands. One safety-critical ``yes'' gives a pothole $2/7=0.29$, just short of Medium, while the same answer for litter gives $2/6=0.33$ and reaches Medium.
 
-\begin{figure}[!t]
+\begin{figure}[!tb]
 \centering
 \includegraphics[width=0.96\columnwidth]{figs/fig05.pdf}
 \caption{All reachable questionnaire scores for the two weight profiles, with the urgency bands. For a pothole, a single safety-critical ``yes'' scores $2/7=0.29$ and stays in Standard.}
@@ -282,7 +291,7 @@ The submitted version of this paper raised the suggested urgency one band when $
 
 Fig.~\ref{fig:f6} shows the order of events. The questionnaire score is computed when the complaint is filed, and the tracking ID is returned before any inference runs, so the dashed call to the model is the only step that can be slow. The model's detections are reduced to $s^{*}$ and tested once against $\tau_k$. Both branches end in the same triage queue, so a photo the model could not confirm still reaches a person, with a flag, and is never rejected automatically.
 
-\begin{figure}[!t]
+\begin{figure}[!tb]
 \centering
 \resizebox{\columnwidth}{!}{\input{tikz/fig06_screening}}
 \caption{Photo screening and triage. The model's result can only set the review flag $r$; the supervisor decides, and urgency stays the questionnaire band $u_Q$.}
@@ -314,7 +323,7 @@ Fig.~\ref{fig:f8} shows every path a complaint can take. The main path runs thro
 \label{fig:f7}
 \end{figure*}
 
-\begin{figure}[!t]
+\begin{figure}[!tb]
 \centering
 \includegraphics[width=0.79\columnwidth]{figs/fig08.jpg}
 \caption{Server-enforced complaint lifecycle (Eq.~\ref{eq:fsm}). Fill colour gives the public status $\varphi(s)$; double borders mark terminal stages.}
@@ -331,7 +340,7 @@ The assets are the citizen's identity and contact data (name, email, phone), the
 \subsubsection{Adversaries}
 We consider (a) any member of the public using the registry and the tracker; (b) an approved researcher; (c) two or more researchers who combine their exports; (d) an insider with administrator rights; and (e) an outside attacker who obtains a copy of the database.
 
-\begin{table}[!t]
+\begin{table}[!tb]
 \caption{Disclosure of one complaint record by audience}
 \label{tab:t4}
 \centering
@@ -385,7 +394,7 @@ so two exports of the same complaint carry different IDs and cannot be joined on
 
 For an insider (d), staff accounts are only ever deactivated, so history entries keep a valid actor, and the research access log is append-only and hash-chained \cite{b50,b52}: each row stores the SHA-256 of the previous row's hash and its own canonical content, under a unique sequence number. A verifier reports the first broken link. An administrator who rewrites the whole chain is detected only against a head hash published earlier, which is why the current head hash is published in the public statistics. For an outside attacker with a database copy (e), passwords are hashed with bcrypt, one-time codes are stored as hashes, allow five attempts and expire after five minutes, and the HMAC and token secrets are kept out of the database.
 
-\begin{table}[!t]
+\begin{table}[!tb]
 \caption{Adversaries and controls}
 \label{tab:t6}
 \centering
@@ -437,7 +446,7 @@ The main remaining risks are in the registry content: names in free text (the re
 \subsubsection{Law}
 India's Digital Personal Data Protection Act, 2023 \cite{b57} requires notice and consent for processing personal data, limits use to the stated purpose, and requires reasonable security safeguards. Section 17(2)(b) exempts processing for research, archiving or statistical purposes if the data is not used to take any decision specific to the person and the processing follows prescribed standards, which Rule~16 and the Second Schedule of the Digital Personal Data Protection Rules, 2025 set out. The Rules, notified on 14 November 2025, phase in most obligations over eighteen months \cite{b58}. The GDPR \cite{b47} treats pseudonymised data as personal data and names pseudonymisation as a safeguard for research. UrbanFix's notice, consent step, purpose statement for researchers and safeguards are designed with these texts in mind; whether a particular deployment complies is a question for the municipality and its legal advisers, and we make no claim about it.
 
-\begin{figure}[!t]
+\begin{figure}[!tb]
 \centering
 \includegraphics[width=0.99\columnwidth]{figs/fig09.jpg}
 \caption{Research access chain. Expiry, scope and quotas are checked on every request (Eq.~\ref{eq:access}), only the projection of Eq.~(\ref{eq:proj}) is returned, and every request is logged.}
@@ -521,7 +530,7 @@ Category & Test images & $P$ & $R$ & mAP50 & mAP50--95 & Mask mAP50 & Val. mAP50
 
 Fig.~\ref{fig:f11} shows that all three models reached their best validation score at epoch \nPotholeBestEpoch{}, \nLitterBestEpoch{} and \nGraffitiBestEpoch{} of \nMaxEpochs{}, so they were still improving when the cap stopped them. The cap may understate YOLOv8n against models that converge faster; we state this as a limitation rather than tune the budget per model.
 
-\begin{figure}[!t]
+\begin{figure}[!tb]
 \centering
 \includegraphics[width=\columnwidth]{figs/fig_curves.pdf}
 \caption{Validation box mAP50 per epoch for the deployed models; dots mark the chosen checkpoint. Training and validation data only.}
@@ -586,9 +595,9 @@ Fig.~\ref{fig:f10} shows one example per category, chosen by rule: among the val
 \label{fig:f10}
 \end{figure*}
 
-\begin{figure*}[!t]
+\begin{figure*}[!p]
 \centering
-\includegraphics[width=0.92\textwidth]{figs/fig_errors.jpg}
+\includegraphics[width=0.82\textwidth]{figs/fig_errors.jpg}
 \caption{Error analysis of the deployed models. In each panel, top: the four valid test photos with the lowest $s^{*}$ (flagged at $\tau_k$); bottom: the four wrong-category or unrelated photos with the highest $s^{*}$ (passed), with the passing detection in red. Grey tiles stand for COCO photos whose licence does not allow reproduction here.}
 \label{fig:f13}
 \end{figure*}
@@ -615,7 +624,7 @@ Country & Img. & mAP50 & Flagged & mAP50 & Flagged\\
 \end{tabular}
 \end{table*}
 
-\begin{figure}[!t]
+\begin{figure}[!tb]
 \centering
 \includegraphics[width=\columnwidth]{figs/fig_geo.pdf}
 \caption{Share of valid pothole complaints flagged per country, with 95\,\% Wilson intervals, for the model trained without Indian photos ($\tau=0.50$) and the deployed model trained with them ($\tau=0.40$). $n$: valid test complaints per country.}
@@ -638,7 +647,7 @@ Country & Img. & mAP50 & Flagged & mAP50 & Flagged\\
 
 Table~\ref{tab:t12} lists the automated tests, which run on every push to the public repository. The backend tests start the API with an in-memory MongoDB and exercise it over HTTP; the sixteen API tests of the submitted version are kept unchanged. Beyond them, the tests check that five wrong codes lock a code and that it cannot be reused; that two simultaneous transitions on one complaint and parallel exports beyond the daily quota cannot both succeed; that editing or deleting an access-log row breaks the hash chain at that row; that GPS and camera metadata are gone from served photos and identifiers from published text; that research records in classes under five are withheld and that a day-level filter cannot isolate them; and that a complaint without publication consent is refused. The one skipped test needs the vision service and runs in the continuous-integration job that starts it.
 
-\begin{table}[!t]
+\begin{table}[!tb]
 \caption{Automated tests (JUnit reports in the repository). $^{*}$The skipped test needs the running vision service; it runs in the continuous-integration job that starts the service.}
 \label{tab:t12}
 \centering
@@ -655,7 +664,7 @@ Group & Tests & Passed\\
 
 Table~\ref{tab:t13} gives a load test on one laptop (\nLoadCpu, \nLoadComplaints{} seeded complaints, \nLoadDuration{} s per scenario; the load generator runs on the same machine). At 50 connections every scenario ran without errors. Research records take \nLoadResearchRecordsFiveZerorps{} requests per second, against \nLoadRegistryListFiveZerorps{} for the registry, because each request counts equivalence classes over all matching complaints before releasing any. At 200 connections some requests failed, because macOS limits the listen backlog to 128 connections; the numbers describe one machine and are not a claim about city-scale capacity. Filing was first limited to \nLoadSubmitBeforeRps{} complaints per second (median \nLoadSubmitBeforePfifty{} ms), because every first-time citizen received a random password hashed with bcrypt at cost 12, which blocked the server's single event loop for each new citizen. Citizens who only file now get an unusable random marker instead, which cannot be used to log in, and filing rose to \nLoadSubmitTwoZerorps{} complaints per second (median \nLoadSubmitTwoZeropfifty{} ms). The vision service does not slow filing, because the model runs after the response.
 
-\begin{table}[!t]
+\begin{table}[!tb]
 \caption{Load test (autocannon; latency in ms; p97.5 is reported because autocannon gives it instead of p95). Research records are $k$-anonymised and every request is logged.}
 \label{tab:t13}
 \centering
@@ -678,7 +687,7 @@ The slowest deployed model takes \nCpuMsMax{} ms per photo on one CPU core, so a
 
 To exercise the dashboards we seeded 80 complaints over twelve months (Fig.~\ref{fig:f16}): 41 were accepted, 9 rejected and 19 closed, after 8.2 to 9.2 days on average. Each stage holds fewer complaints than the one before because the workflow never skips a stage. With two to nine closed complaints per category and seeded data, the panel shows only that the dashboards compute the measures; no real ward was measured.
 
-\begin{figure}[!t]
+\begin{figure}[!tb]
 \centering
 \includegraphics[width=0.96\columnwidth]{figs/fig16.jpg}
 \caption{Workflow on the seeded demonstration dataset (n = 80); closed complaints per category in brackets. They exercise the dashboards only; no real ward was measured.}
@@ -697,6 +706,7 @@ UrbanFix takes a civic complaint from the citizen's photo to a recorded repair u
 
 The source code (MIT licence), the model weights (AGPL-3.0, as they are fine-tuned from Ultralytics weights), the split lists, the result files, the test reports and the scripts that generate every table and figure of this paper are available at \repoURL{} and archived at \archiveDOI. Dataset images are not redistributed; the repository contains scripts that download them from their publishers (Table~\ref{tab:t5}), and the Chicago 311 extract is fetched from the City of Chicago Data Portal by a script that records its checksum. No real complaint data exists, because the system has not been deployed.
 
+\clearpage
 \begin{thebibliography}{00}
 \bibitem{b1} Ministry of Road Transport and Highways, Government of India, ``Road Accidents in India,'' annual reports 2018--2022, New Delhi.
 \bibitem{b2} Ministry of Road Transport and Highways, written reply on pothole-related road accidents 2020--2024, Lok Sabha, Feb. 2026.

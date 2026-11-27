@@ -927,7 +927,13 @@ Backend: 69 tests, 68 passed, 1 skipped. Vision service: 10 passed. Both are rec
   - The open manhole panel is gone.
 - The graphical abstract is regenerated with test mAP50 and its CIs. The old one showed the Kaggle manhole photo and validation numbers. The caption is rewritten.
 
-**Compiling.** The official class needs pdfLaTeX. Installing TinyTeX was blocked by the tool's permission check, so the manuscript was compiled with tectonic and a stand-in class that loads IEEEtran. That gave 19 pages, no undefined references, and no overfull box over 10 pt. The final layout must be checked with the official class on Overleaf (free) or with a local pdfLaTeX.
+**Compiling.** TinyTeX (free) was installed in `~/Library/TinyTeX` at the user's request. `scripts/build_pdf.sh` compiles with the official class and pdfLaTeX and writes `UrbanFix_IEEE_Access_rev1.pdf`: 18 pages, no undefined references or citations.
+
+Two class problems were found and fixed in `main.tex`:
+- `ieeeaccess.cls` redefines the TeX primitive `\year`, so TikZ failed to load. The primitive is now kept while TikZ loads.
+- pgf drops the page resource that holds the class's PANTONE spot colour, so PDF viewers reported "Bad color space". `accessblue` is now defined with the same CMYK values.
+
+Floats are flushed before the references, so none land after the biographies.
 
 **Findings during phase 6**
 - **F26.** The pothole model flags 27.1 % of valid test complaints, above the 20 % the τ rule allowed on validation. The rule's bound does not carry over exactly from validation to test. The paper says so.

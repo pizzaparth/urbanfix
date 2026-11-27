@@ -32,7 +32,12 @@ ai_service/.venv/bin/python paper/urbanfix_ieee_access_rev1/scripts/make_figures
 
 The official IEEE Access template (`ieeeaccess.cls`, `spotcolor.sty`, logos and fonts) is
 needed and is not redistributed here. Download `ACCESS_latex_template_20240429.zip` from
-ieeeaccess.ieee.org, copy its files next to `main.tex` (or into `template/`, which git
-ignores), and compile with pdfLaTeX, or upload `latex/` to the Overleaf "IEEE Access LaTeX
+ieeeaccess.ieee.org and unpack its files into `template/` (git-ignored). Then run
+`scripts/build_pdf.sh`, which compiles with pdfLaTeX (TinyTeX works; it is free) and writes
+`UrbanFix_IEEE_Access_rev1.pdf`. On Overleaf, upload `latex/` into the "IEEE Access LaTeX
 Template" project. The class needs pdfLaTeX; XeTeX-based engines such as tectonic do not work
 with it.
+
+Two fixes in `main.tex` make the class work with TikZ: the class redefines the TeX primitive
+`\year`, which TikZ needs while loading, and pgf drops the page resource that holds the class's
+PANTONE spot colour, so `accessblue` is redefined with the same CMYK values.
