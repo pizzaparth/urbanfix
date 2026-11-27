@@ -47,7 +47,11 @@ describe('Concurrency', () => {
       request(app).patch(`/api/supervisor/complaints/${c._id}/accept`).set(a.auth).send({ remarks: 'Verified on site photos.' }),
       request(app).patch(`/api/supervisor/complaints/${c._id}/reject`).set(a.auth).send({ remarks: 'Duplicate of another one.' }),
     ]);
-    assert.deepEqual(results.map((r) => r.status).sort(), [200, 409]);
+    // The loser is refused either way: 409 if it loaded the complaint before the winner saved
+    // (version conflict), 400 if it loaded it after (the transition is no longer legal).
+    const [win, lose] = results.map((r) => r.status).sort();
+    assert.equal(win, 200);
+    assert.ok([400, 409].includes(lose), `loser got ${lose}`);
     const after = await Complaint.findById(c._id).lean();
     assert.ok(['accepted', 'triage_rejected'].includes(after.stage));
     assert.equal(after.statusHistory.length, 2);
@@ -61,7 +65,11 @@ describe('Concurrency', () => {
       request(app).patch(`/api/supervisor/complaints/${c._id}/close`).set(sup.auth).send({ remarks: 'Repair checked, closing.' }),
       request(app).patch(`/api/supervisor/complaints/${c._id}/rework`).set(sup.auth).send({ remarks: 'Patch is uneven, redo.' }),
     ]);
-    assert.deepEqual(results.map((r) => r.status).sort(), [200, 409]);
+    // The loser is refused either way: 409 if it loaded the complaint before the winner saved
+    // (version conflict), 400 if it loaded it after (the transition is no longer legal).
+    const [win, lose] = results.map((r) => r.status).sort();
+    assert.equal(win, 200);
+    assert.ok([400, 409].includes(lose), `loser got ${lose}`);
     const after = await Complaint.findById(c._id).lean();
     assert.ok(['closed', 'assigned'].includes(after.stage));
     assert.equal(after.statusHistory.length, 2);
