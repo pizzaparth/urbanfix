@@ -1,8 +1,13 @@
 {
-  "_note": "Per-category confidence threshold tau_k used by Eq. (5). 0.25 is the value in the submitted paper. Replace each value with the one chosen by the tau sweep (feedback/action.md, A4) and record the rule used.",
+  "_note": "Per-category confidence threshold tau_k for Eq. (5), chosen by ai_model/scripts/complaint_eval.py (action A4): the largest tau on 0.05..0.90 (step 0.05) whose false-flag rate on valid validation complaints is at most 20 %. Chosen on validation data only. Source files: ai_model/results/complaints/<model>.json.",
+  "models": {
+    "pothole_road_damage": "pothole_india__yolov8n__s0 (RDD2022 D40 incl. India, box detector)",
+    "garbage_litter": "garbage_litter__yolov8n__s0 (TACO, segmentation)",
+    "graffiti": "graffiti__yolov8n__s0 (STORM, box detector)"
+  },
   "tau": {
-    "pothole_road_damage": 0.25,
-    "garbage_litter": 0.25,
-    "graffiti": 0.25
+    "pothole_road_damage": 0.4,
+    "garbage_litter": 0.8,
+    "graffiti": 0.85
   }
 }

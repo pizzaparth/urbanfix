@@ -659,7 +659,7 @@ Details and sources: `ai_model/DATASETS.md`. Numbers: `ai_model/results/split_au
 | Action | Status | Where |
 |---|---|---|
 | D1 Provenance and licences | Done. Every dataset checked against its publisher page or API on 2026-11-24, with collector, licence, DOI or URL, version, source photos versus copies, redistribution and role. | `ai_model/DATASETS.md` |
-| D2 Pothole | Done. Moved to **RDD2022 class D40** (boxes, CC BY 4.0). India is held out completely as the external test set. Training pool: Japan, Czech Republic, United States, China motorbike, split 70/15/15 by source group inside each country. Norway (10.6 GB) and China drone (aerial) are left out. The Roboflow set becomes an external test set. | `scripts/fetch_rdd2022.py` |
+| D2 Pothole | Done. Moved to **RDD2022 class D40** (boxes, CC BY 4.0). India is held out completely as the external test set. Training pool: Japan, Czech Republic, China motorbike (United States removed on 2026-11-27, F25), split 70/15/15 by source group inside each country. Norway (10.6 GB) and China drone (aerial) are left out. The Roboflow set becomes an external test set. | `scripts/fetch_rdd2022.py` |
 | D3 Open manhole | Done: **category withdrawn**. The Kaggle set fails Eq. (1) (F18). A synthetic CC BY replacement (Zenodo doi:10.5281/zenodo.21291309) was considered and rejected because it has no real photos. Removed from the API category list, the app, the vision service, the seed script, the load test, the notebooks and the weights. Earlier complaints keep the category; their questionnaire stays so their published urgency can be recomputed. A test checks that the API refuses the category. | `backend/constants/categories.js`, `ai_model/DATASETS.md` |
 | D4 Eq. (1) | Done. Eq. (1) has five criteria. Fig. 4 redrawn from a script with a licence column and the corrected open manhole row; screening text says three of ten categories qualify and why open manholes were withdrawn. | `ai_model/scripts/fig_dataset_screening.py`, `paper/.../figs/fig04.jpg` |
 | D1 in the paper | Done. Table IV lists dataset, licence, collector and capture, DOI, splits, external test sets and model for the three categories. References updated: RDD2022 journal version and data DOI, TACO data DOI, Kaggle set cited as the withdrawn dataset. | `paper/.../main.tex` |
@@ -680,7 +680,8 @@ Details and sources: `ai_model/DATASETS.md`. Numbers: `ai_model/results/split_au
 
 | Category | Source | Train | Val | Test | External test sets |
 |---|---|---|---|---|---|
-| Pothole | RDD2022 D40 (Japan 1,219 / Czech 135 / US 102 / China 144 train images) | 1,600 (1,281 with a pothole) | 341 (275) | 339 (268) | RDD2022 India 1,911 (1,530 with a pothole); Roboflow 297 |
+| Pothole | RDD2022 D40 (Japan 1,219 / Czech 135 / China 144 train images; US removed on 2026-11-27, F25) | 1,498 (1,199 with a pothole) | 319 (259) | 318 | RDD2022 India 1,911 (1,530 with a pothole); Roboflow 297 |
+| Pothole with India (deployed, added 2026-11-26) | as above plus RDD2022 India 70/15/15 by group | 2,836 (2,266) | 606 (490) | 604 | Roboflow 297 |
 | Litter | TACO official | 1,000 | 214 | 214 | TACO unofficial 2,308 (6 near-duplicates of TACO official dropped) |
 | Graffiti | STORM | 670 | 143 | 209 (official test) | none |
 
@@ -698,6 +699,7 @@ Details and sources: `ai_model/DATASETS.md`. Numbers: `ai_model/results/split_au
 - **F21. A 64-bit dHash alone gives false duplicates on plain walls.** On STORM it matched 5 unrelated graffiti pairs. The 256-bit confirmation step separates the two cases cleanly: true duplicates differ in at most 11 of 256 bits, false matches in at least 43. The old Roboflow pothole split contains one true near-duplicate pair (`pic-88` in val, `pic-142` in train), and so does the old TACO split (`taco_1081` and `taco_1110`).
 - **F23. Open manhole category withdrawn.** The system now offers three categories. In the response letter this is the screening rule working as designed, not a loss: the paper's own Eq. (1) excludes the only real-photo dataset.
 - **F24. CI never ran the backend tests** (see the CI row above). Both earlier pushes showed a failed run; only the vision-service job passed.
+- **F25. RDD2022's United States subset is Google Street View imagery** (RDD2022 paper, data collection section: "the data for the United States comprises Google Street View Images"). Its CC BY 4.0 label cannot cover Google's images, so it fails the licence criterion of Eq. (1). Found on 2026-11-27 through a Google watermark in the A6 error figure; the subset was removed and the pothole models retrained.
 - **F22. RDD2022 is box-only**, so the pothole model becomes a box detector. This removes the last mask-based model that δ in Eq. (4) relied on, apart from litter. A10 (drop the δ-to-urgency rule) is now required, not just recommended.
 
 ### Phase 3, training and evaluation: in progress (started 2026-11-26)
@@ -723,22 +725,24 @@ workload simulation) → `error_examples.py` (A6 figure) → `summarize.py`. Col
 | 2026-11-26 | τ rule: largest τ on 0.05 to 0.90 (step 0.05) with validation false-flag rate ≤ 20 %; chosen on validation data only (k's val split, other categories' val splits, half of the COCO photos), reported on the test data | A4. Keeps τ selection away from the test set. |
 | 2026-11-26 | Unrelated photos: 1,000 seeded COCO 2017 val photos (`scripts/fetch_coco_negatives.py`); for litter, the 124 with a bottle, cup or wine glass are left out | A5. COCO has no pothole or graffiti class; some COCO street scenes may still show one (checked in A6). |
 | 2026-11-26 | **India gap found, India-trained pothole model added.** The pothole model trained without India scored far lower on Indian photos than on its own test set and flagged about two thirds of genuine Indian pothole complaints (source: `results/eval/pothole__yolov8n__s0.json`, `results/complaints/pothole__yolov8n__s0.json`). A second split `splits/pothole_india.json` keeps the other countries' splits unchanged and adds India 70/15/15 by group; its India test images are also an external set for the no-India model, so both are compared on identical photos. The India-trained model is the one to deploy; the paper reports both. | User decision after the measurement. It turns A11 from a limitation into a measured gap plus a measured fix. |
+| 2026-11-27 | **RDD2022 United States subset removed; pothole models retrained (F25).** The A6 error figure showed a Google watermark on a US test photo; the RDD2022 paper confirms the US images are Google Street View captures. Both pothole splits were rebuilt without them (Japan, Czech and China splits unchanged, checked file by file). The three pothole runs trained with US images were moved to `ai_model/results/superseded/2026-11-27_with_US_streetview/` and may not be used in the paper. Retrained: pothole and pothole_india YOLOv8n on the laptop; pothole RT-DETR-l and YOLO11n on Colab. | User decision. Our own Eq. (1) requires a usable licence, and Reviewer 2 asked about licences. |
+| 2026-11-27 | **Deployed models:** `pothole_india__yolov8n__s0` (box detector), `garbage_litter__yolov8n__s0` (segmentation), `graffiti__yolov8n__s0` (box detector), copied to `ai_model/weights/` with τ from `results/complaints/<run>.json` in `ai_service/thresholds.json`. (The pothole weights and τ installed on 2026-11-27 morning came from the run with US images and are replaced after the retraining.) Service and backend tests updated: the pothole model reports no δ (A10); the service fixture is now an RDD2022 India test photo (CC BY 4.0). Service 10 tests, backend 61 tests and the end-to-end test pass. | YOLOv8n per the A8 rule (smallest CPU model). Graffiti is an open question: RT-DETR-l scores higher on the test set but is about 10 times slower on the laptop CPU and 10 times larger; to be decided with the final latency numbers. |
 | 2026-11-26 | Pothole and litter YOLO11n moved from the laptop to Colab (litter at 23:10, on the user's instruction) | To fit the India model into the 4-hour laptop queue. Graffiti YOLO11n stays on the laptop. |
 | 2026-11-26 | **Observation:** the laptop YOLOv8n runs for pothole, litter and graffiti all reached their best validation fitness at epoch 39 or 40 of 40 (`best_epoch` in `results/train/*__yolov8n__s0.json`), so they were still improving when the 40-epoch cap stopped them. | The cap may understate YOLOv8n against models that converge faster. Either state this in the paper or rerun the deployed models with 60 epochs on Colab if GPU time allows. |
 
-**Result of the India decision** (sources: `results/eval/pothole__yolov8n__s0.json` set `pothole_india_test_split`; `results/eval/pothole_india__yolov8n__s0.json` set `test`, stratum `India`; `results/complaints/*.json` `fairness_by_country`). On the same 286 Indian test photos, box mAP50 rose from 0.101 (0.073–0.135) without Indian training data to 0.378 (0.335–0.429) with it, and the share of genuine Indian pothole complaints flagged fell from 67.0 % (τ 0.50) to 27.8 % (τ 0.40). India stays below Japan (0.617 for the India-trained model), so a smaller gap remains; the paper should report both numbers.
+**Result of the India decision — SUPERSEDED on 2026-11-27:** the numbers in this paragraph came from runs trained with the RDD2022 United States subset (now in `results/superseded/`). They will be replaced by the retrained runs. (Original sources: `results/eval/pothole__yolov8n__s0.json` set `pothole_india_test_split`; `results/eval/pothole_india__yolov8n__s0.json` set `test`, stratum `India`; `results/complaints/*.json` `fairness_by_country`). On the same 286 Indian test photos, box mAP50 rose from 0.101 (0.073–0.135) without Indian training data to 0.378 (0.335–0.429) with it, and the share of genuine Indian pothole complaints flagged fell from 67.0 % (τ 0.50) to 27.8 % (τ 0.40). India stays below Japan (0.617 for the India-trained model), so a smaller gap remains; the paper should report both numbers.
 
 **Run status (2026-11-27 01:15; numbers in `ai_model/results/phase3_summary.md`):**
 
 | Run | Machine | Trained | Evaluated | Complete |
 |---|---|---|---|---|
-| pothole yolov8n s0 | laptop | yes | yes | yes (latency to remeasure on idle laptop) |
-| pothole_india yolov8n s0 (to deploy) | laptop | yes | yes | yes (latency to remeasure) |
+| pothole yolov8n s0 | laptop | retraining without US (2026-11-27) | no | no |
+| pothole_india yolov8n s0 (to deploy) | laptop | queued for retraining without US | no | no |
 | garbage_litter yolov8n s0 | laptop | yes | yes | yes (latency to remeasure) |
 | graffiti yolov8n s0 | laptop | yes | yes | yes (latency to remeasure) |
 | graffiti yolo11n s0 | laptop | yes | yes | yes |
-| graffiti rtdetr-l s0 | Colab | yes | on Colab | re-score on laptop (wrong-category photos missing on Colab), latency on laptop |
-| pothole rtdetr-l s0 | Colab | yes | on Colab | re-evaluate and re-score on laptop (Roboflow and India test split missing on Colab), latency on laptop |
+| graffiti rtdetr-l s0 | Colab | yes | re-evaluated on laptop (2026-11-27); re-scoring running | latency on idle laptop |
+| pothole rtdetr-l s0 | Colab | to retrain without US | no | no |
 | garbage_litter rtdetr-l s0 | Colab | no | no | to do |
 | pothole yolo11n s0 | Colab | no | no | to do |
 | garbage_litter yolo11n s0 | Colab | no | no | to do |

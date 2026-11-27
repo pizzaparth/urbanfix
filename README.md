@@ -183,7 +183,7 @@ Open manholes were offered until November 2026. The only real-photo dataset foun
 
 | Category | Training dataset | Licence | Train / val / test | External test sets |
 |:--|:--|:--|:--|:--|
-| Pothole / Road Damage | [RDD2022](https://doi.org/10.6084/m9.figshare.21431547), class D40, Japan, Czech Republic, United States, China | CC BY 4.0 | 1,600 / 341 / 339 | RDD2022 India (1,911, never used in training); Roboflow pothole set (297) |
+| Pothole / Road Damage | [RDD2022](https://doi.org/10.6084/m9.figshare.21431547), class D40, Japan, Czech Republic, China and India (the United States subset is Google Street View imagery and is excluded) | CC BY 4.0 | 2,836 / 606 / 604 | Roboflow pothole set (297). A variant trained without Indian photos (1,498 / 319 / 318) is tested on all 1,911 Indian photos to measure the geographic gap. |
 | Garbage / Litter | [TACO](https://doi.org/10.5281/zenodo.3587843) official annotations | CC BY 4.0 | 1,000 / 214 / 214 | TACO unofficial annotations (2,308) |
 | Graffiti | [STORM graffiti/tagging](https://doi.org/10.5281/zenodo.3238357) | CC BY 4.0 | 670 / 143 / 209 (official test split) | none found |
 
@@ -191,9 +191,9 @@ Splits are grouped by source photo (file-name stems plus near-duplicate image ha
 
 ### Models and results
 
-The weights in `ai_model/weights/` (pothole and litter segmentation, graffiti detection) are the models of the submitted paper. They were trained and selected on the old splits, which leaked between training and validation, so their validation numbers are not reported here any more. New models, trained on the splits above and measured once on the test sets with confidence intervals, replace them in phase 3 of `feedback/action.md`. The pothole model then becomes a box detector, because RDD2022 has boxes only.
+The weights in `ai_model/weights/` are the 2026 models, trained on the splits above (phase 3 of `feedback/action.md`): YOLOv8n for each category, the pothole model trained on RDD2022 including Indian roads (box detector, because RDD2022 has boxes only), litter as segmentation, graffiti as box detection. Their test-set results with 95 % confidence intervals, the baselines (YOLO11n, RT-DETR-l) and the complaint-level screening rates are generated into `ai_model/results/phase3_summary.md`. The models of the submitted paper are in the git history.
 
-Training settings: 640 x 640 images, batch 16, Ultralytics default optimiser and augmentation, early stopping with patience 15.
+Training settings: 640 x 640 images, batch 16, COCO-pretrained, at most 40 epochs with early stopping after 10, Ultralytics default optimiser and augmentation. Each category's threshold τ is in `ai_service/thresholds.json`, chosen on validation data by a written rule.
 
 The vision service that runs the models, its endpoints and τ per category are described in [`ai_service/README.md`](./ai_service/README.md). A low-confidence or empty result marks the complaint `needsReview` for a supervisor; the model never rejects a complaint.
 

@@ -27,7 +27,8 @@ def jpeg(color=(128, 128, 128), size=(320, 240)) -> bytes:
 def test_health_lists_three_models(client):
     body = client.get("/health").json()
     assert set(body["models"]) == {"pothole_road_damage", "garbage_litter", "graffiti"}
-    assert body["models"]["pothole_road_damage"]["task"] == "segment"
+    assert body["models"]["pothole_road_damage"]["task"] == "detect"
+    assert body["models"]["garbage_litter"]["task"] == "segment"
     assert body["models"]["graffiti"]["task"] == "detect"
     assert all(0 < t < 1 for t in body["tau"].values())
 
@@ -38,15 +39,20 @@ def test_pothole_photo_is_confirmed(client):
     body = client.post("/predict/pothole_road_damage", files=[("files", ("p.jpg", data, "image/jpeg"))]).json()
     assert body["needs_review"] is False
     assert body["s_star"] >= body["tau"]
-    assert 0 < body["delta"] <= 1
+    assert body["delta"] is None  # box model: no damage share (A10)
     assert body["images"][0]["detections"]
     assert body["images"][0]["annotated_jpeg_base64"]
 
 
 def test_blank_photo_needs_review(client):
-    body = client.post("/predict/pothole_road_damage", files=[("files", ("blank.jpg", jpeg(), "image/jpeg"))]).json()
-    assert body["needs_review"] is True
-    assert body["s_star"] == 0
+    for category in ("pothole_road_damage", "garbage_litter", "graffiti"):
+        body = client.post(f"/predict/{category}", files=[("files", ("blank.jpg", jpeg(), "image/jpeg"))]).json()
+        assert body["needs_review"] is True, category
+        assert body["s_star"] == 0, category
+
+
+def test_segmentation_model_reports_zero_delta_on_blank_photo(client):
+    body = client.post("/predict/garbage_litter", files=[("files", ("blank.jpg", jpeg(), "image/jpeg"))]).json()
     assert body["delta"] == 0
 
 

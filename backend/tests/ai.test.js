@@ -144,6 +144,6 @@ describe('AI analysis', () => {
     assert.equal(c.aiAnalysis.state, 'done', c.aiAnalysis.error);
     assert.equal(c.aiAnalysis.needsReview, false);
     assert.ok(c.aiAnalysis.sStar >= c.aiAnalysis.tau);
-    assert.ok(c.aiAnalysis.delta > 0);
+    assert.ok(c.aiAnalysis.delta == null, 'the pothole model is a box detector, so no damage share (A10)');
   });
 });

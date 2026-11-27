@@ -13,7 +13,7 @@ ai_model/
 │   ├── 04_graffiti.ipynb              convert STORM CSV boxes to YOLO, train detection
 │   ├── 05_evaluate_models.ipynb       metrics, PR curves, confusion counts, latency -> results/
 │   └── 06_report_figures.ipynb        Figures 5.5 to 5.10 of the report
-├── weights/                           trained models used by the AI service
+├── weights/                           deployed models used by the AI service (phase 3; v2/ holds every run, git-ignored)
 │   ├── pothole_road_damage_model.pt
 │   ├── garbage_litter_model.pt
 │   └── graffiti_model.pt

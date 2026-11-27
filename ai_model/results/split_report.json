@@ -10,41 +10,38 @@
  "categories": {
   "pothole": {
    "source": "RDD2022 (Arya et al., 2024), doi:10.6084/m9.figshare.21431547, CC BY 4.0, class D40",
-   "pool_images": 2280,
-   "pool_groups": 2269,
+   "pool_images": 2135,
+   "pool_groups": 2124,
    "dropped_cross_fixed_split": 0,
    "splits": {
     "train": {
-     "images": 1600,
-     "source_groups": 1589,
-     "with_defect": 1281,
+     "images": 1498,
+     "source_groups": 1487,
+     "with_defect": 1199,
      "by_stratum": {
       "China_MotorBike": 144,
       "Czech": 135,
-      "Japan": 1219,
-      "United_States": 102
+      "Japan": 1219
      }
     },
     "val": {
-     "images": 341,
-     "source_groups": 341,
-     "with_defect": 275,
+     "images": 319,
+     "source_groups": 319,
+     "with_defect": 259,
      "by_stratum": {
       "China_MotorBike": 30,
       "Czech": 29,
-      "Japan": 260,
-      "United_States": 22
+      "Japan": 260
      }
     },
     "test": {
-     "images": 339,
-     "source_groups": 339,
-     "with_defect": 268,
+     "images": 318,
+     "source_groups": 318,
+     "with_defect": 250,
      "by_stratum": {
       "China_MotorBike": 31,
       "Czech": 28,
-      "Japan": 259,
-      "United_States": 21
+      "Japan": 259
      }
     }
    },
@@ -132,39 +129,36 @@
    "source": "RDD2022 (Arya et al., 2024), doi:10.6084/m9.figshare.21431547, CC BY 4.0, class D40; plus RDD2022 India (same class and background rule)",
    "splits": {
     "train": {
-     "images": 2938,
-     "source_groups": 2927,
-     "with_defect": 2348,
+     "images": 2836,
+     "source_groups": 2825,
+     "with_defect": 2266,
      "by_stratum": {
       "China_MotorBike": 144,
       "Czech": 135,
       "India": 1338,
-      "Japan": 1219,
-      "United_States": 102
+      "Japan": 1219
      }
     },
     "val": {
-     "images": 628,
-     "source_groups": 628,
-     "with_defect": 506,
+     "images": 606,
+     "source_groups": 606,
+     "with_defect": 490,
      "by_stratum": {
       "China_MotorBike": 30,
       "Czech": 29,
       "India": 287,
-      "Japan": 260,
-      "United_States": 22
+      "Japan": 260
      }
     },
     "test": {
-     "images": 625,
-     "source_groups": 625,
-     "with_defect": 500,
+     "images": 604,
+     "source_groups": 604,
+     "with_defect": 482,
      "by_stratum": {
       "China_MotorBike": 31,
       "Czech": 28,
       "India": 286,
-      "Japan": 259,
-      "United_States": 21
+      "Japan": 259
      }
     }
    },

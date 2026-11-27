@@ -1,0 +1,44 @@
+{
+ "tag": "garbage_litter__yolov8n__s0",
+ "tau": 0.8,
+ "flagged_valid": [
+  {
+   "file": "data/garbage_litter/images/val/taco_0181.jpg",
+   "s_star": 0.04472
+  },
+  {
+   "file": "data/garbage_litter/images/val/taco_0947.jpg",
+   "s_star": 0.06507
+  },
+  {
+   "file": "data/garbage_litter/images/train/taco_0801.jpg",
+   "s_star": 0.07807
+  },
+  {
+   "file": "data/garbage_litter/images/train/taco_1326.jpg",
+   "s_star": 0.12063
+  }
+ ],
+ "passed_negative": [
+  {
+   "file": "data/graffiti/images/val/IMG_1246.jpg",
+   "kind": "graffiti",
+   "s_star": 0.95557
+  },
+  {
+   "file": "data/raw/coco_val2017/000000216277.jpg",
+   "kind": "unrelated",
+   "s_star": 0.95478
+  },
+  {
+   "file": "data/raw/coco_val2017/000000419379.jpg",
+   "kind": "unrelated",
+   "s_star": 0.95311
+  },
+  {
+   "file": "data/raw/coco_val2017/000000298396.jpg",
+   "kind": "unrelated",
+   "s_star": 0.94489
+  }
+ ]
+}

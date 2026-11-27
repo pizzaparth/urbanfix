@@ -35,19 +35,19 @@
  },
  "pothole": {
   "train": {
-   "images": 1600,
-   "images_with_defect": 1281,
-   "objects": 1959
+   "images": 1498,
+   "images_with_defect": 1199,
+   "objects": 1867
   },
   "val": {
-   "images": 341,
-   "images_with_defect": 275,
-   "objects": 419
+   "images": 319,
+   "images_with_defect": 259,
+   "objects": 401
   },
   "test": {
-   "images": 339,
-   "images_with_defect": 268,
-   "objects": 432
+   "images": 318,
+   "images_with_defect": 250,
+   "objects": 407
   }
  },
  "external/garbage_litter_taco_unofficial": {
@@ -67,19 +67,19 @@
  },
  "pothole_india": {
   "train": {
-   "images": 2938,
-   "images_with_defect": 2348,
-   "objects": 4127
+   "images": 2836,
+   "images_with_defect": 2266,
+   "objects": 4035
   },
   "val": {
-   "images": 628,
-   "images_with_defect": 506,
-   "objects": 940
+   "images": 606,
+   "images_with_defect": 490,
+   "objects": 922
   },
   "test": {
-   "images": 625,
-   "images_with_defect": 500,
-   "objects": 930
+   "images": 604,
+   "images_with_defect": 482,
+   "objects": 905
   }
  },
  "external/pothole_india_test_split": {

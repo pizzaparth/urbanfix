@@ -6,7 +6,7 @@ country without compression. Each inner zip is therefore a contiguous byte range
 of the outer file, and this script fetches only the ranges it needs.
 
 Usage:
-    python scripts/fetch_rdd2022.py [--countries India Japan Czech United_States China_MotorBike]
+    python scripts/fetch_rdd2022.py [--countries India Japan Czech China_MotorBike]
 
 Output: data/raw/rdd2022/<Country>/train/{images,annotations/xmls}/...
 """
@@ -26,7 +26,9 @@ from remote_zip import HttpRangeFile, open_remote_zip  # noqa: E402
 URL = "https://ndownloader.figshare.com/files/38030910"
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "data" / "raw" / "rdd2022"
-DEFAULT = ["India", "Japan", "Czech", "United_States", "China_MotorBike"]
+# United_States is left out: the RDD2022 paper states those images are Google Street View
+# captures, which the dataset's CC BY 4.0 licence cannot cover (ai_model/DATASETS.md, F25).
+DEFAULT = ["India", "Japan", "Czech", "China_MotorBike"]
 CHUNK = 16 << 20
 
 

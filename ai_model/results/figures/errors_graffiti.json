@@ -1,0 +1,44 @@
+{
+ "tag": "graffiti__yolov8n__s0",
+ "tau": 0.85,
+ "flagged_valid": [
+  {
+   "file": "data/graffiti/images/val/IMG_20180723_123437.jpg",
+   "s_star": 0.0051
+  },
+  {
+   "file": "data/graffiti/images/val/IMG_20180810_085645.jpg",
+   "s_star": 0.01151
+  },
+  {
+   "file": "data/graffiti/images/val/IMG_20180724_123021.jpg",
+   "s_star": 0.02131
+  },
+  {
+   "file": "data/graffiti/images/val/IMG_0057.JPG",
+   "s_star": 0.07939
+  }
+ ],
+ "passed_negative": [
+  {
+   "file": "data/raw/coco_val2017/000000080153.jpg",
+   "kind": "unrelated",
+   "s_star": 0.93364
+  },
+  {
+   "file": "data/raw/coco_val2017/000000263425.jpg",
+   "kind": "unrelated",
+   "s_star": 0.91239
+  },
+  {
+   "file": "data/raw/coco_val2017/000000357081.jpg",
+   "kind": "unrelated",
+   "s_star": 0.90801
+  },
+  {
+   "file": "data/raw/coco_val2017/000000289960.jpg",
+   "kind": "unrelated",
+   "s_star": 0.89865
+  }
+ ]
+}

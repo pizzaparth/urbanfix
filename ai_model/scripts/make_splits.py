@@ -271,7 +271,8 @@ def categories() -> dict:
     return {
         "pothole": {
             "source": "RDD2022 (Arya et al., 2024), doi:10.6084/m9.figshare.21431547, CC BY 4.0, class D40",
-            "pool": lambda: sum((rdd_pool(c, 0.25) for c in ("Japan", "Czech", "United_States", "China_MotorBike")), []),
+            # United_States is excluded: Google Street View images (RDD2022 paper), licence not grantable (F25).
+            "pool": lambda: sum((rdd_pool(c, 0.25) for c in ("Japan", "Czech", "China_MotorBike")), []),
             "external": {
                 "pothole_rdd2022_india": lambda: rdd_pool("India", 0.25),
                 "pothole_roboflow": roboflow_pothole_pool,

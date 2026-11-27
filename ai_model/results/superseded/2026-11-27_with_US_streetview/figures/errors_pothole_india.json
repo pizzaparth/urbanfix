@@ -1,0 +1,44 @@
+{
+ "tag": "pothole_india__yolov8n__s0",
+ "tau": 0.4,
+ "flagged_valid": [
+  {
+   "file": "data/raw/rdd2022/United_States/train/images/United_States_002262.jpg",
+   "s_star": 0.00594
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_007432.jpg",
+   "s_star": 0.0069
+  },
+  {
+   "file": "data/raw/rdd2022/India/train/images/India_008336.jpg",
+   "s_star": 0.0091
+  },
+  {
+   "file": "data/raw/rdd2022/Japan/train/images/Japan_006544.jpg",
+   "s_star": 0.01007
+  }
+ ],
+ "passed_negative": [
+  {
+   "file": "data/garbage_litter/images/train/taco_0555.jpg",
+   "kind": "litter",
+   "s_star": 0.85555
+  },
+  {
+   "file": "data/raw/coco_val2017/000000104603.jpg",
+   "kind": "unrelated",
+   "s_star": 0.82643
+  },
+  {
+   "file": "data/garbage_litter/images/train/taco_0297.jpg",
+   "kind": "litter",
+   "s_star": 0.81245
+  },
+  {
+   "file": "data/raw/coco_val2017/000000021879.jpg",
+   "kind": "unrelated",
+   "s_star": 0.74166
+  }
+ ]
+}

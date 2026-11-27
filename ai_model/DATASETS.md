@@ -11,7 +11,7 @@ research use.
 
 | Category | Dataset | Collector and how images were taken | Licence | Where (version, access date) | Source photos vs copies | Redistribution | Role |
 |---|---|---|---|---|---|---|---|
-| Pothole | **RDD2022**, class D40 (Arya et al., Geoscience Data Journal, 2024) | Named research team (University of Tokyo and partners). Smartphone and dashboard cameras on public roads in Japan, India, Czech Republic, Norway, United States and China. | CC BY 4.0 (figshare record) | doi:10.6084/m9.figshare.21431547.v1, accessed 2026-11-24 | Original frames, no augmentation | Yes, with attribution | **Training** (Japan, Czech, United States, China motorbike); **external test** (India) |
+| Pothole | **RDD2022**, class D40 (Arya et al., Geoscience Data Journal, 2024) | Named research team (University of Tokyo and partners). Vehicle-mounted smartphones (Japan, India, Czech Republic), high-resolution vehicle cameras (Norway), motorbike and drone cameras (China); the **United States images are Google Street View captures** (RDD2022 paper, data collection section). | CC BY 4.0 (figshare record); the paper says nothing about the licence of the Street View images, which belong to Google | doi:10.6084/m9.figshare.21431547.v1, accessed 2026-11-24 | Original frames, no augmentation | Yes, with attribution, **except the United States subset** | **Training** (Japan, Czech, China motorbike, and India in the deployed model); **external test** (India, for the model trained without it). **United States excluded** (F25) |
 | Pothole | Roboflow "Pothole_Segmentation_YOLOv8" v1 [16] | "Provided by a Roboflow user"; image sources not stated | CC BY 4.0 | universe.roboflow.com/farzad/pothole_segmentation_yolov8, export of 2023-10-20 | 300 source photos; training folder holds 3 Roboflow augmentations of each of 240 | Yes, with attribution | **External test only** (provenance not documented) |
 | Litter | **TACO**, official annotations [17] (Proença and Simões, 2020) | Named authors; photos taken by the authors and volunteers in woods, roads and beaches, hosted by the project | CC BY 4.0 (Zenodo record) | doi:10.5281/zenodo.3587843; annotation file from github.com/pedropro/TACO | 1,500 photos (1,428 still downloadable) | Yes, with attribution | **Training** |
 | Litter | TACO unofficial annotations | Public submissions through tacodataset.org, not reviewed by the TACO authors | Image licence field "CC" for the 2,399 TACO-hosted images used; 1,432 OpenLitterMap images (ODbL) left out | `data/annotations_unofficial.json` at commit 3844bcd (2026-10-20) | Original photos | Yes, with attribution | **External test only** (different photographers; labels unreviewed) |
@@ -41,8 +41,16 @@ Design of the RDD2022 use:
 - **India is held out completely.** The model never sees an Indian image during training or model
   selection. India is the external test set for A3 and the main number for the fairness analysis
   (A11): it measures what happens to complaints from roads unlike the training data.
-- In-domain pool: Japan, Czech Republic, United States and China (motorbike). Each country is split
-  70/15/15 by source group, so every country has its own in-domain test set for A11.
+- In-domain pool: Japan, Czech Republic and China (motorbike). Each country is split 70/15/15 by
+  source group, so every country has its own in-domain test set for A11.
+- **United States is left out** (decided 2026-11-27, F25): the RDD2022 paper states that those images
+  are Google Street View captures. Google holds their copyright, so the dataset's CC BY 4.0 licence
+  cannot cover them, and they fail the licence criterion of Eq. (1). Removing them left the Japan,
+  Czech and China splits unchanged (checked file by file).
+- **India was added in a second split** (`splits/pothole_india.json`, decided 2026-11-26) after the
+  model trained without India performed far worse on Indian roads; that model is the one deployed.
+  Its India test images also serve as an external set for the model trained without India, so the
+  two are compared on identical photos.
 - Norway is left out: its archive is 10.6 GB of very wide dashboard images, larger than the other
   countries together, and adds no new road type for this use.
 - China (drone) is left out: aerial images are not what residents photograph.

@@ -349,7 +349,7 @@ The AI system is an automated validation and localisation layer. It does not rej
 
 | Complaint Category | AI Model | Task | Training Dataset |
 |---|---|---|---|
-| Pothole / Road Damage | `pothole_road_damage_model.pt` | Segmentation (submitted paper); detection after retraining | Submitted paper: Roboflow **Pothole Segmentation (YOLOv8)**, CC BY 4.0, image sources undocumented. 2026 revision: **RDD2022** class D40 (potholes), CC BY 4.0, from Japan, the Czech Republic, the United States and China; India is held out as an external test set. See `ai_model/DATASETS.md`. |
+| Pothole / Road Damage | `pothole_road_damage_model.pt` | Segmentation (submitted paper); detection after retraining | Submitted paper: Roboflow **Pothole Segmentation (YOLOv8)**, CC BY 4.0, image sources undocumented. 2026 revision: **RDD2022** class D40 (potholes), CC BY 4.0, from Japan, the Czech Republic, China and India (the United States subset is Google Street View imagery and is excluded); a variant trained without India measures the geographic gap. See `ai_model/DATASETS.md`. |
 | Garbage / Litter | `garbage_litter_model.pt` | Segmentation | **TACO** (Trash Annotations in Context): 1,500 images and 4,784 litter annotations, with COCO-format masks, taken on roads, in woods and on beaches. |
 | Graffiti | `graffiti_model.pt` | Detection | **STORM graffiti/tagging detection dataset** (University of West Attica, CC BY 4.0): 1,022 smartphone images with bounding boxes, collected through a crowdsensing app. |
 

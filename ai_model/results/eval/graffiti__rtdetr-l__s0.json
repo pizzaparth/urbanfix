@@ -6,7 +6,7 @@
  "task": "detect",
  "weights": "weights/v2/graffiti__rtdetr-l__s0.pt",
  "bootstrap_resamples": 1000,
- "machine": "Linux-6.6.159+-x86_64-with-glibc2.39 / x86_64",
+ "machine": "macOS-27.2-arm64-arm-64bit-Mach-O / arm",
  "sets": {
   "test": {
    "images": 209,
@@ -14,36 +14,36 @@
    "objects": 450,
    "box": {
     "precision": {
-     "value": 0.8424,
+     "value": 0.8305,
      "ci95": [
-      0.8013,
-      0.8854
+      0.7887,
+      0.898
      ]
     },
     "recall": {
-     "value": 0.7311,
+     "value": 0.7298,
      "ci95": [
-      0.6759,
-      0.7868
+      0.6692,
+      0.7913
      ]
     },
     "mAP50": {
-     "value": 0.7999,
+     "value": 0.8007,
      "ci95": [
-      0.7527,
-      0.8521
+      0.7537,
+      0.8528
      ]
     },
     "mAP50-95": {
-     "value": 0.6148,
+     "value": 0.6145,
      "ci95": [
-      0.5594,
-      0.6775
+      0.5591,
+      0.6773
      ]
     }
    }
   }
  },
- "cpu_latency_ms": 1257.1,
+ "cpu_latency_ms": 345.7,
  "weights_mb": 66.2
 }
